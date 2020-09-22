@@ -26,7 +26,7 @@ public class WCSController {
     @Autowired
     private IWCSService service;
 
-    @ApiOperation(value="任务回告",notes="此接口包含入库任务回告、出库任务回告、移库任务回告、小车换层回告、输送线行走任务回告")
+    @ApiOperation(value="任务回告",notes="此接口包含输送线行走任务回告")
     @PostMapping("/task/callback")
     public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception{
         logger.info("接收任务回告,{}",JsonUtils.toString(taskCallbackDTO));
@@ -62,15 +62,4 @@ public class WCSController {
         return wcsService.executeLightCallback(lightDTO);
     }
 
-    @ApiOperation(value="安全门控制",notes="安全门控制")
-    @PostMapping("/door")
-    public RestMessage<String> door(@RequestBody DoorDTO doorDTO) throws Exception{
-        logger.info("安全门回告,{}",JsonUtils.toString(doorDTO));
-        try {
-            service.openDoor(doorDTO.getDoorNo(),doorDTO.isOpen());
-            return RestMessage.newInstance(true,"操作成功",null);
-        }catch (Exception e){
-            return RestMessage.newInstance(false,"500","操作失败，"+e.getMessage(),null);
-        }
-    }
 }

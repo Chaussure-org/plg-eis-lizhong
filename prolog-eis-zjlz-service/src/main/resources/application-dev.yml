@@ -47,3 +47,18 @@ spring:
     
 logging:
   config: classpath:log4j2-dev.xml
+
+prolog:
+  eis:
+    wcs:
+      host:
+      port:
+    rcs:
+      host:
+      port:
+    sas:
+      host:
+      port:
+    mcs:
+      host:
+      port:

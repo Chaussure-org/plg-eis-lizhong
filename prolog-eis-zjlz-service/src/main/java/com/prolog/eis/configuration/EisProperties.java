@@ -28,6 +28,12 @@ public class EisProperties {
 
     private RCSProperties rcs = new RCSProperties();
 
+    private MCSProperties mcs = new MCSProperties();
+
+    private SASProperties sas = new SASProperties();
+
+    private WMSProperties wms = new WMSProperties();
+
     public int getBzInterval() {
         return bzInterval;
     }
@@ -150,5 +156,21 @@ public class EisProperties {
 
     public void setRcs(RCSProperties rcs) {
         this.rcs = rcs;
+    }
+
+    public MCSProperties getMcs() {
+        return mcs;
+    }
+
+    public void setMcs(MCSProperties mcs) {
+        this.mcs = mcs;
+    }
+
+    public SASProperties getSas() {
+        return sas;
+    }
+
+    public void setSas(SASProperties sas) {
+        this.sas = sas;
     }
 }
