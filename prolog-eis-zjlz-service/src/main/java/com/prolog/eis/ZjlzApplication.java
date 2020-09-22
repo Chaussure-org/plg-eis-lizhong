@@ -1,8 +1,7 @@
 package com.prolog.eis;
 
-import java.nio.charset.StandardCharsets;
-
 import com.prolog.framework.authority.annotation.EnablePrologResourceServer;
+import com.prolog.framework.microservice.annotation.EnablePrologService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -13,31 +12,16 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
-import com.prolog.framework.authority.annotation.EnablePrologEmptySecurityServer;
-import com.prolog.framework.microservice.annotation.EnablePrologService;
+import java.nio.charset.StandardCharsets;
 
 @EnableScheduling
 @EnablePrologResourceServer
 @MapperScan({"com.prolog.eis.dao","com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService
-public class MasterApplication {
-
-	@Bean
-	@LoadBalanced
-	public RestTemplate restTemplate() {
-		HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-		httpRequestFactory.setConnectionRequestTimeout(30000);
-		httpRequestFactory.setConnectTimeout(30000);
-		httpRequestFactory.setReadTimeout(30000);
-		RestTemplate restTemplate = new RestTemplate(httpRequestFactory);
-        restTemplate.getMessageConverters().set(1,new StringHttpMessageConverter(StandardCharsets.UTF_8)); // 支持中文编码
-		return restTemplate;
-	}
-
-
+public class ZjlzApplication {
 	public static void main( String[] args )
     {
-    	SpringApplication.run(MasterApplication.class, args);
+    	SpringApplication.run(ZjlzApplication.class, args);
     }
 }

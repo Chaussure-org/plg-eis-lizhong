@@ -5,11 +5,11 @@
 <configuration status="WARN" monitorInterval="30">
     <properties>
         <!--需修改，全小写，与 spring.application.name 保持一致-->
-        <property name="APP_NAME">eis-btn-master</property>
+<!--        <property name="APP_NAME">prolog-eis-zjlz-service</property>-->
         <!--需修改， 与 eureka.instance.instanceId 保存一致-->
-        <property name="INSTANCE_ID">127.0.0.1:20310</property>
+<!--        <property name="INSTANCE_ID">127.0.0.1:20310</property>-->
         <!--日志存储路径，固定不更改-->
-        <property name="LOG_PATH">/usr/local/logs</property>
+<!--        <property name="LOG_PATH">/usr/local/logs</property>-->
     </properties>
     <!--先定义所有的appender-->
     <appenders>

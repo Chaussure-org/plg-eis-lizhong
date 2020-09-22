@@ -14,7 +14,7 @@ eureka:
 
 server:
   ipAddress: 127.0.0.1
-  port: 20203
+  port: 20310
   servlet:
     context-path:
 
@@ -45,12 +45,12 @@ ribbon:
 prolog:
   #api文档配置文件
   apidoc:
-    title: EIS贝泰妮项目
+    title: EIS利中项目
     basePackage: com.prolog.eis
-    description: EIS贝泰妮项目
+    description: EIS利中项目
     version: 1.0
   dao:
-    dialect: oracle
+    dialect: mysql
     pagehelper: #pagehelper分页插件配置
       helperDialect: ${prolog.dao.dialect}
       reasonable: true
