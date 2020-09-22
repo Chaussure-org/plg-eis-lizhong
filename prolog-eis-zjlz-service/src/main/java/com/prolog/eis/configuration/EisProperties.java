@@ -26,6 +26,8 @@ public class EisProperties {
     private int bzInterval = 1500;//拍灯间隔
     private WCSProperties wcs = new WCSProperties();
 
+    private RCSProperties rcs = new RCSProperties();
+
     public int getBzInterval() {
         return bzInterval;
     }
@@ -140,5 +142,13 @@ public class EisProperties {
 
     public void setWcs(WCSProperties wcs) {
         this.wcs = wcs;
+    }
+
+    public RCSProperties getRcs() {
+        return rcs;
+    }
+
+    public void setRcs(RCSProperties rcs) {
+        this.rcs = rcs;
     }
 }
