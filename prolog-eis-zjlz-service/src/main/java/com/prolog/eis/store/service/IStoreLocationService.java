@@ -10,4 +10,6 @@ import com.prolog.eis.model.store.SxStoreLocation;
 public interface IStoreLocationService {
 
     void saveStoreLocation(SxStoreLocation sxStoreLocation);
+
+    int countTotal();
 }

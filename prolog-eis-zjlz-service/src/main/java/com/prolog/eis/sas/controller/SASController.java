@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/sas")
-@Api(tags = "SAS回调接口文档")
+@Api(tags = "SAS回调接口文档(两向车及提升机)")
 public class SASController {
 
     private final Logger logger = LoggerFactory.getLogger(SASController.class);
@@ -27,7 +27,7 @@ public class SASController {
     @Autowired
     private IWCSService service;
 
-    @ApiOperation(value="任务回告",notes="此接口包含入库任务回告、出库任务回告、移库任务回告、小车换层回告、输送线行走任务回告")
+    @ApiOperation(value="任务回告",notes="此接口包含入库任务回告、出库任务回告、移库任务回告、小车换层回告")
     @PostMapping("/task/callback")
     public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception{
         logger.info("接收任务回告,{}",JsonUtils.toString(taskCallbackDTO));

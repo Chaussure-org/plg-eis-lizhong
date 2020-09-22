@@ -1,14 +1,11 @@
 package com.prolog.eis.wcs.service.impl;
 
 import com.prolog.eis.model.point.PointLocation;
-import com.prolog.eis.service.pointlocation.IPointLocationService;
+import com.prolog.eis.out.service.pointlocation.IPointLocationService;
 import com.prolog.eis.util.CollectionUtils;
 import com.prolog.eis.wcs.common.Constant;
-import com.prolog.eis.wcs.dao.WCSHistoyTaskMapper;
-import com.prolog.eis.wcs.dao.WCSTaskMapper;
 import com.prolog.eis.wcs.model.WCSHistoryTask;
 import com.prolog.eis.wcs.model.WCSTask;
-import com.prolog.eis.wcs.service.IWCSTaskService;
 import com.prolog.framework.core.exception.ParameterException;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;

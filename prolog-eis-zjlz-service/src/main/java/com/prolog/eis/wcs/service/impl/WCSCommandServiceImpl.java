@@ -1,13 +1,9 @@
 package com.prolog.eis.wcs.service.impl;
 
 import com.prolog.eis.wcs.common.Constant;
-import com.prolog.eis.wcs.dao.WCSCommandMapper;
-import com.prolog.eis.wcs.dao.WCSHistoryCommandMapper;
 import com.prolog.eis.wcs.model.WCSCommand;
 import com.prolog.eis.wcs.model.WCSHistoryCommand;
-import com.prolog.eis.wcs.service.IWCSCommandService;
 import com.prolog.eis.wcs.service.IWCSService;
-import com.prolog.eis.wcs.service.IWCSTaskService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.core.exception.ParameterException;
 import com.prolog.framework.core.restriction.Criteria;

@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/wms")
-@Api(tags = "WCS回调接口文档")
-public class WcsController {
+@Api(tags = "WMS回调接口文档")
+public class WMSController {
 }

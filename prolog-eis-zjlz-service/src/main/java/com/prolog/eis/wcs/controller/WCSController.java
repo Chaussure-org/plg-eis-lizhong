@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/wcs")
-@Api(tags = "WCS回调接口文档")
+@Api(tags = "WCS回调接口文档(输送线)")
 public class WCSController {
 
     private final Logger logger = LoggerFactory.getLogger(WCSController.class);

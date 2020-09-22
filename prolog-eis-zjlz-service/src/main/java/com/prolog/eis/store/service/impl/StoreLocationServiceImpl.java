@@ -21,4 +21,9 @@ public class StoreLocationServiceImpl implements IStoreLocationService {
     public void saveStoreLocation(SxStoreLocation sxStoreLocation) {
         storeLocationMapper.save(sxStoreLocation);
     }
+
+    @Override
+    public int countTotal() {
+        return (int) storeLocationMapper.findCountByMap(null,SxStoreLocation.class);
+    }
 }

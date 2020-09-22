@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "海康rcs接口")
+@Api(tags = "海康rcs接口(agv)")
 @RequestMapping("/api/v1/agv/agvCallbackService")
 public class RcsController {
 
