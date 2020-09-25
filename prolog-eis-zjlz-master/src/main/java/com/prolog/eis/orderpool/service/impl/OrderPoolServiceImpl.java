@@ -1,3 +1,4 @@
+/*
 package com.prolog.eis.orderpool.service.impl;
 
 import com.google.common.collect.Lists;
@@ -25,11 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+*/
 /**
  * @author panteng
  * @description:订单池服务
  * @date 2020/4/17 15:18
- */
+ *//*
+
 
 @Service
 public class OrderPoolServiceImpl implements OrderPoolService {
@@ -54,9 +57,11 @@ public class OrderPoolServiceImpl implements OrderPoolService {
         orderBillList.addAll(orders);
     }
 
-    /**
+    */
+/**
      * 拉取新订单
-     */
+     *//*
+
     @Override
 
     public void pullNewOrders() {
@@ -72,11 +77,13 @@ public class OrderPoolServiceImpl implements OrderPoolService {
     }
 
 
-    /**
+    */
+/**
      * 获取订单明细
      *
      * @param order
-     */
+     *//*
+
     private void findOrderMx(List<OpOrderHz> order) {
         //500个 获取明细
         List<List<OpOrderHz>> partition = Lists.partition(order, 500);
@@ -113,10 +120,12 @@ public class OrderPoolServiceImpl implements OrderPoolService {
             outboundTaskHzMapper.updateOrder2Pool(idsStr);
         }
     }
-    /**
+    */
+/**
      * 获取订单池里的订单
      * @return
-     */
+     *//*
+
     @Override
     public List<OpOrderHz> getOrderPool() throws Exception {
         synchronized (lockObj) {
@@ -137,11 +146,13 @@ public class OrderPoolServiceImpl implements OrderPoolService {
         }
     }
 
-    /**
+    */
+/**
      * 删除订单池的订单集合
      *
      * @param ids
-     */
+     *//*
+
 
     @Override
     public void delOrderList(List<Integer> ids) throws Exception {
@@ -162,11 +173,13 @@ public class OrderPoolServiceImpl implements OrderPoolService {
     }
 
 
-    /**
+    */
+/**
      * 修改订单优先级
      *
      * @param map
-     */
+     *//*
+
 
     @Override
 
@@ -186,3 +199,4 @@ public class OrderPoolServiceImpl implements OrderPoolService {
 
 
 }
+*/
