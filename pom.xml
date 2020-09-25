@@ -9,7 +9,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>prolog-eis-zjlz-facade</module>
-        <module>prolog-eis-zjlz-service</module>
+        <module>prolog-eis-zjlz-master</module>
         <module>prolog-eis-zjlz-common</module>
     </modules>
     <packaging>pom</packaging>
@@ -47,7 +47,7 @@
 
             <dependency>
                 <groupId>com.prolog.eis</groupId>
-                <artifactId>prolog-eis-zjlz-service</artifactId>
+                <artifactId>prolog-eis-zjlz-master</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

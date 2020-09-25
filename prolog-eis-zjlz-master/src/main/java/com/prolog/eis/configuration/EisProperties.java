@@ -1,5 +1,6 @@
 package com.prolog.eis.configuration;
 
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = com.prolog.eis.configuration.EisProperties.Prefix)
@@ -142,35 +143,47 @@ public class EisProperties {
         this.maxSPCount = maxSPCount;
     }
 
-    public WCSProperties getWcs() {
+    public static String getPrefix() {
+        return Prefix;
+    }
+
+    public com.prolog.eis.configuration.WCSProperties getWcs() {
         return wcs;
     }
 
-    public void setWcs(WCSProperties wcs) {
+    public void setWcs(com.prolog.eis.configuration.WCSProperties wcs) {
         this.wcs = wcs;
     }
 
-    public RCSProperties getRcs() {
+    public com.prolog.eis.configuration.RCSProperties getRcs() {
         return rcs;
     }
 
-    public void setRcs(RCSProperties rcs) {
+    public void setRcs(com.prolog.eis.configuration.RCSProperties rcs) {
         this.rcs = rcs;
     }
 
-    public MCSProperties getMcs() {
+    public com.prolog.eis.configuration.MCSProperties getMcs() {
         return mcs;
     }
 
-    public void setMcs(MCSProperties mcs) {
+    public void setMcs(com.prolog.eis.configuration.MCSProperties mcs) {
         this.mcs = mcs;
     }
 
-    public SASProperties getSas() {
+    public com.prolog.eis.configuration.SASProperties getSas() {
         return sas;
     }
 
-    public void setSas(SASProperties sas) {
+    public void setSas(com.prolog.eis.configuration.SASProperties sas) {
         this.sas = sas;
+    }
+
+    public com.prolog.eis.configuration.WMSProperties getWms() {
+        return wms;
+    }
+
+    public void setWms(com.prolog.eis.configuration.WMSProperties wms) {
+        this.wms = wms;
     }
 }

@@ -2,7 +2,7 @@ package com.prolog.eis.rcs.service;
 
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 
-public interface RcsRequestService {
+public interface IRcsRequestService {
 
 	/**
 	 * 給Rcs发送搬运任务

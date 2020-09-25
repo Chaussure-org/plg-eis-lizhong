@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
-import com.prolog.eis.rcs.service.RcsRequestService;
+import com.prolog.eis.rcs.service.IRcsRequestService;
 import com.prolog.eis.util.PrologHttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Service
-public class RcsRequestServiceImpl implements RcsRequestService {
+public class RcsRequestServiceImpl implements IRcsRequestService {
 
 	@Autowired
 	private EisProperties properties;

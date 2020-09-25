@@ -1,7 +1,7 @@
 package com.prolog.eis.rcs.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.prolog.eis.rcs.service.RcsCallbackService;
+import com.prolog.eis.rcs.service.IRcsCallbackService;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RcsController {
 
 	@Autowired
-	private RcsCallbackService rcsCallbackService;
+	private IRcsCallbackService rcsCallbackService;
 	
 	@ApiOperation(value = "Rcs回告", notes = "Rcs回告")
 	@PostMapping("/agvCallback")

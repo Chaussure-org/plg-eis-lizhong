@@ -1,10 +1,8 @@
 package com.prolog.eis.sas.service.impl;
 
-
-import com.prolog.eis.dto.wcs.*;
+import com.prolog.eis.dto.wcs.BCRDataDTO;
+import com.prolog.eis.dto.wcs.TaskCallbackDTO;
 import com.prolog.eis.sas.service.ISASCallbackService;
-import com.prolog.eis.wcs.service.IWCSCallbackService;
-import com.prolog.eis.wcs.service.impl.WCSCallbackServiceImpl;
 import com.prolog.framework.common.message.RestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +34,7 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class,timeout = 600)
     public RestMessage<String> executeTaskCallback(TaskCallbackDTO taskCallbackDTO) {
 
         return success;
@@ -47,29 +46,7 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
      *
      * @param taskCallbackDTO
      */
-    @Transactional(rollbackFor = Exception.class,timeout = 600)
-    public void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-
-    }
-
-
-    /**
-     * 行走任务回告,入库点
-     *
-     * @param taskCallbackDTO
-     */
-    @Transactional(rollbackFor = Exception.class,timeout = 600)
-    public void doXZTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-
-    }
-
-    /**
-     * 外形检测结果处理
-     *
-     * @param bcrDataDTO
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void shapeInspect(BCRDataDTO bcrDataDTO) throws Exception {
+    private void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
 
     }
 
@@ -78,8 +55,7 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
      *
      * @param taskCallbackDTO
      */
-    @Transactional(rollbackFor = Exception.class,timeout = 600)
-    public void doInboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
+    private void doInboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
 
     }
 
