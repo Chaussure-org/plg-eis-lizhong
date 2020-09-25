@@ -1,6 +1,6 @@
 package com.prolog.eis.dto.dingdantaker;
 
-import com.prolog.eis.dto.enginee.DingDanDto;
+import com.prolog.eis.dto.enginee.OrderBillDto;
 import com.prolog.eis.dto.enginee.DingDanMxDto;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 public class YunDanGroup {
 	private String yunDanSPKey;
 	private HashSet<Integer> spIdHS;
-	private List<DingDanDto> yunDanList;
+	private List<OrderBillDto> yunDanList;
 
 	/// <summary>
 	/// 匹配数量
@@ -29,7 +29,7 @@ public class YunDanGroup {
 
 	public YunDanGroup() {
 		this.spIdHS = new HashSet<Integer>();
-		this.yunDanList = new ArrayList<DingDanDto>();
+		this.yunDanList = new ArrayList<OrderBillDto>();
 
 //		try {
 //			this.minShiXiaoTime = new SimpleDateFormat("yyyy-MM-dd").parse("9999-01-01");
@@ -54,11 +54,11 @@ public class YunDanGroup {
 		this.spIdHS = spIdHS;
 	}
 
-	public List<DingDanDto> getYunDanList() {
+	public List<OrderBillDto> getYunDanList() {
 		return yunDanList;
 	}
 
-	public void setYunDanList(List<DingDanDto> yunDanList) {
+	public void setYunDanList(List<OrderBillDto> yunDanList) {
 		this.yunDanList = yunDanList;
 	}
 
@@ -86,7 +86,7 @@ public class YunDanGroup {
 		this.otherZtSameCount = otherZtSameCount;
 	}
 
-	public void initSPIdHS(DingDanDto yd) {
+	public void initSPIdHS(OrderBillDto yd) {
 		this.setYunDanSPKey(yd.getYunDanSPKey());
 		for (DingDanMxDto mx : yd.getDingDanMxList()) {
 			if (!this.spIdHS.contains(mx.getSpId()))

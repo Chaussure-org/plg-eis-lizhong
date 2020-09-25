@@ -1,6 +1,7 @@
 package com.prolog.eis.orderpool.service;
 
 import com.prolog.eis.dto.orderpool.OpOrderHz;
+import com.prolog.eis.model.OrderBill;
 
 import java.util.List;
 import java.util.Map;
@@ -27,13 +28,13 @@ public interface OrderPoolService {
      *将订单标记位已加入订单池
      * @param orderList
      */
-    void updateOrder2Pool(List<OpOrderHz> orderList);
+    void updateOrder2Pool(List<OrderBill> orderList);
 
     /**
      * 获取订单池
      * @return
      */
-    List<OpOrderHz> getOrderPool() throws Exception;
+    List<OrderBill> getOrderPool() throws Exception;
 
 
 

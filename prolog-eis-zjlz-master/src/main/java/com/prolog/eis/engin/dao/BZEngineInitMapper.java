@@ -1,4 +1,4 @@
-package com.prolog.eis.dao.enginee;
+package com.prolog.eis.engin.dao;
 
 import com.prolog.eis.dto.enginee.*;
 import org.apache.ibatis.annotations.Select;
@@ -26,7 +26,7 @@ public interface BZEngineInitMapper {
     @Select(" select hz.id ,hz.picking_order_id as jxdId,hz.order_priority as priority  from ORDER_BILL hz\n" +
             "            inner join PICKING_ORDER po on po.id = hz.picking_order_id\n" +
             "            where hz.picking_order_id is not null and po.is_all_arrived = 0")
-    List<DingDanDto> findAllDingDan();
+    List<OrderBillDto> findAllDingDan();
     @Select("select conotd.container_no as containerNo,conotd.order_detail_id as orderDetailId,conotd.order_detail_qty as orderDetailQty\n" +
             "from container_order_task_detail conotd")
     List<LxOrderMxCountDto>findLxOrderMxCount();

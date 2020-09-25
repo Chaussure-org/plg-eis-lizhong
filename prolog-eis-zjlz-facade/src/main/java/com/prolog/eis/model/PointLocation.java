@@ -25,16 +25,7 @@ public class PointLocation {
   private String pointName;
 
   @Column("point_type")
-  @ApiModelProperty("点位类型
-1;-入库接驳口 
-2-出库接驳口 
-3-料箱bcr 
-4-订单箱bcr 
-5-料箱位 
-6-订单框位 
-7-外形检测 
-8-异常出库口 
-9-异常出库口")
+  @ApiModelProperty("点位类型 1;-入库接驳口 2-出库接驳口 3-料箱bcr 4-订单箱bcr 5-料箱位 6-订单框位 7-外形检测 8-异常出库口 9-异常出库口")
   private Integer pointType;
 
   @Column("station_id")

@@ -1,4 +1,4 @@
-package com.prolog.eis.dao.enginee;
+package com.prolog.eis.engin.dao;
 
 import com.prolog.eis.dto.enginee.AllHuoWeiDto;
 import com.prolog.eis.dto.enginee.CengLxTaskDto;

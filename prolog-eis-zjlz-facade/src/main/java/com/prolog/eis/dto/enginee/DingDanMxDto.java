@@ -5,7 +5,7 @@ public class DingDanMxDto {
 		super();
 	}
 
-	public DingDanMxDto(DingDanDto dingDan, int spId, int spCount) {
+	public DingDanMxDto(OrderBillDto dingDan, int spId, int spCount) {
 		this();
 
 		this.dingDan = dingDan;
@@ -23,7 +23,7 @@ public class DingDanMxDto {
 	private int spId;
 
 	// 明细所在的订单
-	private DingDanDto dingDan;
+	private OrderBillDto dingDan;
 
 	/// <summary>
 	/// 应播
@@ -68,11 +68,11 @@ public class DingDanMxDto {
 		return this.spCount - this.boZhongCount - this.bindingCount;
 	}
 
-	public DingDanDto getDingDan() {
+	public OrderBillDto getDingDan() {
 		return dingDan;
 	}
 
-	public void setDingDan(DingDanDto dingDan) {
+	public void setDingDan(OrderBillDto dingDan) {
 		this.dingDan = dingDan;
 	}
 

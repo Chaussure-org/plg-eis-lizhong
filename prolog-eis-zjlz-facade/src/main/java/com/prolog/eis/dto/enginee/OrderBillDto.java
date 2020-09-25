@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DingDanDto {
-	public DingDanDto() {
+public class OrderBillDto {
+	public OrderBillDto() {
 		this.dingDanMxList = new ArrayList<DingDanMxDto>();
 	}
 
@@ -118,8 +118,8 @@ public class DingDanDto {
 		this.yunDanSPKey = yunDanSPKey;
 	}	
 	
-	public static DingDanDto CopyDingDan(OpOrderHz opOrder) {
-		DingDanDto dd = new DingDanDto();
+	public static OrderBillDto CopyDingDan(OpOrderHz opOrder) {
+		OrderBillDto dd = new OrderBillDto();
 		dd.setId(opOrder.getId());
 		dd.setPriority(opOrder.getPriority());
 		dd.setShiXiaoTime(opOrder.getExpectTime());

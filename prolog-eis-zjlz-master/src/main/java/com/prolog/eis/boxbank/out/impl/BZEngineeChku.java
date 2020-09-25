@@ -3,8 +3,7 @@ package com.prolog.eis.boxbank.out.impl;
 import com.prolog.eis.boxbank.out.IOutService;
 import com.prolog.eis.boxbank.rule.LayerLockRule;
 import com.prolog.eis.boxbank.rule.StoreLocationDTO;
-import com.prolog.eis.dao.enginee.EngineGetInitMapper;
-import com.prolog.eis.dao.enginee.EngineLxChuKuMapper;
+import com.prolog.eis.engin.dao.EngineLxChuKuMapper;
 import com.prolog.eis.dto.enginee.*;
 import com.prolog.eis.util.FileLogHelper;
 import org.slf4j.Logger;
@@ -20,8 +19,7 @@ import java.util.List;
 public class BZEngineeChku {
     private final Logger logger = LoggerFactory.getLogger(BZEngineeChku.class);
 
-    @Autowired
-    private EngineGetInitMapper engineGetInitMapper;
+
    /* @Autowired
     private ContainerBindingHzMapper containerBindingHzMapper;
     @Autowired
@@ -155,7 +153,7 @@ public class BZEngineeChku {
             boolean isLxBinding = false;
             JianXuanDanDto jxd = zhanTai.getNeedChuKuJXD();
             for (int i = 0; i < jxd.getDdList().size(); i++) {
-                DingDanDto dd = jxd.getDdList().get(i);
+                OrderBillDto dd = jxd.getDdList().get(i);
                 boolean isDingDanBinding = this.BindDingDan(jxd, lx, dd, zhanTai);
                 if (isDingDanBinding)
                     isLxBinding = true;
@@ -182,7 +180,7 @@ public class BZEngineeChku {
      * @return
      * @throws Exception
      */
-    private boolean BindDingDan(JianXuanDanDto jxd, LiaoXiangDto lx, DingDanDto dd, ZhanTaiDto zhanTai) throws Exception {
+    private boolean BindDingDan(JianXuanDanDto jxd, LiaoXiangDto lx, OrderBillDto dd, ZhanTaiDto zhanTai) throws Exception {
         boolean isBinding = false;
         while (true) {
             DingDanMxDto ddmx = null;

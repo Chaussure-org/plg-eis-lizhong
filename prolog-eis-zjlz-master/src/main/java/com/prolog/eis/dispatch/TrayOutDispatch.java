@@ -1,10 +1,9 @@
 package com.prolog.eis.dispatch;
 
-import com.prolog.eis.dto.enginee.DingDanDto;
-import com.prolog.eis.dto.enginee.XiangKuDto;
+import com.prolog.eis.dto.enginee.OrderBillDto;
 import com.prolog.eis.dto.orderpool.OpOrderHz;
+import com.prolog.eis.model.OrderBill;
 import com.prolog.eis.orderpool.service.OrderPoolService;
-import com.prolog.eis.util.FileLogHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +26,7 @@ public class TrayOutDispatch {
     private OrderPoolService orderPoolService;
 
     public void trayOut() {
-        /**
-         *
-         * 1.查找agv空位，有空位就出
-         * 2.订单池获取订单,优先出库 立库 里库存满足的订单 computerHandleOrder()
-         * 3.出库调度 goodsId,找托盘，这个根据商品数量
-         */
+
     }
 
     /**
@@ -41,12 +35,12 @@ public class TrayOutDispatch {
      * @return
      * @throws Exception
      */
-    private List<DingDanDto> computerHandleOrder() throws Exception {
+    private List<OrderBillDto> computerHandleOrder() throws Exception {
         // 获得订单池的订单
-        List<OpOrderHz> opOrderList = orderPoolService.getOrderPool();
-        List<DingDanDto> orderList = new ArrayList<DingDanDto>();
+        List<OrderBill> opOrderList = orderPoolService.getOrderPool();
+        List<OrderBillDto> orderList = new ArrayList<OrderBillDto>();
         if (opOrderList != null) {
-            for (OpOrderHz opOrder : opOrderList) {
+            for (OrderBill opOrder : opOrderList) {
                 //计算 订单里的 goodsId 在库存里是否满足
                 // 满足库存的订单加入 orderPoolList
 
@@ -60,7 +54,7 @@ public class TrayOutDispatch {
      * @param orderList
      * @throws Exception
      */
-    private void outFromOrderBill(List<DingDanDto> orderList)throws Exception{
+    private void outFromOrderBill(List<OrderBillDto> orderList)throws Exception{
 
     }
 

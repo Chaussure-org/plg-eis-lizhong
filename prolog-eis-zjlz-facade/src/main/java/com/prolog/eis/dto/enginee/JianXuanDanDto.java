@@ -11,7 +11,7 @@ import java.util.List;
 public class JianXuanDanDto {
 	private int jxdId;
 	private int zhanTaiId;
-	private List<DingDanDto> ddList;
+	private List<OrderBillDto> ddList;
 	private List<LiaoXiangDto> liangXiangList;// 料箱集合
 	private int isAllLiaoXiangArrive;
 
@@ -19,7 +19,7 @@ public class JianXuanDanDto {
 	private HashSet<Integer> spKeyHs;
 
 	public JianXuanDanDto() {
-		this.ddList = new ArrayList<DingDanDto>();
+		this.ddList = new ArrayList<OrderBillDto>();
 		this.liangXiangList = new ArrayList<LiaoXiangDto>();
 		this.spKeyHs = new HashSet<Integer>();
 	}
@@ -40,11 +40,11 @@ public class JianXuanDanDto {
 		this.isAllLiaoXiangArrive = isAllLiaoXiangArrive;
 	}
 
-	public List<DingDanDto> getDdList() {
+	public List<OrderBillDto> getDdList() {
 		return ddList;
 	}
 
-	public void setDdList(List<DingDanDto> ddList) {
+	public void setDdList(List<OrderBillDto> ddList) {
 		this.ddList = ddList;
 	}
 
@@ -81,7 +81,7 @@ public class JianXuanDanDto {
 	}
 
 	public Integer GetChuKuSpId(HashSet<Integer> chuKuFailSpIdSet) throws Exception {
-		for (DingDanDto dd : this.getDdList()) {
+		for (OrderBillDto dd : this.getDdList()) {
 			Integer spId = dd.GetChuKuSpId();
 			if (spId != null) {
 				// 判断出库失败的商品是否包含此商品，防止死循环
@@ -94,7 +94,7 @@ public class JianXuanDanDto {
 	}
 
 	public boolean CheckIsAllBinding() throws Exception {
-		for (DingDanDto dd : this.ddList) {
+		for (OrderBillDto dd : this.ddList) {
 			if (!dd.CheckIsAllBinding())
 				return false;
 		}
@@ -102,7 +102,7 @@ public class JianXuanDanDto {
 		return true;
 	}
 
-	public void AddYunDan(DingDanDto dd) {
+	public void AddYunDan(OrderBillDto dd) {
 		this.ddList.add(dd);
 
 		for (DingDanMxDto mx : dd.getDingDanMxList()) {
@@ -116,7 +116,7 @@ public class JianXuanDanDto {
 			return;
 		this.ddList.addAll(ydGroup.getYunDanList());
 
-		DingDanDto firstDingDan = ydGroup.getYunDanList().get(0);
+		OrderBillDto firstDingDan = ydGroup.getYunDanList().get(0);
 
 		for (DingDanMxDto mx : firstDingDan.getDingDanMxList()) {
 			if (!this.spKeyHs.contains(mx.getSpId()))

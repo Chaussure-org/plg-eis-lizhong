@@ -3,11 +3,12 @@ package com.prolog.eis.dispatch;
 import com.prolog.eis.boxbank.out.BZEnginee;
 import com.prolog.eis.boxbank.out.BZEngineeTakeJxd;
 import com.prolog.eis.configuration.EisProperties;
-import com.prolog.eis.dto.enginee.DingDanDto;
+import com.prolog.eis.dto.enginee.OrderBillDto;
 import com.prolog.eis.dto.enginee.JianXuanDanDto;
 import com.prolog.eis.dto.enginee.XiangKuDto;
 import com.prolog.eis.dto.enginee.ZhanTaiDto;
 import com.prolog.eis.dto.orderpool.OpOrderHz;
+import com.prolog.eis.model.OrderBill;
 import com.prolog.eis.orderpool.service.OrderPoolService;
 import com.prolog.eis.util.FileLogHelper;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class BoxOutDispatch {
             return;
 
         //获取可用订单
-        List<DingDanDto> dingDanPoolList = this.initDingDan(xiangKu);
+        List<OrderBillDto> dingDanPoolList = this.initDingDan(xiangKu);
         if(dingDanPoolList!=null && dingDanPoolList.size()>0){
 			// 为所需料箱全部出库到线体的站台向订单池索取一个新的拣选单
 			bzEngineeTakeJxd.checkZhanTaiJXD(xiangKu,dingDanPoolList);
@@ -67,21 +68,21 @@ public class BoxOutDispatch {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<DingDanDto> initDingDan(XiangKuDto xiangKu) throws Exception {
+	private List<OrderBillDto> initDingDan(XiangKuDto xiangKu) throws Exception {
 		// 获得订单池的订单
-		List<OpOrderHz> opOrderList = orderPoolService.getOrderPool();
-		List<DingDanDto> dingDanPoolList = new ArrayList<DingDanDto>();
+		List<OrderBill> opOrderList = orderPoolService.getOrderPool();
+		List<OrderBillDto> dingDanPoolList = new ArrayList<OrderBillDto>();
 		if (opOrderList != null) {
 			FileLogHelper.WriteLog("engineDingDanPool", "原始订单池订单数：" + opOrderList.size());
-			dingDanPoolList = this.computeUsedDingDan(opOrderList,xiangKu);
+			//dingDanPoolList = this.computeUsedDingDan(opOrderList,xiangKu);
 			FileLogHelper.WriteLog("engineDingDanPool", "可用订单数：" + opOrderList.size());
 		}
 		return dingDanPoolList;
 	}
 
 	// 计算订单池中的满足库存的订单
-	private List<DingDanDto> computeUsedDingDan(List<OpOrderHz> opOrderList, XiangKuDto xiangKu) throws Exception {
-		List<DingDanDto> dingDanPoolList = new ArrayList<DingDanDto>();
+	private List<OrderBillDto> computeUsedDingDan(List<OpOrderHz> opOrderList, XiangKuDto xiangKu) throws Exception {
+		List<OrderBillDto> dingDanPoolList = new ArrayList<OrderBillDto>();
 		// 按优先级和时效排序，优先保留时效靠前的订单
 		opOrderList.sort((dd1, dd2) -> {
 			if(dd1.getPriority() != dd2.getPriority())
@@ -99,7 +100,7 @@ public class BoxOutDispatch {
 		for (OpOrderHz opOrder : opOrderList) {
 			if (xiangKu.checkDingDan(opOrder)) {
 				xiangKu.subtractingDingDan(opOrder);
-				DingDanDto dd = DingDanDto.CopyDingDan(opOrder);
+				OrderBillDto dd = OrderBillDto.CopyDingDan(opOrder);
 				dingDanPoolList.add(dd);
 			}
 		}

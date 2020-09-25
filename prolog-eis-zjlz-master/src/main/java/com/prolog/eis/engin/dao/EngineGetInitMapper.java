@@ -1,4 +1,4 @@
-package com.prolog.eis.dao.enginee;
+package com.prolog.eis.engin.dao;
 
 import com.prolog.eis.dto.enginee.*;
 import org.apache.ibatis.annotations.Select;
@@ -57,7 +57,7 @@ public interface EngineGetInitMapper {
 	@Select("select hz.id ,hz.picking_order_id as jxdId,hz.expect_time as shiXiaoTime ,hz.priority as priority  from order_hz hz\r\n" +
 			"inner join pick_order po on po.id = hz.picking_order_id\r\n" +
 			"where hz.picking_order_id is not null and po.is_all_arrive = 0")
-	List<DingDanDto> findAllDingDan();
+	List<OrderBillDto> findAllDingDan();
 
 	@Select("\n" +
 			"SELECT\n" +

@@ -15,15 +15,15 @@ public class XiangKuDto {
 	private Map<Integer, Integer> spStockMap;// 商品库存<商品Id,库存数量>
 	
 	//***********以下非查询数据**************
-	private List<DingDanDto> poolDDList;//当前订单集合
-	private List<DingDanDto> ddList;//当前库存满足的订单集合
+	private List<OrderBillDto> poolDDList;//当前订单集合
+	private List<OrderBillDto> ddList;//当前库存满足的订单集合
 	private Map<Integer,Integer> kuCunSPMap;//当前库存<商品Id,库存数量>
 	private HashSet<Integer> chuKuFailSpIdHs;//当前巷道出库失败的商品Id集合
 	
 	public XiangKuDto() {
 		this.ztList = new ArrayList<ZhanTaiDto>();
-		this.poolDDList = new ArrayList<DingDanDto>();
-		this.ddList = new ArrayList<DingDanDto>();
+		this.poolDDList = new ArrayList<OrderBillDto>();
+		this.ddList = new ArrayList<OrderBillDto>();
 		this.kuCunSPMap = new HashMap<Integer,Integer>();
 		this.chuKuFailSpIdHs = new HashSet<Integer>();
 		this.spStockMap = new HashMap<Integer, Integer>();
@@ -37,19 +37,19 @@ public class XiangKuDto {
 		this.ztList = ztList;
 	}
 
-	public List<DingDanDto> getPoolDDList() {
+	public List<OrderBillDto> getPoolDDList() {
 		return poolDDList;
 	}
 
-	public void setPoolDDList(List<DingDanDto> poolDDList) {
+	public void setPoolDDList(List<OrderBillDto> poolDDList) {
 		this.poolDDList = poolDDList;
 	}
 
-	public List<DingDanDto> getDdList() {
+	public List<OrderBillDto> getDdList() {
 		return ddList;
 	}
 
-	public void setDdList(List<DingDanDto> ddList) {
+	public void setDdList(List<OrderBillDto> ddList) {
 		this.ddList = ddList;
 	}
 

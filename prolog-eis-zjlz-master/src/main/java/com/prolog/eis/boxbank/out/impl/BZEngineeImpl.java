@@ -1,9 +1,8 @@
 package com.prolog.eis.boxbank.out.impl;
 
 import com.prolog.eis.boxbank.out.BZEnginee;
-import com.prolog.eis.dao.enginee.BZEngineInitMapper;
-import com.prolog.eis.dao.enginee.EngineGetInitMapper;
-import com.prolog.eis.dao.enginee.EngineLxChuKuMapper;
+import com.prolog.eis.engin.dao.BZEngineInitMapper;
+import com.prolog.eis.engin.dao.EngineLxChuKuMapper;
 import com.prolog.eis.dto.enginee.*;
 import com.prolog.eis.store.dao.OContainerStoreMapper;
 import com.prolog.eis.util.FileLogHelper;
@@ -104,7 +103,7 @@ public class BZEngineeImpl implements BZEnginee {
         // 查询拣选单  没有订单集合  和 料箱集合
         List<JianXuanDanDto> jianXuanDanDtos = bzEngineInitMapper.findAllJianXuanDan();
         // 查询料箱未全部到位的拣选单下的所有订单
-        Map<Integer, List<DingDanDto>> dingDanDtoMap = bzEngineInitMapper.findAllDingDan().stream().collect(Collectors.groupingBy(DingDanDto::getJxdId));// 只查非锁定巷道的站台
+        Map<Integer, List<OrderBillDto>> dingDanDtoMap = bzEngineInitMapper.findAllDingDan().stream().collect(Collectors.groupingBy(OrderBillDto::getJxdId));// 只查非锁定巷道的站台
         //查询所有的料箱
         List<LiaoXiangDto> allLxList = bzEngineInitMapper.findAllLx();
         //查询料箱绑定明细数量
