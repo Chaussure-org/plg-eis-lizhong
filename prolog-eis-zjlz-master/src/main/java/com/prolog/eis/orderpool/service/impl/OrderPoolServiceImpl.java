@@ -25,11 +25,13 @@
 //import java.util.Map;
 //import java.util.stream.Collectors;
 //
+//
 ///**
 // * @author panteng
 // * @description:订单池服务
 // * @date 2020/4/17 15:18
 // */
+//
 //
 //@Service
 //public class OrderPoolServiceImpl implements OrderPoolService {
@@ -54,9 +56,11 @@
 //        orderBillList.addAll(orders);
 //    }
 //
-//    /**
+//    */
+///**
 //     * 拉取新订单
-//     */
+//     *//*
+//
 //    @Override
 //
 //    public void pullNewOrders() {
@@ -72,11 +76,13 @@
 //    }
 //
 //
-//    /**
+//    */
+///**
 //     * 获取订单明细
 //     *
 //     * @param order
-//     */
+//     *//*
+//
 //    private void findOrderMx(List<OpOrderHz> order) {
 //        //500个 获取明细
 //        List<List<OpOrderHz>> partition = Lists.partition(order, 500);
@@ -113,10 +119,12 @@
 //            outboundTaskHzMapper.updateOrder2Pool(idsStr);
 //        }
 //    }
-//    /**
+//    */
+///**
 //     * 获取订单池里的订单
 //     * @return
-//     */
+//     *//*
+//
 //    @Override
 //    public List<OpOrderHz> getOrderPool() throws Exception {
 //        synchronized (lockObj) {
@@ -137,11 +145,13 @@
 //        }
 //    }
 //
-//    /**
+//    */
+///**
 //     * 删除订单池的订单集合
 //     *
 //     * @param ids
-//     */
+//     *//*
+//
 //
 //    @Override
 //    public void delOrderList(List<Integer> ids) throws Exception {
@@ -162,11 +172,13 @@
 //    }
 //
 //
-//    /**
+//    */
+///**
 //     * 修改订单优先级
 //     *
 //     * @param map
-//     */
+//     *//*
+//
 //
 //    @Override
 //
@@ -186,3 +198,5 @@
 //
 //
 //}
+//*/
+//>>>>>>> 9d2f4a5b24eb2508d7b2feedefabcc33af50462e

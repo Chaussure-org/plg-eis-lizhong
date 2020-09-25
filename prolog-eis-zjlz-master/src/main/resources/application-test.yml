@@ -24,7 +24,7 @@ spring:
       enabled: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver #oracle.jdbc.driver.OracleDriver
-    url: jdbc:mysql://192.168.1.13:2206/eis?characterEncoding=utf8&useSSL=false
+    url: jdbc:mysql://39.96.69.213:3306/zjlz?characterEncoding=utf8&useSSL=false
     username: dev
     password: prolog0212-dev
     initialSize: 0 #初始化大小
