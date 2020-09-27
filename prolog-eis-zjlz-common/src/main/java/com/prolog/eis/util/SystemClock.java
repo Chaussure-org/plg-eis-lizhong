@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *  * <p>1000万：480,12,40.0%</p>
  *  * <p>100万：50,10,5.0%</p>
  */
+@SuppressWarnings("AlibabaThreadPoolCreation")
 public class SystemClock {
     private final long period;
     private final AtomicLong now;
@@ -39,6 +40,7 @@ public class SystemClock {
         return new Timestamp(instance().currentTimeMillis()).toString();
     }
 
+    @SuppressWarnings("AlibabaThreadPoolCreation")
     private void scheduleClockUpdating() {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
             Thread thread = new Thread(runnable, "System Clock");

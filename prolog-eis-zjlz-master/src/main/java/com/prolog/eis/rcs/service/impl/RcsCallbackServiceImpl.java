@@ -1,11 +1,11 @@
 package com.prolog.eis.rcs.service.impl;
 
-import com.prolog.eis.rcs.service.IRcsCallbackService;
+import com.prolog.eis.rcs.service.IRCSCallbackService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RcsCallbackServiceImpl implements IRcsCallbackService {
+public class RcsCallbackServiceImpl implements IRCSCallbackService {
 
 	@Override
     @Transactional(rollbackFor = Exception.class)

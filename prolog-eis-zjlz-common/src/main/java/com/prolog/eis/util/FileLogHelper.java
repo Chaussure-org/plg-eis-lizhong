@@ -8,22 +8,22 @@ import java.util.Date;
 
 public class FileLogHelper {
 	public static void main(String[] args) {
-		FileLogHelper.WriteLog("123", "aaa", "bbb", "ccc");
-		FileLogHelper.WriteLog("123", "aaa", "bbb", "ccc");
-		FileLogHelper.WriteLog("123", "aaa", "bbb", "ccc");
+		FileLogHelper.writeLog("123", "aaa", "bbb", "ccc");
+		FileLogHelper.writeLog("123", "aaa", "bbb", "ccc");
+		FileLogHelper.writeLog("123", "aaa", "bbb", "ccc");
 	}
 
-	public static void WriteLog(String fileName, String... logs) {
+	public static void writeLog(String fileName, String... logs) {
 		String str = "";
 		for (String log : logs) {
 			str += log + "\r\n";
 		}
 		str += "-----------------------";
 
-		FileLogHelper.WriteLogToFile(fileName, str);
+		FileLogHelper.writeLogToFile(fileName, str);
  	}
 
-	private static void WriteLogToFile(String fileName, String log) {
+	private static void writeLogToFile(String fileName, String log) {
 		try {
 			Date date = new Date();
 			String strDate = new SimpleDateFormat("yyyyMMdd").format(date);

@@ -19,9 +19,9 @@ public class StoreLockHelper {
 		return instance;
 	}
 	public synchronized Object GetXKKunCunLockObj(int layer) {
-		if (this.LockMap.containsKey(layer))
-			return this.LockMap.get(layer);
-		else {
+		if (this.LockMap.containsKey(layer)) {
+            return this.LockMap.get(layer);
+        } else {
 			Object lockObj = new Object();
 			this.LockMap.put(layer, lockObj);
 			return lockObj;

@@ -3,10 +3,10 @@ package com.prolog.eis.dispatch;
 import com.prolog.eis.boxbank.out.BZEnginee;
 import com.prolog.eis.boxbank.out.BZEngineeTakeJxd;
 import com.prolog.eis.configuration.EisProperties;
-import com.prolog.eis.dto.enginee.DingDanDto;
-import com.prolog.eis.dto.enginee.JianXuanDanDto;
-import com.prolog.eis.dto.enginee.XiangKuDto;
-import com.prolog.eis.dto.enginee.ZhanTaiDto;
+import com.prolog.eis.dto.enginee.OrderDto;
+import com.prolog.eis.dto.enginee.PickOrderDto;
+import com.prolog.eis.dto.enginee.BoxLibDto;
+import com.prolog.eis.dto.enginee.StationDto;
 import com.prolog.eis.dto.orderpool.OpOrderHz;
 import com.prolog.eis.orderpool.service.OrderPoolService;
 import com.prolog.eis.util.FileLogHelper;
@@ -45,85 +45,92 @@ public class BoxOutDispatch {
 		/**
 		 * 1.每次出库计算
 		 */
-        XiangKuDto xiangKu = bzEnginee.init();
-        if (xiangKu == null || xiangKu.getZtList() ==null || xiangKu.getZtList().size() == 0 )
-            return;
+        BoxLibDto boxLib = bzEnginee.init();
+        if (boxLib == null || boxLib.getStations() ==null || boxLib.getStations().size() == 0 ) {
+			return;
+		}
 
         //获取可用订单
-        List<DingDanDto> dingDanPoolList = this.initDingDan(xiangKu);
-        if(dingDanPoolList!=null && dingDanPoolList.size()>0){
+        List<OrderDto> orderPoolList = this.initOrder(boxLib);
+        if(orderPoolList!=null && orderPoolList.size()>0){
 			// 为所需料箱全部出库到线体的站台向订单池索取一个新的拣选单
-			bzEngineeTakeJxd.checkZhanTaiJXD(xiangKu,dingDanPoolList);
+			bzEngineeTakeJxd.checkStationPickOrder(boxLib,orderPoolList);
         }
         // 计算巷道的各个站台需要出库的拣选单
-        this.checkZhanTaiNeedChuKuJXD(xiangKu);
+        this.checkStationNeedOutboundPickOrder(boxLib);
 
-        this.chuKu(xiangKu);
+        this.outbound(boxLib);
     }
 
 	/**
 	 * 初始化订单数据
-	 * @param xiangKu
+	 * @param boxLib
 	 * @return
 	 * @throws Exception
 	 */
-	private List<DingDanDto> initDingDan(XiangKuDto xiangKu) throws Exception {
+	private List<OrderDto> initOrder(BoxLibDto boxLib) throws Exception {
 		// 获得订单池的订单
 		List<OpOrderHz> opOrderList = orderPoolService.getOrderPool();
-		List<DingDanDto> dingDanPoolList = new ArrayList<DingDanDto>();
+		List<OrderDto> orderPoolList = new ArrayList<OrderDto>();
 		if (opOrderList != null) {
-			FileLogHelper.WriteLog("engineDingDanPool", "原始订单池订单数：" + opOrderList.size());
-			dingDanPoolList = this.computeUsedDingDan(opOrderList,xiangKu);
-			FileLogHelper.WriteLog("engineDingDanPool", "可用订单数：" + opOrderList.size());
+			FileLogHelper.writeLog("engineDingDanPool", "原始订单池订单数：" + opOrderList.size());
+			orderPoolList = this.computeUsedDingDan(opOrderList,boxLib);
+			FileLogHelper.writeLog("engineDingDanPool", "可用订单数：" + opOrderList.size());
 		}
-		return dingDanPoolList;
+		return orderPoolList;
 	}
 
-	// 计算订单池中的满足库存的订单
-	private List<DingDanDto> computeUsedDingDan(List<OpOrderHz> opOrderList, XiangKuDto xiangKu) throws Exception {
-		List<DingDanDto> dingDanPoolList = new ArrayList<DingDanDto>();
+	/**
+	 * 	计算订单池中的满足库存的订单
+	 */
+	private List<OrderDto> computeUsedDingDan(List<OpOrderHz> opOrderList, BoxLibDto boxLib) throws Exception {
+		List<OrderDto> orderPoolList = new ArrayList<OrderDto>();
 		// 按优先级和时效排序，优先保留时效靠前的订单
 		opOrderList.sort((dd1, dd2) -> {
-			if(dd1.getPriority() != dd2.getPriority())
+			if(!dd1.getPriority().equals(dd2.getPriority())) {
 				return dd1.getPriority() - dd2.getPriority();
+			}
 			
-			if (dd1.getExpectTime().getTime() < dd2.getExpectTime().getTime())
+			if (dd1.getExpectTime().getTime() < dd2.getExpectTime().getTime()) {
 				return -1;
-			else if (dd1.getExpectTime().getTime() > dd2.getExpectTime().getTime())
+			} else if (dd1.getExpectTime().getTime() > dd2.getExpectTime().getTime()) {
 				return 1;
-			else
+			} else {
 				return 0;
+			}
 		});
 
 		// 计算巷道哪些订单满足库存
 		for (OpOrderHz opOrder : opOrderList) {
-			if (xiangKu.checkDingDan(opOrder)) {
-				xiangKu.subtractingDingDan(opOrder);
-				DingDanDto dd = DingDanDto.CopyDingDan(opOrder);
-				dingDanPoolList.add(dd);
+			if (boxLib.checkOrder(opOrder)) {
+				boxLib.subtractingOrder(opOrder);
+				OrderDto dd = OrderDto.copyOrder(opOrder);
+				orderPoolList.add(dd);
 			}
 		}
-		return dingDanPoolList;
+		return orderPoolList;
 	}
 
-	private void chuKu(XiangKuDto xiangKu) throws Exception {
-		List<ZhanTaiDto> ztList = xiangKu.getZtList().stream().filter(zt -> zt.getIsLock() == ZhanTaiDto.STATUS_UNLOCK && zt.getNeedChuKuJXD() != null && !zt.IsLiaoXiangLimitMax() ).collect(Collectors.toList());
+	private void outbound(BoxLibDto boxLib) throws Exception {
+		List<StationDto> stations = boxLib.getStations().stream().filter(station -> station.getIsLock() == StationDto.STATUS_UNLOCK && station.getNeedOutboundPickOrder() != null && !station.isContainerLimitMax() ).collect(Collectors.toList());
 		while (true) {
-			ZhanTaiDto zt = this.getBestZt(ztList);
+			StationDto station = this.getBestStation(stations);
 
-			if (zt == null)
+			if (station == null) {
 				break;
+			}
 
-			boolean isAllChuKu = this.chuKuLiaoXiang(zt,xiangKu);
+			boolean isAllChuKu = this.containerOutbound(station,boxLib);
 
 			// 如果站台所需料箱已经全部出库,则从集合移除该站台
 			if (isAllChuKu) {
-				ztList.remove(zt);
+				stations.remove(station);
 			}
 			else{
 				// 如果站台的出库料箱数达到最大出库料箱数，则该站台不再出库料箱
-				if (zt.getChuKuLxCount() >= zt.getMaxLxCacheCount())
-					ztList.remove(zt);
+				if (station.getChuKuLxCount() >= station.getMaxLxCacheCount()) {
+					stations.remove(station);
+				}
 			}
 
 		}
@@ -132,63 +139,72 @@ public class BoxOutDispatch {
 
 	/**
 	 * 为一个站台出库一个料箱,返回该站台所需料箱是否出库料箱完成
-	 * @param zt
-	 * @param xiangKu
+	 * @param station
+	 * @param boxLib
 	 * @return
 	 * @throws Exception
 	 */
-	private boolean chuKuLiaoXiang(ZhanTaiDto zt, XiangKuDto xiangKu) throws Exception {
-		JianXuanDanDto jxd = zt.getNeedChuKuJXD();
-		Integer spId = jxd.GetChuKuSpId(xiangKu.getChuKuFailSpIdHs());
+	private boolean containerOutbound(StationDto station, BoxLibDto boxLib) throws Exception {
+		PickOrderDto pickOrder = station.getNeedOutboundPickOrder();
+		Integer spId = pickOrder.getOutboundSpId(boxLib.getChuKuFailSpIdHs());
 
-		if (spId == null)
+		if (spId == null) {
 			return true;
+		}
 
 		// 出库一个商品
-		boolean isChukuSuccess = bzEnginee.chuku(spId,zt);
+		boolean isOutboundSuccess = bzEnginee.outbound(spId,station);
 
-		if (isChukuSuccess) {
-			zt.setChuKuLxCount(zt.getChuKuLxCount() + 1);
-			if (zt.IsLiaoXiangLimitMax())// 如果料箱数量达到最大数量，则不再返回
+		if (isOutboundSuccess) {
+			station.setChuKuLxCount(station.getChuKuLxCount() + 1);
+			// 如果料箱数量达到最大数量，则不再返回
+			if (station.isContainerLimitMax())
+			{
 				return true;
+			}
 
-			return zt.CheckIsAllBinding();
+			return station.checkIsAllBinding();
 		} else {
 			logger.info("++++++++++++++++++"+spId+"商品出库失败,请查询所在层小车状态++++++++++++++++++");
 			// 如果出库失败，则记录在当前巷道的出库失败商品Map里
-			xiangKu.getChuKuFailSpIdHs().add(spId);
+			boxLib.getChuKuFailSpIdHs().add(spId);
 			return false;
 		}
 	}
 
-	// 计算巷道的各个站台需要出库的拣选单
-	private void checkZhanTaiNeedChuKuJXD(XiangKuDto xiangKu) {
-		for (ZhanTaiDto zt : xiangKu.getZtList()) {
-			for (JianXuanDanDto jxd : zt.getJxdList()) {
-				if (jxd.getIsAllLiaoXiangArrive() != 1) {
-					zt.setNeedChuKuJXD(jxd);
+	/**
+	 * 	计算巷道的各个站台需要出库的拣选单
+ 	 */
+	private void checkStationNeedOutboundPickOrder(BoxLibDto boxLib) {
+		for (StationDto station : boxLib.getStations()) {
+			for (PickOrderDto pickOrder : station.getPickOrderList()) {
+				if (pickOrder.getIsAllContainerArrive() != 1) {
+					station.setNeedOutboundPickOrder(pickOrder);
 					break;
 				}
 			}
 		}
 	}
 
-	// 获得当前出库料箱数最少的站台
-	private ZhanTaiDto getBestZt(List<ZhanTaiDto> ztList) {
-		if (ztList.size() == 0)
+	/**
+	 * 	获得当前出库料箱数最少的站台
+ 	 */
+	private StationDto getBestStation(List<StationDto> stations) {
+		if (stations.size() == 0) {
 			return null;
+		}
 
-		ZhanTaiDto bestZhanTai = ztList.get(0);
-		int bestZtLxCount = bestZhanTai.ComputeLiaoXiangCount();
-		for (int i = 1; i < ztList.size(); i++) {
-			ZhanTaiDto zt = ztList.get(i);
-			int ztLxCount = zt.ComputeLiaoXiangCount();
+		StationDto station = stations.get(0);
+		int bestZtLxCount = station.computeContainerCount();
+		for (int i = 1; i < stations.size(); i++) {
+			StationDto zt = stations.get(i);
+			int ztLxCount = zt.computeContainerCount();
 			if (ztLxCount < bestZtLxCount) {
 				bestZtLxCount = ztLxCount;
-				bestZhanTai = zt;
+				station = zt;
 			}
 		}
 
-		return bestZhanTai;
+		return station;
 	}
 }

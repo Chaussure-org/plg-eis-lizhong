@@ -28,7 +28,7 @@ public class OrderPoolTimeTask {
             //获取新订单
             orderPoolService.pullNewOrders();
         } catch (Exception e) {
-            FileLogHelper.WriteLog("updateOrderPool", e.getMessage());
+            FileLogHelper.writeLog("updateOrderPool", e.getMessage());
         }
     }
 

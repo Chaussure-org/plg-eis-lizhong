@@ -37,7 +37,7 @@ public class WCSController {
     @PostMapping("/bcr")
     public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception{
         logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
-        return wcsService.executeBCRCallback(bcrDataDTO);
+        return wcsService.executeBcrCallback(bcrDataDTO);
 
     }
 

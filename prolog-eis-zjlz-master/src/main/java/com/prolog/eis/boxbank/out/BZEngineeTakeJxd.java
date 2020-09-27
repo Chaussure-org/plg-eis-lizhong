@@ -1,16 +1,19 @@
 package com.prolog.eis.boxbank.out;
 
-import com.prolog.eis.dto.enginee.DingDanDto;
-import com.prolog.eis.dto.enginee.XiangKuDto;
+import com.prolog.eis.dto.enginee.OrderDto;
+import com.prolog.eis.dto.enginee.BoxLibDto;
 
 import java.util.List;
 
+/**
+ * @author wangkang
+ */
 public interface BZEngineeTakeJxd {
     /**
      * 为播种站台从订单池索取一个拣选单
-     * @param xiangKu
-     * @param dingDanPoolList
+     * @param boxLib
+     * @param orderPoolList
      * @throws Exception
      */
-    void checkZhanTaiJXD(XiangKuDto xiangKu, List<DingDanDto> dingDanPoolList) throws Exception;
+    void checkStationPickOrder(BoxLibDto boxLib, List<OrderDto> orderPoolList) throws Exception;
 }

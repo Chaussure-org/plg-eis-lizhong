@@ -16,7 +16,7 @@ public interface IWCSCallbackService {
      * @param bcrDataDTO
      * @return
      */
-    RestMessage<String> executeBCRCallback(BCRDataDTO bcrDataDTO);
+    RestMessage<String> executeBcrCallback(BCRDataDTO bcrDataDTO);
 
     /**
      * 料箱、订单框到位回告

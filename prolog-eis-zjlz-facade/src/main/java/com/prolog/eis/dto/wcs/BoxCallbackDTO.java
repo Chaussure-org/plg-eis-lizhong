@@ -3,6 +3,7 @@ package com.prolog.eis.dto.wcs;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@SuppressWarnings({"ALL", "AlibabaPojoMustOverrideToString"})
 @ApiModel
 public class BoxCallbackDTO {
     @ApiModelProperty("任务id")

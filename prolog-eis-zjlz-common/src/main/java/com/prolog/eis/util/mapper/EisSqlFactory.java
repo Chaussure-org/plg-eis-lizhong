@@ -31,7 +31,7 @@ public class EisSqlFactory{
         String oneSql = StringPool.EMPTY;
         String pstr = String.join(StringPool.SPACE,conditions);
         String orderStr = StringPool.EMPTY;
-        pstr = pstr.trim().equals("") ? "1=1" : "1=1" + pstr;
+        pstr = "".equals(pstr.trim()) ? "1=1" : "1=1" + pstr;
         SqlHelper sqlHelper = SqlHelper.SELECT_FIELDS_BY_CRITERIA;
         String sql = String.format(sqlHelper.getSql(), asstr, mainTableSql, oneSql, pstr + StringPool.SPACE + orderStr);
         logger.debug(sql);

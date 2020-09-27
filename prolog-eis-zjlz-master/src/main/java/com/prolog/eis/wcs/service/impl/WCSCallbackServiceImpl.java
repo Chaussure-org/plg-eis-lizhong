@@ -49,7 +49,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @return
      */
     @Override
-    public RestMessage<String> executeBCRCallback(BCRDataDTO bcrDataDTO) {
+    public RestMessage<String> executeBcrCallback(BCRDataDTO bcrDataDTO) {
         return success;
     }
 

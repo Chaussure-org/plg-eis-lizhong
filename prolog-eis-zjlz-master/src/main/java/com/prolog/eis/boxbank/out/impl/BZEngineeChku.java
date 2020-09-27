@@ -4,7 +4,7 @@ import com.prolog.eis.boxbank.out.IOutService;
 import com.prolog.eis.boxbank.rule.LayerLockRule;
 import com.prolog.eis.boxbank.rule.StoreLocationDTO;
 import com.prolog.eis.dao.enginee.EngineGetInitMapper;
-import com.prolog.eis.dao.enginee.EngineLxChuKuMapper;
+import com.prolog.eis.dao.enginee.EngineOutboundMapper;
 import com.prolog.eis.dto.enginee.*;
 import com.prolog.eis.util.FileLogHelper;
 import org.slf4j.Logger;
@@ -16,49 +16,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * @author wangkang
+ */
 @Service
 public class BZEngineeChku {
     private final Logger logger = LoggerFactory.getLogger(BZEngineeChku.class);
 
     @Autowired
     private EngineGetInitMapper engineGetInitMapper;
-   /* @Autowired
-    private ContainerBindingHzMapper containerBindingHzMapper;
     @Autowired
-    private ContainerSubBindingMxMapper containerSubBindingMxMapper;*/
-    @Autowired
-    private EngineLxChuKuMapper engineLxChuKuMapper;
-//    @Autowired
-//    private ContainerSubMapper containerSubInfoMapper;
+    private EngineOutboundMapper engineOutboundMapper;
 
     @Autowired
     private LayerLockRule layerLockRule;
 
 
-    @Autowired
-    private IOutService outService;
-
-//    @Autowired
-//    private OrderMxBingdingMapper orderMxBingdingMapper;
 
     /**
      * 找到层之后 层的出库方法
      *
      * @param targetLayerId
      * @param spId
-     * @param zhanTaiDto
+     * @param stationDto
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRES_NEW)
-    public boolean cengChuku(int targetLayerId, Integer spId, ZhanTaiDto zhanTaiDto) throws Exception {
+    public boolean outboundByLayer(int targetLayerId, Integer spId, StationDto stationDto) throws Exception {
         StoreLocationDTO location = new StoreLocationDTO();
         location.setLayer(targetLayerId);
 
         boolean result = layerLockRule.execute(location, x -> {
             try {
                 // 找出离目标点(x、y)最近的非锁定的该商品料箱（用内存计算）
-                List<OutStoreHuoWeiDto> outStoreHuoWeiDtos = engineLxChuKuMapper.findAllCKHuoWei(spId, x.getLayer());
+                List<OutStoreHuoWeiDto> outStoreHuoWeiDtos = engineOutboundMapper.findAllOutboundCargoBox(spId, x.getLayer());
                 if (outStoreHuoWeiDtos.size() == 0) {
                     return false;
                 }
@@ -77,7 +69,7 @@ public class BZEngineeChku {
                 OutStoreHuoWeiDto outStoreHuoWeiDto = bubblingSort(outStoreHuoWeiDtos);
                 logger.info("+++++++++++++++++++++++" + outStoreHuoWeiDto.getContainerNo() + "++++++++++++++++++++++++");
                 //生成料箱绑定汇总
-                this.bindStation(outStoreHuoWeiDto.getStoreId(), outStoreHuoWeiDto.getContainerNo(), zhanTaiDto);
+                this.bindStation(outStoreHuoWeiDto.getStoreId(), outStoreHuoWeiDto.getContainerNo(), stationDto);
                 //生成料箱绑定汇总 之后 往path 表里添加数据，发出下游指令方法
 //                boolean checkMoveStore = outService.checkOut(outStoreHuoWeiDto.getContainerNo(),SxStore.TASKTYPE_BZ,zhanTaiDto.getZhanTaiId());
 //                return checkMoveStore;
@@ -121,52 +113,54 @@ public class BZEngineeChku {
      * 绑定站台
      *
      * @param storeId
-     * @param lxNo
-     * @param zhanTai
+     * @param containerNo
+     * @param station
      * @throws Exception
      */
-    private void bindStation(int storeId, String lxNo, ZhanTaiDto zhanTai) throws Exception {
-        if (zhanTai == null) {
-            FileLogHelper.WriteLog("LiaoXiangChuKuLogError",
-                    "LiaoXiangChuKu站台为空，xkKuCunId:" + storeId + ",containerNo:" + lxNo);
+    private void bindStation(int storeId, String containerNo, StationDto station) throws Exception {
+        if (station == null) {
+            FileLogHelper.writeLog("LiaoXiangChuKuLogError",
+                    "LiaoXiangChuKu站台为空，xkKuCunId:" + storeId + ",containerNo:" + containerNo);
 
             throw new Exception("LiaoXiangChuKu站台为空!");
         }
 
-        if (zhanTai.getNeedChuKuJXD() == null) {
-            FileLogHelper.WriteLog("LiaoXiangChuKuLogError", "站台" + zhanTai.getZhanTaiId() + "的出库拣选单为空，xkKuCunId:"
-                    + storeId + ",containerNo:" + lxNo);
+        if (station.getNeedOutboundPickOrder() == null) {
+            FileLogHelper.writeLog("LiaoXiangChuKuLogError", "站台" + station.getStationId() + "的出库拣选单为空，xkKuCunId:"
+                    + storeId + ",containerNo:" + containerNo);
 
-            throw new Exception("站台" + zhanTai.getZhanTaiId() + "的出库拣选单为空!");
+            throw new Exception("站台" + station.getStationId() + "的出库拣选单为空!");
         }
 
-        FileLogHelper.WriteLog("LiaoXiangChuKuLog", "料箱出库后生成数据:xkKuCunId:" + storeId + ",containerNo:"
-                + lxNo + ",zhanTaiId:" + zhanTai.getZhanTaiId());
+        FileLogHelper.writeLog("LiaoXiangChuKuLog", "料箱出库后生成数据:xkKuCunId:" + storeId + ",containerNo:"
+                + containerNo + ",zhanTaiId:" + station.getStationId());
 
         try {
 
-            LiaoXiangDto lx = new LiaoXiangDto();
-            lx.setXkKuCunId(storeId);
-            lx.setStationId(zhanTai.getZhanTaiId());
-            lx.setLiaoXiangNo(lxNo);
+            ContainerDto container = new ContainerDto();
+            container.setBoxLibStockId(storeId);
+            container.setStationId(station.getStationId());
+            container.setContainerNo(containerNo);
 
             //一个站台只有一个订单，此料箱只绑定一次（利中项目）
             // 从当前站台的所有订单中查找此料箱中的商品，依次进行绑定扣除
             boolean isLxBinding = false;
-            JianXuanDanDto jxd = zhanTai.getNeedChuKuJXD();
-            for (int i = 0; i < jxd.getDdList().size(); i++) {
-                DingDanDto dd = jxd.getDdList().get(i);
-                boolean isDingDanBinding = this.BindDingDan(jxd, lx, dd, zhanTai);
-                if (isDingDanBinding)
+            PickOrderDto pickOrder = station.getNeedOutboundPickOrder();
+            for (int i = 0; i < pickOrder.getOrderList().size(); i++) {
+                OrderDto order = pickOrder.getOrderList().get(i);
+                boolean isDingDanBinding = this.bindOrder(pickOrder, container, order, station);
+                if (isDingDanBinding) {
                     isLxBinding = true;
+                }
             }
 
-            if (!isLxBinding)
+            if (!isLxBinding) {
                 throw new Exception("料箱没有进行订单绑定");
+            }
 
         } catch (Exception ex) {
-            FileLogHelper.WriteLog("LiaoXiangChuKuLogError", "料箱出库后生成数据失败:xkKuCunId" + storeId + ",containerNo:"
-                    + lxNo + ",zhanTaiId:" + zhanTai.getZhanTaiId() + ",异常:" + ex.toString());
+            FileLogHelper.writeLog("LiaoXiangChuKuLogError", "料箱出库后生成数据失败:xkKuCunId" + storeId + ",containerNo:"
+                    + containerNo + ",zhanTaiId:" + station.getStationId() + ",异常:" + ex.toString());
             throw new Exception(ex.toString());
         }
     }
@@ -175,40 +169,44 @@ public class BZEngineeChku {
     /**
      * 绑定料箱和订单
      *
-     * @param jxd
-     * @param lx
-     * @param dd
-     * @param zhanTai
+     * @param pickOrder
+     * @param container
+     * @param order
+     * @param station
      * @return
      * @throws Exception
      */
-    private boolean BindDingDan(JianXuanDanDto jxd, LiaoXiangDto lx, DingDanDto dd, ZhanTaiDto zhanTai) throws Exception {
+    private boolean bindOrder(PickOrderDto pickOrder, ContainerDto container, OrderDto order, StationDto station) throws Exception {
         boolean isBinding = false;
         while (true) {
-            DingDanMxDto ddmx = null;
-            HuoGeDto hg = null;
-            for (DingDanMxDto ddmxTemp : dd.getDingDanMxList()) {
-                if (ddmxTemp.getSpId() == lx.getSpId()) {
-                    if (!ddmxTemp.CheckBindingFinish()) {
-                        ddmx = ddmxTemp;
+            OrderMxDto orderMx = null;
+            CargoBoxDto cargoBox = null;
+            for (OrderMxDto orderMxTemp : order.getOrderMxList()) {
+                if (orderMxTemp.getSpId() == container.getSpId()) {
+                    if (!orderMxTemp.checkBindingFinish()) {
+                        orderMx = orderMxTemp;
                         break;
                     }
                 }
             }
-
-            if (ddmx == null)// 订单内没有需要当前料箱绑定的明细
+            // 订单内没有需要当前料箱绑定的明细
+            if (orderMx == null)
+            {
                 break;
+            }
 
 
             // 未绑数=应播数-已播数-已绑数
-            int leaveBindingCount = ddmx.GetLeaveBindingCount();
+            int leaveBindingCount = orderMx.getLeaveBindingCount();
 
-            if (leaveBindingCount <= 0)
+            if (leaveBindingCount <= 0) {
                 throw new Exception("明细已完全绑定");
+            }
 
-            boolean isBindingDingDan = this.BindingDDMxLiaoXiang(jxd, ddmx, hg, zhanTai);
-            if (isBindingDingDan)
+            boolean isBindingDingDan = this.bindingOrderMxContainer(pickOrder, orderMx, cargoBox, station);
+            if (isBindingDingDan) {
                 isBinding = true;
+            }
         }
 
         return isBinding;
@@ -217,41 +215,47 @@ public class BZEngineeChku {
     /**
      * 绑定订单明细和料箱
      *
-     * @param jxd
-     * @param ddmx
-     * @param hg
-     * @param zhanTai
+     * @param pickOrder
+     * @param orderMx
+     * @param cargoBox
+     * @param station
      * @return
      * @throws Exception
      */
-    private boolean BindingDDMxLiaoXiang(JianXuanDanDto jxd, DingDanMxDto ddmx, HuoGeDto hg, ZhanTaiDto zhanTai) throws Exception {
-        int ddspLeaveCount = ddmx.GetLeaveBindingCount();
-        int hgLeaveCount = hg.GetBindingLeaveCount();
+    private boolean bindingOrderMxContainer(PickOrderDto pickOrder, OrderMxDto orderMx, CargoBoxDto cargoBox, StationDto station) throws Exception {
+        int ddspLeaveCount = orderMx.getLeaveBindingCount();
+        int hgLeaveCount = cargoBox.getBindingLeaveCount();
 
-        if (ddspLeaveCount < 0)
+        if (ddspLeaveCount < 0) {
             throw new Exception(String.format("ddspLeaveCount小于0；值：%n", ddspLeaveCount));
+        }
 
-        if (hgLeaveCount < 0)
+        if (hgLeaveCount < 0) {
             throw new Exception(String.format("hgLeaveCount小于0；值：%n", hgLeaveCount));
+        }
 
-        if (hgLeaveCount == 0)
+        if (hgLeaveCount == 0) {
             return false;
-        if (ddspLeaveCount == 0)
+        }
+        if (ddspLeaveCount == 0) {
             return false;
+        }
 
         int jxCount = ddspLeaveCount;
-        if (hgLeaveCount < ddspLeaveCount)
+        if (hgLeaveCount < ddspLeaveCount) {
             jxCount = hgLeaveCount;
+        }
 
-        ddmx.AddBindingCount(jxCount);
-        hg.getLxDingDanMxBindingMap().put(ddmx.getId(), jxCount);
-        if (!jxd.getLiangXiangList().contains(hg.getLiaoXiang()))
-            jxd.getLiangXiangList().add(hg.getLiaoXiang());
+        orderMx.addBindingCount(jxCount);
+        cargoBox.getContainerSubOrderMxBindingMap().put(orderMx.getId(), jxCount);
+        if (!pickOrder.getContainerList().contains(cargoBox.getContainer())) {
+            pickOrder.getContainerList().add(cargoBox.getContainer());
+        }
 
         // 保存料箱绑定数据
-        this.saveLxBingDing(hg.getLiaoXiangNo(), hg.getHuoGeNo(), ddmx.getOrderHzId(), ddmx.getId(),
-                jxCount, zhanTai.getZhanTaiId(), zhanTai.getNeedChuKuJXD().getJxdId(),
-                hg.getLiaoXiang().getXkKuCunId());
+        this.saveLxBingDing(cargoBox.getContainerNo(), cargoBox.getCargoBoxNo(), orderMx.getOrderHzId(), orderMx.getId(),
+                jxCount, station.getStationId(), station.getNeedOutboundPickOrder().getPickOrderId(),
+                cargoBox.getContainer().getBoxLibStockId());
 
         return true;
     }
@@ -307,7 +311,7 @@ public class BZEngineeChku {
             orderMxBingding.setContainerSubNo(huoGeNo);
             orderMxBingdingMapper.save(orderMxBingding);
         }*/
-        FileLogHelper.WriteLog("saveLxBingDingLog", "生成料箱绑定汇总xkKuCunId:" + xkStoreId + ",liaoXiangNo:" + liaoXiangNo
+        FileLogHelper.writeLog("saveLxBingDingLog", "生成料箱绑定汇总xkKuCunId:" + xkStoreId + ",liaoXiangNo:" + liaoXiangNo
                 + ",orderHzId:" + orderHzId + "orderMxId:" + orderMxId + ",planNum：" + planNum);
     }
 }

@@ -14,7 +14,7 @@ public class IdsSeqUtils {
 	private static Map<Integer, Object> tsjMap = new HashMap<Integer, Object>();
 	//private static Map<Integer, Object> rkMap = new HashMap<Integer, Object>();
 
-	public static int getSeqID(String stationNo) {
+	public static int getSeqId(String stationNo) {
 		if (!map.containsKey(stationNo)) {
 			map.put(stationNo, 1);
 			return 1;
@@ -29,7 +29,7 @@ public class IdsSeqUtils {
 		}
 	}
 	
-	public static int getXKTargetAddress(Integer hangDao) {
+	public static int getBoxLibOutTargetAddress(Integer hangDao) {
 		if (!tsjMap.containsKey(hangDao)) {
 			tsjMap.put(hangDao, 1);
 			return 1;
@@ -65,8 +65,8 @@ public class IdsSeqUtils {
 //		return tsj == 1 ? "2000" : "3000";
 //	}
 	
-	public static int getRKTargetAddress(Integer hangDao) {
-		int tsj= IdsSeqUtils.getXKTargetAddress(hangDao);
+	public static int getBoxLibInTargetAddress(Integer hangDao) {
+		int tsj= IdsSeqUtils.getBoxLibOutTargetAddress(hangDao);
 		return tsj;
 //		if (!rkMap.containsKey(hangDao)) {
 //			rkMap.put(hangDao, 1);

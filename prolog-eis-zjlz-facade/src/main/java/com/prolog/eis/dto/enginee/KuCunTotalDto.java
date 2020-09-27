@@ -33,18 +33,23 @@ public class KuCunTotalDto {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		KuCunTotalDto other = (KuCunTotalDto) obj;
 	        if (spId == 0) {
-	            if (other.spId != 0)
-	                return false;
-	        } else if (spId!=other.spId )
-	            return false;
+	            if (other.spId != 0) {
+                    return false;
+                }
+	        } else if (spId!=other.spId ) {
+                return false;
+            }
 			
 		return true;
 	}

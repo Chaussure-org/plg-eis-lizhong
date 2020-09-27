@@ -76,8 +76,9 @@ public class ListHelper {
 		List<NewTType> result = new ArrayList<NewTType>();
 		for (TType t : list) {
 			NewTType value = func.apply(t);
-			if(value != null)
-				result.add(value);
+			if(value != null) {
+                result.add(value);
+            }
 		}
 
 		return result;
@@ -99,8 +100,9 @@ public class ListHelper {
 			TType2 t2 = list2.get(i);
 			
 			NewTType value = func.apply(t1,t2);
-			if(value != null)
-				result.add(value);
+			if(value != null) {
+                result.add(value);
+            }
 		}
 
 		return result;
@@ -207,8 +209,9 @@ public class ListHelper {
 		int sum = 0;
 		for (TType t : list) {
 			Integer value = func.apply(t);
-			if(value !=null)
-				sum += value;
+			if(value !=null) {
+                sum += value;
+            }
 		}
 
 		return sum;

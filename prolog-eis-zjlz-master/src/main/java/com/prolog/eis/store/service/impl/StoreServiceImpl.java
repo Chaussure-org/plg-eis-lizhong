@@ -1,7 +1,7 @@
 package com.prolog.eis.store.service.impl;
 
-import com.prolog.eis.model.store.SxStoreLocation;
-import com.prolog.eis.model.store.SxStoreLocationGroup;
+import com.prolog.eis.model.location.sxk.SxStoreLocation;
+import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
 import com.prolog.eis.store.service.IStoreLocationGroupService;
 import com.prolog.eis.store.service.IStoreLocationService;
 import com.prolog.eis.store.service.IStoreService;

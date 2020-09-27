@@ -3,28 +3,56 @@ package com.prolog.eis.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = com.prolog.eis.configuration.EisProperties.Prefix)
+@ConfigurationProperties(prefix = com.prolog.eis.configuration.EisProperties.PREFIX)
 public class EisProperties {
-    public static final String Prefix = "prolog.eis";
-    private int maxJxdOrderCount = 5; //拣选单最大订单数量
-    private int maxSPCount=20; //拣选单最大商品数量，超过就开始进行收敛
-    private int maxTaskCountPerCar = 5;//每个小车最大任务数量
-    private int maxLxCountPerStation = 3;//每个站台到料箱bcr线体料箱容量
-    private int maxInLxCountPerStation = 5;//每个站台，料箱入库线体容量
-
-    private int commandSheduleThreadCount = 3;//wcs异步命令执行线程数
-    private long commandExucteRate=800;//wcs异步命令调度执行频率ms
+    public static final String PREFIX = "prolog.eis";
+    /**
+     *   拣选单最大订单数量
+     */
+    private int maxJxdOrderCount = 5;
+    /**
+     *  拣选单最大商品数量，超过就开始进行收敛
+     */
+    private int maxSpCount=20;
+    /**
+     * 每个小车最大任务数量
+     */
+    private int maxTaskCountPerCar = 5;
+    /**
+     * 每个站台到料箱bcr线体料箱容量
+     */
+    private int maxLxCountPerStation = 3;
+    /**
+     * 每个站台，料箱入库线体容量
+     */
+    private int maxInLxCountPerStation = 5;
+    /**
+     * wcs异步命令执行线程数
+     */
+    private int commandSheduleThreadCount = 3;
+    /**
+     * wcs异步命令调度执行频率ms
+     */
+    private long commandExucteRate=800;
 
     private int basePointX = 11;
     private int basePointY = 64;
 
     private double limitWeight = 30000;
 
-    private int maxOutTaskCountPerStation=6;//每个站台的最大出库数量
+    /**
+     * 每个站台的最大出库数量
+     */
+    private int maxOutTaskCountPerStation=6;
+    /**
+     * eis客戶端端口
+     */
+    private int clientPort = 9100;
 
-    private int clientPort = 9100;//eis客戶端端口
-
-    private int bzInterval = 1500;//拍灯间隔
+    /**
+     * 拍灯间隔
+     */
+    private int bzInterval = 1500;
     private WCSProperties wcs = new WCSProperties();
 
     private RCSProperties rcs = new RCSProperties();
@@ -135,55 +163,56 @@ public class EisProperties {
         this.maxJxdOrderCount = maxJxdOrderCount;
     }
 
-    public int getMaxSPCount() {
-        return maxSPCount;
+    public int getMaxSpCount() {
+        return maxSpCount;
     }
 
-    public void setMaxSPCount(int maxSPCount) {
-        this.maxSPCount = maxSPCount;
+    public void setMaxSpCount(int maxSpCount) {
+        this.maxSpCount = maxSpCount;
     }
 
-    public static String getPrefix() {
-        return Prefix;
-    }
 
-    public com.prolog.eis.configuration.WCSProperties getWcs() {
+    public WCSProperties getWcs() {
         return wcs;
     }
 
-    public void setWcs(com.prolog.eis.configuration.WCSProperties wcs) {
+    public void setWcs(WCSProperties wcs) {
         this.wcs = wcs;
     }
 
-    public com.prolog.eis.configuration.RCSProperties getRcs() {
+    public RCSProperties getRcs() {
         return rcs;
     }
 
-    public void setRcs(com.prolog.eis.configuration.RCSProperties rcs) {
+    public void setRcs(RCSProperties rcs) {
         this.rcs = rcs;
     }
 
-    public com.prolog.eis.configuration.MCSProperties getMcs() {
+    public MCSProperties getMcs() {
         return mcs;
     }
 
-    public void setMcs(com.prolog.eis.configuration.MCSProperties mcs) {
+    public void setMcs(MCSProperties mcs) {
         this.mcs = mcs;
     }
 
-    public com.prolog.eis.configuration.SASProperties getSas() {
+    public SASProperties getSas() {
         return sas;
     }
 
-    public void setSas(com.prolog.eis.configuration.SASProperties sas) {
+    public void setSas(SASProperties sas) {
         this.sas = sas;
     }
 
-    public com.prolog.eis.configuration.WMSProperties getWms() {
+    public WMSProperties getWms() {
         return wms;
     }
 
-    public void setWms(com.prolog.eis.configuration.WMSProperties wms) {
+    public void setWms(WMSProperties wms) {
         this.wms = wms;
+    }
+
+    public static String getPREFIX() {
+        return PREFIX;
     }
 }

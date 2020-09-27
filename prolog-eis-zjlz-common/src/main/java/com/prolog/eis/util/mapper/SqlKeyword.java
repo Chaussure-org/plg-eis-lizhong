@@ -25,6 +25,7 @@ import com.prolog.eis.util.StringPool;
  * @since 2018-05-28
  */
 public enum SqlKeyword {
+    // sql中常用关键字
     AND("AND"),
     OR("OR"),
     IN("IN"),

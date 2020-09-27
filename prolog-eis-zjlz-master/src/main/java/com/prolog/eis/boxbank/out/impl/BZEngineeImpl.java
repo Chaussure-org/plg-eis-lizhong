@@ -2,8 +2,7 @@ package com.prolog.eis.boxbank.out.impl;
 
 import com.prolog.eis.boxbank.out.BZEnginee;
 import com.prolog.eis.dao.enginee.BZEngineInitMapper;
-import com.prolog.eis.dao.enginee.EngineGetInitMapper;
-import com.prolog.eis.dao.enginee.EngineLxChuKuMapper;
+import com.prolog.eis.dao.enginee.EngineOutboundMapper;
 import com.prolog.eis.dto.enginee.*;
 import com.prolog.eis.store.dao.OContainerStoreMapper;
 import com.prolog.eis.util.FileLogHelper;
@@ -29,7 +28,7 @@ public class BZEngineeImpl implements BZEnginee {
     private BZEngineInitMapper bzEngineInitMapper;
 
     @Autowired
-    private EngineLxChuKuMapper engineLxChuKuMapper;
+    private EngineOutboundMapper engineOutboundMapper;
 
     @Autowired
     private BZEngineeChku bzEngineeChku;
@@ -59,23 +58,23 @@ public class BZEngineeImpl implements BZEnginee {
      * @throws Exception
      */
     @Override
-    public XiangKuDto init() throws Exception {
-        XiangKuDto xiangKuDto = new XiangKuDto();
+    public BoxLibDto init() throws Exception {
+        BoxLibDto boxLibDto = new BoxLibDto();
         // 当前播种作业站台集合
-        List<ZhanTaiDto> ztList = bzEngineInitMapper.findAllStation();
+        List<StationDto> stations = bzEngineInitMapper.findAllStation();
         //站台出库料箱数量
-        Map<Integer, Integer> zTCountMap = bzEngineInitMapper.findChuKuLxCount().stream().
-                collect(Collectors.toMap(ZhanTaiLXNo::getZhanTaiId, ZhanTaiLXNo::getCount));
-        ztList.stream().forEach(x -> {
-            if (zTCountMap.containsKey(x)) {
-                x.setChuKuLxCount(zTCountMap.get(x));
-                x.setJxdList(findJxdList());
+        Map<Integer, Integer> ztCountMap = bzEngineInitMapper.findChuKuLxCount().stream().
+                collect(Collectors.toMap(StationContainerNo::getZhanTaiId, StationContainerNo::getCount));
+        stations.stream().forEach(x -> {
+            if (ztCountMap.containsKey(x)) {
+                x.setChuKuLxCount(ztCountMap.get(x));
+                x.setPickOrderList(findPickOrderList());
             }
         });
-        xiangKuDto.setZtList(ztList);
-        xiangKuDto.setSpStockMap(findSpStockMap());
-        System.out.println(JsonUtils.toString(xiangKuDto));
-        return xiangKuDto;
+        boxLibDto.setStations(stations);
+        boxLibDto.setSpStockMap(findSpStockMap());
+        System.out.println(JsonUtils.toString(boxLibDto));
+        return boxLibDto;
 
     }
 
@@ -100,60 +99,60 @@ public class BZEngineeImpl implements BZEnginee {
      *
      * @return
      */
-    private List<JianXuanDanDto> findJxdList() {
+    private List<PickOrderDto> findPickOrderList() {
         // 查询拣选单  没有订单集合  和 料箱集合
-        List<JianXuanDanDto> jianXuanDanDtos = bzEngineInitMapper.findAllJianXuanDan();
+        List<PickOrderDto> pickOrders = bzEngineInitMapper.findAllJianXuanDan();
         // 查询料箱未全部到位的拣选单下的所有订单
-        Map<Integer, List<DingDanDto>> dingDanDtoMap = bzEngineInitMapper.findAllDingDan().stream().collect(Collectors.groupingBy(DingDanDto::getJxdId));// 只查非锁定巷道的站台
+        Map<Integer, List<OrderDto>> orderMap = bzEngineInitMapper.findAllDingDan().stream().collect(Collectors.groupingBy(OrderDto::getJxdId));
         //查询所有的料箱
-        List<LiaoXiangDto> allLxList = bzEngineInitMapper.findAllLx();
+        List<ContainerDto> allLxList = bzEngineInitMapper.findAllLx();
         //查询料箱绑定明细数量
         List<LxOrderMxCountDto> lxOrderMxCountDtoList = bzEngineInitMapper.findLxOrderMxCount();
 
-        for (LiaoXiangDto liaoXiangDto : allLxList) {
+        for (ContainerDto containerDto : allLxList) {
             for (LxOrderMxCountDto lxOrderMxCountDto : lxOrderMxCountDtoList) {
-                if (lxOrderMxCountDto.getContainerNo().equals(liaoXiangDto.getLiaoXiangNo())) {
-                    liaoXiangDto.getLxDingDanMxBindingMap().put(lxOrderMxCountDto.getOrderDetailId(), lxOrderMxCountDto.getOrderDetailQty());
+                if (lxOrderMxCountDto.getContainerNo().equals(containerDto.getContainerNo())) {
+                    containerDto.getContainerOrderBindingMap().put(lxOrderMxCountDto.getOrderDetailId(), lxOrderMxCountDto.getOrderDetailQty());
                 }
             }
         }
-        Map<Integer, List<LiaoXiangDto>> LxMap = allLxList.stream().collect(Collectors.groupingBy(LiaoXiangDto::getJxdId));
-        for (JianXuanDanDto jianXuanDanDto : jianXuanDanDtos) {
-            if (dingDanDtoMap.containsKey(jianXuanDanDto.getJxdId())) {
-                jianXuanDanDto.setDdList(dingDanDtoMap.get(jianXuanDanDto.getJxdId()));
+        Map<Integer, List<ContainerDto>> lxMap = allLxList.stream().collect(Collectors.groupingBy(ContainerDto::getPickOrderId));
+        for (PickOrderDto pickOrderDto : pickOrders) {
+            if (orderMap.containsKey(pickOrderDto.getPickOrderId())) {
+                pickOrderDto.setOrderList(orderMap.get(pickOrderDto.getPickOrderId()));
             }
-            if (LxMap.containsKey(jianXuanDanDto.getJxdId())) {
-                jianXuanDanDto.setLiangXiangList(LxMap.get(jianXuanDanDto.getJxdId()));
+            if (lxMap.containsKey(pickOrderDto.getPickOrderId())) {
+                pickOrderDto.setContainerList(lxMap.get(pickOrderDto.getPickOrderId()));
             }
         }
 
-        return jianXuanDanDtos;
+        return pickOrders;
     }
 
     /**
      * 箱库的出库方法
      * @param spId
-     * @param zhanTaiDto
+     * @param stationDto
      * @return
      * @throws Exception
      */
     @Override
-    @Transactional
-    public boolean chuku(int spId, ZhanTaiDto zhanTaiDto) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean outbound(int spId, StationDto stationDto) throws Exception {
         /**
          * 2020.4.20确认 step1.计算每层的出库作业数(找任务数少的) step2.计算每层的入库作业数(找任务数少的)
          * step3.计算商品在每层非锁定的料箱数量(优先找数量多的) step4.排列优先级 step5.选择总任务数小于小车数量*2(找层)
          * step6.找出离提升机(x、y)最近的非锁定的该商品料箱（用内存计算） step7.发送出库任务，路径规划
          */
         // 计算每层的总任务数
-        List<CengLxTaskDto> totalTasks = engineLxChuKuMapper.findTotalTask();
+        List<CengLxTaskDto> totalTasks = engineOutboundMapper.findTotalTask();
         // 计算每层的出库作业数
-        List<CengLxTaskDto> ckCengLxTaskDtos = engineLxChuKuMapper.findCkCengLxTaskDtos();
+        List<CengLxTaskDto> ckCengLxTaskDtos = engineOutboundMapper.findCkCengLxTaskDtos();
         // 计算每层的入库作业数
-        List<CengLxTaskDto> rkCengLxTaskDtos = engineLxChuKuMapper.findRkCengLxTaskDtos();
+        List<CengLxTaskDto> rkCengLxTaskDtos = engineOutboundMapper.findRkCengLxTaskDtos();
 
         // 计算商品在每层非锁定的料箱数量
-        List<AllHuoWeiDto> allHuoWeiDtos = engineLxChuKuMapper.findAllHuoWeiDto(spId);
+        List<AllHuoWeiDto> allHuoWeiDtos = engineOutboundMapper.findAllHuoWeiDto(spId);
         // 拼装集合
         Map<Integer, List<CengLxTaskDto>> ckCengLxTaskDtosByCeng = ListHelper.buildGroupDictionary(ckCengLxTaskDtos,
                 p -> p.getCeng());
@@ -191,16 +190,17 @@ public class BZEngineeImpl implements BZEnginee {
             AllHuoWeiDto allHuoWeiDto = allHuoWeiDtos.get(i);
             // 出库
             try {
-                boolean isSuccessChuku = bzEngineeChku.cengChuku(allHuoWeiDto.getCeng(), spId, zhanTaiDto);
-                if (isSuccessChuku)
+                boolean isOutboundSuccess = bzEngineeChku.outboundByLayer(allHuoWeiDto.getCeng(), spId, stationDto);
+                if (isOutboundSuccess) {
                     return true;
+                }
             } catch (Exception e) {
                 continue;
             }
 
         }
 
-        FileLogHelper.WriteLog("StoreCkError", "无法获得可用货位,当前商品为：" + spId);
+        FileLogHelper.writeLog("StoreCkError", "无法获得可用货位,当前商品为：" + spId);
         return false;
 
 
@@ -230,10 +230,11 @@ public class BZEngineeImpl implements BZEnginee {
                 }
             }
             Collection<KuCunTotalDto> values = map.values();
-            if (values instanceof List)
+            if (values instanceof List) {
                 xkAndztKuCun = (List) values;
-            else
+            } else {
                 xkAndztKuCun = new ArrayList<KuCunTotalDto>(values);
+            }
         }
 
         if (findAllUsedKuCun.size() == 0) {

@@ -19,9 +19,9 @@ public class PrologContainerLockHelper {
 		return instance;
 	}
 	public synchronized Object GetInBoundCancelLockObj(String containerNo) {
-		if (this.LockMap.containsKey(containerNo))
-			return this.LockMap.get(containerNo);
-		else {
+		if (this.LockMap.containsKey(containerNo)) {
+            return this.LockMap.get(containerNo);
+        } else {
 			Object lockObj = new Object();
 			this.LockMap.put(containerNo, lockObj);
 			return lockObj;
