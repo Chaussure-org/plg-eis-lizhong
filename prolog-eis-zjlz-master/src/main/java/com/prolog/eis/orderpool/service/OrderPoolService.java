@@ -1,6 +1,7 @@
 package com.prolog.eis.orderpool.service;
 
 import com.prolog.eis.dto.orderpool.OpOrderHz;
+import com.prolog.eis.model.order.OrderBill;
 
 import java.util.List;
 import java.util.Map;

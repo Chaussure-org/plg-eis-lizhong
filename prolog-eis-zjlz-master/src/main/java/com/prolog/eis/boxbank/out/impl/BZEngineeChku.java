@@ -1,11 +1,9 @@
 package com.prolog.eis.boxbank.out.impl;
 
-import com.prolog.eis.boxbank.out.IOutService;
 import com.prolog.eis.boxbank.rule.LayerLockRule;
 import com.prolog.eis.boxbank.rule.StoreLocationDTO;
-import com.prolog.eis.dao.enginee.EngineGetInitMapper;
-import com.prolog.eis.dao.enginee.EngineOutboundMapper;
 import com.prolog.eis.dto.enginee.*;
+import com.prolog.eis.engin.dao.EngineGetInitMapper;
 import com.prolog.eis.util.FileLogHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +23,11 @@ public class BZEngineeChku {
 
     @Autowired
     private EngineGetInitMapper engineGetInitMapper;
+
+//    @Autowired
+//    private ContainerBindingHzMapper containerBindingHzMapper;
     @Autowired
-    private EngineOutboundMapper engineOutboundMapper;
+    private com.prolog.eis.dao.enginee.EngineOutboundMapper engineOutboundMapper;
 
     @Autowired
     private LayerLockRule layerLockRule;

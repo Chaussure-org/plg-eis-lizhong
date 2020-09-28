@@ -76,6 +76,7 @@ public class BoxOutDispatch {
 			FileLogHelper.writeLog("engineDingDanPool", "原始订单池订单数：" + opOrderList.size());
 			orderPoolList = this.computeUsedDingDan(opOrderList,boxLib);
 			FileLogHelper.writeLog("engineDingDanPool", "可用订单数：" + opOrderList.size());
+		// 获得订单池的订单
 		}
 		return orderPoolList;
 	}
@@ -85,6 +86,7 @@ public class BoxOutDispatch {
 	 */
 	private List<OrderDto> computeUsedDingDan(List<OpOrderHz> opOrderList, BoxLibDto boxLib) throws Exception {
 		List<OrderDto> orderPoolList = new ArrayList<OrderDto>();
+	// 计算订单池中的满足库存的订单
 		// 按优先级和时效排序，优先保留时效靠前的订单
 		opOrderList.sort((dd1, dd2) -> {
 			if(!dd1.getPriority().equals(dd2.getPriority())) {
