@@ -1,16 +1,37 @@
 package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.order.OrderBill;
+import com.prolog.eis.store.dao.OContainerStoreMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
+    @Autowired
+    private OContainerStoreMapper containerStoreMapper;
+    /**
+     * 1.出库时效
+     * 2.出库 订单在立库里 库存满足的订单 在订单明细里记状态 出库至 agv 区域
+     * 3.不满足时 判断
+     * 该订单明细 在立库和箱库 所需要出库的 容器的数量
+     * 数量少的 标记 目的的出库位置
+     *
+     * @throws Exception
+     */
     @Override
     public List<OrderBill> computerOrder(List<OrderBill> orderBills) throws Exception {
+        /**
+         * 1.查所有的订单
+         */
+        List<ContainerStore> containerStoreList = containerStoreMapper.findByMap(null, ContainerStore.class);
+        Map<Integer, Integer> collect = containerStoreList.stream().collect(Collectors.toMap(ContainerStore::getGoodsId, ContainerStore::getQty));
         return null;
     }
 

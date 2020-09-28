@@ -43,7 +43,7 @@ public class ContainerStore {
 
   @Column("goods_id")
   @ApiModelProperty("商品ID")
-  private String goodsId;
+  private Integer goodsId;
 
   @Column("lot_id")
   @ApiModelProperty("批次")
@@ -113,11 +113,11 @@ public class ContainerStore {
     this.ownerId = ownerId;
   }
 
-  public String getGoodsId() {
+  public Integer getGoodsId() {
     return goodsId;
   }
 
-  public void setGoodsId(String goodsId) {
+  public void setGoodsId(Integer goodsId) {
     this.goodsId = goodsId;
   }
 
