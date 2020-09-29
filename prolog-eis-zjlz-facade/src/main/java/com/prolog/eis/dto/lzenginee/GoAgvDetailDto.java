@@ -3,19 +3,18 @@ package com.prolog.eis.dto.lzenginee;
 import lombok.Data;
 
 /**
- * ClassName:RoadWayGoodsCountDto
+ * ClassName:GoAgvDetailDto
  * Package:com.prolog.eis.dto.lzenginee
  * Description:
  *
- * @date:2020/9/29 14:10
+ * @date:2020/9/29 17:16
  * @author:SunPP
  */
 @Data
-public class RoadWayGoodsCountDto {
+public class GoAgvDetailDto {
+    private int orderBillId;
+    private int priority;
     private int detailId;
     private int goodsId;
-    private int roadWay;
     private int qty;
-    private Double rate;
-    private String ContainerNo;
 }

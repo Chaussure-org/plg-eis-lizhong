@@ -3,6 +3,7 @@ package com.prolog.eis.engin.service.impl;
 import com.prolog.eis.dto.lzenginee.*;
 import com.prolog.eis.engin.dao.TrayOutMapper;
 import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
@@ -16,10 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +44,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
      * 3.不满足时 判断
      * 该订单明细 在立库和箱库 所需要出库的 容器的数量
      * 数量少的 标记 目的的出库位置
-     *
+     *只是确定订单明细的要从哪里出库 并且给订单划分 优先级
      * @throws Exception
      */
     @Override
@@ -68,14 +66,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     return v1 + v2;
                 }));
         //计算 立库和 agv 有订单明细的库存  可以满足的 订单的所需数量 的订单
-        Set<Integer> orderDetailIdList = this.computeAreaByOrder(orderDetailMap, containerStoreMap);
-        if (orderDetailIdList.size() > 0) {
-            updateOrderDetailArea(orderDetailIdList, "A");
+        Map<Integer, Set<Integer>> map = this.computeAreaByOrder(orderDetailMap, containerStoreMap);
+        if (map.size() > 0) {
+            updateOrderDetailArea(map, "A", OrderBill.FIRST_PRIORITY);
         } else {
             //计算 箱库 可以满足的 订单的所需数量 的订单
-            Set<Integer> boxDetailList = this.computeAreaByOrder(orderDetailMap, boxStoreMap);
-            if (boxDetailList.size() > 0) {
-                updateOrderDetailArea(boxDetailList, "d");
+            Map<Integer, Set<Integer>> boxMap = this.computeAreaByOrder(orderDetailMap, boxStoreMap);
+            if (boxMap.size() > 0) {
+                updateOrderDetailArea(boxMap, "d",OrderBill.SECOND_PRIORITY);
             } else {
                 //这一部分订单是由两个库区的库存组成的
                 this.computeAllStoreByOrder(orderDetailMap, containerStoreMap, boxStoreMap);
@@ -85,15 +83,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Override
     public void trayOutByOrder(List<OrderBill> orderBills) throws Exception {
-        /**
-         * 1.找detail 区域是 agv区的 并且 没有发送任务的
-         * 2.是否控制生成路径的 数量？
-         */
-        List<StoreGoodsCount> agvDetailList = orderDetailMapper.findAgvDetail();
-        for (StoreGoodsCount storeGoodsCount : agvDetailList) {
-            boolean b = this.outByGoodsId(storeGoodsCount.getGoodsId(), storeGoodsCount.getQty());
+        //1.要去往agv区域的订单明细 然后订单明细的 订单优先级是高的
+        List<GoAgvDetailDto> agvDetailList = orderDetailMapper.findAgvDetail();
+        agvDetailList.stream().sorted(Comparator.comparing(GoAgvDetailDto::getPriority));
+        for (GoAgvDetailDto agvDetailDto : agvDetailList) {
+            boolean b = this.outByGoodsId(agvDetailDto.getGoodsId(), agvDetailDto.getQty());
             if (b) {
-
+                //每次生成几个 去往agv区域的 路径
+                break;
             }
         }
     }
@@ -107,7 +104,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
      * @throws Exception
      */
     @Override
-    public boolean outByGoodsId(int goodsId, int count) throws Exception {
+    public synchronized boolean outByGoodsId(int goodsId, int count) throws Exception {
         /** 1.首先应该找巷道的均衡 计算每层的出库任务数 和 入库任务数
          4.计算商品在每层非锁定的料箱数量
          5.得到 每一层总的任务数  出库任务数 入库 任务数 非锁定的料箱数量
@@ -121,12 +118,36 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
          */
         //巷道的出库任务数 和入库任务数
         List<RoadWayContainerTaskDto> layerContainerTasks = trayOutMapper.findRoadWayContainerTask();
-        //巷道的 goodsId 和 goodsCount
-        List<RoadWayGoodsCountDto> layerGoodsCounts = trayOutMapper.findRoadWayGoodsCount(goodsId);
-        List<RoadWayGoodsCountDto> conformContainerList = layerGoodsCounts.stream().filter(x -> x.getGoodsId() == goodsId).collect(Collectors.toList());
-
+        //巷道库存的 goodsId 和 goodsCount
+        List<RoadWayGoodsCountDto> roadWayGoodsCounts = trayOutMapper.findRoadWayGoodsCount(goodsId);
+        //agv区域的库存
+        List<RoadWayGoodsCountDto> agvGoodsCounts = trayOutMapper.findAgvGoodsCount(goodsId);
+        List<AgvBindingDetail> agvBindingDetails = new ArrayList<AgvBindingDetail>();
+        boolean isContinue=true;
+        //优先从agv库存找
+        for (RoadWayGoodsCountDto roadWayGoodsCountDto:agvGoodsCounts){
+            if (roadWayGoodsCountDto.getQty()>count){
+                //重新生成明细
+                isContinue=false;
+                break;
+            }
+        }
+        if (!isContinue){
+            return true;
+        }
+        //箱库库存找
+        int sumCount=0;
+        for (RoadWayGoodsCountDto roadWayGoodsCountDto : roadWayGoodsCounts) {
+            if (sumCount>=count){
+                return true;
+            }
+            //生成 agv_binding_detail
+            sumCount+=roadWayGoodsCountDto.getQty();
+        }
         return true;
     }
+
+
 
 
     /**
@@ -136,9 +157,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
      * @param containerStoreMap
      * @return 订单明细集合
      */
-    private Set<Integer> computeAreaByOrder(Map<Integer, List<OrderDetail>> orderDetailMap, Map<Integer, Integer> containerStoreMap) {
+    private Map<Integer, Set<Integer>> computeAreaByOrder(Map<Integer, List<OrderDetail>> orderDetailMap, Map<Integer, Integer> containerStoreMap) {
         //出库 订单在立库里 库存满足的订单 在订单明细里记状态
-        Set<Integer> orderDetailIdList = new HashSet<>();
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+
         boolean isAdd = true;
         for (Integer key : orderDetailMap.keySet()) {
             for (OrderDetail orderDetail : orderDetailMap.get(key)) {
@@ -149,10 +171,12 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 }
             }
             if (isAdd) {
+                Set<Integer> orderDetailIdList = new HashSet<>();
                 orderDetailIdList.addAll(orderDetailMap.get(key).stream().map(OrderDetail::getId).collect(Collectors.toList()));
+                map.put(key, orderDetailIdList);
             }
         }
-        return orderDetailIdList;
+        return map;
     }
 
     /**
@@ -164,32 +188,40 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
      * @return 订单明细集合
      */
     private void computeAllStoreByOrder(Map<Integer, List<OrderDetail>> orderDetailMap, Map<Integer, Integer> containerTrayMap, Map<Integer, Integer> containerBoxMap) {
-        Set<Integer> trayDetailIds = new HashSet<>();
-        Set<Integer> orderDetailIds = new HashSet<>();
+        Map<Integer, Set<Integer>> trayMap = new HashMap<Integer, Set<Integer>>();
+        Map<Integer, Set<Integer>> boxMap = new HashMap<Integer, Set<Integer>>();
         for (Integer key : orderDetailMap.keySet()) {
+            Set<Integer>trayList=new HashSet<>();
+            Set<Integer>boxList=new HashSet<>();
             for (OrderDetail orderDetail : orderDetailMap.get(key)) {
                 //首先出库托盘库的托盘，然后出库立库的托盘
                 if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerTrayMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
-                    trayDetailIds.add(orderDetail.getGoodsId());
+                    trayList.add(orderDetail.getGoodsId());
+                    continue;
                 }
                 if (containerBoxMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
-                    orderDetailIds.add(orderDetail.getGoodsId());
+                    boxList.add(orderDetail.getGoodsId());
                 } else {
                     logger.info("======================库存不足================");
                 }
             }
+            trayMap.put(key,trayList);
+            boxMap.put(key,trayList);
         }
-        if (trayDetailIds.size() > 0) {
-            updateOrderDetailArea(trayDetailIds, "a");
+        if (trayMap.size() > 0) {
+            updateOrderDetailArea(trayMap, "a",OrderBill.THIRD_PRIORITY);
         }
-        if (orderDetailIds.size() > 0) {
-            updateOrderDetailArea(trayDetailIds, "c");
+        if (boxMap.size() > 0) {
+            updateOrderDetailArea(boxMap, "c",OrderBill.THIRD_PRIORITY);
         }
     }
 
-    private void updateOrderDetailArea(Set<Integer> orderDetailIdList, String area) {
-        Criteria ctr = Criteria.forClass(OrderDetail.class);
-        ctr.setRestriction(Restrictions.in("id", orderDetailIdList.toArray()));
-        orderDetailMapper.updateMapByCriteria(MapUtils.put("areaNo", area).getMap(), ctr);
+    private void updateOrderDetailArea(Map<Integer, Set<Integer>> map, String area, int priority) {
+        for (Integer orderId : map.keySet()) {
+            Criteria ctr = Criteria.forClass(OrderDetail.class);
+            ctr.setRestriction(Restrictions.in("id", map.get(orderId).toArray()));
+            orderDetailMapper.updateMapByCriteria(MapUtils.put("areaNo", area).getMap(), ctr);
+            orderBillMapper.updateMapById(orderId, MapUtils.put("orderPriority", priority).getMap(), OrderBill.class);
+        }
     }
 }

@@ -31,12 +31,23 @@ public interface TrayOutMapper {
     @Select("SELECT \n" +
             "sl.x as roadWay,\n" +
             "cpt.container_no AS containerNo,\n" +
-            "cs.goods_id AS goodsId,\n" +
+            "cs.goods_id AS goodsId,g.last_container_rate AS rate,\n" +
             "cs.qty \n" +
             "FROM\n" +
             "\tcontainer_store cs\n" +
-            "\tLEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no\n" +
+            "\tLEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no LEFT JOIN goods g on cs.goods_id=g.id\n" +
             "\tLEFT JOIN sx_store_location sl on sl.id=cpt.source_location\n" +
-            "\tWHERE cpt.task_type=0 and cs.goods_id=#{goodsId}")
+            "\tWHERE cpt.task_type=0 and cs.goods_id=#{goodsId} order by cs.qty DESC")
     List<RoadWayGoodsCountDto> findRoadWayGoodsCount(@Param("goodsId")int goodsId);
+
+    @Select("SELECT\n" +
+            "\tabd.goodsId AS goodsId,\n" +
+            "\tabd.container_no AS containerNo,\n" +
+            "\tcs.qty AS qty,\n" +
+            "g.last_container_rate AS rate, "+
+            "\tabd.order_mx_id AS detailId\n" +
+            "FROM\n" +
+            "\tagv_binding_detail abd\n" +
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where abd.goodsId=#{goodsId} order by cs.qty DESC")
+    List<RoadWayGoodsCountDto> findAgvGoodsCount(@Param("goodsId")int goodsId);
 }
