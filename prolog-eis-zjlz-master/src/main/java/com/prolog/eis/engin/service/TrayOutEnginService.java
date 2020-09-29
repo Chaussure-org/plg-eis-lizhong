@@ -17,7 +17,7 @@ public interface TrayOutEnginService {
      *
      * @throws Exception
      */
-    List<OrderBill> computerOrder(List<OrderBill> orderBills) throws Exception;
+    void initOrder(List<OrderBill> orderBills) throws Exception;
 
     /**
      * 根据 合适的订单
@@ -35,5 +35,5 @@ public interface TrayOutEnginService {
      * 生成路径 path 给点位
      * @throws Exception
      */
-    void OutByGoodsId(int goodsId,int count) throws Exception;
+    boolean outByGoodsId(int goodsId,int count) throws Exception;
 }
