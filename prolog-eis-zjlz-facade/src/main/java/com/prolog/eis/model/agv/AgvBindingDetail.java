@@ -6,6 +6,8 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 
 /**
  * @Description  
@@ -27,6 +29,30 @@ public class AgvBindingDetail {
   @Column("goodsId")
   @ApiModelProperty("商品id")
   private Integer goodsId;
+
+  @Column("order_priority")
+  @ApiModelProperty("订单明细id")
+  private Integer orderPriority;
+
+  @Column("update_time")
+  @ApiModelProperty("订单明细id")
+  private Date updateTime;
+
+  public Integer getOrderPriority() {
+    return orderPriority;
+  }
+
+  public void setOrderPriority(Integer orderPriority) {
+    this.orderPriority = orderPriority;
+  }
+
+  public Date getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
 
   public String getContainerNo() {
     return containerNo;

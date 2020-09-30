@@ -83,7 +83,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     }
 
     @Override
-    public void trayOutByOrder(List<OrderBill> orderBills) throws Exception {
+    public void trayOutByOrder() throws Exception {
         //1.要去往agv区域的订单明细 然后订单明细的 订单优先级是高的 生成agv的bindingDetail
         List<GoAgvDetailDto> agvDetailList = orderDetailMapper.findAgvDetail();
         //生成路径的
@@ -92,9 +92,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         for (GoAgvDetailDto agvDetailDto : agvDetailList) {
             List<OutContainerDto> outList = this.outByGoodsId(agvDetailDto.getGoodsId(), agvDetailDto.getQty());
             //单次调度出一个明细的箱子
-            if (outList.size()>0){
-                //outContainerList.addAll(outList);
-                //生成路径和agvbindingDetail
+            if (outList.size() > 0) {
+                saveAgvBindingDetail(outList,agvDetailDto);
                 break;
             }
         }
@@ -141,19 +140,19 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         //agv库存没有 从箱库里面找
-        int sumCount=0;
+        int sumCount = 0;
         if (isContinue) {
             //先找移位数最少 再找巷道任务数最少
             roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).thenComparing(RoadWayGoodsCountDto::getTaskCount));
-            if (sumCount<count){
-                for (RoadWayGoodsCountDto goodsCountDto:roadWayGoodsCounts){
+            if (sumCount < count) {
+                for (RoadWayGoodsCountDto goodsCountDto : roadWayGoodsCounts) {
                     OutContainerDto outContainerDto = new OutContainerDto();
                     outContainerDto.setContainerNo(goodsCountDto.getContainerNo());
                     outContainerDto.setGoodsId(goodsId);
                     outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
                     outContainerDto.setQty(goodsCountDto.getQty());
                     outContainerDtoList.add(outContainerDto);
-                    sumCount+=goodsCountDto.getQty();
+                    sumCount += goodsCountDto.getQty();
                 }
             }
         }
@@ -233,6 +232,17 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             ctr.setRestriction(Restrictions.in("id", map.get(orderId).toArray()));
             orderDetailMapper.updateMapByCriteria(MapUtils.put("areaNo", area).getMap(), ctr);
             orderBillMapper.updateMapById(orderId, MapUtils.put("orderPriority", priority).getMap(), OrderBill.class);
+        }
+    }
+
+    private void saveAgvBindingDetail(List<OutContainerDto> outList,GoAgvDetailDto detailDto) {
+        for (OutContainerDto containerDto : outList) {
+            AgvBindingDetail agvBindingDetail = new AgvBindingDetail();
+            agvBindingDetail.setOrderMxId(detailDto.getDetailId());
+            agvBindingDetail.setGoodsId(containerDto.getGoodsId());
+            agvBindingDetail.setContainerNo(containerDto.getContainerNo());
+            agvBindingDetail.setOrderPriority(detailDto.getOrderPriority());
+            agvBindingDetail.setUpdateTime(new Date());
         }
     }
 }

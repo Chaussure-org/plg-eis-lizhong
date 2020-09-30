@@ -24,10 +24,9 @@ public interface TrayOutEnginService {
      * 根据 合适的订单
      * 1.根据agv 的 库位数量进行出库
      * 2.找到 属于agv 订单区域的订单
-     * @param orderBills
      * @throws Exception
      */
-    void trayOutByOrder(List<OrderBill> orderBills) throws Exception;
+    void trayOutByOrder() throws Exception;
 
     /**
      * 1.根据goodsId count 找到具体的托盘进行出库

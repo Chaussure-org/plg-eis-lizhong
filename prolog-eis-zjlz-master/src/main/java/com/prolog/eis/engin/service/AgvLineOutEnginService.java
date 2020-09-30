@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * agv区域和箱库的 出库
  */
-public interface AgvBoxOutEnginService {
+public interface AgvLineOutEnginService {
 
     /**
      * init 方法 拣选区域的 信息集合
