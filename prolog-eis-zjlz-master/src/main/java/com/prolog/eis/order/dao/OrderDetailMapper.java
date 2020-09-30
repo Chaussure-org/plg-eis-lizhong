@@ -16,7 +16,7 @@ import java.util.List;
 public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
     @Select("SELECT\n" +
             "ob.id AS orderBillId,\n" +
-            "ob.order_priority AS priority,\n" +
+            "ob.order_priority AS orderPriority,\n" +
             "od.id AS detailId,\n" +
             "\tod.goods_id AS goodsId,\n" +
             "\tod.plan_qty AS qty \n" +

@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service;
 
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.model.order.OrderBill;
 
 import java.util.List;
@@ -35,5 +36,5 @@ public interface TrayOutEnginService {
      * 生成路径 path 给点位
      * @throws Exception
      */
-    boolean outByGoodsId(int goodsId,int count) throws Exception;
+    List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception;
 }

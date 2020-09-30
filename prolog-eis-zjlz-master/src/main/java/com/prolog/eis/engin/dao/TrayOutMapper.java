@@ -31,7 +31,7 @@ public interface TrayOutMapper {
     @Select("SELECT \n" +
             "sl.x as roadWay,\n" +
             "cpt.container_no AS containerNo,\n" +
-            "cs.goods_id AS goodsId,g.last_container_rate AS rate,\n" +
+            "cs.goods_id AS goodsId,g.last_container_rate AS rate,sl.dept_num as deptNum,sl.store_no as storeLocation,\n" +
             "cs.qty \n" +
             "FROM\n" +
             "\tcontainer_store cs\n" +

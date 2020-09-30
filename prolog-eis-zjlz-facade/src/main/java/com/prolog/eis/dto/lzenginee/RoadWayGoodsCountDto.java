@@ -18,4 +18,8 @@ public class RoadWayGoodsCountDto {
     private int qty;
     private Double rate;
     private String ContainerNo;
+
+    private int taskCount;
+    private int deptNum;
+    private String storeLocation;
 }
