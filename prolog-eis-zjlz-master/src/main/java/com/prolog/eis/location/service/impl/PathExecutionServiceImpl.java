@@ -131,6 +131,37 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    public void doMcsToWcsTask(ContainerPathTask containerPathTask,
+                               ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+
+    }
+
+    @Override
+    public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+
+    }
+
+    @Override
+    public void doWcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+
+    }
+
+    @Override
+    public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+
+    }
+
+    @Override
+    public void doSasToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+
+    }
+
+    @Override
+    public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+
+    }
+
+    @Override
     public void updateNextContainerPathTaskDetail(ContainerPathTaskDetail containerPathTaskDetail, ContainerPathTask containerPathTask, Timestamp nowTime) throws Exception {
         Query query = new Query(containerPathTaskDetail.getClass());
         query.addEq("containerNo", containerPathTaskDetail.getContainerNo());

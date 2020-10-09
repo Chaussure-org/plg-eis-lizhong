@@ -152,7 +152,6 @@ public class SASServiceImpl implements ISASService {
         try {
             RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("containerNo",containerNo).getMap(),new TypeReference<RestMessage<String>>() {});
             return result;
-
         } catch (Exception e) {
             logger.warn("EIS -> WCS 删除异常入库料箱", e);
             return null;

@@ -15,7 +15,6 @@ public interface ISASService {
 
     /**
      * 获取三个提升机的信息
-     *
      * @return
      */
     List<HoisterInfoDto> getHoisterInfoDto();
@@ -45,9 +44,12 @@ public interface ISASService {
                                           String weight, String priority, int status);
 
 
-
     /**
-     * 料箱入库异常删除
+     * 删除容器信息
+     * @param taskId
+     * @param containerNo
+     * @return
+     * @throws Exception
      */
     RestMessage<String> deleteAbnormalContainerNo(String taskId, String containerNo) throws Exception;
 }
