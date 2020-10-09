@@ -19,6 +19,9 @@ public class OrderBill {
     public static final int FIRST_PRIORITY = 1;
     public static final int SECOND_PRIORITY = 2;
     public static final int THIRD_PRIORITY = 3;
+    public static final int ORDER_STATUS_START_OUT=10;
+    public static final int ORDER_STATUS_OUTING=20;
+    public static final int ORDER_STATUS_FINISH=30;
     @Column("id")
     @Id
     @ApiModelProperty("订单ID")
@@ -41,7 +44,7 @@ public class OrderBill {
     private Integer orderPriority;
 
     @Column("order_task_state")
-    @ApiModelProperty("订单任务进度（0创建 10 开始出库 20 30 90完成）")
+    @ApiModelProperty("订单任务进度（0创建 10 开始出库 20 出库中 30 完成）")
     private Integer orderTaskState;
 
     @Column("receiver")
