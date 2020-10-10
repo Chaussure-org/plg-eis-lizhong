@@ -12,7 +12,7 @@ public interface IStationBZService {
      * @param containerNo 容器编号
      * @param orderBoxNo 订单框编号
      */
-    void startBZPicking(int stationId,String containerNo,String orderBoxNo);
+    void startBZPicking(int stationId,String containerNo,String orderBoxNo) throws Exception;
 
     /**
      * 拣选确认
