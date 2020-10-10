@@ -39,7 +39,7 @@ public class OrderDetail {
 
   @Column("goods_id")
   @ApiModelProperty("商品id")
-  private String goodsId;
+  private int goodsId;
 
   @Column("goods_order_no")
   @ApiModelProperty("商品订单号")
@@ -56,6 +56,11 @@ public class OrderDetail {
   @Column("complete_qty")
   @ApiModelProperty("已完成数量")
   private Integer completeQty;
+
+
+  @Column("area_no")
+  @ApiModelProperty("已完成数量")
+  private String areaNo;
 
   @Column("create_time")
   @ApiModelProperty("创建时间")
@@ -105,11 +110,11 @@ public class OrderDetail {
     this.lotId = lotId;
   }
 
-  public String getGoodsId() {
+  public int getGoodsId() {
     return goodsId;
   }
 
-  public void setGoodsId(String goodsId) {
+  public void setGoodsId(int goodsId) {
     this.goodsId = goodsId;
   }
 
@@ -161,4 +166,11 @@ public class OrderDetail {
     this.updateTime = updateTime;
   }
 
+  public String getAreaNo() {
+    return areaNo;
+  }
+
+  public void setAreaNo(String areaNo) {
+    this.areaNo = areaNo;
+  }
 }

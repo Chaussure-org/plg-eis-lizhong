@@ -32,6 +32,7 @@ public interface OrderPoolService {
 
     /**
      * 获取订单池
+     * @throws Exception
      * @return
      */
     List<OpOrderHz> getOrderPool() throws Exception;
@@ -48,6 +49,7 @@ public interface OrderPoolService {
     /**
      * 修改订单优先级
      * @param map
+     * @throws Exception
      */
     void updatePriority(Map<Integer, Integer> map) throws Exception;
 }

@@ -2,8 +2,10 @@ package com.prolog.eis.dto.wcs;
 
 public class CarInfoDTO {
 
+
     private String rgvId;
     private int layer;
+    //1,2 正常 3跨层 4故障
     private int status;
 
     public String getRgvId() {

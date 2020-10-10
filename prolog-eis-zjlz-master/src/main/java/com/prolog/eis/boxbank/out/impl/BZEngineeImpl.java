@@ -5,6 +5,7 @@ import com.prolog.eis.dao.enginee.EngineOutboundMapper;
 import com.prolog.eis.engin.dao.BZEngineInitMapper;
 import com.prolog.eis.engin.dao.EngineLxChuKuMapper;
 import com.prolog.eis.dto.enginee.*;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.dao.OContainerStoreMapper;
 import com.prolog.eis.util.FileLogHelper;
 import com.prolog.eis.util.ListHelper;
@@ -24,7 +25,7 @@ public class BZEngineeImpl implements BZEnginee {
     private final Logger logger = LoggerFactory.getLogger(BZEngineeImpl.class);
 
     @Autowired
-    private OContainerStoreMapper containerStoreMapper;
+    private ContainerStoreMapper containerStoreMapper;
     @Autowired
     private BZEngineInitMapper bzEngineInitMapper;
 

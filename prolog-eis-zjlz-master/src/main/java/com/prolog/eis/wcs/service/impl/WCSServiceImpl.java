@@ -42,11 +42,12 @@ public class WCSServiceImpl implements IWCSService {
      * @return
      */
     @Override
-    public RestMessage<String> lineMove(String taskId, String address, String target, String containerNo, int type,int i) {
+    public RestMessage<String> lineMove(String taskId, String address, String target, String containerNo, int type) {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 输送线行走:{}",url);
         try {
-            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address).put("containerNo",containerNo).put("type",type).put("target",target).getMap(),new TypeReference<RestMessage<String>>() {});
+            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address)
+                    .put("containerNo",containerNo).put("type",type).put("target",target).getMap(),new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
             logger.warn("EIS -> WCS 请求输送线行走异常",e);

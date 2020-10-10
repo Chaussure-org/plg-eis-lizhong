@@ -19,6 +19,7 @@ public interface IStoreService {
      * @param exList 排除列(子道,母道)
      * @throws Exception
      */
-    void initStore(int layerCount, int xCount, int yCount, int ascent, int factor, List<Integer> exList) throws Exception;
+    void initStore(int layerCount, int xCount, int yCount, int ascent, int factor, List<Integer> exList,
+                   String areaNo) throws Exception;
 
 }
