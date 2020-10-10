@@ -6,4 +6,6 @@ package com.prolog.eis.mcs.service;
  * @CreateTime 2020-09-22 15:55
  */
 public interface IMCSCallBackService {
+
+    void mcsCallback(String taskId,int status) throws Exception;
 }

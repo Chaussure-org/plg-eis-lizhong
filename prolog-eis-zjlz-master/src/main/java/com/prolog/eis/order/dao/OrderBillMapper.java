@@ -9,4 +9,6 @@ import com.prolog.framework.dao.mapper.BaseMapper;
  * @CreateTime 2020-09-27 10:53
  */
 public interface OrderBillMapper extends BaseMapper<OrderBill> {
+
+
 }

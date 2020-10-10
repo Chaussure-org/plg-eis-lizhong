@@ -31,7 +31,8 @@ public class StoreServiceImpl implements IStoreService {
     private IStoreLocationGroupService storeLocationGroupService;
 
     @Override
-    public void initStore(int layerCount, int xCount, int yCount, int ascent, int factor, List<Integer> exList) throws Exception {
+    public void initStore(int layerCount, int xCount, int yCount, int ascent, int factor, List<Integer> exList,
+                          String areaNo) throws Exception {
         int group = 0;
         boolean flag = true;
         for(int i=1;i<layerCount;i++){
@@ -55,8 +56,8 @@ public class StoreServiceImpl implements IStoreService {
                             if (!flag){
                                 flag = true;
                             }
-                            addLocation(group,i,x,y,point1);
-                            addLocation(group,i,x,y,point2);
+                            addLocation(group,i,x,y,point1,areaNo,ascent);
+                            addLocation(group,i,x,y,point2,areaNo,ascent);
                             break;
                         default:
                             for (int j = 1; j <=2*ascent ; j++) {
@@ -65,7 +66,7 @@ public class StoreServiceImpl implements IStoreService {
                                 if (!flag){
                                     flag = true;
                                 }
-                                addLocation(group,i,x,y,point);
+                                addLocation(group,i,x,y,point,areaNo,ascent);
                             }
                     }
                 }
@@ -75,7 +76,7 @@ public class StoreServiceImpl implements IStoreService {
         }
     }
 
-    private void addLocation(int groupNo,int layer,int x,int y,String point){
+    private void addLocation(int groupNo,int layer,int x,int y,String point,String areaNo,Integer ascent){
         SxStoreLocationGroup group = new SxStoreLocationGroup();
         group.setGroupNo(groupNo+"");
         group.setEntrance(1);

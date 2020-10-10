@@ -84,12 +84,12 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Override
     public void trayOutByOrder() throws Exception {
-        //1.要去往agv区域的订单明细 然后订单明细的 订单优先级是高的 生成agv的bindingDetail
-        List<GoAgvDetailDto> agvDetailList = orderDetailMapper.findAgvDetail();
+        //1.要去往agv区域的订单明细
+        List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail("A");
         //生成路径的
         //List<OutContainerDto> outContainerList=new ArrayList<>();
-        agvDetailList.stream().sorted(Comparator.comparing(GoAgvDetailDto::getOrderPriority));
-        for (GoAgvDetailDto agvDetailDto : agvDetailList) {
+        agvDetailList.stream().sorted(Comparator.comparing(OutDetailDto::getOrderPriority));
+        for (OutDetailDto agvDetailDto : agvDetailList) {
             List<OutContainerDto> outList = this.outByGoodsId(agvDetailDto.getGoodsId(), agvDetailDto.getQty());
             //单次调度出一个明细的箱子
             if (outList.size() > 0) {
@@ -129,12 +129,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //优先从agv库存找
         for (RoadWayGoodsCountDto roadWayGoodsCountDto : agvGoodsCounts) {
             if (roadWayGoodsCountDto.getQty() >= count) {
-                OutContainerDto outContainerDto = new OutContainerDto();
-                outContainerDto.setContainerNo(roadWayGoodsCountDto.getContainerNo());
-                outContainerDto.setGoodsId(goodsId);
-                outContainerDto.setStoreLocation(roadWayGoodsCountDto.getStoreLocation());
-                outContainerDto.setQty(roadWayGoodsCountDto.getQty());
-                outContainerDtoList.add(outContainerDto);
+                OutContainerDto outContainer = getOutContainer(roadWayGoodsCountDto, goodsId);
+                outContainerDtoList.add(outContainer);
                 isContinue = false;
                 break;
             }
@@ -146,12 +142,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).thenComparing(RoadWayGoodsCountDto::getTaskCount));
             if (sumCount < count) {
                 for (RoadWayGoodsCountDto goodsCountDto : roadWayGoodsCounts) {
-                    OutContainerDto outContainerDto = new OutContainerDto();
-                    outContainerDto.setContainerNo(goodsCountDto.getContainerNo());
-                    outContainerDto.setGoodsId(goodsId);
-                    outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
-                    outContainerDto.setQty(goodsCountDto.getQty());
-                    outContainerDtoList.add(outContainerDto);
+                    OutContainerDto outContainer = getOutContainer(goodsCountDto, goodsId);
+                    outContainerDtoList.add(outContainer);
                     sumCount += goodsCountDto.getQty();
                 }
             }
@@ -159,7 +151,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerDtoList;
     }
 
-
+    private OutContainerDto getOutContainer(RoadWayGoodsCountDto goodsCountDto, int goodsId) {
+        OutContainerDto outContainerDto = new OutContainerDto();
+        outContainerDto.setContainerNo(goodsCountDto.getContainerNo());
+        outContainerDto.setGoodsId(goodsId);
+        outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
+        outContainerDto.setQty(goodsCountDto.getQty());
+        return outContainerDto;
+    }
     /**
      * 计算订单所满足的 区域
      *
@@ -205,6 +204,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             Set<Integer> boxList = new HashSet<>();
             for (OrderDetail orderDetail : orderDetailMap.get(key)) {
                 //首先出库托盘库的托盘，然后出库立库的托盘
+                //当两边的库区都有此商品时，计算从那个库存的出的容器数最少
                 if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerTrayMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
                     trayList.add(orderDetail.getGoodsId());
                     continue;
@@ -235,7 +235,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         }
     }
 
-    private void saveAgvBindingDetail(List<OutContainerDto> outList,GoAgvDetailDto detailDto) {
+    private void saveAgvBindingDetail(List<OutContainerDto> outList, OutDetailDto detailDto) {
         for (OutContainerDto containerDto : outList) {
             AgvBindingDetail agvBindingDetail = new AgvBindingDetail();
             agvBindingDetail.setOrderMxId(detailDto.getDetailId());

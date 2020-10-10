@@ -439,19 +439,19 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 								// 最左侧已满则找另一侧
 								SxStoreLocation sxLocation = new SxStoreLocation();
 								for (SxStoreLocation sxStoreLocation2 : sxStoreLocations) {
-									if (sxStoreLocations2.get(0).getId() != sxStoreLocation2.getId()) {
+									if (!sxStoreLocations2.get(0).getId().equals(sxStoreLocation2.getId())) {
 										sxLocation = sxStoreLocation2;
 									}
 								}
 								result = findLocationAscentId(sxLocation,sxStoreLocationGroup);
 							} else {
 								List<SxStoreLocation> sxStoreLocations3 = ListHelper.where(sxStoreLocations,
-										p -> p.getLocationIndex() == sxStoreLocationGroup.getLocationNum());
+										p -> p.getLocationIndex().equals(sxStoreLocationGroup.getLocationNum()));
 								if (sxStoreLocations3.size() > 0) {
 									// 有则找另一侧
 									SxStoreLocation sxLocation = new SxStoreLocation();
 									for (SxStoreLocation sxStoreLocation2 : sxStoreLocations) {
-										if (sxStoreLocations3.get(0).getId() != sxStoreLocation2.getId()) {
+										if (!sxStoreLocations3.get(0).getId().equals(sxStoreLocation2.getId())) {
 											sxLocation = sxStoreLocation2;
 										}
 									}

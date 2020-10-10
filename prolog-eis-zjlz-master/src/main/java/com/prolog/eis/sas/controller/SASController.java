@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author wangkang
+ */
 @RestController
 @RequestMapping("/sas")
 @Api(tags = "SAS回调接口文档(两向车及提升机)")
