@@ -84,18 +84,23 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Override
     public void trayOutByOrder() throws Exception {
-        //1.要去往agv区域的订单明细
+        //1.要去往agv区域的订单明细 并且优先级是 第1 优先级
         List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail("A");
-        //生成路径的
-        //List<OutContainerDto> outContainerList=new ArrayList<>();
-        agvDetailList.stream().sorted(Comparator.comparing(OutDetailDto::getOrderPriority));
-        for (OutDetailDto agvDetailDto : agvDetailList) {
-            List<OutContainerDto> outList = this.outByGoodsId(agvDetailDto.getGoodsId(), agvDetailDto.getQty());
-            //单次调度出一个明细的箱子
-            if (outList.size() > 0) {
-                saveAgvBindingDetail(outList,agvDetailDto);
-                break;
+        List<OutDetailDto> agvFirstDetails = agvDetailList.stream().filter(x -> x.getOrderPriority() == OrderBill.FIRST_PRIORITY).collect(Collectors.toList());
+        if (agvFirstDetails.size()>0) {
+            //生成路径的
+            //List<OutContainerDto> outContainerList=new ArrayList<>();
+            for (OutDetailDto agvDetailDto : agvDetailList) {
+                List<OutContainerDto> outList = this.outByGoodsId(agvDetailDto.getGoodsId(), agvDetailDto.getQty());
+                //单次调度出一个明细的箱子
+                if (outList.size() > 0) {
+                    saveAgvBindingDetail(outList, agvDetailDto);
+                    break;
+                }
             }
+        }else {
+            // TODO: 2020/10/10 需要从 agv和箱库一起出的订单明细
+
         }
     }
 
