@@ -1,8 +1,11 @@
 package com.prolog.eis.dto.lzenginee;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * ClassName:OutContainerDto
@@ -13,10 +16,13 @@ import java.util.List;
  * @author:SunPP
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OutContainerDto {
     private String containerNo;
     private String storeLocation;
     private int goodsId;
     private int qty;
-    private List<Integer> detailId;
+    //明细id 数量
+    private Map<Integer, Integer> detailMap;
 }
