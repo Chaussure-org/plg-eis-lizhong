@@ -6,7 +6,8 @@ import com.prolog.eis.model.order.OrderBill;
 
 import java.util.List;
 
-public class AgvBoxOutEnginServiceImpl implements AgvLineOutEnginService {
+public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
+
     @Override
     public PickingAreaDto init() throws Exception {
         return null;

@@ -1,6 +1,7 @@
 package com.prolog.eis.engin.service;
 
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
+import com.prolog.eis.dto.lzenginee.OutDetailDto;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public interface BoxOutEnginService {
      */
     void BoxOutByOrder() throws Exception;
 
-    List<OutContainerDto> outByGoodsId() throws Exception;
+    List<OutContainerDto> outByGoodsId(List<OutDetailDto> outDetailDtos) throws Exception;
 }

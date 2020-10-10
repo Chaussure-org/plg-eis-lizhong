@@ -2,6 +2,8 @@ package com.prolog.eis.dto.lzenginee;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * ClassName:OutContainerDto
  * Package:com.prolog.eis.dto.lzenginee
@@ -16,4 +18,5 @@ public class OutContainerDto {
     private String storeLocation;
     private int goodsId;
     private int qty;
+    private List<Integer> detailId;
 }

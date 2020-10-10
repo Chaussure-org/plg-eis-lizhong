@@ -11,7 +11,7 @@ import lombok.Data;
  * @author:SunPP
  */
 @Data
-public class GoAgvDetailDto {
+public class OutDetailDto {
     private int orderBillId;
     private int orderPriority;
     private int detailId;
