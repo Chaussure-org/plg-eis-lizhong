@@ -54,6 +54,5 @@ public interface StoreAreaDirectionMapper extends EisBaseMapper<StoreAreaDirecti
             @Result(property = "targetTemporaryArea",  column = "target_temporary_area"),@Result(property = "sourceLocationNo",  column = "source_location_no"),
             @Result(property = "targetLocationNo",  column = "target_location_no")
     })
-    List<StoreAreaDirectionDTO> listStoreAreaDirectionsByParam(@Param("sourceAreaNo") String sourceAreaNo, @Param(
-            "targetAreaNo") String targetAreaNo, @Param("containerNo") String containerNo);
+    List<StoreAreaDirectionDTO> listStoreAreaDirectionsByParam(@Param("sourceAreaNo") String sourceAreaNo, @Param("targetAreaNo") String targetAreaNo, @Param("containerNo") String containerNo);
 }

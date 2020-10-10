@@ -58,7 +58,9 @@ public class RcsServiceImpl implements IRCSService {
 		jsonObject.put("data", "");
 
 		String data = jsonObject.toString();
-		String postUrl = String.format("http://%s:%s%s", properties.getRcs().getHost(), properties.getRcs().getPort(),properties.getRcs().getSendTaskUrl());
+		//	TODO 先改为模拟器方式
+		//String postUrl = String.format("http://%s:%s%s", properties.getRcs().getHost(), properties.getRcs().getPort(),properties.getRcs().getSendTaskUrl());
+		String postUrl = String.format("http://%s/api/v1/agv/rcsRequest/agvMove", "service-ai-eis-zjlz-simulator");
 		String result = restTemplate.postForObject(postUrl, PrologHttpUtils.getRequestEntity(data), String.class);
 		//LogServices.logRcs(postUrl,data,"",result);
 		RcsRequestResultDto resultObj = JSONObject.parseObject(result, RcsRequestResultDto.class);

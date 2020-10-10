@@ -105,6 +105,16 @@ public class ContainerPathTaskDetailDTO implements Serializable {
     private Date bindingStartTime;
 
     /**
+     * 给设备发送移动指令时间
+     */
+    private Date sendTime;
+
+    /**
+     * 移动开始时间
+     */
+    private Date moveTime;
+
+    /**
      * 修改时间
      */
     private Date updateTime;
