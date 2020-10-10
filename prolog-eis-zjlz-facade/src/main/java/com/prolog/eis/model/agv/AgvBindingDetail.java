@@ -10,72 +10,85 @@ import java.util.Date;
 
 
 /**
- * @Description  
- * @Author  SunPP
- * @Date 2020-09-29 
+ * @Description
+ * @Author SunPP
+ * @Date 2020-09-29
  */
-@ApiModel ("null")
-@Table ("agv_binding_detail")
+@ApiModel("null")
+@Table("agv_binding_detail")
 public class AgvBindingDetail {
 
-  @Column("container_no")
-  @ApiModelProperty("容器编号")
-  private String containerNo;
+    @Column("container_no")
+    @ApiModelProperty("容器编号")
+    private String containerNo;
 
-  @Column("order_mx_id")
-  @ApiModelProperty("订单明细id")
-  private Integer orderMxId;
+    @Column("order_bill_id")
+    @ApiModelProperty("订单明细id")
+    private Integer orderBillId;
 
-  @Column("goodsId")
-  @ApiModelProperty("商品id")
-  private Integer goodsId;
 
-  @Column("order_priority")
-  @ApiModelProperty("订单明细id")
-  private Integer orderPriority;
+    @Column("order_mx_id")
+    @ApiModelProperty("订单明细id")
+    private Integer orderMxId;
 
-  @Column("update_time")
-  @ApiModelProperty("订单明细id")
-  private Date updateTime;
+    @Column("goodsId")
+    @ApiModelProperty("商品id")
+    private Integer goodsId;
 
-  public Integer getOrderPriority() {
-    return orderPriority;
-  }
+    @Column("order_priority")
+    @ApiModelProperty("订单优先级")
+    private Integer orderPriority;
 
-  public void setOrderPriority(Integer orderPriority) {
-    this.orderPriority = orderPriority;
-  }
+    @Column("update_time")
+    @ApiModelProperty("订单明细id")
+    private Date updateTime;
 
-  public Date getUpdateTime() {
-    return updateTime;
-  }
+    public Integer getOrderBillId() {
+        return orderBillId;
+    }
 
-  public void setUpdateTime(Date updateTime) {
-    this.updateTime = updateTime;
-  }
+    public void setOrderBillId(Integer orderBillId) {
+        this.orderBillId = orderBillId;
+    }
 
-  public String getContainerNo() {
-    return containerNo;
-  }
+    public Integer getOrderPriority() {
+        return orderPriority;
+    }
 
-  public void setContainerNo(String containerNo) {
-    this.containerNo = containerNo;
-  }
+    public void setOrderPriority(Integer orderPriority) {
+        this.orderPriority = orderPriority;
+    }
 
-  public Integer getOrderMxId() {
-    return orderMxId;
-  }
+    public Date getUpdateTime() {
+        return updateTime;
+    }
 
-  public void setOrderMxId(Integer orderMxId) {
-    this.orderMxId = orderMxId;
-  }
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
-  public Integer getGoodsId() {
-    return goodsId;
-  }
+    public String getContainerNo() {
+        return containerNo;
+    }
 
-  public void setGoodsId(Integer goodsId) {
-    this.goodsId = goodsId;
-  }
+    public void setContainerNo(String containerNo) {
+        this.containerNo = containerNo;
+    }
+
+    public Integer getOrderMxId() {
+        return orderMxId;
+    }
+
+    public void setOrderMxId(Integer orderMxId) {
+        this.orderMxId = orderMxId;
+    }
+
+    public Integer getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(Integer goodsId) {
+        this.goodsId = goodsId;
+    }
 
 }

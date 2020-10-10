@@ -3,7 +3,6 @@ package com.prolog.eis.engin.service.impl;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
-import com.prolog.eis.dto.lzenginee.RoadWayGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.LayerTaskDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.OrderSortDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
@@ -19,8 +18,6 @@ import com.prolog.eis.util.CompareStrSimUtil;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
-import io.swagger.models.auth.In;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +80,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<OutContainerDto> outContainerDtoList = this.outByGoodsId(detailList);
         if (outContainerDtoList.size() > 0) {
             this.saveLineBindingDetail(outContainerDtoList);
+            //生成路径
         }
     }
 
