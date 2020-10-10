@@ -90,7 +90,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setOrderBillId(orderBill.getId());
                     Goods goods = goodsService.getGoodsByCode(wmsOutboundTaskDto.getItemCode());
-                    orderDetail.setGoodsId(goods.getId().toString());
+                    orderDetail.setGoodsId(goods.getId());
                     orderDetail.setGoodsOrderNo(wmsOutboundTaskDto.getSeqNo());
                     orderDetail.setPlanQty(wmsOutboundTaskDto.getQty());
                     orderDetail.setCreateTime(new Date());

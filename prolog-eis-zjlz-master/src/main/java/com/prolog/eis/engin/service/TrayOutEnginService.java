@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service;
 
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.model.order.OrderBill;
 
 import java.util.List;
@@ -17,16 +18,15 @@ public interface TrayOutEnginService {
      *
      * @throws Exception
      */
-    List<OrderBill> computerOrder(List<OrderBill> orderBills) throws Exception;
+    void initOrder(List<OrderBill> orderBills) throws Exception;
 
     /**
      * 根据 合适的订单
      * 1.根据agv 的 库位数量进行出库
      * 2.找到 属于agv 订单区域的订单
-     * @param orderBills
      * @throws Exception
      */
-    void trayOutByOrder(List<OrderBill> orderBills) throws Exception;
+    void trayOutByOrder() throws Exception;
 
     /**
      * 1.根据goodsId count 找到具体的托盘进行出库
@@ -35,5 +35,5 @@ public interface TrayOutEnginService {
      * 生成路径 path 给点位
      * @throws Exception
      */
-    void OutByGoodsId(int goodsId,int count) throws Exception;
+    List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception;
 }

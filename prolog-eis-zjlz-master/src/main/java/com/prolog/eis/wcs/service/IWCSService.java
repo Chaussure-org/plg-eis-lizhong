@@ -19,7 +19,7 @@ public interface IWCSService {
      * @param type
      * @return
      */
-    RestMessage<String> lineMove(String taskId, String address, String target, String containerNo, int type, int i);
+    RestMessage<String> lineMove(String taskId, String address, String target, String containerNo, int type);
 
 
     /**

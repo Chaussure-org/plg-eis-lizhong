@@ -9,6 +9,15 @@ public class MCSProperties {
     private String host;
     private int port;
 
+    private String taskUrl="/Interface/Request";//出库（入库/同层移库）任务接口
+
+    public String getTaskUrl() {
+        return taskUrl;
+    }
+
+    public void setTaskUrl(String taskUrl) {
+        this.taskUrl = taskUrl;
+    }
 
     public String getHost() {
         return host;

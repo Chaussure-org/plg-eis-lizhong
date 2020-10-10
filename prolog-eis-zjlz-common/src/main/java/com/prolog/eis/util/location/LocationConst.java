@@ -21,6 +21,16 @@ public class LocationConst {
     public static final String DEVICE_SYSTEM_MCS = "MCS";
 
     /**
+     * SAS设备厂商
+     */
+    public static final String DEVICE_SYSTEM_SAS ="SAS";
+
+    /**
+     * WCS设备厂商
+     */
+    public static final String DEVICE_SYSTEM_WCS = "WCS";
+
+    /**
      * RCS任务类型 厂内货架搬运
      */
     public static final String RCS_TASK_TYPE_TRANSPORT = "F01";

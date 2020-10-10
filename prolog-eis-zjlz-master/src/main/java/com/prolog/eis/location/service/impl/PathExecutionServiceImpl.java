@@ -13,9 +13,12 @@ import com.prolog.eis.mcs.service.IMCSService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.rcs.service.IRCSService;
+import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConst;
 import com.prolog.eis.util.mapper.Query;
+import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.framework.common.message.RestMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,10 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     private IMCSService mcsRequestService;
     @Autowired
     private SxMoveStoreService sxMoveStoreService;
+    @Autowired
+    private IWCSService wcsRequestService;
+    @Autowired
+    private ISASService sasRequestService;
 
 
     @Override
@@ -133,7 +140,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doMcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-
+        
     }
 
     @Override
@@ -181,7 +188,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateContainerPathTask(ContainerPathTask containerPathTask,
                                  ContainerPathTaskDetailDTO containerPathTaskDetailDTO
             , ContainerPathTaskDetailDTO palletContainerPathTaskDetailDTO, Integer hzTaskState, Integer mxTaskState) throws Exception {
