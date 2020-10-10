@@ -12,7 +12,18 @@ import lombok.Data;
  */
 @Data
 public class LayerGoodsCountDto {
+
     private int goodsId;
     private int layer;
-    private int goodsCount;
+    private int qty;
+    private Double rate;
+    private String ContainerNo;
+    private String storeLocation;
+    private int deptNum;
+
+    //非查询数据
+    private int outCount;
+    private int inCount;
+
+
 }

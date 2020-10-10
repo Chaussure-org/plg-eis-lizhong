@@ -129,12 +129,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //优先从agv库存找
         for (RoadWayGoodsCountDto roadWayGoodsCountDto : agvGoodsCounts) {
             if (roadWayGoodsCountDto.getQty() >= count) {
-                OutContainerDto outContainerDto = new OutContainerDto();
-                outContainerDto.setContainerNo(roadWayGoodsCountDto.getContainerNo());
-                outContainerDto.setGoodsId(goodsId);
-                outContainerDto.setStoreLocation(roadWayGoodsCountDto.getStoreLocation());
-                outContainerDto.setQty(roadWayGoodsCountDto.getQty());
-                outContainerDtoList.add(outContainerDto);
+                OutContainerDto outContainer = getOutContainer(roadWayGoodsCountDto, goodsId);
+                outContainerDtoList.add(outContainer);
                 isContinue = false;
                 break;
             }
@@ -146,12 +142,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).thenComparing(RoadWayGoodsCountDto::getTaskCount));
             if (sumCount < count) {
                 for (RoadWayGoodsCountDto goodsCountDto : roadWayGoodsCounts) {
-                    OutContainerDto outContainerDto = new OutContainerDto();
-                    outContainerDto.setContainerNo(goodsCountDto.getContainerNo());
-                    outContainerDto.setGoodsId(goodsId);
-                    outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
-                    outContainerDto.setQty(goodsCountDto.getQty());
-                    outContainerDtoList.add(outContainerDto);
+                    OutContainerDto outContainer = getOutContainer(goodsCountDto, goodsId);
+                    outContainerDtoList.add(outContainer);
                     sumCount += goodsCountDto.getQty();
                 }
             }
@@ -159,7 +151,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerDtoList;
     }
 
-
+    private OutContainerDto getOutContainer(RoadWayGoodsCountDto goodsCountDto, int goodsId) {
+        OutContainerDto outContainerDto = new OutContainerDto();
+        outContainerDto.setContainerNo(goodsCountDto.getContainerNo());
+        outContainerDto.setGoodsId(goodsId);
+        outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
+        outContainerDto.setQty(goodsCountDto.getQty());
+        return outContainerDto;
+    }
     /**
      * 计算订单所满足的 区域
      *

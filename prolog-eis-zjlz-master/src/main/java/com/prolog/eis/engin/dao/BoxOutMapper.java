@@ -1,6 +1,6 @@
 package com.prolog.eis.engin.dao;
 
-import com.prolog.eis.dto.lzenginee.RoadWayGoodsCountDto;
+import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.LayerTaskDto;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -35,7 +35,7 @@ public interface BoxOutMapper {
             "\tAND source_area='b'\n" +
             "ORDER BY\n" +
             "\tcs.qty DESC")
-    List<RoadWayGoodsCountDto> findLayerGoodsCount(@Param("goodsId")int goodsId);
+    List<LayerGoodsCountDto> findLayerGoodsCount(@Param("goodsId")int goodsId);
 
     @Select("SELECT\n" +
             "\tsl.layer AS layer,\n" +
