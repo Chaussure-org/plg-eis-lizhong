@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 public class RoadWayContainerTaskDto {
-    private int RoadWay;
+    private int roadWay;
     private int outCount;
     private int inCount;
 //    private int goodsId;
