@@ -245,6 +245,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             AgvBindingDetail agvBindingDetail = new AgvBindingDetail();
             agvBindingDetail.setOrderMxId(detailDto.getDetailId());
             agvBindingDetail.setGoodsId(containerDto.getGoodsId());
+            agvBindingDetail.setBindingNum(detailDto.getQty());
             agvBindingDetail.setContainerNo(containerDto.getContainerNo());
             agvBindingDetail.setOrderPriority(detailDto.getOrderPriority());
             agvBindingDetail.setUpdateTime(new Date());

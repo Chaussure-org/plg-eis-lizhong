@@ -35,6 +35,10 @@ public class AgvBindingDetail {
     @ApiModelProperty("商品id")
     private Integer goodsId;
 
+    @Column("binding_num")
+    @ApiModelProperty("订单优先级")
+    private Integer bindingNum;
+
     @Column("order_priority")
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
@@ -42,6 +46,14 @@ public class AgvBindingDetail {
     @Column("update_time")
     @ApiModelProperty("订单明细id")
     private Date updateTime;
+
+    public Integer getBindingNum() {
+        return bindingNum;
+    }
+
+    public void setBindingNum(Integer bindingNum) {
+        this.bindingNum = bindingNum;
+    }
 
     public Integer getOrderBillId() {
         return orderBillId;
