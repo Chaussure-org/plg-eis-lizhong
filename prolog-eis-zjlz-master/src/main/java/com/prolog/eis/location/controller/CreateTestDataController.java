@@ -57,7 +57,7 @@ public class CreateTestDataController {
     private ContainerStoreMapper containerStoreMapper;
 
     /**
-     * 写死100个存储位，5个拣选站货位，每个拣选站2个货位，1个空托盘回收位。
+     * 写死100个存储位，10个拣选站货位，1个空托盘回收位。
      */
     @ApiOperation(value = "新增agv货位", notes = "新增agv货位")
     @PostMapping("/agvStorage")
@@ -68,7 +68,7 @@ public class CreateTestDataController {
         //拣选站货位
         this.addPickingStation();
         //空托盘回收位
-        this.addEmptyContainerStation();
+        //this.addEmptyContainerStation();
 
         return RestMessage.newInstance(true, "保存成功");
     }
@@ -137,7 +137,7 @@ public class CreateTestDataController {
                 y += 1;
             }
             AgvStoragelocation agvStoragelocation = new AgvStoragelocation();
-            agvStoragelocation.setAreaNo("AGV000");
+            agvStoragelocation.setAreaNo("A100");
             agvStoragelocation.setLocationNo(CoordinateUtils.xyToLocationForRcs(x, y));
             agvStoragelocation.setCeng(1);
             agvStoragelocation.setX(x);
@@ -147,30 +147,34 @@ public class CreateTestDataController {
             agvStoragelocation.setStorageLock(LocationConstants.AGV_STORAGELOCK_UNLOCK);
             agvStoragelocationList.add(agvStoragelocation);
 
-            ContainerPathTask containerPathTask = new ContainerPathTask();
-            containerPathTask.setPalletNo(String.format("ZJ%s", String.format("%05d", i + 1)));
-            containerPathTask.setSourceArea("AGV000");
-            containerPathTask.setSourceLocation(agvStoragelocation.getLocationNo());
-            containerPathTask.setTargetArea("AGV000");
-            containerPathTask.setTargetLocation(agvStoragelocation.getLocationNo());
-            containerPathTask.setActualHeight(1);
-            containerPathTask.setCallBack(0);
-            containerPathTask.setTaskType(LocationConstants.PATH_TASK_TYPE_NONE);
-            containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_NOTSTARTED);
-            containerPathTask.setCreateTime(PrologDateUtils.parseObject(new Date()));
-            containerPathTaskList.add(containerPathTask);
+            if(i%2==0){
+                String containerNo = String.format("TP%s", String.format("%05d", i + 1));
+                ContainerPathTask containerPathTask = new ContainerPathTask();
+                containerPathTask.setPalletNo(containerNo);
+                containerPathTask.setContainerNo(containerNo);
+                containerPathTask.setSourceArea("A100");
+                containerPathTask.setSourceLocation(agvStoragelocation.getLocationNo());
+                containerPathTask.setTargetArea("A100");
+                containerPathTask.setTargetLocation(agvStoragelocation.getLocationNo());
+                containerPathTask.setActualHeight(1);
+                containerPathTask.setCallBack(0);
+                containerPathTask.setTaskType(LocationConstants.PATH_TASK_TYPE_NONE);
+                containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_NOTSTARTED);
+                containerPathTask.setCreateTime(PrologDateUtils.parseObject(new Date()));
+                containerPathTaskList.add(containerPathTask);
 
-            ContainerPathTaskDetail containerPathTaskDetail = new ContainerPathTaskDetail();
-            containerPathTaskDetail.setPalletNo(containerPathTask.getPalletNo());
-            containerPathTaskDetail.setSourceArea(containerPathTask.getSourceArea());
-            containerPathTaskDetail.setSourceLocation(containerPathTask.getSourceLocation());
-            containerPathTaskDetail.setNextArea(containerPathTask.getTargetArea());
-            containerPathTaskDetail.setNextLocation(containerPathTask.getTargetLocation());
-            containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
-            containerPathTaskDetail.setSortIndex(1);
-            containerPathTaskDetail.setCreateTime(PrologDateUtils.parseObject(new Date()));
-            containerPathTaskDetailList.add(containerPathTaskDetail);
-
+                ContainerPathTaskDetail containerPathTaskDetail = new ContainerPathTaskDetail();
+                containerPathTaskDetail.setPalletNo(containerPathTask.getPalletNo());
+                containerPathTaskDetail.setContainerNo(containerNo);
+                containerPathTaskDetail.setSourceArea(containerPathTask.getSourceArea());
+                containerPathTaskDetail.setSourceLocation(containerPathTask.getSourceLocation());
+                containerPathTaskDetail.setNextArea(containerPathTask.getTargetArea());
+                containerPathTaskDetail.setNextLocation(containerPathTask.getTargetLocation());
+                containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
+                containerPathTaskDetail.setSortIndex(1);
+                containerPathTaskDetail.setCreateTime(PrologDateUtils.parseObject(new Date()));
+                containerPathTaskDetailList.add(containerPathTaskDetail);
+            }
             x ++;
         }
         agvStoragelocationMapper.saveBatch(agvStoragelocationList);
@@ -181,41 +185,27 @@ public class CreateTestDataController {
     @SneakyThrows
     private void addPickingStation(){
         List<AgvStoragelocation> agvStoragelocationList = Lists.newArrayList();
-        List<StoreArea> storeAreaList = Lists.newArrayList();
-        int x = 100;
-        int y = 100;
-        for (int i = 1; i <= 5; i++) {
-            StoreArea storeArea = new StoreArea();
-            storeArea.setAreaNo(String.format("AGV%s", String.format("%03d", i)));
-            storeArea.setAreaType(LocationConstants.AREA_TYPE_AREA);
-            storeArea.setDeviceSystem(LocationConstants.DEVICE_SYSTEM_RCS);
-            storeArea.setMaxHeight(10);
-            storeArea.setTemporaryArea(0);
-            storeArea.setMaxCount(2);
-            storeArea.setCreateTime(PrologDateUtils.parseObject(new Date()));
-            storeAreaList.add(storeArea);
-
-            for (int j = 0; j < 2; j++) {
-                AgvStoragelocation agvStoragelocation = new AgvStoragelocation();
-                agvStoragelocation.setAreaNo(storeArea.getAreaNo());
-                agvStoragelocation.setLocationNo(CoordinateUtils.xyToLocationForRcs(++x, y));
-                agvStoragelocation.setCeng(1);
-                agvStoragelocation.setX(x);
-                agvStoragelocation.setY(y);
-                agvStoragelocation.setLocationType(LocationConstants.AGV_LOCATION_TYPE_PALLET);
-                agvStoragelocation.setTaskLock(LocationConstants.AGV_TASKLOCK_UNLOCK);
-                agvStoragelocation.setStorageLock(LocationConstants.AGV_STORAGELOCK_UNLOCK);
-                agvStoragelocationList.add(agvStoragelocation);
-            }
+        int x = 1001;
+        int y = 1000;
+        for (int i = 1; i <= 10; i++) {
+            AgvStoragelocation agvStoragelocation = new AgvStoragelocation();
+            agvStoragelocation.setAreaNo(String.format("A%s", String.format("%03d", 100+i)));
+            agvStoragelocation.setLocationNo(CoordinateUtils.xyToLocationForRcs(x, ++y));
+            agvStoragelocation.setCeng(1);
+            agvStoragelocation.setX(x);
+            agvStoragelocation.setY(y);
+            agvStoragelocation.setLocationType(LocationConstants.AGV_LOCATION_TYPE_PALLET);
+            agvStoragelocation.setTaskLock(LocationConstants.AGV_TASKLOCK_UNLOCK);
+            agvStoragelocation.setStorageLock(LocationConstants.AGV_STORAGELOCK_UNLOCK);
+            agvStoragelocationList.add(agvStoragelocation);
         }
-        storeAreaMapper.saveBatch(storeAreaList);
         agvStoragelocationMapper.saveBatch(agvStoragelocationList);
     }
 
     @SneakyThrows
     private void addEmptyContainerStation(){
         StoreArea storeArea = new StoreArea();
-        storeArea.setAreaNo("AGV099");
+        storeArea.setAreaNo("A099");
         storeArea.setAreaType(LocationConstants.AREA_TYPE_AREA);
         storeArea.setDeviceSystem(LocationConstants.DEVICE_SYSTEM_RCS);
         storeArea.setMaxHeight(10);

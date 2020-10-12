@@ -17,7 +17,7 @@ public class CoordinateUtils {
      * @return
      */
     public static String xyToLocationForMcs(int layer, int x, int y){
-        return String.format("%02d", layer) + x + y;
+        return String.format("%s%s%s", String.format("%02d", layer), String.format("%04d", x), String.format("%04d", y));
     }
 
     /**
@@ -59,5 +59,33 @@ public class CoordinateUtils {
         int x = Integer.parseInt(location.substring(0, 6));
         int y = Integer.parseInt(location.substring(location.length() - 6));
         return new int[]{x, y};
+    }
+
+    /**
+     * sas坐标转点位
+     * 随便定义一个，后期调整
+     * @param x
+     * @param y
+     * @return
+     */
+    public static String xyToLocationForSas(int layer, int x, int y){
+        return String.format("%s%s%s", String.format("%02d", layer), String.format("%03d", x), String.format("%03d", y));
+    }
+
+    /**
+     * sas点位转坐标
+     * 随便定义一个，后期调整
+     * @param location
+     * @return
+     * @throws Exception
+     */
+    public static int[] locationToXyForSas(String location) throws Exception {
+        if(StringUtils.isEmpty(location) || location.length() != 10){
+            throw new Exception("解析有误");
+        }
+        int layer = Integer.parseInt(location.substring(0, 2));
+        int x = Integer.parseInt(location.substring(2, 5));
+        int y = Integer.parseInt(location.substring(location.length() - 3));
+        return new int[]{layer, x, y};
     }
 }
