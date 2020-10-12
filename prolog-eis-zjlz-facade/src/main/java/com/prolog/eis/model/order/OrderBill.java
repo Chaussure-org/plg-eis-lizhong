@@ -43,6 +43,11 @@ public class OrderBill {
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
 
+    @Column("wms_order_priority")
+    @ApiModelProperty("订单优先级")
+    private Integer wmsOrderPriority;
+
+
     @Column("order_task_state")
     @ApiModelProperty("订单任务进度（0创建 10 开始出库 20 出库中 30 完成）")
     private Integer orderTaskState;
@@ -155,4 +160,11 @@ public class OrderBill {
         this.isAddPool = isAddPool;
     }
 
+    public Integer getWmsOrderPriority() {
+        return wmsOrderPriority;
+    }
+
+    public void setWmsOrderPriority(Integer wmsOrderPriority) {
+        this.wmsOrderPriority = wmsOrderPriority;
+    }
 }

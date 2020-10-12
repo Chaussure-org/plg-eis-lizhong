@@ -50,6 +50,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void BoxOutByOrder() throws Exception {
+        /**
+         * 1.托盘的出库与箱库的出库不影响
+         * 2.优先出 全部从箱库出库的 订单
+         */
         //1.要去往循环线区域的订单明细
         List<OutDetailDto> lineDetailList = orderDetailMapper.findAgvDetail("B");
         //找到所有要去循环线的订单

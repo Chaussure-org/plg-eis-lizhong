@@ -17,4 +17,5 @@ public class OutDetailDto {
     private int detailId;
     private int goodsId;
     private int qty;
+
 }
