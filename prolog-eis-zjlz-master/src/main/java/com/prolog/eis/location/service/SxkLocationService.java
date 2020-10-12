@@ -17,7 +17,7 @@ public interface SxkLocationService {
 	 * @return
 	 */
 	SxStoreLocation findLoacationByArea(String area, int originX, int originY, int reserveCount, double weight,
-                                        String taskProperty1, String taskProperty2) throws Exception;
+										String taskProperty1, String taskProperty2) throws Exception;
 	
 	/**
 	 * 重新计算货位组  深度， 可入库货位，货位组商品属性

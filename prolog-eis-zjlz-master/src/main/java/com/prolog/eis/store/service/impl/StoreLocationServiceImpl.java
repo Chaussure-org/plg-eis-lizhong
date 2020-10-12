@@ -6,6 +6,8 @@ import com.prolog.eis.store.service.IStoreLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Author wangkang
  * @Description
@@ -18,8 +20,8 @@ public class StoreLocationServiceImpl implements IStoreLocationService {
     private StoreLocationMapper storeLocationMapper;
 
     @Override
-    public void saveStoreLocation(SxStoreLocation sxStoreLocation) {
-        storeLocationMapper.save(sxStoreLocation);
+    public void saveBatchStoreLocation(List<SxStoreLocation> sxStoreLocations) {
+        storeLocationMapper.saveBatch(sxStoreLocations);
     }
 
     @Override

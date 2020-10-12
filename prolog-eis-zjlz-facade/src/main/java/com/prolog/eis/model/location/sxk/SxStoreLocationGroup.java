@@ -1,5 +1,6 @@
 package com.prolog.eis.model.location.sxk;
 
+import com.prolog.framework.core.annotation.AutoKey;
 import com.prolog.framework.core.annotation.Column;
 import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
@@ -10,7 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description  
  * @Author  Hunter
- * @Date 2020-09-25 
+ * @Date 2020-10-10 
  */
 @ApiModel ("货位组表")
 @Table ("sx_store_location_group")
@@ -18,6 +19,7 @@ public class SxStoreLocationGroup {
 
   @Column("id")
   @Id
+  @AutoKey(type = AutoKey.TYPE_IDENTITY)
   @ApiModelProperty("货位组ID")
   private Integer id;
 
