@@ -84,9 +84,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Override
     public void trayOutByOrder() throws Exception {
-        //1.要去往agv区域的订单明细 并且优先级是 第1 优先级
+        //1.要去往agv区域的订单明细 并且优先级是 第1 优先级 然后按时间排序
         List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail("A");
-        List<OutDetailDto> agvFirstDetails = agvDetailList.stream().filter(x -> x.getOrderPriority() == OrderBill.FIRST_PRIORITY).collect(Collectors.toList());
+        List<OutDetailDto> agvFirstDetails = agvDetailList.stream().filter(x -> x.getOrderPriority() == OrderBill.SECOND_PRIORITY).
+                sorted(Comparator.comparing(OutDetailDto::getOrderPriority)).collect(Collectors.toList());
         if (agvFirstDetails.size()>0) {
             //生成路径的
             //List<OutContainerDto> outContainerList=new ArrayList<>();
@@ -98,9 +99,6 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     break;
                 }
             }
-        }else {
-            // TODO: 2020/10/10 需要从 agv和箱库一起出的订单明细
-
         }
     }
 
