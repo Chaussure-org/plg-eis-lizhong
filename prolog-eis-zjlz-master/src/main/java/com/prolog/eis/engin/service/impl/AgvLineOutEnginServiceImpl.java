@@ -1,6 +1,7 @@
 package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.dto.lzenginee.PickingAreaDto;
+import com.prolog.eis.dto.lzenginee.boxoutdto.StationPickingOrderDto;
 import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.service.AgvLineOutEnginService;
@@ -74,15 +75,17 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
      *
      * @param map
      */
-    private void stationTakePickOrder(Map<Integer, List<AgvBindingDetail>> map) {
+    @Transactional(rollbackFor = Exception.class)
+    public void stationTakePickOrder(Map<Integer, List<AgvBindingDetail>> map) throws Exception{
         //所有的站台集合
         List<Station> stationsTemp = stationMapper.findByMap(null, Station.class);
         List<Station> stations = stationsTemp.stream().filter(x -> x.getIsLock().equals(Station.UN_LOCK)).collect(Collectors.toList());
-        List<PickingOrder> pickOrders = pickingOrderMapper.findByMap(null, PickingOrder.class);
+        List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
         //如果没用开启的站台
         if (stations.isEmpty()) {
             return;
         }
+        //如果站台没有拣选单
         for (Map.Entry<Integer, List<AgvBindingDetail>> orderMap : map.entrySet()) {
             for (Station station : stations) {
                 if (station.getCurrentStationPickId() == null) {
@@ -97,13 +100,28 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                 }
             }
         }
-        //找到合适的站台出托盘 1.站台的agv位置是为空的
-        Station station = new Station();
-        Optional<PickingOrder> pickingOrder = pickOrders.stream().filter(x -> x.getId().equals(station.getCurrentStationPickId())).findFirst();
-        if (pickingOrder.isPresent()) {
-            //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
-
+        //如果站台有拣选单
+        for (Map.Entry<Integer, List<AgvBindingDetail>> orderMap : map.entrySet()) {
+            for (Station station : stations) {
+                for (StationPickingOrderDto pickingOrder : pickOrders) {
+                    if (station.getCurrentStationPickId().equals(pickingOrder.getStationId())) {
+                        //生成拣选单
+                        this.savePickOrder(station, pickingOrder.getOrderBillId());
+                        //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
+                        this.saveContainerBindingDetail(orderMap);
+                        // TODO: 2020/10/12  生成路径
+                        //删除agv_binding_detail
+                        agvBindingDetaileMapper.deleteByMap(MapUtils.put("orderBillId", orderMap.getKey()).getMap(), AgvBindingDetail.class);
+                    }
+                }
+            }
         }
+        Station station = new Station();
+//        Optional<PickingOrder> pickingOrder = pickOrders.stream().filter(x -> x.getId().equals(station.getCurrentStationPickId())).findFirst();
+//        if (pickingOrder.isPresent()) {
+//            //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
+//
+//        }
         /**
          * 站台索取订单 1.全部生成订单binding_detail 2.删除agv_binding_detail 3.全部生成路径
          * 这样每次站台 只需要判断站台 有没有订单
