@@ -13,8 +13,8 @@ import java.util.Date;
  * @Description
  * @CreateTime 2020/7/20 20:20
  */
-@Table("log")
-public class Log {
+@Table("wms_log")
+public class WmsLog {
 
     @Id
     @Column("id")
@@ -55,19 +55,9 @@ public class Log {
     @ApiModelProperty("创建时间")
     private Date createTime;
 
-    public Log(Integer id , String descri, String direct, Integer type, String params, Boolean success, String exception, Date createTime) {
-        this.id = id;
-        this.descri = descri;
-        this.direct = direct;
-        this.type = type;
-        this.params = params;
-        this.success = success;
-        this.exception = exception;
-        this.createTime = createTime;
-    }
-
-    public Log() {
-    }
+    @Column("system_type")
+    @ApiModelProperty("系统类型")
+    private int systemType;
 
     public Integer getId() {
         return id;
@@ -141,9 +131,17 @@ public class Log {
         this.methodName = methodName;
     }
 
+    public int getSystemType() {
+        return systemType;
+    }
+
+    public void setSystemType(int systemType) {
+        this.systemType = systemType;
+    }
+
     @Override
     public String toString() {
-        return "Log{" +
+        return "McsLog{" +
                 "id=" + id +
                 ", descri='" + descri + '\'' +
                 ", direct='" + direct + '\'' +
@@ -153,6 +151,7 @@ public class Log {
                 ", success=" + success +
                 ", exception='" + exception + '\'' +
                 ", createTime=" + createTime +
+                ", systemType=" + systemType +
                 '}';
     }
 }

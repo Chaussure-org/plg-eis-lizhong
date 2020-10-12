@@ -16,4 +16,5 @@ public @interface LogInfo {
     String desci();
     String direction();
     int type();
+    int systemType();
 }

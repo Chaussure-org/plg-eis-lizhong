@@ -1,7 +1,7 @@
 package com.prolog.eis.aspect;
 
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.log.service.ILogService;
-import com.prolog.eis.model.log.Log;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.framework.utils.JsonUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -33,7 +33,7 @@ public class LogAspect {
 
     @Around("doLog()")
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
-        Log log = new Log();
+        LogDto log = new LogDto();
         Object[] args = joinPoint.getArgs();
 
         String methodName = joinPoint.getSignature().getName();
@@ -56,6 +56,7 @@ public class LogAspect {
                 LogInfo logInfo = method.getAnnotation(LogInfo.class);
                 log.setDescri(logInfo.desci());
                 log.setDirect(logInfo.direction());
+                log.setSystemType(logInfo.systemType());
                 log.setType(logInfo.type());
                 Object arg = args[0];
                 log.setParams(JsonUtils.toString(arg));
@@ -65,12 +66,12 @@ public class LogAspect {
                     log.setSuccess(true);
                     log.setCreateTime(new Date());
                     System.out.println(log);
-                    //logService.save(log);
+                    logService.save(log);
                 }catch (Exception e){
                     log.setSuccess(false);
                     log.setException(e.getMessage().toString());
                     log.setCreateTime(new Date());
-                    //logService.save(log);
+                    logService.save(log);
                 }
             }else {
                 joinPoint.proceed();

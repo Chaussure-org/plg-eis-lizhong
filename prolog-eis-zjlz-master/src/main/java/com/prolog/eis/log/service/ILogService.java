@@ -1,6 +1,6 @@
 package com.prolog.eis.log.service;
 
-import com.prolog.eis.model.log.Log;
+import com.prolog.eis.dto.log.LogDto;
 
 /**
  * @Author wangkang
@@ -8,6 +8,5 @@ import com.prolog.eis.model.log.Log;
  * @CreateTime 2020/7/20 21:42
  */
 public interface ILogService {
-    void save(Log log);
-    void update(Log log);
+    void save(LogDto log);
 }

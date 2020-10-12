@@ -12,19 +12,10 @@ import java.util.List;
 public interface IStoreService {
 
     /**
-     * 初始化货位及货位组
-     * @param layerCount 层+1
-     * @param xStart 开始巷道
-     * @param xCount 巷道数+1
-     * @param yCount 行数+1
-     * @param ascent 深位数
-     * @param exList 排除列(子道,母道)
+     * 生产货位
+     * @param initStoreDto 初始化货位参数实体
      * @throws Exception
      */
-    void initStore(int layerCount,int xStart, int xCount, int yCount, int ascent,
-                   List<Integer> exList,
-                   String areaNo) throws Exception;
-
     void initStore(InitStoreDto initStoreDto) throws Exception;
 
 }
