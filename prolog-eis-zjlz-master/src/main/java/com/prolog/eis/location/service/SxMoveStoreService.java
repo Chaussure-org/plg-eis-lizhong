@@ -15,20 +15,18 @@ public interface SxMoveStoreService {
 	 * @return
 	 */
 	void mcsContainerMove(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO);
-	
+
 	/**
 	 * 四向库内回告开始方法
-	 * @param
-	 * @param
-	 * @return
+	 * @param containerPathTaskDetail
+	 * @param time
 	 */
 	void mcsCallBackStart(ContainerPathTaskDetail containerPathTaskDetail, Timestamp time);
 
 	/**
 	 * 四向库内回告开始方法
-	 * @param
-	 * @param
-	 * @return
+	 * @param containerPathTaskDetail
+	 * @param time
 	 */
 	void mcsCallBackComplete(ContainerPathTaskDetail containerPathTaskDetail, Timestamp time);
 }

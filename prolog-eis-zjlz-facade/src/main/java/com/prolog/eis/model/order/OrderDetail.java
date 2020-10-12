@@ -6,6 +6,8 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 
 /**
  * @Description  
@@ -69,6 +71,11 @@ public class OrderDetail {
   @Column("update_time")
   @ApiModelProperty("修改时间")
   private java.util.Date updateTime;
+
+  @Column("graph_no")
+  @ApiModelProperty("图号")
+  private String graphNo;
+
 
   public Integer getId() {
     return id;
@@ -172,5 +179,13 @@ public class OrderDetail {
 
   public void setAreaNo(String areaNo) {
     this.areaNo = areaNo;
+  }
+
+  public String getGraphNo() {
+    return graphNo;
+  }
+
+  public void setGraphNo(String graphNo) {
+    this.graphNo = graphNo;
   }
 }

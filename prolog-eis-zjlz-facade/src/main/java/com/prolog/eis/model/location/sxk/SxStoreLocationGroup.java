@@ -6,14 +6,15 @@ import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
-
+import java.util.Date;
 /**
  * @Description  
  * @Author  Hunter
  * @Date 2020-10-10 
  */
-@ApiModel ("货位组表")
+@ApiModel("货位组表")
 @Table ("sx_store_location_group")
 public class SxStoreLocationGroup {
 
@@ -234,5 +235,4 @@ public class SxStoreLocationGroup {
   public void setCreateTime(java.util.Date createTime) {
     this.createTime = createTime;
   }
-
 }

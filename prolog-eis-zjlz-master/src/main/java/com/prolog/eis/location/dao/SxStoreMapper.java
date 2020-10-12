@@ -21,8 +21,7 @@ public interface SxStoreMapper {
     		"sl.ascent_lock_state as ascentLockState, \r\n" + 
     		"sslp.ascent_lock_state as ascentGroupLockState, \r\n" + 
     		"sslp.is_lock as isLock, \r\n" + 
-    		"sl.dept_num as deptNum, \r\n" + 
-    		"ss.store_state as storeState, \r\n" + 
+    		"sl.dept_num as deptNum, \r\n" +
     		"sl.layer, \r\n" + 
     		"sl.x, \r\n" + 
     		"sl.y \r\n" + 
