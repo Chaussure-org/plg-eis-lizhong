@@ -118,6 +118,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception {
         List<OutContainerDto> outContainerList = new ArrayList<>();
         int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
@@ -212,7 +213,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).thenComparing(RoadWayGoodsCountDto::getTaskCount));
             if (sumCount < count) {
                 for (RoadWayGoodsCountDto goodsCountDto : roadWayGoodsCounts) {
-                    OutContainerDto outContainer = getOutContainer(goodsCountDto, goodsId);
+                    OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
                     outContainerDtoList.add(outContainer);
                     sumCount += goodsCountDto.getQty();
                 }
@@ -220,6 +221,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         }
         return outContainerDtoList;
     }
+
 
     private OutContainerDto getOutContainer(RoadWayGoodsCountDto goodsCountDto, int goodsId) {
         OutContainerDto outContainerDto = new OutContainerDto();
@@ -229,7 +231,6 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         outContainerDto.setQty(goodsCountDto.getQty());
         return outContainerDto;
     }
-
     /**
      * 删除原来agv绑定的订单明细
      */

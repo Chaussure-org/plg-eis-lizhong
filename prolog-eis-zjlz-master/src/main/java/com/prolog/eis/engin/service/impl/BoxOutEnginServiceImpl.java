@@ -3,6 +3,7 @@ package com.prolog.eis.engin.service.impl;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
+import com.prolog.eis.dto.lzenginee.RoadWayGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.LayerTaskDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.OrderSortDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
@@ -84,21 +85,54 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         }
         List<OutDetailDto> detailList = lineDetailList.stream().filter(x -> orderIds.contains(x.getOrderBillId())).collect(Collectors.toList());
         //每次出一个goodsId，也就是一个订单明细
-        List<OutContainerDto> outContainerDtoList = this.outByGoodsId(detailList);
+        List<OutContainerDto> outContainerDtoList = this.outByDetails(detailList);
         if (outContainerDtoList.size() > 0) {
             this.saveLineBindingDetail(outContainerDtoList);
             //生成路径
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception {
+        List<OutContainerDto> outContainerList = new ArrayList<>();
+        int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
+        //按 商品分组
+        Map<Integer, List<OutDetailDto>> goodsIdMap = detailDtos.stream().collect(Collectors.groupingBy(x -> x.getGoodsId()));
+        for (Map.Entry<Integer, List<OutDetailDto>> map : goodsIdMap.entrySet()) {
+            for (OutDetailDto outDetailDto : map.getValue()) {
+                int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
+                List<OutContainerDto> outContainerDtoList = this.outByGoodsId(map.getKey(), sum, wmsPriority);
+                for (OutContainerDto outContainerDto : outContainerDtoList) {
+                    if (outContainerDto.getQty() == 0) {
+                        break;
+                    }
+
+                    OutDetailDto orderDetail = new OutDetailDto();
+                    if (outContainerDto.getQty() >= outDetailDto.getPlanQty()) {
+                        outContainerDto.setQty(outContainerDto.getQty() - outDetailDto.getPlanQty());
+                        outDetailDto.setPlanQty(0);
+                        orderDetail.setPlanQty(outDetailDto.getPlanQty());
+                    } else {
+                        outContainerDto.setQty(0);
+                        outDetailDto.setPlanQty(outDetailDto.getPlanQty() - outContainerDto.getQty());
+                        orderDetail.setPlanQty(outContainerDto.getQty());
+                    }
+                    //给此容器添加绑定的明细
+                    orderDetail.setDetailId(outDetailDto.getDetailId());
+                    outContainerDto.getDetailList().add(orderDetail);
+                }
+                outContainerList.addAll(outContainerDtoList);
+            }
+        }
+        return outContainerList;
+    }
+
     @Override
-    public synchronized List<OutContainerDto> outByGoodsId(List<OutDetailDto> outDetailDtos) throws Exception {
+    public synchronized List<OutContainerDto> outByGoodsId(int goodsId,int count,int wmsPriority) throws Exception {
+
         //1.优先出小车所在的层的库存 移位数量由低到高 2.出库任务数从低到高排序 3.按照入库任务数从低到高 4.离出库位置最近的位置
         List<OutContainerDto> outContainerDtoList = new ArrayList<>();
         //选择重复度最高的订单 中的任意一个明细进行出库,找符合商品id的箱子
-        int goodsId = outDetailDtos.get(0).getGoodsId();
-        int goodsCount = outDetailDtos.get(0).getPlanQty();
-        OutDetailDto outDetailDto = outDetailDtos.get(0);
         List<LayerGoodsCountDto> layerGoodsCounts = boxOutMapper.findLayerGoodsCount(goodsId);
         //找层的任务数出库任务数和入库任务数
         List<LayerTaskDto> layerTaskCounts = boxOutMapper.findLayerTaskCount();
@@ -128,10 +162,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
                             thenComparing(LayerGoodsCountDto::getOutCount).reversed().thenComparing(LayerGoodsCountDto::getInCount).reversed());
             int sumCount = 0;
             for (LayerGoodsCountDto goodsCountDto : layerGoodsCounts) {
-                if (sumCount >= goodsCount) {
+                if (sumCount >= count) {
                     break;
                 }
-                OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId, outDetailDto);
+                OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
                 outContainerDtoList.add(outContainer);
                 sumCount += goodsCountDto.getQty();
             }
@@ -139,13 +173,13 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         return outContainerDtoList;
     }
 
-    private OutContainerDto getOutContainer(LayerGoodsCountDto goodsCountDto, int goodsId, OutDetailDto detailDto) {
+
+    private OutContainerDto getOutContainer(LayerGoodsCountDto goodsCountDto, int goodsId) {
         OutContainerDto outContainerDto = new OutContainerDto();
         outContainerDto.setContainerNo(goodsCountDto.getContainerNo());
         outContainerDto.setGoodsId(goodsId);
         outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
         outContainerDto.setQty(goodsCountDto.getQty());
-
         return outContainerDto;
     }
 
