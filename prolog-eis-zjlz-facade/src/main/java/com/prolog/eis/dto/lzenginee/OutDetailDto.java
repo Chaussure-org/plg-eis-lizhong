@@ -14,7 +14,9 @@ import lombok.Data;
 public class OutDetailDto {
     private int orderBillId;
     private int orderPriority;
+    private int wmsOrderPriority;
     private int detailId;
     private int goodsId;
-    private int qty;
+    private int planQty;
+
 }

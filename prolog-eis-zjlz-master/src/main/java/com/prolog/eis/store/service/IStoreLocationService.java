@@ -2,6 +2,8 @@ package com.prolog.eis.store.service;
 
 import com.prolog.eis.model.location.sxk.SxStoreLocation;
 
+import java.util.List;
+
 /**
  * @Author wangkang
  * @Description
@@ -9,7 +11,7 @@ import com.prolog.eis.model.location.sxk.SxStoreLocation;
  */
 public interface IStoreLocationService {
 
-    void saveStoreLocation(SxStoreLocation sxStoreLocation);
+    void saveBatchStoreLocation(List<SxStoreLocation> sxStoreLocations);
 
     int countTotal();
 }

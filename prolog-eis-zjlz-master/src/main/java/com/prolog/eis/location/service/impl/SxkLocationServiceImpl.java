@@ -7,11 +7,15 @@ import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
 import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.location.service.SxkLocationService;
+import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.sxk.SxStoreLocation;
 import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
+import com.prolog.eis.store.service.ContainerStoreService;
 import com.prolog.eis.util.ListHelper;
-import com.prolog.eis.util.location.LocationConst;
+import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +34,8 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	private SxStoreLocationMapper sxStoreLocationMapper;
 	@Autowired
 	private ContainerPathTaskMapper containerPathTaskMapper;
-//	@Autowired
-//	private ContainerStoreService containerStoreService;
+	@Autowired
+	private ContainerStoreService containerStoreService;
 
 	@Override
 	public SxStoreLocation findLoacationByArea(String area, int originX, int originY, int reserveCount, double weight, String taskProperty1, String taskProperty2) throws Exception {
@@ -44,15 +48,15 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 
 		return result;
 	}
-
+	
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void computeLocation(SxStoreLocationGroup sxStoreLocationGroup) throws Exception {
-
+		
 		int sxStoreLocationGroupId = sxStoreLocationGroup.getId();
 		if (sxStoreLocationGroup.getEntrance() == 1) {
 			// 入库朝上的 找最小的有货的索引值，其他的货位减索引值
-			List<SxStoreLocationDto> sxStoreLocations = sxStoreLocationMapper.findMinHaveStore(sxStoreLocationGroupId,LocationConst.PATH_TASK_STATE_START);
+			List<SxStoreLocationDto> sxStoreLocations = sxStoreLocationMapper.findMinHaveStore(sxStoreLocationGroupId, LocationConstants.PATH_TASK_STATE_START, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
 			Integer haveStoreIndex = 0;
 			if (sxStoreLocations.size() > 0) {
 				SxStoreLocationDto sxStoreLocation3 = sxStoreLocations.get(0);
@@ -69,15 +73,15 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 				// 找移位数位0的，应该为1个
 				SxStoreLocationDto sxStoreLocations2 = ListHelper.firstOrDefault(sxStoreLocations, p -> p.getDeptNum() == 0);
 				String containerNo = this.getContainerNo(sxStoreLocations2.getSourceContainerNo(),sxStoreLocations2.getTargetContainerNo());
-
-//				GoodsInfo goodsInfo = containerStoreService.findContainerStockInfo(containerNo);
-//				//获取商品库存属性
-//				String taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
-//				String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
-
+				
+				GoodsInfo goodsInfo = containerStoreService.findContainerStockInfo(containerNo);
+				//获取商品库存属性
+				String taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
+				String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
+				
 				sxStoreLocationGroupMapper.updateMapById(sxStoreLocationGroupId,
-						MapUtils.put("entrance1Property1", null)
-								.put("entrance1Property2", null).getMap(),
+						MapUtils.put("entrance1Property1", taskProperty1)
+								.put("entrance1Property2", taskProperty2).getMap(),
 						SxStoreLocationGroup.class);
 			} else {
 				// 找索引最大的货位
@@ -96,7 +100,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			sxStoreLocationMapper.updateNotIsInboundLocation(sxStoreLocationGroupId,haveStoreIndex);
 		} else if (sxStoreLocationGroup.getEntrance() == 2) {
 			Integer haveStoreIndex = 0;
-			List<SxStoreLocationDto> sxStoreLocations = sxStoreLocationMapper.findMaxHaveStore(sxStoreLocationGroupId,LocationConst.PATH_TASK_STATE_START);
+			List<SxStoreLocationDto> sxStoreLocations = sxStoreLocationMapper.findMaxHaveStore(sxStoreLocationGroupId, LocationConstants.PATH_TASK_STATE_START, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
 			if (sxStoreLocations.size() > 0) {
 				SxStoreLocationDto sxStoreLocation3 = sxStoreLocations.get(0);
 				for (SxStoreLocationDto sxStoreLocation2 : sxStoreLocations) {
@@ -111,15 +115,15 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 				}
 				SxStoreLocationDto sxStoreLocations2 = ListHelper.firstOrDefault(sxStoreLocations, p -> p.getDeptNum() == 0);
 				String containerNo = this.getContainerNo(sxStoreLocations2.getSourceContainerNo(),sxStoreLocations2.getTargetContainerNo());
-
-//				GoodsInfo goodsInfo = containerStoreService.findContainerStockInfo(containerNo);
-//				//获取商品库存属性
-//				String taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
-//				String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
-
+				
+				GoodsInfo goodsInfo = containerStoreService.findContainerStockInfo(containerNo);
+				//获取商品库存属性
+				String taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
+				String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
+			
 				sxStoreLocationGroupMapper.updateMapById(sxStoreLocationGroupId,
-						MapUtils.put("entrance2Property1", null)
-								.put("entrance2Property2", null).getMap(),
+						MapUtils.put("entrance2Property1", taskProperty1)
+								.put("entrance2Property2", taskProperty2).getMap(),
 						SxStoreLocationGroup.class);
 			} else {
 				haveStoreIndex = 1;
@@ -142,7 +146,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			sxStoreLocationMapper.updateNotIsInboundLocation(sxStoreLocationGroupId,haveStoreIndex);
 
 		} else if (sxStoreLocationGroup.getEntrance() == 3) {
-			List<SxStoreLocationDto> sxStoreLocations = sxStoreLocationMapper.findHaveStore(sxStoreLocationGroupId,LocationConst.PATH_TASK_STATE_START);
+			List<SxStoreLocationDto> sxStoreLocations = sxStoreLocationMapper.findHaveStore(sxStoreLocationGroupId, LocationConstants.PATH_TASK_STATE_START, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
 			if (sxStoreLocations.size() > 0) {
 				Integer bigHaveStoreIndex = 0;
 				Integer smallHaveStoreIndex = 0;
@@ -176,47 +180,47 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 				List<SxStoreLocationDto> sxStoreLocations2 = ListHelper.where(sxStoreLocations, p -> p.getDeptNum() == 0);
 				if (sxStoreLocations2.size() == 1) {
 					String containerNo = this.getContainerNo(sxStoreLocations2.get(0).getSourceContainerNo(),sxStoreLocations2.get(0).getTargetContainerNo());
-
-//					GoodsInfo goodsInfo = containerStoreService.findContainerStockInfo(containerNo);
-//					//获取商品库存属性
-//					String taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
-//					String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
-
+					
+					GoodsInfo goodsInfo = containerStoreService.findContainerStockInfo(containerNo);
+					//获取商品库存属性
+					String taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
+					String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
+					
 					sxStoreLocationGroupMapper.updateMapById(sxStoreLocationGroupId,
-							MapUtils.put("entrance2Property1", null)
-									.put("entrance2Property2", null)
-									.put("entrance1Property1", null)
-									.put("entrance1Property2", null).getMap(),
+							MapUtils.put("entrance2Property1", taskProperty1)
+									.put("entrance2Property2", taskProperty2)
+									.put("entrance1Property1", taskProperty1)
+									.put("entrance1Property2", taskProperty2).getMap(),
 							SxStoreLocationGroup.class);
 				} else if (sxStoreLocations2.size() == 2) {
 					SxStoreLocationDto sxStoreLocation2 = sxStoreLocations2.get(0);
 					SxStoreLocationDto sxStoreLocation3 = sxStoreLocations2.get(1);
 
 					String containerNoA = this.getContainerNo(sxStoreLocation2.getSourceContainerNo(),sxStoreLocation2.getTargetContainerNo());
-//					GoodsInfo goodsInfoA = containerStoreService.findContainerStockInfo(containerNoA);
-//					//获取商品库存属性
-//					String taskPropertyA1 = containerStoreService.buildTaskProperty1(goodsInfoA);
-//					String taskPropertyA2 = containerStoreService.buildTaskProperty2(goodsInfoA);
-//
-//					String containerNoB = this.getContainerNo(sxStoreLocation3.getSourceContainerNo(),sxStoreLocation3.getTargetContainerNo());
-//					GoodsInfo goodsInfoB = containerStoreService.findContainerStockInfo(containerNoB);
-//					//获取商品库存属性
-//					String taskPropertyB1 = containerStoreService.buildTaskProperty1(goodsInfoB);
-//					String taskPropertyB2 = containerStoreService.buildTaskProperty2(goodsInfoB);
-
+					GoodsInfo goodsInfoA = containerStoreService.findContainerStockInfo(containerNoA);
+					//获取商品库存属性
+					String taskPropertyA1 = containerStoreService.buildTaskProperty1(goodsInfoA);
+					String taskPropertyA2 = containerStoreService.buildTaskProperty2(goodsInfoA);
+					
+					String containerNoB = this.getContainerNo(sxStoreLocation3.getSourceContainerNo(),sxStoreLocation3.getTargetContainerNo());
+					GoodsInfo goodsInfoB = containerStoreService.findContainerStockInfo(containerNoB);
+					//获取商品库存属性
+					String taskPropertyB1 = containerStoreService.buildTaskProperty1(goodsInfoB);
+					String taskPropertyB2 = containerStoreService.buildTaskProperty2(goodsInfoB);
+					
 					if (sxStoreLocation2.getLocationIndex() < sxStoreLocation3.getLocationIndex()) {
 						sxStoreLocationGroupMapper.updateMapById(sxStoreLocationGroupId,
-								MapUtils.put("entrance2Property1", null)
-										.put("entrance2Property2", null)
-										.put("entrance1Property1", null)
-										.put("entrance1Property2", null).getMap(),
+								MapUtils.put("entrance2Property1", taskPropertyB1)
+										.put("entrance2Property2", taskPropertyB2)
+										.put("entrance1Property1", taskPropertyA1)
+										.put("entrance1Property2", taskPropertyA2).getMap(),
 								SxStoreLocationGroup.class);
 					} else {
 						sxStoreLocationGroupMapper.updateMapById(sxStoreLocationGroupId,
-								MapUtils.put("entrance2Property1", null)
-										.put("entrance2Property2", null)
-										.put("entrance1Property1", null)
-										.put("entrance1Property2", null).getMap(),
+								MapUtils.put("entrance2Property1", taskPropertyA1)
+										.put("entrance2Property2", taskPropertyA2)
+										.put("entrance1Property1", taskPropertyB1)
+										.put("entrance1Property2", taskPropertyB2).getMap(),
 								SxStoreLocationGroup.class);
 					}
 				} else {
@@ -272,7 +276,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			}
 		}
 	}
-
+	
 	private String getContainerNo(String sourceContainerNo,String targetContainerNo) {
 		if(StringUtils.isBlank(sourceContainerNo)) {
 			return targetContainerNo;
@@ -280,36 +284,37 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			return sourceContainerNo;
 		}
 	}
-
-	private int findBigIndexCount(List<SxStoreLocationDto> sxStoreLocations,int index) {
+	
+	private int findBigIndexCount(List<SxStoreLocationDto> sxStoreLocations, int index) {
 		int bigCount = 0;
 		for (SxStoreLocationDto sxStoreLocationDto : sxStoreLocations) {
 			if(sxStoreLocationDto.getLocationIndex() > index) {
 				bigCount++;
 			}
 		}
-
+		
 		return bigCount;
 	}
-
-	private int findSmallIndexCount(List<SxStoreLocationDto> sxStoreLocations,int index) {
+	
+	private int findSmallIndexCount(List<SxStoreLocationDto> sxStoreLocations, int index) {
 		int smallCount = 0;
 		for (SxStoreLocationDto sxStoreLocationDto : sxStoreLocations) {
 			if(sxStoreLocationDto.getLocationIndex() < index) {
 				smallCount++;
 			}
 		}
-
+		
 		return smallCount;
 	}
-
-	//public void
+	
+	//public void 
 
 	/**
 	 * 根据区域查找货位组
 	 * @param area
 	 * @param originX
 	 * @param originY
+	 * @param reserveCount
 	 * @param weight
 	 * @param taskProperty1
 	 * @param taskProperty2
@@ -334,7 +339,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 				storeLocationGroupId = findLocationGroupId(findStoreLocationGroup, originX, originY);
 			}else {
 				//找不同属性的货位组
-				storeLocationGroupId = findLocationGroupId(emptyInStoreLocationGroupDto, originX, originY);
+				storeLocationGroupId = findLocationGroupId(emptyInStoreLocationGroupDto, originX, originY);	
 			}
 		}else if (inStoreLocationGroupDtos.size() > 1) {
 			// 有两个相同属性的货位组则找 预留货位1.托盘数小于出口数的货位组 2.托盘数减去出口数小的
@@ -344,11 +349,11 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			storeLocationGroupId = inStoreLocationGroupDtos.get(0).getStoreLocationGroupId();
 		}
 
-		return null;
+		return storeLocationGroupId;
 	}
 
 	/**
-	 *
+	 * 
 	 * @param locationGroupId
 	 * @param taskProperty1
 	 * @param taskProperty2
@@ -362,10 +367,15 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		SxStoreLocationGroup sxStoreLocationGroup = sxStoreLocationGroupMapper.findById(locationGroupId, SxStoreLocationGroup.class);
 		/**
 		 * 优先级最高的是满足重量 1.找到相同属性的 1.1 找到一个出入口直接入相邻货位 1.2 找到两个出入口则找出口近的一侧货位
-		 *
+		 * 
 		 * 2.没有相同的属性，找出 2.1一个出入口直接入相邻货位 2.2找出两个出入口找出口近的一侧货位 2.2.1如果没有货位可用，则入另一侧
 		 */
-		List<SxStoreLocation> sxStoreLocations1 = sxStoreLocationMapper.checkWeight(locationGroupId, weight);
+
+		Criteria criteria = Criteria.forClass(SxStoreLocation.class);
+		criteria.setRestriction(Restrictions.and(Restrictions.eq("storeLocationGroupId",locationGroupId),Restrictions.eq("isInBoundLocation",1),Restrictions.ge("limitWeight",weight)));
+		List<SxStoreLocation> sxStoreLocations1 = sxStoreLocationMapper.findByCriteria(criteria);
+
+		//List<SxStoreLocation> sxStoreLocations1 = sxStoreLocationMapper.checkWeight(locationGroupId, weight);
 
 		if (sxStoreLocations1.size() == 0) {
 			throw new Exception("所选货位组没有找到入库货位,请检查货位组Id为【" + locationGroupId + "】");
@@ -378,7 +388,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			// 找离入口2属性相同的有托盘的货位
 			List<SxStoreLocation> sxStoreLocationsProperty2 = sxStoreLocationMapper.findByProperty2(locationGroupId,
 					taskProperty1, taskProperty2);
-
+			
 			if (sxStoreLocationsProperty1.size() > 0 && sxStoreLocationsProperty2.size() > 0) {
 				// 两个入口都是相同属性
 				// 找出口近的一侧货位
@@ -471,12 +481,12 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		}else {
 			throw new Exception("所选货位组查询到两个以上的入库货位,请检查货位组Id为【" + locationGroupId + "】");
 		}
-
+		
 		return result;
 	}
 
 	private SxStoreLocation findSingleLocation(int locationNum, SxStoreLocation sxStoreLocation) throws Exception {
-
+		
 		SxStoreLocation result = null;
 		//Integer storeLocationId = null;
 		StoreLocationDistanceDto storeLocationDistance = new StoreLocationDistanceDto();
@@ -512,9 +522,9 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 
 		return result;
 	}
-
+	
 	private SxStoreLocation findEmptyLocation(SxStoreLocationGroup sxStoreLocationGroup) throws Exception {
-
+		
 		SxStoreLocation result = null;
 		// 空货位组找出离出口最远的货位
 		//Integer storeLocationId = null;
@@ -550,7 +560,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 
 	// 查询相同属性的货位组
 	private List<InStoreLocationGroupDto> findSamePropertyLocationGroup(
-			List<InStoreLocationGroupDto> findSameTypeLocationGroup, String taskProperty1, String taskProperty2) {
+            List<InStoreLocationGroupDto> findSameTypeLocationGroup, String taskProperty1, String taskProperty2) {
 		List<InStoreLocationGroupDto> inStoreLocationGroupDtosUsed = new ArrayList<InStoreLocationGroupDto>();
 		for (InStoreLocationGroupDto inStoreLocationGroupDto : findSameTypeLocationGroup) {
 
@@ -576,7 +586,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 
 	// 根据 0.预留货位组1.托盘数小于出口数的货位组 2.托盘数减去出口数小的 3.离目标提升机最近的
 	private Integer findLocationGroupId(List<InStoreLocationGroupDto> inStoreLocationGroupDtos, Integer originX,
-			Integer originY) {
+                                        Integer originY) {
 		Integer storeLocationGroupId = null;
 		// 算出预留货位
 
@@ -611,7 +621,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	}
 
 	private InStoreLocationGroupDto chooseBestLocationGroup(InStoreLocationGroupDto inStoreLocationGroupDto2,
-			InStoreLocationGroupDto inStoreLocationGroupDto) {
+                                                            InStoreLocationGroupDto inStoreLocationGroupDto) {
 		if (inStoreLocationGroupDto2.getSubtract() > inStoreLocationGroupDto.getSubtract()) {
 			inStoreLocationGroupDto2 = inStoreLocationGroupDto;
 		} else if (inStoreLocationGroupDto2.getSubtract() == inStoreLocationGroupDto.getSubtract()) {
@@ -621,9 +631,9 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		}
 		return inStoreLocationGroupDto2;
 	}
-
+	
 	private SxStoreLocation chooseBestLocation(int locationNum, SxStoreLocation sxStoreLocationProperty1,
-			SxStoreLocation sxStoreLocationProperty2) throws Exception {
+                                               SxStoreLocation sxStoreLocationProperty2) throws Exception {
 		SxStoreLocation result = null;
 		StoreLocationDistanceDto storeLocationDistance = new StoreLocationDistanceDto();
 		StoreLocationDistanceDto storeLocationDistance1 = new StoreLocationDistanceDto();
@@ -683,11 +693,11 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		}
 		return result;
 	}
-
-	private SxStoreLocation findLocationAscentId(SxStoreLocation sxLocation,SxStoreLocationGroup sxStoreLocationGroup) throws Exception {
+	
+	private SxStoreLocation findLocationAscentId(SxStoreLocation sxLocation, SxStoreLocationGroup sxStoreLocationGroup) throws Exception {
 		SxStoreLocation result = null;
 		Integer sxStoreLocationId = null;
-
+		
 		Integer storeLocationId1 = sxLocation.getStoreLocationId1();
 		Integer storeLocationId2 = sxLocation.getStoreLocationId2();
 		if (storeLocationId1 == null) {
@@ -705,7 +715,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			}
 		}
 		result = sxStoreLocationMapper.findById(sxStoreLocationId, SxStoreLocation.class);
-
+		
 		return result;
 	}
 }

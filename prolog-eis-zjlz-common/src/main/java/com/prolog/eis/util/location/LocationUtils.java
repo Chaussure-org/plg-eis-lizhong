@@ -78,12 +78,18 @@ public class LocationUtils {
     //得到x的邻接点为y的后一个邻接点位置,为null说明没有找到
     private static String getNextNode(String x, String y){
         String next_node = null;
+        List<String> nList = Lists.newArrayList();
         PathDTO pathDTO = vertexList.get(x);
         if (null != pathDTO && y == null) {
-            String n = pathDTO.getVertexId();
-            //元素还不在stack中
-            if (!states.get(n)) {
-                return n;
+            nList.add(pathDTO.getVertexId());
+            if (null != pathDTO.getNext()) {
+                nList.add(pathDTO.getNext().getVertexId());
+            }
+            for (String n : nList) {
+                //元素还不在stack中
+                if (!states.get(n)) {
+                    return n;
+                }
             }
             return null;
         }
@@ -111,27 +117,5 @@ public class LocationUtils {
         stack.stream().map(i -> i + "->").forEach(sb::append);
         sb.delete(sb.length()-2,sb.length());
         return sb.toString();
-    }
-
-    public static void main(String[]args){
-        LocationUtils.vertexList.put("A001", null);
-        LocationUtils.vertexList.put("B002", null);
-        LocationUtils.vertexList.put("C003", null);
-        LocationUtils.vertexList.put("D004", null);
-        //初始化所有节点在stack中的情况
-        LocationUtils.states.put("A001", false);
-        LocationUtils.states.put("B002", false);
-        LocationUtils.states.put("C003", false);
-        LocationUtils.states.put("D004", false);
-
-        LocationUtils.addPathDTO("A001","B002");
-        LocationUtils.addPathDTO("B002","A001");
-        LocationUtils.addPathDTO("A001","C003");
-        LocationUtils.addPathDTO("C003","D004");
-        LocationUtils.addPathDTO("D004","C003");
-        LocationUtils.addPathDTO("B002","D004");
-        LocationUtils.addPathDTO("A001","D004");
-        List<String> visit = LocationUtils.visit("A001", "D004");
-        visit.forEach(System.out::println);
     }
 }

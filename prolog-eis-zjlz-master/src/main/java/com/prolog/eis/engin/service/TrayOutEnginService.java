@@ -35,5 +35,5 @@ public interface TrayOutEnginService {
      * 生成路径 path 给点位
      * @throws Exception
      */
-    List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception;
+    List<OutContainerDto> outByGoodsId(int goodsId, int count,int wmsPriority) throws Exception;
 }

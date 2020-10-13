@@ -2,13 +2,13 @@ package com.prolog.eis.mcs.service.impl;
 
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
-import com.prolog.eis.location.service.PathExecutionService;
+import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.mcs.service.IMCSCallBackService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.util.PrologDateUtils;
-import com.prolog.eis.util.location.LocationConst;
+import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.util.mapper.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,9 +32,9 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     @Autowired
     private ContainerPathTaskMapper containerPathTaskMapper;
     @Autowired
-    private PathExecutionService pathExecutionService;
-    @Autowired
     private SxMoveStoreService sxMoveStoreService;
+    @Autowired
+    private ContainerPathTaskService containerPathTaskService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -52,10 +52,10 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         Timestamp nowTime = PrologDateUtils.parseObject(new Date());
 
         switch (state) {
-            case LocationConst.MCS_TASK_METHOD_START :
+            case LocationConstants.MCS_TASK_METHOD_START :
                 this.callbackStart(containerPathTaskDetailList, nowTime);
                 break;
-            case LocationConst.MCS_TASK_METHOD_END :
+            case LocationConstants.MCS_TASK_METHOD_END :
                 this.callbackEnd(containerPathTaskDetailList, nowTime);
                 break;
             default:
@@ -74,10 +74,10 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         Integer taskState = containerPathTaskDetail.getTaskState();
 
         switch (taskState) {
-            case LocationConst.PATH_TASK_DETAIL_STATE_SEND :
+            case LocationConstants.PATH_TASK_DETAIL_STATE_SEND :
                 sxMoveStoreService.mcsCallBackStart(containerPathTaskDetail,nowTime);
                 break;
-            case LocationConst.PATH_TASK_DETAIL_STATE_PALLETINPLACE :
+            case LocationConstants.PATH_TASK_DETAIL_STATE_PALLETINPLACE :
                 this.mcsTransferCallbackStart(containerPathTaskDetailList, nowTime);
                 break;
             default:
@@ -95,22 +95,22 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         if (containerPathTaskDetailList.size() > 1) {
             for (ContainerPathTaskDetail containerPathTaskDetail : containerPathTaskDetailList) {
                 ContainerPathTask containerPathTask = this.getContainerPathTask(containerPathTaskDetail);
-                containerPathTask.setTaskState(LocationConst.PATH_TASK_STATE_START);
+                containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_START);
                 containerPathTask.setUpdateTime(nowTime);
                 containerPathTaskMapper.update(containerPathTask);
 
-                containerPathTaskDetail.setTaskState(LocationConst.PATH_TASK_DETAIL_STATE_BINDPALLET);
+                containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_BINDPALLET);
                 containerPathTaskDetail.setUpdateTime(nowTime);
                 containerPathTaskDetailMapper.update(containerPathTaskDetail);
             }
         } else {//否则是rcs-mcs移载任务
             ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
             ContainerPathTask containerPathTask = this.getContainerPathTask(containerPathTaskDetail);
-            containerPathTask.setTaskState(LocationConst.PATH_TASK_STATE_START);
+            containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_START);
             containerPathTask.setUpdateTime(nowTime);
             containerPathTaskMapper.update(containerPathTask);
 
-            containerPathTaskDetail.setTaskState(LocationConst.PATH_TASK_DETAIL_STATE_BINDPALLET);
+            containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_BINDPALLET);
             containerPathTaskDetail.setUpdateTime(nowTime);
             containerPathTaskDetailMapper.update(containerPathTaskDetail);
         }
@@ -127,10 +127,10 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         Integer taskState = containerPathTaskDetail.getTaskState();
 
         switch (taskState) {
-            case LocationConst.PATH_TASK_DETAIL_STATE_START :
+            case LocationConstants.PATH_TASK_DETAIL_STATE_START :
                 sxMoveStoreService.mcsCallBackComplete(containerPathTaskDetail,nowTime);
                 break;
-            case LocationConst.PATH_TASK_DETAIL_STATE_BINDPALLET :
+            case LocationConstants.PATH_TASK_DETAIL_STATE_BINDPALLET :
                 this.mcsTransferCallbackEnd(containerPathTaskDetailList, nowTime);
                 break;
             default:
@@ -154,16 +154,16 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
                     containerPathTaskDetailMapper.deleteById(containerPathTaskDetail.getId(), ContainerPathTaskDetail.class);
                     containerPathTaskMapper.deleteById(containerPathTask.getId(), ContainerPathTask.class);
                 } else {
-                    containerPathTaskDetail.setTaskState(LocationConst.PATH_TASK_DETAIL_STATE_NOTSTARTED);
+                    containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_NOTSTARTED);
                     containerPathTaskDetail.setUpdateTime(nowTime);
                     containerPathTaskDetailMapper.update(containerPathTaskDetail);
 
                     containerPathTask.setSourceArea(containerPathTaskDetail.getNextArea());
-                    containerPathTask.setTaskState(LocationConst.PATH_TASK_STATE_TOBESENT);
+                    containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_TOBESENT);
                     containerPathTask.setUpdateTime(nowTime);
                     containerPathTaskMapper.update(containerPathTask);
 
-                    pathExecutionService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
+                    containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
                 }
             }
         } else {//否则是rcs-mcs移载任务
@@ -179,7 +179,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
             newContainerPathTask.setTargetArea("ZC");
             newContainerPathTask.setTargetLocation("ZC");
             newContainerPathTask.setActualHeight(containerPathTask.getActualHeight());
-            newContainerPathTask.setTaskState(LocationConst.PATH_TASK_STATE_TOBESENT);
+            newContainerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_TOBESENT);
             newContainerPathTask.setCreateTime(nowTime);
             containerPathTaskMapper.save(containerPathTask);
 
@@ -190,23 +190,23 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
             newContainerPathTaskDetail.setSourceLocation(containerPathTaskDetail.getSourceLocation());
             newContainerPathTaskDetail.setNextArea("ZC");
             newContainerPathTaskDetail.setNextLocation("ZC");
-            newContainerPathTaskDetail.setTaskState(LocationConst.PATH_TASK_DETAIL_STATE_INPLACE);
+            newContainerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
             newContainerPathTaskDetail.setSortIndex(1);
             newContainerPathTaskDetail.setCreateTime(nowTime);
             containerPathTaskDetailMapper.save(containerPathTaskDetail);
 
             //正常路径状态修改
-            containerPathTaskDetail.setTaskState(LocationConst.PATH_TASK_DETAIL_STATE_NOTSTARTED);
+            containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_NOTSTARTED);
             containerPathTaskDetail.setUpdateTime(nowTime);
             containerPathTaskDetailMapper.update(containerPathTaskDetail);
 
             containerPathTask.setPalletNo(containerPathTask.getContainerNo());
             containerPathTask.setSourceArea(containerPathTaskDetail.getNextArea());
-            containerPathTask.setTaskState(LocationConst.PATH_TASK_STATE_TOBESENT);
+            containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_TOBESENT);
             containerPathTask.setUpdateTime(nowTime);
             containerPathTaskMapper.update(containerPathTask);
 
-            pathExecutionService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
+            containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
         }
     }
 

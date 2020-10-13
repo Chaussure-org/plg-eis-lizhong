@@ -1,7 +1,7 @@
 package com.prolog.eis.location.service;
 
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
-import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
+import com.prolog.eis.dto.location.ContainerPathTaskDTO;
 
 public interface AgvLocationService {
 
@@ -14,12 +14,12 @@ public interface AgvLocationService {
 	 * @return
 	 */
 	AgvStoragelocationDTO findLoacationByArea(String area, String locationNo, int reserveCount) throws Exception;
-	
+
 	/**
-	 * 申请载具方法
-	 * @param locationNo	目标点位
+	 * agv出库
+	 * @param goodsId
+	 * @param stationNo
 	 * @throws Exception
-	 * @return
 	 */
-	ContainerPathTaskDetailDTO requestPallet(String locationNo) throws Exception;
+	ContainerPathTaskDTO agvOutboundTask(int goodsId, String stationNo) throws Exception;
 }

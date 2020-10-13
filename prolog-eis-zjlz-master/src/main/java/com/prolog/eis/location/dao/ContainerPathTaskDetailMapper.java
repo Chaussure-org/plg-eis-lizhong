@@ -5,6 +5,7 @@ import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -53,9 +54,36 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
             @Result(property = "arriveTime",  column = "arrive_time"),@Result(property = "applyTime",  column = "apply_time"),
             @Result(property = "applyStartTime",  column = "apply_start_time"),@Result(property = "palletArriveTime",  column = "pallet_arrive_time"),
             @Result(property = "updateTime",  column = "update_time"),@Result(property = "sourceDeviceSystem",  column = "source_device_system"),
-            @Result(property = "nextDeviceSystem",  column = "next_device_system")
+            @Result(property = "nextDeviceSystem",  column = "next_device_system"),@Result(property = "sendTime",  column = "send_Time"),
+            @Result(property = "moveTime",  column = "move_time"),
     })
-    List<ContainerPathTaskDetailDTO> listContainerPathTaskDetais(@Param("palletNo") String palletNo, @Param(
-            "containerNo") String containerNo, @Param("taskState") Integer taskState);
+    List<ContainerPathTaskDetailDTO> listContainerPathTaskDetais(@Param("palletNo") String palletNo, @Param("containerNo") String containerNo, @Param("taskState") Integer taskState);
 
+    /**
+     * 找载具
+     * @param taskState
+     * @return
+     */
+    @Select({"select t.* from container_path_task_detail t where t.container_no is null and t.task_state = #{taskState}"})
+    @ResultMap(value="containerPathTaskDetailMap")
+    List<ContainerPathTaskDetailDTO> listRequestPallet(@Param("taskState") Integer taskState);
+
+    /**
+     * 查找所有容器
+     * @return
+     */
+    @Select({"select t.* from container_path_task_detail t where t.container_no is not null"})
+    @Results(value={
+            @Result(property = "id",  column = "id"),@Result(property = "palletNo",  column = "pallet_no"),
+            @Result(property = "containerNo",  column = "container_no"),@Result(property = "sourceArea",  column = "source_area"),
+            @Result(property = "sourceLocation",  column = "source_location"),@Result(property = "nextArea",  column = "next_area"),
+            @Result(property = "nextLocation",  column = "next_location"),@Result(property = "taskState",  column = "task_state"),
+            @Result(property = "taskId",  column = "task_id"),@Result(property = "deviceNo",  column = "device_no"),
+            @Result(property = "sortIndex",  column = "sort_index"),@Result(property = "createTime",  column = "create_time"),
+            @Result(property = "arriveTime",  column = "arrive_time"),@Result(property = "applyTime",  column = "apply_time"),
+            @Result(property = "applyStartTime",  column = "apply_start_time"),@Result(property = "palletArriveTime",  column = "pallet_arrive_time"),
+            @Result(property = "sendTime",  column = "send_time"),@Result(property = "moveTime",  column = "move_time"),
+            @Result(property = "updateTime",  column = "update_time")
+    })
+    List<ContainerPathTaskDetail> listRequestContainer();
 }

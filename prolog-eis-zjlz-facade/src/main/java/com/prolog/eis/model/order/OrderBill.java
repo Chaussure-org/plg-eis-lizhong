@@ -19,6 +19,9 @@ public class OrderBill {
     public static final int FIRST_PRIORITY = 1;
     public static final int SECOND_PRIORITY = 2;
     public static final int THIRD_PRIORITY = 3;
+
+    public static final int WMS_PRIORITY=10;
+
     public static final int ORDER_STATUS_START_OUT=10;
     public static final int ORDER_STATUS_OUTING=20;
     public static final int ORDER_STATUS_FINISH=30;
@@ -42,6 +45,11 @@ public class OrderBill {
     @Column("order_priority")
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
+
+    @Column("wms_order_priority")
+    @ApiModelProperty("订单优先级")
+    private Integer wmsOrderPriority;
+
 
     @Column("order_task_state")
     @ApiModelProperty("订单任务进度（0创建 10 开始出库 20 出库中 30 完成）")
@@ -155,4 +163,11 @@ public class OrderBill {
         this.isAddPool = isAddPool;
     }
 
+    public Integer getWmsOrderPriority() {
+        return wmsOrderPriority;
+    }
+
+    public void setWmsOrderPriority(Integer wmsOrderPriority) {
+        this.wmsOrderPriority = wmsOrderPriority;
+    }
 }

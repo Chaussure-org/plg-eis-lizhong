@@ -3,7 +3,6 @@ package com.prolog.eis.engin.service.impl;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
-import com.prolog.eis.dto.lzenginee.RoadWayGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.LayerTaskDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.OrderSortDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
@@ -19,8 +18,6 @@ import com.prolog.eis.util.CompareStrSimUtil;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
-import io.swagger.models.auth.In;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,14 +50,21 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void BoxOutByOrder() throws Exception {
+        /**
+         * 1.托盘的出库与箱库的出库不影响
+         * 2.优先出 全部从箱库出库的 订单
+         */
         //1.要去往循环线区域的订单明细
         List<OutDetailDto> lineDetailList = orderDetailMapper.findAgvDetail("B");
+        //优先出库 wms优先级高的  eis优先级为 高的
+        List<OutDetailDto> lineDetails = lineDetailList.stream().sorted(Comparator.comparing(OutDetailDto::getWmsOrderPriority).thenComparing(OutDetailDto::getOrderPriority)).collect(Collectors.toList());
+
         //找到所有要去循环线的订单
         Criteria ctr = Criteria.forClass(OrderBill.class);
         Set<Integer> ids = lineDetailList.stream().map(OutDetailDto::getOrderBillId).collect(Collectors.toSet());
         ctr.setRestriction(Restrictions.in("orderBillId", ids.toArray()));
         List<OrderBill> orderBillList = orderBillMapper.findByCriteria(ctr);
-        //判断订单的状态 10 储备出库的订单 如果有 return 如果没有
+        //判断订单的状态 10 准备出库的订单 如果有 return 如果没有
         List<OrderBill> matchOrders = orderBillList.stream().filter(x -> x.getOrderTaskState().equals(10)).collect(Collectors.toList());
         //判断循环线的最大料箱数量，判断是否要出库
         //todo
@@ -83,6 +87,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<OutContainerDto> outContainerDtoList = this.outByGoodsId(detailList);
         if (outContainerDtoList.size() > 0) {
             this.saveLineBindingDetail(outContainerDtoList);
+            //生成路径
         }
     }
 
@@ -92,7 +97,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<OutContainerDto> outContainerDtoList = new ArrayList<>();
         //选择重复度最高的订单 中的任意一个明细进行出库,找符合商品id的箱子
         int goodsId = outDetailDtos.get(0).getGoodsId();
-        int goodsCount = outDetailDtos.get(0).getQty();
+        int goodsCount = outDetailDtos.get(0).getPlanQty();
         OutDetailDto outDetailDto = outDetailDtos.get(0);
         List<LayerGoodsCountDto> layerGoodsCounts = boxOutMapper.findLayerGoodsCount(goodsId);
         //找层的任务数出库任务数和入库任务数
@@ -131,15 +136,6 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
                 sumCount += goodsCountDto.getQty();
             }
         }
-        //2.找到箱子的最后一个判断是否符合其他订单的明细
-        OutContainerDto outContainerDto = outContainerDtoList.get(outContainerDtoList.size() - 1);
-        int count = outContainerDto.getQty() - outContainerDto.getDetailMap().get(outDetailDto.getDetailId()).intValue();
-        for (OutDetailDto out : outDetailDtos) {
-            if (out.getQty() <= count) {
-                outContainerDto.getDetailMap().put(out.getDetailId(), out.getQty());
-                count -= out.getQty();
-            }
-        }
         return outContainerDtoList;
     }
 
@@ -149,25 +145,14 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         outContainerDto.setGoodsId(goodsId);
         outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
         outContainerDto.setQty(goodsCountDto.getQty());
-        Map<Integer, Integer> detailMap = new HashedMap();
-        detailMap.put(detailDto.getDetailId(), detailDto.getQty());
-        outContainerDto.setDetailMap(detailMap);
+
         return outContainerDto;
     }
 
     //更新line_binding_detail
     private void saveLineBindingDetail(List<OutContainerDto> outList) {
         for (OutContainerDto containerDto : outList) {
-            for (Map.Entry<Integer, Integer> map : containerDto.getDetailMap().entrySet()) {
-                LineBindingDetail lineBindingDetail = new LineBindingDetail();
-                lineBindingDetail.setOrderMxId(map.getKey());
-                lineBindingDetail.setQty(containerDto.getQty());
-                lineBindingDetail.setBindingNum(map.getValue());
-                lineBindingDetail.setGoodsId(containerDto.getGoodsId());
-                lineBindingDetail.setContainerNo(containerDto.getContainerNo());
-                lineBindingDetail.setUpdateTime(new Date());
-                lineBindingDetailMapper.save(lineBindingDetail);
-            }
+
         }
     }
 
@@ -184,7 +169,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
      * 计算10单 重复度最高的
      * 返回订单id 集合
      */
-    private List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) {
+    @Override
+    public List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) throws Exception{
         Map<Integer, List<OutDetailDto>> mapTemp = lineDetailList.stream().collect(Collectors.groupingBy(OutDetailDto::getOrderBillId));
         Map<Integer, StringBuffer> orderMap = new HashMap<>();
         for (Integer orderId : mapTemp.keySet()) {

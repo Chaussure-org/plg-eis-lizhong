@@ -5,14 +5,16 @@ import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+import java.util.Date;
 
 /**
  * @Description  
  * @Author  Hunter
- * @Date 2020-09-25 
+ * @Date 2020-10-10 
  */
-@ApiModel ("货位表")
+@ApiModel("货位表")
 @Table ("sx_store_location")
 public class SxStoreLocation {
 
@@ -29,16 +31,20 @@ public class SxStoreLocation {
   @ApiModelProperty("货位组id")
   private Integer storeLocationGroupId;
 
+  @Column("area_no")
+  @ApiModelProperty("区域编号")
+  private String areaNo;
+
   @Column("layer")
   @ApiModelProperty("层")
   private Integer layer;
 
   @Column("x")
-  @ApiModelProperty("x轴")
+  @ApiModelProperty("巷道")
   private Integer X;
 
   @Column("y")
-  @ApiModelProperty("y轴")
+  @ApiModelProperty("y轴（列）")
   private Integer Y;
 
   @Column("store_location_id1")
@@ -115,6 +121,14 @@ public class SxStoreLocation {
 
   public void setStoreLocationGroupId(Integer storeLocationGroupId) {
     this.storeLocationGroupId = storeLocationGroupId;
+  }
+
+  public String getAreaNo() {
+    return areaNo;
+  }
+
+  public void setAreaNo(String areaNo) {
+    this.areaNo = areaNo;
   }
 
   public Integer getLayer() {
