@@ -36,12 +36,24 @@ public class AgvBindingDetail {
     private Integer goodsId;
 
     @Column("binding_num")
-    @ApiModelProperty("订单优先级")
+    @ApiModelProperty("绑定数量")
     private Integer bindingNum;
 
     @Column("order_priority")
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
+
+    public Integer getWmsOrderPriority() {
+        return wmsOrderPriority;
+    }
+
+    public void setWmsOrderPriority(Integer wmsOrderPriority) {
+        this.wmsOrderPriority = wmsOrderPriority;
+    }
+
+    @Column("order_priority")
+    @ApiModelProperty("wms订单优先级")
+    private Integer wmsOrderPriority;
 
     @Column("update_time")
     @ApiModelProperty("订单明细id")

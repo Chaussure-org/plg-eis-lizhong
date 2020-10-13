@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,5 +25,5 @@ public class OutContainerDto {
     private int goodsId;
     private int qty;
     //明细id 数量
-    private Map<Integer, Integer> detailMap;
+    private List<OutDetailDto> detailList=new ArrayList<>();
 }

@@ -19,6 +19,9 @@ public class OrderBill {
     public static final int FIRST_PRIORITY = 1;
     public static final int SECOND_PRIORITY = 2;
     public static final int THIRD_PRIORITY = 3;
+
+    public static final int WMS_PRIORITY=10;
+
     public static final int ORDER_STATUS_START_OUT=10;
     public static final int ORDER_STATUS_OUTING=20;
     public static final int ORDER_STATUS_FINISH=30;
