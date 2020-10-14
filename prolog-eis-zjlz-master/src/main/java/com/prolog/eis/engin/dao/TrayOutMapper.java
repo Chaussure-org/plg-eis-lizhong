@@ -37,7 +37,7 @@ public interface TrayOutMapper {
             "\tcontainer_store cs\n" +
             "\tLEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no LEFT JOIN goods g on cs.goods_id=g.id\n" +
             "\tLEFT JOIN sx_store_location sl on sl.id=cpt.source_location\n" +
-            "\tWHERE cpt.task_type=0 and cs.goods_id=#{goodsId} order by cs.qty DESC")
+            "\tWHERE cpt.task_type=0 and cpt.source_area in ('D010','D020','D030','D040')  and cs.goods_id=#{goodsId} order by cs.qty DESC")
     List<RoadWayGoodsCountDto> findRoadWayGoodsCount(@Param("goodsId")int goodsId);
 
     @Select("SELECT\n" +
