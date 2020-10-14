@@ -2,8 +2,12 @@ package com.prolog.eis.wms.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
-import com.prolog.eis.dto.wms.InboundCallBackDto;
+import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
+import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.util.HttpUtils;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.wms.service.IWMSService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
@@ -13,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @Author wangkang
@@ -44,43 +46,53 @@ public class WMSServiceImpl implements IWMSService {
 
     /**
      * 上架任务回告wms
-     * @param inboundCallBackDto
+     * @param wmsInboundCallBackDto
      * @return
      */
     @Override
-    public RestMessage<String> inboundTaskCallBack(InboundCallBackDto inboundCallBackDto) {
+    @LogInfo(desci = "EIS入库任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INBOUND_CALLBACK,systemType = LogDto.WMS)
+    public RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
-        logger.info("EIS -> WCS 输送线行走:{}",url);
+        logger.info("EIS -> WMS 入库任务回告:{}",url);
         try {
-            RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(inboundCallBackDto),new TypeReference<RestMessage<String>>() {});
+            RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsInboundCallBackDto),new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
-            logger.warn("EIS -> WCS 请求输送线行走异常", e);
+            logger.warn("EIS -> WCS 入库任务完成回告异常", e);
             return RestMessage.newInstance(false, "500", e.getMessage(), null);
         }
     }
 
     /**
      * 拣选任务回告wms
-     * @param billNo 清单号
-     * @param billDate  清单时间
-     * @param status 状态
-     * @param sjc 时间戳
-     * @param billType 单据类型
+     * @param wmsOutboundCallBackDto 回告实体
      * @return
      */
     @Override
-    public RestMessage<String> outboundTaskCallBack(String billNo, Date billDate, Integer status, Date sjc,
-                                                    Integer billType) {
+    @LogInfo(desci = "Eis出库任务完成回告",direction = "eis->wms",type = LogDto.WMS_TYPE_OUTBOUND_CALLBACK,systemType =
+            LogDto.WMS)
+    public RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
-        logger.info("EIS -> WCS 输送线行走:{}",url);
+        logger.info("EIS -> WCS 出库任务完成回告:{}",url);
         try {
-            Map<String, Object> params =
-                    MapUtils.put("billNo", billNo).put("billDate", billDate).put("status", status).put("sjc", sjc).put("billType", billType).getMap();
-            RestMessage<String> result = httpUtils.post(url, params,new TypeReference<RestMessage<String>>() {});
+            RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsOutboundCallBackDto),new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
-            logger.warn("EIS -> WCS 请求输送线行走异常", e);
+            logger.warn("EIS -> WCS 出库任务完成回告异常", e);
+            return RestMessage.newInstance(false, "500", e.getMessage(), null);
+        }
+    }
+
+    @Override
+    @LogInfo(desci = "eis盘点任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INVENTORY_CALLBACK,systemType = LogDto.WMS)
+    public RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) {
+        String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+        logger.info("EIS -> WCS 出库任务完成回告:{}",url);
+        try {
+            RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsInventoryCallBackDto),new TypeReference<RestMessage<String>>() {});
+            return result;
+        } catch (Exception e) {
+            logger.warn("EIS -> WCS 出库任务完成回告异常", e);
             return RestMessage.newInstance(false, "500", e.getMessage(), null);
         }
     }

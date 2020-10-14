@@ -1,4 +1,4 @@
-package com.prolog.eis.dto.location.sxk;
+package com.prolog.eis.dto.store;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

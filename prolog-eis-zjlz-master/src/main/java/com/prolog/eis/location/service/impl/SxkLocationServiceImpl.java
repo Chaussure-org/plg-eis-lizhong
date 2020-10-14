@@ -2,15 +2,15 @@ package com.prolog.eis.location.service.impl;
 
 import com.prolog.eis.dto.location.InStoreLocationGroupDto;
 import com.prolog.eis.dto.location.sxk.StoreLocationDistanceDto;
-import com.prolog.eis.dto.location.sxk.SxStoreLocationDto;
+import com.prolog.eis.dto.store.SxStoreLocationDto;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
 import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
-import com.prolog.eis.model.location.sxk.SxStoreLocation;
-import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
+import com.prolog.eis.model.store.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.store.service.ContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.location.LocationConstants;

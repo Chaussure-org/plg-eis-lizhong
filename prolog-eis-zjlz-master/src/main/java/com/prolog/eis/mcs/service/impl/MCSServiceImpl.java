@@ -1,9 +1,11 @@
 package com.prolog.eis.mcs.service.impl;
 
 import com.prolog.eis.configuration.EisProperties;
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.dto.mcs.McsSendTaskDto;
 import com.prolog.eis.mcs.service.IMCSService;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import com.prolog.eis.util.PrologHttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ public class MCSServiceImpl implements IMCSService {
     }
 
     @Override
+    @LogInfo(desci = "eis发起托盘移动任务",direction = "eis->mcs",type = LogDto.MCS_TYPE_CONTIANER_MOVE,systemType = LogDto.MCS)
     public McsResultDto mcsContainerMove(String taskId, String containerNo, int type, String address, String target,
                                          String priority) throws Exception {
         List<McsSendTaskDto> mcsSendTaskDtos = new ArrayList<McsSendTaskDto>();

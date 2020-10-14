@@ -20,12 +20,24 @@ public class GoodsServiceImpl implements IGoodsService {
     @Autowired
     private GoodsMapper goodsMapper;
 
+
+
     @Override
-    public Goods getGoodsByCode(String itemCode) throws Exception {
-        List<Goods> goodsList = goodsMapper.findByMap(MapUtils.put("goodsNo", itemCode).getMap(), Goods.class);
-        if (goodsList.size()== 0) {
-            throw new Exception("没有找到"+itemCode+"该条码对应的商品信息,请确认");
+    public Goods getGoodsByGoodId(Integer goodId) {
+        List<Goods> goods = goodsMapper.findByMap(MapUtils.put("id", goodId).getMap(), Goods.class);
+        if (goods !=null && goods.size()>0){
+            return goods.get(0);
         }
-        return goodsList.get(0);
+        return null;
+    }
+
+    @Override
+    public void saveAndUpdateGoods(List<Goods> newGoods, List<Goods> updateGoods) {
+        if (newGoods != null){
+            goodsMapper.saveBatch(newGoods);
+        }
+        for (Goods updateGood : updateGoods) {
+            goodsMapper.update(updateGood);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.prolog.eis.model.location.sxk;
+package com.prolog.eis.model.store;
 
 import com.prolog.framework.core.annotation.AutoKey;
 import com.prolog.framework.core.annotation.Column;

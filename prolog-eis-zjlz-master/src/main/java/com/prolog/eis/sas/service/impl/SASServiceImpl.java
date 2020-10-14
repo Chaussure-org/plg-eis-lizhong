@@ -2,11 +2,13 @@ package com.prolog.eis.sas.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.CarListDTO;
 import com.prolog.eis.dto.wcs.HoisterInfoDto;
 import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.util.HttpUtils;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import com.prolog.eis.wcs.service.IWCSService;
 import com.prolog.eis.wcs.service.impl.WCSServiceImpl;
@@ -22,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author
+ */
 @Service
 public class SASServiceImpl implements ISASService {
     @Autowired
@@ -46,14 +51,15 @@ public class SASServiceImpl implements ISASService {
      * @return
      */
     @Override
+    @LogInfo(desci = "sas请求小车信息",direction = "eis->sas",type = LogDto.SAS_TYPE_GET_CARINFO,systemType = LogDto.SAS)
     public List<CarInfoDTO> getCarInfo() {
         String url = this.getUrl(properties.getWcs().getRequestCarUrl());
-        logger.info("EIS -> WCS 请求小车信息:{}",url);
+        logger.info("EIS -> SAS 请求小车信息:{}",url);
         try {
             RestMessage<CarListDTO> result = httpUtils.post(url, null, new TypeReference<RestMessage<CarListDTO>>() {});
             return result.getData().getCarryList();
         } catch (Exception e) {
-            logger.warn("EIS -> WCS 请求小车信息异常",e);
+            logger.warn("EIS -> SAS 请求小车信息异常",e);
             return null;
         }
     }
@@ -64,9 +70,11 @@ public class SASServiceImpl implements ISASService {
      * @return
      */
     @Override
+    @LogInfo(desci = "sas获取提升机信息",direction = "eis->sas",type = LogDto.SAS_TYPE_GET_HOISTERINFO,systemType =
+            LogDto.SAS)
     public List<HoisterInfoDto> getHoisterInfoDto() {
         String url = this.getUrl(properties.getWcs().getRequestHoisterUrl());
-        logger.info("EIS -> WCS 获取提升机信息:{}", url);
+        logger.info("EIS -> SAS 获取提升机信息:{}", url);
 
         try {
             String data = this.restTemplate.postForObject(url, null, String.class);
@@ -75,7 +83,7 @@ public class SASServiceImpl implements ISASService {
             return helper.getObjectList("data", HoisterInfoDto.class);
 
         } catch (Exception e) {
-            logger.warn("EIS -> WCS 提升机信息异常", e);
+            logger.warn("EIS -> SAS 提升机信息异常", e);
             return null;
         }
     }
@@ -91,14 +99,15 @@ public class SASServiceImpl implements ISASService {
      * @return
      */
     @Override
+    @LogInfo(desci = "eis请求小车换层",direction = "eis->sas",type = LogDto.SAS_TYPE_CHANGE_LAYER,systemType = LogDto.SAS)
     public  RestMessage<String> moveCar(String taskId, int carId, int sourceLayer, int targetLayer) {
         String url = this.getUrl(properties.getWcs().getMoveCarUrl());
-        logger.info("EIS -> WCS 请求小车换层:{}",url);
+        logger.info("EIS -> SAS 请求小车换层:{}",url);
         try {
             RestMessage<String> result = httpUtils.post(url, MapUtils.put("taskId", taskId).put("source", sourceLayer).put("target", targetLayer).put("bankId", properties.getWcs().getBankId()).getMap(), new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
-            logger.warn("EIS -> WCS 请求小车换层异常",e);
+            logger.warn("EIS -> SAS 请求小车换层异常",e);
             return RestMessage.newInstance(false,"500",e.getMessage(),null);
         }
     }
@@ -117,6 +126,8 @@ public class SASServiceImpl implements ISASService {
      * @return
      */
     @Override
+    @LogInfo(desci = "eis出入库任务",direction = "eis->sas",type = LogDto.SAS_TYPE_SEND_TASK,systemType =
+            LogDto.SAS)
     public RestMessage<String> sendContainerTask(String taskId, int type, String containerNo, String address, String target, String weight, String priority,int status) {
         String url = this.getUrl(properties.getWcs().getTaskUrl());
         logger.info("EIS -> WCS 任务请求:{}",url);

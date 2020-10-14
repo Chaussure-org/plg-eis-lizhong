@@ -1,7 +1,9 @@
 package com.prolog.eis.wcs.service.impl;
 
 
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.*;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.wcs.service.IWCSCallbackService;
 import com.prolog.framework.common.message.RestMessage;
 import org.slf4j.Logger;
@@ -19,14 +21,6 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
     private final RestMessage<String> faliure = RestMessage.newInstance(false, "500", "操作失败", null);
     private final RestMessage<String> out = RestMessage.newInstance(false, "300", "订单箱异常", null);
 
-    private void pwait() {
-         try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 任务回告
      *
@@ -34,6 +28,8 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @return
      */
     @Override
+    @LogInfo(desci = "wcs行走任务回告",direction = "wcs->eis",type = LogDto.WCS_TYPE_TASK_CALLBACK,systemType = LogDto.WCS)
+    @Transactional(rollbackFor = Exception.class)
     public RestMessage<String> executeTaskCallback(TaskCallbackDTO taskCallbackDTO) {
 
         return success;
@@ -49,6 +45,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @return
      */
     @Override
+    @LogInfo(desci = "wcsBCR请求",direction = "wcs->eis",type = LogDto.WCS_TYPE_BCR_REQUEST,systemType = LogDto.WCS)
     public RestMessage<String> executeBcrCallback(BCRDataDTO bcrDataDTO) {
         return success;
     }

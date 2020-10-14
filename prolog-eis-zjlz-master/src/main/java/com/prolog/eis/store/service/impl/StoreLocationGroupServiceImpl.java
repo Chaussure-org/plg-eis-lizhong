@@ -1,6 +1,6 @@
 package com.prolog.eis.store.service.impl;
 
-import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.store.dao.StoreLocationGroupMapper;
 import com.prolog.eis.store.service.IStoreLocationGroupService;
 import org.springframework.beans.factory.annotation.Autowired;

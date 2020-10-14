@@ -1,12 +1,11 @@
 package com.prolog.eis.wms.service;
 
-import com.prolog.eis.dto.wms.InboundCallBackDto;
-import com.prolog.eis.dto.wms.WMSInboundTaskDto;
-import com.prolog.eis.dto.wms.WMSOutboundTaskDto;
+import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
+import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.framework.common.message.RestMessage;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author wangkang
@@ -17,19 +16,22 @@ public interface IWMSService {
 
     /**
      * 上架完成回告wms
-     * @param inboundCallBackDto
+     * @param wmsInboundCallBackDto 回告实体
      * @return
      */
-    RestMessage<String> inboundTaskCallBack(InboundCallBackDto inboundCallBackDto);
+    RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto);
 
     /**
      * 拣货完成回告wms
-     * @param billNo 清单号
-     * @param billDate  清单时间
-     * @param status 状态
-     * @param sjc 时间戳
-     * @param billType 单据类型
+     * @param wmsOutboundCallBackDto 回告实体
      * @return
      */
-    RestMessage<String> outboundTaskCallBack(String billNo, Date billDate,Integer status,Date sjc,Integer billType);
+    RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto);
+
+    /**
+     * 盘点完成回告wms
+     * @param wmsInventoryCallBackDto 回告实体
+     * @return
+     */
+    RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto);
 }

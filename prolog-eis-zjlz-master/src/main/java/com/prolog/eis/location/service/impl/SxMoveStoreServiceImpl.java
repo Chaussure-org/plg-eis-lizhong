@@ -1,8 +1,8 @@
 package com.prolog.eis.location.service.impl;
 
 import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
-import com.prolog.eis.dto.location.sxk.SxStoreGroupDto;
-import com.prolog.eis.dto.location.sxk.SxStoreLockDto;
+import com.prolog.eis.dto.store.SxStoreGroupDto;
+import com.prolog.eis.dto.store.SxStoreLockDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
@@ -17,8 +17,8 @@ import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
-import com.prolog.eis.model.location.sxk.SxStoreLocation;
-import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
+import com.prolog.eis.model.store.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.store.service.ContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;

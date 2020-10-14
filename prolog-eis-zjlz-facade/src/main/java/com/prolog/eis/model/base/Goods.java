@@ -29,9 +29,9 @@ public class Goods {
   @ApiModelProperty("商品名称")
   private String goodsName;
 
-  @Column("specification")
-  @ApiModelProperty("规格")
-  private String specification;
+  @Column("goods_one_type")
+  @ApiModelProperty("大类")
+  private String goodsOneType;
 
   @Column("owner_drawn_no")
   @ApiModelProperty("客户图号")
@@ -43,7 +43,7 @@ public class Goods {
 
   @Column("goods_type")
   @ApiModelProperty("商品类别")
-  private Integer goodsType;
+  private String goodsType;
 
   @Column("weight")
   @ApiModelProperty("重量（克：g）")
@@ -109,12 +109,12 @@ public class Goods {
     this.goodsName = goodsName;
   }
 
-  public String getSpecification() {
-    return specification;
+  public String getGoodsOneType() {
+    return goodsOneType;
   }
 
-  public void setSpecification(String specification) {
-    this.specification = specification;
+  public void setGoodsOneType(String goodsOneType) {
+    this.goodsOneType = goodsOneType;
   }
 
   public String getOwnerDrawnNo() {
@@ -133,11 +133,11 @@ public class Goods {
     this.surfaceDeal = surfaceDeal;
   }
 
-  public Integer getGoodsType() {
+  public String getGoodsType() {
     return goodsType;
   }
 
-  public void setGoodsType(Integer goodsType) {
+  public void setGoodsType(String goodsType) {
     this.goodsType = goodsType;
   }
 

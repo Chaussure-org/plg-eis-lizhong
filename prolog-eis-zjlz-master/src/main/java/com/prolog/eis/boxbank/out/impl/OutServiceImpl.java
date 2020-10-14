@@ -8,7 +8,7 @@ import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.enums.CkHoisterEnum;
 import com.prolog.eis.model.point.PointLocation;
 import com.prolog.eis.model.store.SxStore;
-import com.prolog.eis.model.location.sxk.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.service.pointlocation.IPointLocationService;
 import com.prolog.eis.service.repair.RepairPlanService;
 import com.prolog.eis.service.store.IStoreLocationService;

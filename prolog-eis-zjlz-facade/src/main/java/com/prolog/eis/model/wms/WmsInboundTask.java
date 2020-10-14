@@ -54,9 +54,9 @@ public class WmsInboundTask {
   @ApiModelProperty("单据行号")
   private String seqNo;
 
-  @Column("goods_code")
+  @Column("goods_id")
   @ApiModelProperty("商品编码")
-  private String goodsCode;
+  private String goodsId;
 
   @Column("goods_name")
   @ApiModelProperty("商品中文名称")
@@ -146,12 +146,12 @@ public class WmsInboundTask {
     this.seqNo = seqNo;
   }
 
-  public String getGoodsCode() {
-    return goodsCode;
+  public String getGoodsId() {
+    return goodsId;
   }
 
-  public void setGoodsCode(String goodsCode) {
-    this.goodsCode = goodsCode;
+  public void setGoodsId(String goodsId) {
+    this.goodsId = goodsId;
   }
 
   public String getGoodsName() {
