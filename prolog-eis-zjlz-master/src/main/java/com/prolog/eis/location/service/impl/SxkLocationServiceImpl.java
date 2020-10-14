@@ -11,7 +11,7 @@ import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
-import com.prolog.eis.store.service.ContainerStoreService;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.core.restriction.Criteria;
@@ -35,7 +35,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	@Autowired
 	private ContainerPathTaskMapper containerPathTaskMapper;
 	@Autowired
-	private ContainerStoreService containerStoreService;
+	private IContainerStoreService containerStoreService;
 
 	@Override
 	public SxStoreLocation findLoacationByArea(String area, int originX, int originY, int reserveCount, double weight, String taskProperty1, String taskProperty2) throws Exception {

@@ -1,6 +1,7 @@
 package com.prolog.eis.order.dao;
 
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
@@ -49,6 +50,14 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\tod.create_time DESC")
     List<OutDetailDto> findLineDetail(@Param("areaNo")String areaNo);
 
+    @Select("SELECT\n" +
+            "\tod.order_bill_id AS orderBillId,\n" +
+            "\tob.wms_order_priority AS wmsOrderPriority,\n" +
+            "\tod.plan_qty AS planQty\n" +
+            "FROM\n" +
+            "\torder_bill ob\n" +
+            "\tLEFT JOIN order_detail od ON ob.id = od.order_bill_id")
+    List<OutDetailDto> findOutDetails();
     /**
      * 查当前播种商品信息
      * @param orderDetailId

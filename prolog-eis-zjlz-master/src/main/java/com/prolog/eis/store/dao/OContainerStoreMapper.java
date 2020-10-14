@@ -23,10 +23,9 @@ public interface OContainerStoreMapper extends BaseMapper<ContainerStore> {
             "FROM\n" +
             "\tcontainer_store cs\n" +
             "\tLEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no\n" +
-            "\tLEFT JOIN agv_binding_detail abd ON cs.container_no = abd.container_no \n" +
+            "\tLEFT JOIN agv_binding_detail abd ON cs.container_no=abd.container_no\n" +
             "WHERE\n" +
-            "\tFIND_IN_SET( cpt.source_area, 'a,b,c' ) \n" +
-            "\tAND cpt.target_area = NULL \n" +
-            "\tAND abd.order_mx_id = NULL")
+            "\tFIND_IN_SET( cpt.source_area, 'A100,D010,D020,D030' ) and cs.container_no not in (SELECT abd.container_no FROM agv_binding_detail abd)\n" +
+            "\tAND cpt.task_type=0")
     List<StoreGoodsCount> findStoreGoodsCount();
 }

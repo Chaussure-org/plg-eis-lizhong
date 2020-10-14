@@ -100,6 +100,8 @@ public class StoreServiceImpl implements IStoreService {
         }
     }
 
+
+
     private void addLocation(String groupNo,int layer,int x,int y,List<String> pointList,String areaNo,Integer ascent){
 
         SxStoreLocationGroup group = new SxStoreLocationGroup();
@@ -143,4 +145,10 @@ public class StoreServiceImpl implements IStoreService {
         storeLocationService.saveBatchStoreLocation(listSxStoreLocations);
     }
 
+
+    //
+    @Override
+    public void initCntainerPatch() {
+
+    }
 }

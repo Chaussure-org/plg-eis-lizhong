@@ -18,4 +18,5 @@ public interface IStoreService {
      */
     void initStore(InitStoreDto initStoreDto) throws Exception;
 
+    void initCntainerPatch();
 }

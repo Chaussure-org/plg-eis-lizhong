@@ -21,6 +21,7 @@ import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * @date:2020/9/30 11:47
  * @author:SunPP
  */
+@Service
 public class BoxOutEnginServiceImpl implements BoxOutEnginService {
 
     @Autowired

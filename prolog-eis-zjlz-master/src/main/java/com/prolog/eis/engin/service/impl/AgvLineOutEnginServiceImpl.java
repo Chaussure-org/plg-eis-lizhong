@@ -19,6 +19,7 @@ import com.prolog.eis.store.dao.PickingOrderMapper;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  * sunpp
  * agv和输送线的调度
  */
+@Service
 public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
 
     @Autowired
@@ -43,13 +45,10 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     @Autowired
     private ContainerBindingDetailMapper containerBindingDetailMapper;
 
-    @Override
-    public PickingAreaDto init() throws Exception {
-        return null;
-    }
+
 
     @Override
-    public List<OrderBill> computerPickOrder(List<OrderBill> orderBills) throws Exception {
+    public List<OrderBill> computerPickOrder() throws Exception {
         // 站台分配拣选单
         //  一.生成拣选单
         //  1.优先找agv_binding_detail

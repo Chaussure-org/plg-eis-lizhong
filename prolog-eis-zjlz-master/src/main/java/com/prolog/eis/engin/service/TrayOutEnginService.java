@@ -19,7 +19,7 @@ public interface TrayOutEnginService {
      *
      * @throws Exception
      */
-    void initOrder(List<OrderBill> orderBills) throws Exception;
+    void initOrder() throws Exception;
 
     /**
      * 根据 合适的订单
