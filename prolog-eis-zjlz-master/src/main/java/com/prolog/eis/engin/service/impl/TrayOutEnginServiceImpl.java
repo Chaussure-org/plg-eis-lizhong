@@ -193,6 +193,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     outContainerDtoList.add(outContainer);
                     //删除原来agv区域绑定的订单
                     this.deleteAgvBindingDetail(outContainer);
+                    //更新已经计算 的订单明细的状态，订单时分开的，订单明细表新加字段
+
                 }
             }
         } else {
@@ -231,11 +233,15 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         outContainerDto.setQty(goodsCountDto.getQty());
         return outContainerDto;
     }
+
     /**
      * 删除原来agv绑定的订单明细
      */
     private void deleteAgvBindingDetail(OutContainerDto outContainerDto) {
-        agvBindingDetaileMapper.deleteByMap(MapUtils.put("containerNo", outContainerDto.getContainerNo()).getMap(), AgvBindingDetail.class);
+        if (!outContainerDto.getDetailList().isEmpty()) {
+            agvBindingDetaileMapper.deleteByMap(MapUtils.put("containerNo", outContainerDto.getContainerNo()).getMap(), AgvBindingDetail.class);
+
+        }
     }
 
     /**
