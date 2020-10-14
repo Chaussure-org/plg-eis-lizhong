@@ -2,6 +2,7 @@ package com.prolog.eis.engin.dispatch;
 
 import com.prolog.eis.engin.service.AgvLineOutEnginService;
 import com.prolog.eis.engin.service.BoxOutEnginService;
+import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,6 +28,9 @@ public class OutDispatch {
     @Autowired
     private AgvLineOutEnginService agvLineOutEnginService;
 
+    @Autowired
+    private FinishedProdOutEnginService finishedProdOutEnginService;
+
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void trayOutDispatch() {
         try {
@@ -35,6 +39,16 @@ public class OutDispatch {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Scheduled(initialDelay = 3000, fixedDelay = 6000)
+    public void finishProdOutDispatch() {
+        try {
+            finishedProdOutEnginService.finishProdOutByOrder();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)

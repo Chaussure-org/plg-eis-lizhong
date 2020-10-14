@@ -1,7 +1,9 @@
 package com.prolog.eis.order.service;
 
+import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.model.order.OrderBill;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,4 +44,9 @@ public interface IOrderBillService {
      */
     void deleteOrderBillByMap(Map map);
 
+    /**
+     * 初始化成品库订单
+     * @return
+     */
+    List<OrderBillDto> initFinishProdOrder();
 }

@@ -1,5 +1,6 @@
 package com.prolog.eis.order.service.impl;
 
+import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
 import com.prolog.eis.order.dao.OrderBillMapper;
@@ -74,6 +75,18 @@ public class OrderBillServiceImpl implements IOrderBillService {
         if (map != null){
             orderBillMapper.deleteByMap(map,OrderBill.class);
         }
+    }
+
+    /**
+     * 改方法需要按照订单优先级以及时间来将成品库出库排序
+     * 判断库存是否满足
+     * @return
+     */
+    @Override
+    public List<OrderBillDto> initFinishProdOrder() {
+        List<OrderBillDto> orderBillList = orderBillMapper.initFinishProdOrder();
+
+        return orderBillList;
     }
 
 }

@@ -10,7 +10,6 @@ import java.util.List;
  * @version 1.0
  * @date 2020/10/12 15:22
  */
-@Repository
 public interface IOrderBillHistoryService {
     /**
      * 保存数据
