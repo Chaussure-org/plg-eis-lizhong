@@ -2,6 +2,8 @@ package com.prolog.eis.order.service;
 
 import com.prolog.eis.model.order.OrderBill;
 
+import java.util.Map;
+
 /**
  * @Author wangkang
  * @Description
@@ -16,8 +18,28 @@ public interface IOrderBillService {
     void saveOrderBill(OrderBill orderBill);
 
     /**
-     * 通过billNo查询订单
-     * @param billNo
+     * 通过billNo更新订单优先级
+     * @param billNo 订单号
      */
     void upOrderProiorityByBillNo(String billNo) throws Exception;
+
+    /**
+     * 根据id查询查询订单
+     * @param orderBillId 订单号
+     * @return
+     */
+     OrderBill findBillById(int orderBillId);
+
+    /**
+     * 汇总转历史
+     * @param orderBillId 订单号
+     */
+     void orderBillToHistory(int orderBillId);
+
+    /**
+     * 根据map删除
+     * @param map map
+     */
+    void deleteOrderBillByMap(Map map);
+
 }

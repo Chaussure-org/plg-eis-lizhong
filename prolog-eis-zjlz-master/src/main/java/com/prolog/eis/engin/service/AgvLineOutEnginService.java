@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * agv区域和输送线的 出库
+ * @author sunpp
  */
 public interface AgvLineOutEnginService {
 
@@ -28,7 +29,7 @@ public interface AgvLineOutEnginService {
      * 二。生成拣选单
      * 1.找到合适的站台分配拣选单
      */
-    void tackPickOrder() throws Exception;
+
 
 
 }

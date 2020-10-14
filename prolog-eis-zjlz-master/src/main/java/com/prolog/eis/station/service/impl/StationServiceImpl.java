@@ -4,12 +4,14 @@ import com.prolog.eis.model.Station;
 import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author dengj
  * @version 1.0
  * @date 2020/10/10 15:34
  */
+@Service
 public class StationServiceImpl implements IStationService {
 
     @Autowired
