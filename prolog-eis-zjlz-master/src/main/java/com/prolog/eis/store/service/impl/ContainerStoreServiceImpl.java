@@ -4,6 +4,8 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +89,12 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 		return false;
 	}
 
-	private GoodsInfo getEmptyGoods() {
+    @Override
+    public List<ContainerStore> findContainerListByGoodsId(Integer goodsId) {
+        return containerStoreMapper.findBestContainerSeq(goodsId);
+    }
+
+    private GoodsInfo getEmptyGoods() {
 		GoodsInfo goodsInfo = new GoodsInfo();
 		goodsInfo.setOwnerId("");
 		goodsInfo.setGoodsCode("");

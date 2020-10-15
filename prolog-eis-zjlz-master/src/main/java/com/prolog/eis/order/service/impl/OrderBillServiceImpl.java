@@ -3,6 +3,7 @@ package com.prolog.eis.order.service.impl;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
+import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.service.IOrderBillHistoryService;
 import com.prolog.eis.order.service.IOrderBillService;
@@ -83,9 +84,21 @@ public class OrderBillServiceImpl implements IOrderBillService {
      * @return
      */
     @Override
-    public List<OrderBillDto> initFinishProdOrder() {
+    public List<OrderBillDto> initFinishProdOrder(Map<Integer, Integer> map) {
         List<OrderBillDto> orderBillList = orderBillMapper.initFinishProdOrder();
-
+        orderBillList.stream().filter(x->{
+            Integer orderBillId = x.getOrderBillId();
+            List<OrderDetail> orderDetailByMap = orderDetailService.findOrderDetailByMap(MapUtils.put("orderBillId",
+                    orderBillId).getMap());
+            for (OrderDetail orderDetail : orderDetailByMap) {
+                if(orderDetail.getPlanQty() < (map.get(orderDetail.getGoodsId()))){
+                    map.put(orderDetail.getGoodsId(),map.get(orderDetail.getGoodsId())-orderDetail.getPlanQty());
+                }else{
+                    return false;
+                }
+            }
+            return true;
+        });
         return orderBillList;
     }
 

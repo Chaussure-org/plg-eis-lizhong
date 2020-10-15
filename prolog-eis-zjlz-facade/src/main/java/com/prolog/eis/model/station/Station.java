@@ -18,6 +18,9 @@ public class Station {
 
     public static final int STATION_TYPE_UNFINISHEDPROD = 1;
     public static final int STATION_TYPE_FINISHEDPROD = 2;
+
+    public static final int UN_LOCK = 0;
+    public static final int LOCK = 1;
     @Column("id")
     @Id
     @ApiModelProperty("站台ID")

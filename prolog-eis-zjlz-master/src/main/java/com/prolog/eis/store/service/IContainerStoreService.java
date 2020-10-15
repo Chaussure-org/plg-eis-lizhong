@@ -61,4 +61,11 @@ public interface IContainerStoreService {
      * @return
      */
     boolean setContainerStoreEmpty(String containerNo);
+
+    /**
+     * 根据商品id找容器
+     * @param goodsId 商品id
+     * @return
+     */
+    List<ContainerStore> findContainerListByGoodsId(Integer goodsId);
 }
