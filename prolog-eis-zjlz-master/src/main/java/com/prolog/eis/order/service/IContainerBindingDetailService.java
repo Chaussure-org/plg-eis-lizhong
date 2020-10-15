@@ -32,4 +32,10 @@ public interface IContainerBindingDetailService {
      * @return
      */
     List<Integer> getContainerBindingToStation(String containerNo);
+
+    /**
+     * 保存容器绑定相亲
+     * @param containerBindingDetail 详情实体
+     */
+    void saveInfo(ContainerBindingDetail containerBindingDetail);
 }

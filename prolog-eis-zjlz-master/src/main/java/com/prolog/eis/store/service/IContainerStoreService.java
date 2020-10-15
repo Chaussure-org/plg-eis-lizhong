@@ -68,4 +68,10 @@ public interface IContainerStoreService {
      * @return
      */
     List<ContainerStore> findContainerListByGoodsId(Integer goodsId);
+
+    /**
+     * 修改容器任务类型
+     * @param containerStore
+     */
+    void updateContainerTaskType(ContainerStore containerStore);
 }

@@ -2,6 +2,7 @@ package com.prolog.eis.order.service;
 
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.model.order.OrderBill;
+import com.prolog.eis.model.order.OrderDetail;
 
 import java.util.List;
 import java.util.Map;
@@ -49,4 +50,10 @@ public interface IOrderBillService {
      * @return
      */
     List<OrderBillDto> initFinishProdOrder(Map<Integer,Integer> map);
+
+    /**
+     * 修改订单及明细状态
+     * @param orderDetail 订单详情
+     */
+    void updateOrderBillStatus(OrderDetail orderDetail) throws Exception;
 }

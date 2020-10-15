@@ -76,6 +76,10 @@ public class OrderDetail {
   @ApiModelProperty("图号")
   private String graphNo;
 
+  @Column("out_qty")
+  @ApiModelProperty("出库数量")
+  private Integer outQty;
+
 
   public Integer getId() {
     return id;
@@ -187,5 +191,13 @@ public class OrderDetail {
 
   public void setGraphNo(String graphNo) {
     this.graphNo = graphNo;
+  }
+
+  public Integer getOutQty() {
+    return outQty;
+  }
+
+  public void setOutQty(Integer outQty) {
+    this.outQty = outQty;
   }
 }

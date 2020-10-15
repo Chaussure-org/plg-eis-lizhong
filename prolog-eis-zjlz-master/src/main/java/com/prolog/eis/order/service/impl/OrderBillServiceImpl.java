@@ -8,6 +8,7 @@ import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.service.IOrderBillHistoryService;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.framework.utils.MapUtils;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.prolog.eis.order.service.IOrderDetailService;
@@ -100,6 +101,17 @@ public class OrderBillServiceImpl implements IOrderBillService {
             return true;
         });
         return orderBillList;
+    }
+
+    @Override
+    public void updateOrderBillStatus(OrderDetail orderDetail) throws Exception {
+        OrderBill orderBill = orderBillMapper.findById(orderDetail.getOrderBillId(), OrderBill.class);
+        orderBill.setOrderTaskState(OrderBill.ORDER_STATUS_OUTING);
+        orderBill.setStartTime(new Date());
+        orderBillMapper.update(orderBill);
+        orderDetail.setUpdateTime(new Date());
+        orderDetailService.updateOrderDetail(orderDetail);
+
     }
 
 }

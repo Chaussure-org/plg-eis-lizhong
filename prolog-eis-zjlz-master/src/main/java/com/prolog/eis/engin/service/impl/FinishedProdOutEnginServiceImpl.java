@@ -6,22 +6,22 @@ import com.prolog.eis.engin.dao.FinishedProdOutEnginMapper;
 import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
+import com.prolog.eis.order.service.IContainerBindingDetailService;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.framework.utils.MapUtils;
+import io.swagger.annotations.ApiModelProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,9 +41,6 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     private IOrderBillService orderBillService;
 
     @Autowired
-    private TrayOutEnginService trayOutEnginService;
-
-    @Autowired
     private IOrderDetailService orderDetailService;
 
     @Autowired
@@ -51,6 +48,9 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
 
     @Autowired
     private IContainerStoreService containerStoreService;
+
+    @ApiModelProperty
+    private IContainerBindingDetailService containerBindingDetailService;
 
     /**
      * 1.优先考虑借道成品
@@ -84,19 +84,79 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         if (orderDetailByMap != null && orderDetailByMap.size() >0) {
             //所有需要出库的托盘
             for (OrderDetail orderDetail : orderDetailByMap) {
+                int bindingNum = 0;
                 //找一个能出的出
                 List<ContainerStore> containerListByGoodsId =
                         containerStoreService.findContainerListByGoodsId(orderDetail.getGoodsId());
                 List<ContainerStore> collect =
-                        containerListByGoodsId.stream().filter(x -> x.getQty() >= orderDetail.getPlanQty()).collect(Collectors.toList());
+                        containerListByGoodsId.stream().filter(x -> x.getQty() >= orderDetail.getPlanQty()-orderDetail.getOutQty()).collect(Collectors.toList());
+                ContainerStore containerStore = null;
                 if (collect.size()>0){
-                    ContainerStore containerStore = collect.get(0);
+                     containerStore = collect.get(0);
+                     bindingNum = orderDetail.getPlanQty()-orderDetail.getOutQty();
                 }else {
-                    containerListByGoodsId.stream().sorted();
+                    List<ContainerStore> collect1 =
+                            containerListByGoodsId.stream().sorted(Comparator.comparing(ContainerStore::getQty).reversed()).collect(Collectors.toList());
+                    containerStore = collect1.get(0);
+                    bindingNum = containerStore.getQty();
+                }
+                try{
+                    this.getOutTray(containerStore,orderDetail,bindingNum);
+                    break;
+                }catch (Exception e){
+                    logger.warn(containerStore.getContainerNo()+"出库失败："+e.getMessage());
+                    continue;
                 }
 
             }
+        }else{
+            logger.warn("未找到可出库订单");
         }
+    }
+
+    /**
+     * 出库托盘
+     * @param containerStore
+     */
+    private void getOutTray(ContainerStore containerStore,OrderDetail orderDetail,int bindingNum) throws Exception {
+        /**
+         * 修改订单状态
+         * 生产绑定明细
+         * 修改托盘任务类型
+         * 出库
+         */
+        orderDetail = checkOrderDetailStatus(containerStore,orderDetail);
+        orderBillService.updateOrderBillStatus(orderDetail);
+        createContainerBindindDetail(containerStore,orderDetail,bindingNum);
+        containerStoreService.updateContainerTaskType(containerStore);
+        //todo 修改路径相关进行出库
+
+    }
+
+    private void createContainerBindindDetail(ContainerStore containerStore, OrderDetail orderDetail,
+                                              Integer bindingNum) {
+        ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
+        containerBindingDetail.setContainerStoreId(containerStore.getId());
+        containerBindingDetail.setContainerNo(containerStore.getContainerNo());
+        containerBindingDetail.setOrderBillId(orderDetail.getOrderBillId());
+        containerBindingDetail.setOrderDetailId(orderDetail.getId());
+        containerBindingDetail.setBindingNum(bindingNum);
+        containerBindingDetailService.saveInfo(containerBindingDetail);
+    }
+
+    /**
+     * 改变订单明细的数量
+     * @param orderDetail
+     * @return
+     */
+    private OrderDetail checkOrderDetailStatus(ContainerStore containerStore,OrderDetail orderDetail) {
+        Integer planQty = orderDetail.getPlanQty();
+        if (planQty>orderDetail.getOutQty()+containerStore.getQty()){
+            orderDetail.setOutQty(orderDetail.getOutQty()+containerStore.getQty());
+        }else {
+            orderDetail.setOutQty(planQty);
+        }
+        return orderDetail;
     }
 
     /**
