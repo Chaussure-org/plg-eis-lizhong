@@ -1,6 +1,8 @@
-package com.prolog.eis.bz.service;
+package com.prolog.eis.pick.service;
 
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
+
+import java.util.List;
 
 /**
  * @author dengj
@@ -40,7 +42,7 @@ public interface IStationBZService {
      * @param containerNo
      * @throws Exception
      */
-    void  containerNoLeave(String containerNo) throws Exception;
+    void  containerNoLeave(String containerNo,int stationId) throws Exception;
 
     /**
      * 订单拖放行
@@ -50,4 +52,26 @@ public interface IStationBZService {
      * @throws Exception
      */
     void orderTrayLeave(String orderTrayNo,int stationId,int orderBillId) throws Exception;
+
+    /**
+     * 计算尾拖
+     * @param containerNo
+     * @return
+     */
+    boolean computeLastTray(String containerNo) throws Exception;
+
+    /**
+     * 计算绑定料箱去最近的一个站台
+     * @param stationIds
+     * @param sourceStation
+     * @return
+     */
+    int computeTargetStation(List<Integer> stationIds,int sourceStation);
+
+
+    /**
+     * 切换拣选单
+     * @param stationId
+     */
+    void changePickingOrder(int stationId);
 }

@@ -60,6 +60,10 @@ public interface IOrderDetailService {
     List<OrderDetail> findOrderDetailByMap(Map map);
 
     /**
-     * 
+     * 查看订单拖商品贴标情况
+     * @param orderBillId
+     * @param orderTrayNo
+     * @return  true贴标区
      */
+    boolean findOrderTrayGoodsLabel(int orderBillId,String orderTrayNo);
 }

@@ -49,6 +49,17 @@ public class Station {
     @Column("max_order_count")
     @ApiModelProperty("最大订单数量")
     private Integer maxOrderCount;
+    @Column("container_no")
+    @ApiModelProperty("料箱编号")
+    private String containerNo;
+
+    public String getContainerNo() {
+        return containerNo;
+    }
+
+    public void setContainerNo(String containerNo) {
+        this.containerNo = containerNo;
+    }
 
     public Integer getId() {
         return id;

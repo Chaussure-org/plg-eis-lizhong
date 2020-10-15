@@ -9,4 +9,11 @@ import com.prolog.eis.model.base.Goods;
  */
 public interface IGoodsService {
     Goods getGoodsByCode(String itemCode) throws Exception;
+
+    /**
+     * 根据id查询
+     * @param goodsId
+     * @return
+     */
+    Goods findGoodsById(int goodsId);
 }

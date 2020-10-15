@@ -1,6 +1,6 @@
-package com.prolog.eis.bz.controller;
+package com.prolog.eis.pick.controller;
 
-import com.prolog.eis.bz.service.IStationBZService;
+import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
 import com.prolog.framework.common.message.RestMessage;
 import io.swagger.annotations.Api;

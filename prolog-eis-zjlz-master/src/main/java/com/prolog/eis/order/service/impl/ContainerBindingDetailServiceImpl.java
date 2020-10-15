@@ -23,4 +23,14 @@ public class ContainerBindingDetailServiceImpl implements IContainerBindingDetai
     public List<ContainerBindingDetail> findMap(Map map) throws Exception {
         return containerBindingDetailMapper.findByMap(map,ContainerBindingDetail.class);
     }
+
+    @Override
+    public void deleteContainerDetail(Map map) {
+        containerBindingDetailMapper.deleteByMap(map,ContainerBindingDetail.class);
+    }
+
+    @Override
+    public List<Integer> getContainerBindingToStation(String containerNo) {
+        return containerBindingDetailMapper.getContainerBindingToStation(containerNo);
+    }
 }
