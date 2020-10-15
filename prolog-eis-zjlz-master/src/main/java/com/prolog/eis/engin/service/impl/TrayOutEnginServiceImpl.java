@@ -14,6 +14,7 @@ import com.prolog.eis.store.dao.OContainerStoreMapper;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,22 +103,24 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             // TODO: 2020/10/13 生成路径 更新状态为 20
             return;
         }
-        //1.要去往agv区域的订单明细 并且优先级是 第1 优先级 然后按时间排序
+        //1.要去往agv区域的订单明细,排除已经生成任务计划的， 然后按时间排序
         List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail("A100");
         if (agvDetailList.isEmpty()) {
             return;
         }
+
         List<OutDetailDto> wmsOutdetails = agvDetailList.stream().filter(x -> x.getWmsOrderPriority() == OrderBill.WMS_PRIORITY).collect(Collectors.toList());
         if (!wmsOutdetails.isEmpty()) {
             //有wms订单优先级,整体算出库的绑定明细
             List<OutContainerDto> outContainerDtoList = this.outByDetails(wmsOutdetails);
-            //生成agv绑定明细
+            this.saveAgvBindingDetail(outContainerDtoList);
         } else {
             List<OutDetailDto> agvDetails = agvDetailList.stream().sorted(Comparator.comparing(OutDetailDto::getOrderPriority)).collect(Collectors.toList());
             List<Integer> orderIds = boxOutEnginService.computeRepeat(agvDetails);
             List<OutDetailDto> details = agvDetails.stream().filter(x -> orderIds.contains(x.getOrderBillId())).collect(Collectors.toList());
             if (!details.isEmpty()) {
                 List<OutContainerDto> outContainerDtoList = this.outByDetails(details);
+                this.saveAgvBindingDetail(outContainerDtoList);
             }
         }
     }
@@ -137,32 +140,45 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
         //把wms优先级 按 商品分组
         Map<Integer, List<OutDetailDto>> goodsIdMap = detailDtos.stream().collect(Collectors.groupingBy(x -> x.getGoodsId()));
+
         for (Map.Entry<Integer, List<OutDetailDto>> map : goodsIdMap.entrySet()) {
+
+            int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
+
+            //商品id，总数，算出所需要出的总箱子
+            List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum, wmsPriority);
             for (OutDetailDto outDetailDto : map.getValue()) {
-                //循环每个商品下的明细集合 的所需商品总数
-                int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
-                List<OutContainerDto> outContainerDtoList = this.outByGoodsId(map.getKey(), sum, wmsPriority);
-                for (OutContainerDto outContainerDto : outContainerDtoList) {
-                    if (outContainerDto.getQty() == 0) {
+                //循环每个商品下的明细集合 进行箱子分配 订单明细
+                for (OutContainerDto outContainerDto : outContainersByGoods) {
+                    //明细已经全部分配完成，则分配下个明细
+                    if (outDetailDto.getPlanQty() == 0) {
                         break;
                     }
+                    //如果箱子数量为0 则找下个箱子
+                    if (outContainerDto.getQty() == 0) {
+                        continue;
+                    }
 
-                    OutDetailDto orderDetail = new OutDetailDto();
+                    OutDetailDto temp = new OutDetailDto();
                     if (outContainerDto.getQty() >= outDetailDto.getPlanQty()) {
+                        temp.setPlanQty(outDetailDto.getPlanQty());
                         outContainerDto.setQty(outContainerDto.getQty() - outDetailDto.getPlanQty());
                         outDetailDto.setPlanQty(0);
-                        orderDetail.setPlanQty(outDetailDto.getPlanQty());
                     } else {
-                        outContainerDto.setQty(0);
+                        temp.setPlanQty(outContainerDto.getQty());
                         outDetailDto.setPlanQty(outDetailDto.getPlanQty() - outContainerDto.getQty());
-                        orderDetail.setPlanQty(outContainerDto.getQty());
+                        outContainerDto.setQty(0);
                     }
                     //给此容器添加绑定的明细
-                    orderDetail.setDetailId(outDetailDto.getDetailId());
-                    outContainerDto.getDetailList().add(orderDetail);
+                    temp.setDetailId(outDetailDto.getDetailId());
+                    temp.setOrderBillId(outDetailDto.getOrderBillId());
+                    temp.setOrderPriority(outDetailDto.getOrderPriority());
+                    temp.setWmsOrderPriority(outDetailDto.getWmsOrderPriority());
+                    outContainerDto.getDetailList().add(temp);
                 }
-                outContainerList.addAll(outContainerDtoList);
             }
+
+            outContainerList.addAll(outContainersByGoods);
         }
         return outContainerList;
     }
@@ -174,7 +190,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
      * @throws Exception
      */
     @Override
-    public List<OutContainerDto> outByGoodsId(int goodsId, int count, int wmsPriority) throws Exception {
+    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count, int wmsPriority) throws Exception {
         /**1.移位数最少 2.巷道任务数最少
          2.找到本层 该商品的货位和数量 以及移位数 最少的
          满足明细数量的，注：尾托的 概念 以及比例的选择
@@ -240,6 +256,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 outContainerDtoList.add(outContainer);
                 sumCount += goodsCountDto.getQty();
             }
+            //此种 商品 在此堆垛机库存找不到满足的
+            if (sumCount < count) {
+                //从箱库库存找，生成输送线绑定明细
+            }
         }
 
         return outContainerDtoList;
@@ -276,22 +296,24 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //出库 订单在立库里 库存满足的订单 在订单明细里记状态
         List<Integer> ids = new ArrayList<>();
         List<Integer> details = new ArrayList<>();
-        //找到agv已经生成绑定的库存
+        Map<Integer, Integer> storeMap = new HashedMap();
+        storeMap = containerStoreMap;
+        //gv已经绑定了不是 wms 优先级 的库存
         List<OutDetailDto> allStores = agvBindingDetaileMapper.findAgvBindingsStore();
         if (!allStores.isEmpty()) {
             Map<Integer, Integer> agvStoreMap = allStores.stream().collect(Collectors.toMap(OutDetailDto::getGoodsId, OutDetailDto::getPlanQty, (v1, v2) -> {
                 return v1 + v2;
             }));
             //java 8 之合并两个map,合并总的库存
-            containerStoreMap.forEach((key, value) -> agvStoreMap.merge(key, value, Integer::sum));
+            storeMap.forEach((key, value) -> agvStoreMap.merge(key, value, Integer::sum));
         }
 
         boolean isAdd = true;
         for (Integer key : orderDetailMap.keySet()) {
             for (OutDetailDto orderDetail : orderDetailMap.get(key)) {
-                //如果该订单明细 是wms优先级，则需计算agv已经绑定了订单的库存
+                //如果该订单明细 是wms优先级，则需计算agv已经绑定了不是 wms 优先级 的订单的库存
                 if (orderDetail.getWmsOrderPriority() == OrderBill.WMS_PRIORITY) {
-                    if (containerStoreMap.containsKey(orderDetail.getGoodsId()) == false || containerStoreMap.get(orderDetail.getGoodsId()) < orderDetail.getPlanQty()) {
+                    if (containerStoreMap.containsKey(orderDetail.getGoodsId()) == false || storeMap.get(orderDetail.getGoodsId()) < orderDetail.getPlanQty()) {
                         isAdd = false;
                         continue;
                     }
@@ -330,11 +352,33 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<Integer> ids = new ArrayList<>();
         List<Integer> trayDetailIds = new ArrayList<>();
         List<Integer> boxDetailIds = new ArrayList<>();
+        Map<Integer, Integer> storeMap = new HashedMap();
+        storeMap = containerTrayMap;
+        //gv已经绑定了不是 wms 优先级 的库存
+        List<OutDetailDto> allStores = agvBindingDetaileMapper.findAgvBindingsStore();
+        if (!allStores.isEmpty()) {
+            Map<Integer, Integer> agvStoreMap = allStores.stream().collect(Collectors.toMap(OutDetailDto::getGoodsId, OutDetailDto::getPlanQty, (v1, v2) -> {
+                return v1 + v2;
+            }));
+            //java 8 之合并两个map,合并总的库存
+            storeMap.forEach((k, value) -> agvStoreMap.merge(k, value, Integer::sum));
+        }
         for (Integer key : orderDetailMap.keySet()) {
-
             for (OutDetailDto orderDetail : orderDetailMap.get(key)) {
                 //首先出库托盘库的托盘，然后出库立库的托盘
                 //当两边的库区都有此商品时，计算从那个库存的出的容器数最少
+                if (orderDetail.getWmsOrderPriority() == 10) {
+                    if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && storeMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
+                        trayDetailIds.add(orderDetail.getDetailId());
+                        continue;
+                    }
+                }else {
+                    if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && storeMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
+                        trayDetailIds.add(orderDetail.getDetailId());
+                        continue;
+                    }
+                }
+
                 if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerTrayMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
                     trayDetailIds.add(orderDetail.getDetailId());
                     continue;
@@ -342,7 +386,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 if (containerBoxMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
                     boxDetailIds.add(orderDetail.getDetailId());
                 } else {
-                    //当一个明细 立库满足不了，箱库也满足不了，则明细需要从两个库区出库，判断该明细在托盘库和箱库中的库存数量，优先从 托盘库出库
+                    //当一个明细 箱库和立库的 库存总和满足 时 则需要从两边的库存一起出库
+
                 }
             }
             ids.add(key);
@@ -356,6 +401,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         if (!ids.isEmpty()) {
             updateBillPriority(ids, OrderBill.THIRD_PRIORITY);
         }
+
     }
 
 
@@ -372,17 +418,25 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     }
 
     private void saveAgvBindingDetail(List<OutContainerDto> outList) {
+        List<AgvBindingDetail> list = new ArrayList<>();
+
         for (OutContainerDto containerDto : outList) {
             for (OutDetailDto detailDto : containerDto.getDetailList()) {
                 AgvBindingDetail agvBindingDetail = new AgvBindingDetail();
+
+                agvBindingDetail.setContainerNo(containerDto.getContainerNo());
+                agvBindingDetail.setOrderBillId(detailDto.getOrderBillId());
                 agvBindingDetail.setOrderMxId(detailDto.getDetailId());
                 agvBindingDetail.setGoodsId(containerDto.getGoodsId());
                 agvBindingDetail.setBindingNum(detailDto.getPlanQty());
-                agvBindingDetail.setContainerNo(containerDto.getContainerNo());
+
                 agvBindingDetail.setOrderPriority(detailDto.getOrderPriority());
                 agvBindingDetail.setWmsOrderPriority(detailDto.getWmsOrderPriority());
+                agvBindingDetail.setDetailStatus(OrderBill.ORDER_STATUS_START_OUT);
                 agvBindingDetail.setUpdateTime(new Date());
+                list.add(agvBindingDetail);
             }
         }
+        agvBindingDetaileMapper.saveBatch(list);
     }
 }

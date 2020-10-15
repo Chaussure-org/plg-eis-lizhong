@@ -44,7 +44,7 @@ public class OutDispatch {
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void finishProdOutDispatch() {
         try {
-            finishedProdOutEnginService.finishProdOutByOrder();
+            //finishedProdOutEnginService.finishProdOutByOrder();
         }catch (Exception e){
             e.printStackTrace();
         }

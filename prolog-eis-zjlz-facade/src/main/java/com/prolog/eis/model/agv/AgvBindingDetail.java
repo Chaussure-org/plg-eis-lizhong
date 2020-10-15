@@ -43,22 +43,35 @@ public class AgvBindingDetail {
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
 
-    public Integer getWmsOrderPriority() {
-        return wmsOrderPriority;
-    }
 
-    public void setWmsOrderPriority(Integer wmsOrderPriority) {
-        this.wmsOrderPriority = wmsOrderPriority;
-    }
 
-    @Column("order_priority")
+    @Column("wms_order_priority")
     @ApiModelProperty("wms订单优先级")
     private Integer wmsOrderPriority;
 
+
+
+    @Column("detail_status")
+    @ApiModelProperty("agv绑定明细状态")
+    private Integer detailStatus;
+
     @Column("update_time")
-    @ApiModelProperty("订单明细id")
+    @ApiModelProperty("更新时间")
     private Date updateTime;
 
+    public Integer getWmsOrderPriority() {
+        return wmsOrderPriority;
+    }
+    public Integer getDetailStatus() {
+        return detailStatus;
+    }
+
+    public void setDetailStatus(Integer detailStatus) {
+        this.detailStatus = detailStatus;
+    }
+    public void setWmsOrderPriority(Integer wmsOrderPriority) {
+        this.wmsOrderPriority = wmsOrderPriority;
+    }
     public Integer getBindingNum() {
         return bindingNum;
     }
