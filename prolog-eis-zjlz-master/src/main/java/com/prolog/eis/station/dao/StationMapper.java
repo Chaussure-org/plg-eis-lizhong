@@ -2,6 +2,7 @@ package com.prolog.eis.station.dao;
 
 import com.prolog.eis.model.station.Station;
 import com.prolog.framework.dao.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -26,6 +27,6 @@ public interface StationMapper extends BaseMapper<Station> {
             "\torder_bill ob\n" +
             "\tJOIN station s ON s.current_station_pick_id = ob.picking_order_id \n" +
             "WHERE\n" +
-            "\tpo.station_id = #{}")
-    List<Integer> getStationOrderBillId();
+            "\tpo.station_id = #{stationId}")
+    List<Integer> getStationOrderBillId(@Param("stationId") int stationId);
 }

@@ -56,6 +56,6 @@ public class StationServiceImpl implements IStationService {
 
     @Override
     public List<Integer> findPickingOrderBillId(int stationId) {
-        return stationMapper.getStationOrderBillId();
+        return stationMapper.getStationOrderBillId(stationId);
     }
 }

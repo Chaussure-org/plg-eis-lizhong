@@ -3,6 +3,7 @@ package com.prolog.eis.pick.service.impl;
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.eis.model.station.Station;
 import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
