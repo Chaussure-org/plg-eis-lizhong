@@ -35,7 +35,7 @@ public class StationServiceImpl implements IStationService {
         if (stations == null){
             throw new Exception("没有找到成品库站台配置");
         }
-        if (stations.size()>1 && stations.size()<1){
+        if (stations.size()>1 || stations.size()<1){
             throw new Exception("成品库站台数量有问题，请检查配置");
         }
         if (stations.get(0).getIsLock()==1) {

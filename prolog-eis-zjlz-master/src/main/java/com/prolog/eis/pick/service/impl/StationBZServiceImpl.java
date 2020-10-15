@@ -1,6 +1,7 @@
 package com.prolog.eis.pick.service.impl;
 
 import com.prolog.eis.base.service.IGoodsService;
+import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.base.Goods;
@@ -22,6 +23,8 @@ import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StationBZServiceImpl implements IStationBZService {
+    private static final Logger logger = LoggerFactory.getLogger(StationBZServiceImpl.class);
     @Autowired
     private IContainerBindingDetailService containerBindingDetailService;
     @Autowired
@@ -109,17 +113,18 @@ public class StationBZServiceImpl implements IStationBZService {
      * 3、明细完成回告wms
      * 4、播种记录保存
      * 5、任务拖放行（容器还有绑定明细则找到最近一个绑定明细发往拣选站台，托盘最后一个绑定明细为尾单则直接放行贴标区）
-     * 6、订单完成更新站台当前作业picking订单拖放行、明细转历史（是否贴标）
+     * 6、订单完成更新站台当前作业picking订、明细转历史、单拖放行（是否贴标）
      * 7、结束上一个拣选单
      *
      * @param stationId
      * @param containerNo
      * @param orderBoxNo
+     * @param completeNum 短拣完成数量
      * @throws Exception
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void pickingConfirm(int stationId, String containerNo, String orderBoxNo) throws Exception {
+    public void pickingConfirm(int stationId, String containerNo, String orderBoxNo,int completeNum) throws Exception {
         if (StringUtils.isBlank(orderBoxNo)) {
             throw new RuntimeException("订单拖编号不能为空");
         }
@@ -144,7 +149,13 @@ public class StationBZServiceImpl implements IStationBZService {
         //更新orderDetail
         Integer orderBillId = containerBinDings.getOrderBillId();
         orderDetail.setHasPickQty(orderDetail.getHasPickQty() + containerBinDings.getSeedNum());
-        orderDetail.setCompleteQty(orderDetail.getCompleteQty() + containerBinDings.getSeedNum());
+        if (completeNum > 0 ){
+            logger.info("站台{}订单明细【{}】短拣完成",stationId,orderDetail.getId());
+            orderDetail.setCompleteQty(orderDetail.getCompleteQty() + completeNum);
+        } else {
+            orderDetail.setCompleteQty(orderDetail.getCompleteQty() + containerBinDings.getSeedNum());
+        }
+
         orderDetail.setUpdateTime(new Date());
         orderDetailService.updateOrderDetail(orderDetail);
         //扣减库存
@@ -155,6 +166,7 @@ public class StationBZServiceImpl implements IStationBZService {
         boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
         if (b){
            //当前订单明细完成，回告wms
+            this.seedToWms(containerBinDings);
         }
         //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存
@@ -170,8 +182,8 @@ public class StationBZServiceImpl implements IStationBZService {
 
 
         }
-        //todo：任务拖放行
-
+        //物料容器放行
+        this.containerNoLeave(containerNo,stationId);
     }
 
     @Override
@@ -299,6 +311,12 @@ public class StationBZServiceImpl implements IStationBZService {
             station.setCurrentStationPickId(pickingOrders.get(0).getId());
             stationService.updateStation(station);
         }
+    }
+
+    @Override
+    public void seedToWms(ContainerBindingDetail containerBindingDetail) {
+       //todo:
+        WmsOutboundCallBackDto wmsOutboundCallBackDto = new WmsOutboundCallBackDto();
     }
 
 

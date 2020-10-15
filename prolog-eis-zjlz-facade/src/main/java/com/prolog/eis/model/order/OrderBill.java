@@ -48,9 +48,9 @@ public class OrderBill {
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
 
-//    @Column("wms_order_priority")
-//    @ApiModelProperty("订单优先级")
-//    private Integer wmsOrderPriority;
+    @Column("wms_order_priority")
+    @ApiModelProperty("订单优先级")
+    private Integer wmsOrderPriority;
 
 
     @Column("order_task_state")

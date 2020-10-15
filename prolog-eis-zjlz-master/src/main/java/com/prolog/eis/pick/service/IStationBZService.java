@@ -1,6 +1,7 @@
 package com.prolog.eis.pick.service;
 
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
+import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.station.Station;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface IStationBZService {
     /**
      * 拣选确认
      */
-    void pickingConfirm(int stationId,String containerNo,String orderBoxNo) throws Exception;
+    void pickingConfirm(int stationId,String containerNo,String orderBoxNo,int completeNum) throws Exception;
     /**
      * 检查容器是否是当前拣选站所需
      */
@@ -75,4 +76,6 @@ public interface IStationBZService {
      * @param station
      */
     void changePickingOrder(Station station) throws Exception;
+
+    void seedToWms(ContainerBindingDetail containerBindingDetail);
 }

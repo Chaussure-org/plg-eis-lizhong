@@ -68,8 +68,26 @@ public class OrderBillHistory {
   @Column("task_id")
   @ApiModelProperty("任务id")
   private String taskId;
+  @Column("wms_order_priority")
+  @ApiModelProperty("订单优先级")
+  private Integer wmsOrderPriority;
 
-  
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
+
+  public Integer getWmsOrderPriority() {
+    return wmsOrderPriority;
+  }
+
+  public void setWmsOrderPriority(Integer wmsOrderPriority) {
+    this.wmsOrderPriority = wmsOrderPriority;
+  }
+
   public Integer getId() {
     return id;
   }
