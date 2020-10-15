@@ -29,4 +29,11 @@ public interface StationMapper extends BaseMapper<Station> {
             "WHERE\n" +
             "\tpo.station_id = #{stationId}")
     List<Integer> getStationOrderBillId(@Param("stationId") int stationId);
+
+    /**
+     * 清空站台拣选单id
+     * @param stationId
+     */
+    @Select("update station set current_station_pick_id = null where station_id = #{stationId}")
+    void updateStationPickingOrderId(@Param("stationId") int stationId);
 }

@@ -45,6 +45,11 @@ public class StationServiceImpl implements IStationService {
     }
 
     @Override
+    public void clearStationPickingOrder(int stationId) {
+        stationMapper.updateStationPickingOrderId(stationId);
+    }
+
+    @Override
     public void updateStation(Station station) throws Exception {
         stationMapper.update(station);
     }
