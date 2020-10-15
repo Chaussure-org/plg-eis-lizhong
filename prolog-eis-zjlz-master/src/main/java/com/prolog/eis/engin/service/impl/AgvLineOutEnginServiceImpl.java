@@ -1,12 +1,10 @@
 package com.prolog.eis.engin.service.impl;
 
-import com.prolog.eis.dto.lzenginee.PickingAreaDto;
 import com.prolog.eis.dto.lzenginee.boxoutdto.StationPickingOrderDto;
 import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.service.AgvLineOutEnginService;
 import com.prolog.eis.model.PickingOrder;
-import com.prolog.eis.model.Station;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.order.ContainerBindingDetail;

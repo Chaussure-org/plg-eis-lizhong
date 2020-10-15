@@ -1,6 +1,6 @@
 package com.prolog.eis.station.service;
 
-import com.prolog.eis.model.Station;
+import com.prolog.eis.model.station.Station;
 
 /**
  * @author dengj
@@ -18,4 +18,10 @@ public interface IStationService {
      * 根据id修改
      */
     void updateStation(Station station) throws Exception;
+
+    /**
+     * 检查站台状态
+     * @return
+     */
+    boolean checkStationStatus() throws Exception;
 }

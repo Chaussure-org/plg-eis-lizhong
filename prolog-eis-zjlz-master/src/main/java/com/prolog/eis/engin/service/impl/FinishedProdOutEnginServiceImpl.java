@@ -1,6 +1,7 @@
 package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.dto.OrderBillDto;
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.engin.dao.FinishedProdOutEnginMapper;
 import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
@@ -8,7 +9,10 @@ import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
+import com.prolog.eis.station.service.IStationService;
 import com.prolog.framework.utils.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,8 @@ import java.util.Map;
 @Service
 public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FinishedProdOutEnginServiceImpl.class);
+
     @Autowired
     private FinishedProdOutEnginMapper mapper;
 
@@ -35,6 +41,9 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     @Autowired
     private IOrderDetailService orderDetailService;
 
+    @Autowired
+    private IStationService stationService;
+
     /**
      * 1.优先考虑借道成品
      * 2.初始化成品立库信息
@@ -45,14 +54,14 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     @Override
     public synchronized void finishProdOutByOrder() throws Exception {
         boolean flag = this.checkStation();
-        if (!flag) {
+        if (flag) {
             this.initFinishedTrayLib();
             List<OrderBillDto> orderBillDtos =  orderBillService.initFinishProdOrder();
             if (orderBillDtos != null && orderBillDtos.size()>0) {
                 this.trayOut(orderBillDtos.get(0));
             }
         }else {
-
+            logger.warn("当前站台锁定状态");
         }
     }
 
@@ -65,8 +74,11 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         Map<String, Object> param = MapUtils.put("orderBillId",orderBillDto.getOrderBillId()).getMap();
         List<OrderDetail> orderDetailByMap = orderDetailService.findOrderDetailByMap(param);
         if (orderDetailByMap != null && orderDetailByMap.size() >0) {
-            trayOutEnginService.outByGoodsId(orderDetailByMap.get(0).getGoodsId(),
-                    orderDetailByMap.get(0).getPlanQty(),orderBillDto.getWmsOrderPriority());
+            //所有需要出库的托盘
+            List<OutContainerDto> outContainerDtos =
+                    trayOutEnginService.outByGoodsId(orderDetailByMap.get(0).getGoodsId(),
+                    orderDetailByMap.get(0).getPlanQty(), orderBillDto.getWmsOrderPriority());
+            //找一个能出的出
         }
     }
 
@@ -74,9 +86,8 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
      * 检查站台当前状态是否完成当前订单
      * @return
      */
-    private boolean checkStation() {
-
-        return false;
+    private boolean checkStation() throws Exception {
+        return stationService.checkStationStatus();
     }
 
     /**

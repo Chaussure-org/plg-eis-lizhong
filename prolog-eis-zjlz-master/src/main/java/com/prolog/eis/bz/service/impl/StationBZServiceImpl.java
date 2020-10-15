@@ -3,7 +3,6 @@ package com.prolog.eis.bz.service.impl;
 import com.prolog.eis.bz.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
-import com.prolog.eis.model.Station;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.service.IContainerBindingDetailService;
