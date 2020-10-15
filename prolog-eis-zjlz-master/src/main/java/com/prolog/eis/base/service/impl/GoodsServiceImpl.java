@@ -42,6 +42,11 @@ public class GoodsServiceImpl implements IGoodsService {
     }
 
     @Override
+    public Goods getGoodsByCode(String itemCode) throws Exception {
+        return null;
+    }
+
+    @Override
     public Goods findGoodsById(int goodsId) {
         return goodsMapper.findById(goodsId, Goods.class);
     }

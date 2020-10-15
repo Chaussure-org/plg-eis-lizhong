@@ -85,6 +85,14 @@ public class OrderBill {
     @ApiModelProperty("任务id")
     private String taskId;
 
+    public Integer getWmsOrderPriority() {
+        return wmsOrderPriority;
+    }
+
+    public void setWmsOrderPriority(Integer wmsOrderPriority) {
+        this.wmsOrderPriority = wmsOrderPriority;
+    }
+
     public Integer getId() {
         return id;
     }

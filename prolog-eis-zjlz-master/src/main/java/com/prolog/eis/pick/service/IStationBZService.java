@@ -77,5 +77,9 @@ public interface IStationBZService {
      */
     void changePickingOrder(Station station) throws Exception;
 
+    /**
+     * 播种明细回告wms
+     * @param containerBindingDetail
+     */
     void seedToWms(ContainerBindingDetail containerBindingDetail);
 }
