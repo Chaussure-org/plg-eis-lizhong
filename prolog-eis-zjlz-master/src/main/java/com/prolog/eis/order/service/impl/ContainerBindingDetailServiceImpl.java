@@ -33,4 +33,9 @@ public class ContainerBindingDetailServiceImpl implements IContainerBindingDetai
     public List<Integer> getContainerBindingToStation(String containerNo) {
         return containerBindingDetailMapper.getContainerBindingToStation(containerNo);
     }
+
+    @Override
+    public void saveInfo(ContainerBindingDetail containerBindingDetail) {
+        containerBindingDetailMapper.save(containerBindingDetail);
+    }
 }

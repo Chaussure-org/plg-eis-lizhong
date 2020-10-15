@@ -4,14 +4,13 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
-import com.prolog.framework.core.restriction.Criteria;
-import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -92,6 +91,13 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
     @Override
     public List<ContainerStore> findContainerListByGoodsId(Integer goodsId) {
         return containerStoreMapper.findBestContainerSeq(goodsId);
+    }
+
+    @Override
+    public void updateContainerTaskType(ContainerStore containerStore) {
+        containerStore.setTaskType(ContainerStore.TASK_TYPE_OUTBOUND);
+        containerStore.setUpdateTime(new Date());
+        containerStoreMapper.update(containerStore);
     }
 
     private GoodsInfo getEmptyGoods() {
