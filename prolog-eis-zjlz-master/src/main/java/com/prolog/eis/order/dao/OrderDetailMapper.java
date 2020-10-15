@@ -23,7 +23,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "ob.wms_order_priority AS wmsOrderPriority,\n" +
             "od.id AS detailId,\n" +
             "\tod.goods_id AS goodsId,\n" +
-            "\tod.plan_qty AS qty \n" +
+            "\tod.plan_qty AS planQty \n" +
             "FROM\n" +
             "order_bill ob JOIN\n" +
             "\torder_detail od on ob.id=od.order_bill_id\n" +
@@ -52,6 +52,8 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
 
     @Select("SELECT\n" +
             "\tod.order_bill_id AS orderBillId,\n" +
+            "\tod.id AS detailId,\n" +
+            "\tod.goods_id AS goodsId,\n" +
             "\tob.wms_order_priority AS wmsOrderPriority,\n" +
             "\tod.plan_qty AS planQty\n" +
             "FROM\n" +
