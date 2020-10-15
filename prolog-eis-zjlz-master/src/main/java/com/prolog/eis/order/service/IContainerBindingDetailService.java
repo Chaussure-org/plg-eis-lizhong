@@ -14,6 +14,22 @@ public interface IContainerBindingDetailService {
 
     /**
      * 根据map查询
+     * @param map
+     * @return
+     * @throws Exception
      */
     List<ContainerBindingDetail> findMap(Map map) throws Exception;
+
+    /**
+     * 根据map删除
+     * @param map
+     */
+    void deleteContainerDetail(Map map);
+
+    /**
+     *   获取容器绑定的站台
+     * @param containerNo
+     * @return
+     */
+    List<Integer> getContainerBindingToStation(String containerNo);
 }

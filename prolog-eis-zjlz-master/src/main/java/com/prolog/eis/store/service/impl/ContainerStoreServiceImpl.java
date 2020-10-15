@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengj
@@ -46,6 +47,11 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         containerStore.setQty(containerStore.getQty() - num);
         this.updateContainerStore(containerStore);
     }
+
+	@Override
+	public List<ContainerStore> findByMap(Map map) {
+		return containerStoreMapper.findByMap(map,ContainerStore.class);
+	}
 
 
 	@Override

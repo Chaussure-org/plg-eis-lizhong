@@ -10,6 +10,14 @@ import java.util.List;
  * @CreateTime 2020-09-27 11:12
  */
 public interface IGoodsService {
+    Goods getGoodsByCode(String itemCode) throws Exception;
+
+    /**
+     * 根据id查询
+     * @param goodsId
+     * @return
+     */
+    Goods findGoodsById(int goodsId);
 
     /**
      * 根据商品id查商品

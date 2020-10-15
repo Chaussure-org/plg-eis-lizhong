@@ -4,6 +4,7 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengj
@@ -24,6 +25,13 @@ public interface IContainerStoreService {
      * @throws Exception
      */
     void updateContainerStoreNum(int num,String containerNo) throws Exception;
+
+    /**
+     * 根据map查询
+     * @param map
+     * @return
+     */
+    List<ContainerStore> findByMap(Map map);
 
 
     /**

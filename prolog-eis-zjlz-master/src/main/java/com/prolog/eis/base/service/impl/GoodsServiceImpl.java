@@ -40,4 +40,9 @@ public class GoodsServiceImpl implements IGoodsService {
             goodsMapper.update(updateGood);
         }
     }
+
+    @Override
+    public Goods findGoodsById(int goodsId) {
+        return goodsMapper.findById(goodsId, Goods.class);
+    }
 }

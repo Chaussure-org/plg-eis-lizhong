@@ -53,9 +53,9 @@ public class Goods {
   @ApiModelProperty("包装数量")
   private Integer packageNumber;
 
-  @Column("past_lable_flg")
+  @Column("past_label_flg")
   @ApiModelProperty("贴标标识")
-  private Integer pastLableFlg;
+  private Integer pastLabelFlg;
 
   @Column("create_time")
   @ApiModelProperty("创建时间")
@@ -157,12 +157,12 @@ public class Goods {
     this.packageNumber = packageNumber;
   }
 
-  public Integer getPastLableFlg() {
-    return pastLableFlg;
+  public Integer getPastLabelFlg() {
+    return pastLabelFlg;
   }
 
-  public void setPastLableFlg(Integer pastLableFlg) {
-    this.pastLableFlg = pastLableFlg;
+  public void setPastLabelFlg(Integer pastLabelFlg) {
+    this.pastLabelFlg = pastLabelFlg;
   }
 
   public java.util.Date getCreateTime() {

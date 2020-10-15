@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author wangkang
@@ -96,5 +97,16 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     @Override
     public List<OrderDetail> findOrderDetailByMap(Map map) {
         return orderDetailMapper.findByMap(map,OrderDetail.class);
+    }
+
+    @Override
+    public boolean findOrderTrayGoodsLabel(int orderBillId, String orderTrayNo) {
+        int size = orderDetailMapper.goodsLabelInfo(orderBillId, orderTrayNo).stream().filter(x -> x.getPastLabelFlg() == 1)
+                .collect(Collectors.toList()).size();
+        if (size > 0){
+            return true;
+        }else {
+            return false;
+        }
     }
 }

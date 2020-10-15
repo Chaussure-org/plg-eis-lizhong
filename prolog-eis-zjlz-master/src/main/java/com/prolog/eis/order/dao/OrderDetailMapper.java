@@ -1,6 +1,7 @@
 package com.prolog.eis.order.dao;
 
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
+import com.prolog.eis.dto.bz.OrderDetailLabelDTO;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.model.order.OrderDetail;
@@ -100,6 +101,24 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
      * @return
      * @throws Exception
      */
-    @Select("select COUNT(*) from order_detail where plan_qty <= complete_qty and order_bill_id = #{orderBillId}")
+    @Select("select COUNT(*) from order_detail where plan_qty = has_pick_qty and order_bill_id = #{orderBillId}")
     int checkOrderFinish(@Param("orderBillId") int orderBillId) throws Exception;
+
+    /**
+     * 商品是否贴标
+     * @param orderBillId
+     * @param orderTrayNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tod.goods_id AS goodsId,\n" +
+            "\tg.past_label_flg AS pastLabelFlg \n" +
+            "FROM\n" +
+            "\tseed_info s\n" +
+            "\tJOIN order_detail od ON od.id = s.order_detail_id\n" +
+            "\tJOIN goods g ON g.id = od.goods_id \n" +
+            "WHERE\n" +
+            "\ts.order_bill_id = #{orderBillId} \n" +
+            "\tAND s.order_tray_no = #{orderTrayNo}")
+    List<OrderDetailLabelDTO> goodsLabelInfo(@Param("orderBillId") int orderBillId,@Param("orderTrayNo") String orderTrayNo);
 }
