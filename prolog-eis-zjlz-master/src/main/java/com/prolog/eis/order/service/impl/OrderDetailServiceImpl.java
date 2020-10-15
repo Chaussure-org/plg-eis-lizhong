@@ -109,4 +109,16 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
             return false;
         }
     }
+
+    @Override
+    public boolean checkOrderDetailFinish(int orderDetailId) {
+        OrderDetail orderDetail = orderDetailMapper.findById(orderDetailId, OrderDetail.class);
+        if (orderDetail == null){
+            throw new RuntimeException("没有找到对应订单明细");
+        }
+        if (orderDetail.getPlanQty().equals(orderDetail.getHasPickQty())){
+            return true;
+        }
+        return false;
+    }
 }

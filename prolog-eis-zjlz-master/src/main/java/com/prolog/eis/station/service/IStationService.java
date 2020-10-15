@@ -48,4 +48,9 @@ public interface IStationService {
      * @return
      */
     boolean checkStationStatus() throws Exception;
+
+    /**
+     * 清空站台拣选单id
+     */
+    void clearStationPickingOrder(int stationId);
 }

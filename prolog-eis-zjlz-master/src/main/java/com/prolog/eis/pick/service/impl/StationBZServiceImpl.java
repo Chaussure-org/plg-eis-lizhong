@@ -2,7 +2,9 @@ package com.prolog.eis.pick.service.impl;
 
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.eis.model.order.PickingOrderHistory;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
@@ -16,8 +18,11 @@ import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.order.service.ISeedInfoService;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.store.service.IPickingOrderHistoryService;
+import com.prolog.eis.store.service.IPickingOrderService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +52,10 @@ public class StationBZServiceImpl implements IStationBZService {
     private ISeedInfoService seedInfoService;
     @Autowired
     private IGoodsService goodsService;
+    @Autowired
+    private IPickingOrderService pickingOrderService;
+    @Autowired
+    private IPickingOrderHistoryService pickingOrderHistoryService;
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -95,7 +104,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
     /**
      * 播种确认
-     *1、找到当前拣选站所需绑定明细
+     * 1、找到当前拣选站所需绑定明细
      * 2、库存扣减，订单明细更新
      * 3、明细完成回告wms
      * 4、播种记录保存
@@ -143,17 +152,23 @@ public class StationBZServiceImpl implements IStationBZService {
         // 删除绑定明细
         containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderBillId()).getMap());
         //todo:   回告wms
+        boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
+        if (b){
+           //当前订单明细完成，回告wms
+        }
         //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存
         seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum());
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
+            //切换拣选单
+            this.changePickingOrder(station);
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //todo：订单拖放行 贴标区或非贴标区
             this.orderTrayLeave(containerNo, stationId, orderBillId);
-            //切换拣选单
-            
+
+
         }
         //todo：任务拖放行
 
@@ -202,13 +217,12 @@ public class StationBZServiceImpl implements IStationBZService {
                     if (!flag) {
                         //不是尾拖，发往拣选站
                     }
-                }else {
+                } else {
                     // 计算合适站台
                 }
             }
         }
     }
-
 
 
     @Override
@@ -247,18 +261,18 @@ public class StationBZServiceImpl implements IStationBZService {
     @Override
     public int computeTargetStation(List<Integer> stationIds, int sourceStation) {
         int targetStationId = 0;
-        if (stationIds.size() == 1 ){
+        if (stationIds.size() == 1) {
             targetStationId = stationIds.get(0);
-        }else {
+        } else {
             for (Integer stationId : stationIds) {
                 //先找到一个比当前站台id且最近的站台
-                if (sourceStation > stationId){
+                if (sourceStation > stationId) {
                     targetStationId = stationId;
                     break;
                 }
             }
             //找寻最大的一个拣选站台
-            if (targetStationId == 0){
+            if (targetStationId == 0) {
                 targetStationId = stationIds.get(0);
             }
 
@@ -267,8 +281,24 @@ public class StationBZServiceImpl implements IStationBZService {
     }
 
     @Override
-    public void changePickingOrder(int stationId) {
+    public void changePickingOrder(Station station) throws Exception {
+        //当前拣选单转历史
+        PickingOrder pickingOrder = pickingOrderService.findByMap(MapUtils.put("id", station.getCurrentStationPickId()).getMap()).get(0);
+        pickingOrder.setPickCompleteTime(new Date());
+        pickingOrder.setSeedCompleteTime(new Date());
+        pickingOrder.setUpdateTime(new Date());
+        PickingOrderHistory pickingOrderHistory = new PickingOrderHistory();
+        BeanUtils.copyProperties(pickingOrder, pickingOrderHistory);
+        pickingOrderHistoryService.savePickingOrder(pickingOrderHistory);
 
+        //清除站台信息
+        stationService.clearStationPickingOrder(station.getId());
+        //获取下一个拣选单
+        List<PickingOrder> pickingOrders = pickingOrderService.findByMap(MapUtils.put("stationId", station.getId()).getMap());
+        if (pickingOrders.size() != 0) {
+            station.setCurrentStationPickId(pickingOrders.get(0).getId());
+            stationService.updateStation(station);
+        }
     }
 
 

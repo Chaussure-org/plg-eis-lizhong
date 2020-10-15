@@ -1,6 +1,7 @@
 package com.prolog.eis.pick.service;
 
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
+import com.prolog.eis.model.station.Station;
 
 import java.util.List;
 
@@ -71,7 +72,7 @@ public interface IStationBZService {
 
     /**
      * 切换拣选单
-     * @param stationId
+     * @param station
      */
-    void changePickingOrder(int stationId);
+    void changePickingOrder(Station station) throws Exception;
 }

@@ -29,14 +29,20 @@ public interface IOrderDetailService {
 
     /**
      * 根据id修改orderDetail
+     * @param orderDetail
+     * @throws Exception
      */
     void updateOrderDetail(OrderDetail orderDetail) throws Exception;
     /**
      * 根据id查询
      */
     OrderDetail findOrderDetailById(int id) throws Exception;
+
     /**
      * 检查订单是否播种完成
+     * @param orderBillId
+     * @return
+     * @throws Exception
      */
     boolean orderPickingFinish(int orderBillId) throws Exception;
 
@@ -66,4 +72,12 @@ public interface IOrderDetailService {
      * @return  true贴标区
      */
     boolean findOrderTrayGoodsLabel(int orderBillId,String orderTrayNo);
+
+
+    /**
+     * 判断商品明细是否完成播种
+     * @param orderDetailId
+     * @return
+     */
+    boolean checkOrderDetailFinish(int orderDetailId);
 }

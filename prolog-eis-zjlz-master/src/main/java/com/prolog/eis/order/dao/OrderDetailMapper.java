@@ -101,7 +101,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
      * @return
      * @throws Exception
      */
-    @Select("select COUNT(*) from order_detail where plan_qty = has_pick_qty and order_bill_id = #{orderBillId}")
+    @Select("select COUNT(*) from order_detail where plan_qty != has_pick_qty and order_bill_id = #{orderBillId}")
     int checkOrderFinish(@Param("orderBillId") int orderBillId) throws Exception;
 
     /**

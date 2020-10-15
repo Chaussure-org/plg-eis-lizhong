@@ -6,6 +6,8 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 
 /**
  * @Description
@@ -46,17 +48,17 @@ public class OrderBill {
     @ApiModelProperty("订单优先级")
     private Integer orderPriority;
 
-    @Column("wms_order_priority")
-    @ApiModelProperty("订单优先级")
-    private Integer wmsOrderPriority;
+//    @Column("wms_order_priority")
+//    @ApiModelProperty("订单优先级")
+//    private Integer wmsOrderPriority;
 
 
     @Column("order_task_state")
     @ApiModelProperty("订单任务进度（0创建 10 开始出库 20 出库中 30 完成）")
     private Integer orderTaskState;
 
-    @Column("receiver")
-    @ApiModelProperty("收货人")
+    @Column("order_area")
+    @ApiModelProperty("区域")
     private String receiver;
 
     @Column("start_time")
@@ -74,6 +76,14 @@ public class OrderBill {
     @Column("is_add_pool")
     @ApiModelProperty("是否加入订单池 0 未加入  1 已加入")
     private Integer isAddPool;
+
+    @Column("out_time")
+    @ApiModelProperty("出库截止时间，越靠小越先出")
+    private Date outTime;
+
+    @Column("task_id")
+    @ApiModelProperty("任务id")
+    private String taskId;
 
     public Integer getId() {
         return id;
@@ -131,27 +141,27 @@ public class OrderBill {
         this.receiver = receiver;
     }
 
-    public java.util.Date getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(java.util.Date startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public java.util.Date getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(java.util.Date createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
-    public java.util.Date getCompleteTime() {
+    public Date getCompleteTime() {
         return completeTime;
     }
 
-    public void setCompleteTime(java.util.Date completeTime) {
+    public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
     }
 
@@ -163,11 +173,19 @@ public class OrderBill {
         this.isAddPool = isAddPool;
     }
 
-    public Integer getWmsOrderPriority() {
-        return wmsOrderPriority;
+    public Date getOutTime() {
+        return outTime;
     }
 
-    public void setWmsOrderPriority(Integer wmsOrderPriority) {
-        this.wmsOrderPriority = wmsOrderPriority;
+    public void setOutTime(Date outTime) {
+        this.outTime = outTime;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 }

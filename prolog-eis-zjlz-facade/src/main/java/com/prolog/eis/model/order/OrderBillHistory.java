@@ -65,6 +65,11 @@ public class OrderBillHistory {
   @ApiModelProperty("出库截止时间，越靠小越先出")
   private java.util.Date outTime;
 
+  @Column("task_id")
+  @ApiModelProperty("任务id")
+  private String taskId;
+
+  
   public Integer getId() {
     return id;
   }
