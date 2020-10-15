@@ -1,6 +1,6 @@
 package com.prolog.eis.station.service;
 
-import com.prolog.eis.model.Station;
+import com.prolog.eis.model.station.Station;
 
 import java.util.List;
 import java.util.Map;
@@ -42,4 +42,10 @@ public interface IStationService {
      * @return
      */
     List<Integer> findPickingOrderBillId(int stationId);
+
+    /**
+     * 检查站台状态
+     * @return
+     */
+    boolean checkStationStatus() throws Exception;
 }

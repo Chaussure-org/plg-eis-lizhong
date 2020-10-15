@@ -1,11 +1,13 @@
 package com.prolog.eis.rcs.service.impl;
 
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.rcs.service.IRCSCallbackService;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.utils.MapUtils;
@@ -30,6 +32,7 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
     private ContainerPathTaskService containerPathTaskService;
 
     @Override
+    @LogInfo(desci = "rcs任务回告",direction = "rcs->eis",type = LogDto.RCS_TYPE_CALLBACK,systemType = LogDto.RCS)
     @Transactional(rollbackFor = Exception.class)
     public void rcsCallback(String taskCode, String method) throws Exception {
         if (StringUtils.isEmpty(taskCode) || StringUtils.isEmpty(method)) {

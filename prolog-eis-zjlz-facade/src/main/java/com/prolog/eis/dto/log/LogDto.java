@@ -11,12 +11,140 @@ import java.util.Date;
  */
 public class LogDto {
 
+    /**
+     * wms系统
+     */
     public static final int WMS = 1;
-    public static final int WCS = 2;
-    public static final int SAS = 3;
-    public static final int MCS = 4;
-    public static final int RCS = 5;
 
+    /**
+     * wcs系统
+     */
+    public static final int WCS = 2;
+
+    /**
+     * sas系统
+     */
+    public static final int SAS = 3;
+
+    /**
+     * mcs系统
+     */
+    public static final int MCS = 4;
+
+    /**
+     * rcs系统
+     */
+    public static final int RCS = 5;
+    /**
+     * wms入库任务下发至eis
+     */
+    public static final int WMS_TYPE_SEND_INBOUND_TASK = 1;
+
+    /**
+     * wms出库任务下发至eis
+     */
+    public static final int WMS_TYPE_SEND_OUTBOUND_TASK = 2;
+
+    /**
+     * wms修改优先级至eis
+     */
+    public static final int WMS_TYPE_UPDATE_PRIORITY = 3;
+
+    /**
+     * eis入库任务完成回告wms
+     */
+    public static final int WMS_TYPE_INBOUND_CALLBACK = 4;
+
+    /**
+     * eis出库任务完成回告wms
+     */
+    public static final int WMS_TYPE_OUTBOUND_CALLBACK = 5;
+
+    /**
+     * wms同步商品到eis
+     */
+    public static final int WMS_TYPE_GOODS_SYNC = 6;
+
+    /**
+     * wms盘点任务下发
+     */
+    public static final int WMS_TYPE_SEND_INVENTORY_TAKS = 7;
+
+    /**
+     * eis盘点任务完成回告
+     */
+    public static final int WMS_TYPE_INVENTORY_CALLBACK = 8;
+
+
+    /**
+     * wcs输送线任务回告eis
+     */
+    public static final int WCS_TYPE_TASK_CALLBACK = 1;
+
+    /**
+     * wcsBCR回告eis
+     */
+    public static final int WCS_TYPE_BCR_REQUEST = 2;
+
+    /**
+     * eis下发输送线行走至wcs
+     */
+    public static final int WCS_TYPE_lINE_MOVE = 3;
+
+    /**
+     * sas入库任务回告eis
+     */
+    public static final int SAS_TYPE_SEND_INBOUND_TASK_CALLBACK = 1;
+
+    /**
+     * sas出库任务回告eis
+     */
+    public static final int SAS_TYPE_SEND_OUTBOUND_TASK_CALLBACK = 2;
+
+    /**
+     * sas换层任务回告eis
+     */
+    public static final int SAS_TYPE_CHANGE_LAYER_CALLBACK = 3;
+
+    /**
+     * eis下发换层指令sas
+     */
+    public static final int SAS_TYPE_CHANGE_LAYER = 4;
+
+    /**
+     * eis下发出入库指令sas
+     */
+    public static final int SAS_TYPE_SEND_TASK = 5;
+
+    /**
+     * eis请求小车信息sas
+     */
+    public static final int SAS_TYPE_GET_CARINFO = 6;
+
+    /**
+     * eis请求提升机信息sas
+     */
+    public static final int SAS_TYPE_GET_HOISTERINFO = 7;
+
+    /**
+     * rcs任务回告eis
+     */
+    public static final int RCS_TYPE_CALLBACK = 1;
+
+    /**
+     * eis下发agv移动任务
+     */
+    public static final int RCS_TYPE_SEND_TASK = 2;
+
+    /**
+     * mcs任务回告eis
+     */
+    public static final int MCS_TYPE_CALLBACK = 1;
+
+    /**
+     * eis下发堆垛机移动指令mcs
+     */
+    public static final int MCS_TYPE_CONTIANER_MOVE = 2;
 
 
     @ApiModelProperty("id")
@@ -28,8 +156,7 @@ public class LogDto {
     @ApiModelProperty("方法流向")
     private String direct;
 
-    @ApiModelProperty("任务类型：1：入库 2：出库 3:移库 4:小车换层 5:输送线行走 \n" +
-            "\t\t\t6-料箱进站 7-订单框进站 8-体积检测 9-入库口 10-订单箱到位 11-料箱到位")
+    @ApiModelProperty("任务类型")
     private Integer type;
 
     @ApiModelProperty("方法名")

@@ -1,7 +1,7 @@
 package com.prolog.eis.dto.location.sxk;
 
 
-import com.prolog.eis.model.location.sxk.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocation;
 
 import java.util.List;
 

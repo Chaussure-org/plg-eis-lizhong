@@ -1,7 +1,7 @@
 package com.prolog.eis.location.dao;
 
-import com.prolog.eis.dto.location.sxk.SxStoreGroupDto;
-import com.prolog.eis.dto.location.sxk.SxStoreLockDto;
+import com.prolog.eis.dto.store.SxStoreGroupDto;
+import com.prolog.eis.dto.store.SxStoreLockDto;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 

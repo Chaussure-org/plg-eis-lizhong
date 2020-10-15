@@ -1,6 +1,6 @@
 package com.prolog.eis.store.service;
 
-import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 
 /**
  * @Author wangkang

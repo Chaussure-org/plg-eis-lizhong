@@ -38,6 +38,7 @@ public class LogAspect {
 
         String methodName = joinPoint.getSignature().getName();
         Object target = joinPoint.getTarget();
+
         Signature sig = joinPoint.getSignature();
         MethodSignature msig = null;
         if (!(sig instanceof MethodSignature)) {
@@ -79,6 +80,5 @@ public class LogAspect {
         }else {
             joinPoint.proceed();
         }
-
     }
 }

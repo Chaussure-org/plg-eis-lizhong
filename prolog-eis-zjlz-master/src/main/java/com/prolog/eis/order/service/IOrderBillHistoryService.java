@@ -1,6 +1,7 @@
 package com.prolog.eis.order.service;
 
 import com.prolog.eis.model.order.OrderBillHistory;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

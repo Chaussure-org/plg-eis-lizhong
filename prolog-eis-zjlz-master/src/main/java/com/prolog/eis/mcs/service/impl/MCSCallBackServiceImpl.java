@@ -1,5 +1,6 @@
 package com.prolog.eis.mcs.service.impl;
 
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
@@ -7,9 +8,11 @@ import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.mcs.service.IMCSCallBackService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.util.mapper.Query;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +40,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     private ContainerPathTaskService containerPathTaskService;
 
     @Override
+    @LogInfo(desci = "mcs任务回告",direction = "mcs->eis",type = LogDto.MCS_TYPE_CALLBACK,systemType = LogDto.MCS)
     @Transactional(rollbackFor = Exception.class)
     public void mcsCallback(String taskCode, int state) throws Exception {
         if (StringUtils.isEmpty(taskCode)) {

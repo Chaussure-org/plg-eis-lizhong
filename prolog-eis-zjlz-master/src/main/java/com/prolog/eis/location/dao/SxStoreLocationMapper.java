@@ -1,7 +1,7 @@
 package com.prolog.eis.location.dao;
 
-import com.prolog.eis.dto.location.sxk.SxStoreLocationDto;
-import com.prolog.eis.model.location.sxk.SxStoreLocation;
+import com.prolog.eis.dto.store.SxStoreLocationDto;
+import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;

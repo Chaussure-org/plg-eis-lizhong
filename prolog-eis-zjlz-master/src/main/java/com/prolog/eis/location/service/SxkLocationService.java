@@ -1,7 +1,7 @@
 package com.prolog.eis.location.service;
 
-import com.prolog.eis.model.location.sxk.SxStoreLocation;
-import com.prolog.eis.model.location.sxk.SxStoreLocationGroup;
+import com.prolog.eis.model.store.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 
 public interface SxkLocationService {
 

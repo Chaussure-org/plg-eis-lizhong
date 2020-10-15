@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.dao;
 
+import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
@@ -26,4 +27,8 @@ public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
             "FROM agv_binding_detail abd LEFT JOIN container_path_task cpt ON abd.container_no=cpt.container_no WHERE\n" +
             "cpt.source_area='a' AND cpt.task_state=0")
     List<AgvBindingDetail> findAgvBindingDetails();
+
+    @Select("\tSELECT abd.goodsId AS goodsId,cs.qty AS qty FROM agv_binding_detail abd LEFT JOIN container_store cs ON abd.container_no=cs.container_no\n")
+    List<OutDetailDto> findAgvBindingsStore();
+
 }

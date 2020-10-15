@@ -3,8 +3,10 @@ package com.prolog.eis.rcs.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.prolog.eis.configuration.EisProperties;
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.rcs.service.IRCSService;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologHttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class RcsServiceImpl implements IRCSService {
 	private RestTemplate restTemplate;
 	
 	@Override
+	@LogInfo(desci = "eis发起rcs任务",direction = "eis->rcs",type = LogDto.RCS_TYPE_SEND_TASK,systemType = LogDto.RCS)
 	public RcsRequestResultDto sendTask(String reqCode,String containerNo,String startPosition,String endPosition,String taskTyp,String priority) {
 
 		JSONObject jsonObject = new JSONObject();
