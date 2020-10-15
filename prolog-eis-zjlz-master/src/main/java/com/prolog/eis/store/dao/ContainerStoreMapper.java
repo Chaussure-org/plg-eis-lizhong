@@ -75,4 +75,12 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
 
 	@Update("update container_store set container_type = -1, goods_id = null, qty = 0 where container_no = #{containerNo}")
 	void setContainerStoreEmpty(@Param("containerNo") String containerNo);
+
+
+	@Select("select * from container_store cs\n" +
+			"join container_path_task cpt on cs.container_no = cpt.container_no\n" +
+			"join sx_store_location sl on cpt.source_location = sl.id\n" +
+			"where cs.task_type=0 #and cs.goods_id = #{goodsId}\n" +
+			"order by sl.y,cs.qty asc")
+    List<ContainerStore> findBestContainerSeq(@Param("goodsId") Integer goodsId);
 }

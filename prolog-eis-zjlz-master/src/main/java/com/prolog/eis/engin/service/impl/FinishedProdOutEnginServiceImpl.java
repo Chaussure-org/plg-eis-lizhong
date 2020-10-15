@@ -5,19 +5,24 @@ import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.engin.dao.FinishedProdOutEnginMapper;
 import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.station.service.IStationService;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author wangkang
@@ -44,6 +49,9 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     @Autowired
     private IStationService stationService;
 
+    @Autowired
+    private IContainerStoreService containerStoreService;
+
     /**
      * 1.优先考虑借道成品
      * 2.初始化成品立库信息
@@ -55,8 +63,8 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     public synchronized void finishProdOutByOrder() throws Exception {
         boolean flag = this.checkStation();
         if (flag) {
-            this.initFinishedTrayLib();
-            List<OrderBillDto> orderBillDtos =  orderBillService.initFinishProdOrder();
+            Map<Integer, Integer> map = this.initFinishedTrayLib();
+            List<OrderBillDto> orderBillDtos =  orderBillService.initFinishProdOrder(map);
             if (orderBillDtos != null && orderBillDtos.size()>0) {
                 this.trayOut(orderBillDtos.get(0));
             }
@@ -75,10 +83,19 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         List<OrderDetail> orderDetailByMap = orderDetailService.findOrderDetailByMap(param);
         if (orderDetailByMap != null && orderDetailByMap.size() >0) {
             //所有需要出库的托盘
-            List<OutContainerDto> outContainerDtos =
-                    trayOutEnginService.outByGoodsId(orderDetailByMap.get(0).getGoodsId(),
-                    orderDetailByMap.get(0).getPlanQty(), orderBillDto.getWmsOrderPriority());
-            //找一个能出的出
+            for (OrderDetail orderDetail : orderDetailByMap) {
+                //找一个能出的出
+                List<ContainerStore> containerListByGoodsId =
+                        containerStoreService.findContainerListByGoodsId(orderDetail.getGoodsId());
+                List<ContainerStore> collect =
+                        containerListByGoodsId.stream().filter(x -> x.getQty() >= orderDetail.getPlanQty()).collect(Collectors.toList());
+                if (collect.size()>0){
+                    ContainerStore containerStore = collect.get(0);
+                }else {
+                    containerListByGoodsId.stream().sorted();
+                }
+
+            }
         }
     }
 
@@ -93,14 +110,43 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     /**
      * 初始化成品立库信息
      */
-    private void initFinishedTrayLib() {
-        this.getCanBeUsedStore();
+    private Map<Integer,Integer> initFinishedTrayLib() {
+        return this.getCanBeUsedStore();
     }
 
     /**
      * 获取可用库存
      */
-    private void getCanBeUsedStore() {
+    @Override
+    public Map<Integer,Integer> getCanBeUsedStore() {
+        //所有成品拖
+        Map<Integer,Integer> allGoodsCount = changeList(mapper.findAllGoodsCount());
 
+        //绑定任务成品拖
+        Map<Integer,Integer> usedGoodsCount = changeList(mapper.findUsedGoodsCount());
+        //可使用成品拖
+        Map<Integer,Integer> canBeUsedStore = new HashMap<>();
+        if (usedGoodsCount != null || usedGoodsCount.size() != 0) {
+            return allGoodsCount;
+        }
+        usedGoodsCount.forEach((k, v) -> {
+                if (allGoodsCount.get(k)!=null){
+                    allGoodsCount.put(k,allGoodsCount.get(k)-v);
+                }
+            });
+        canBeUsedStore.putAll(allGoodsCount);
+        return canBeUsedStore;
     }
+
+    private Map<Integer, Integer> changeList(List<Map<String, Integer>> list) {
+        Map<Integer,Integer> useMap = new HashMap();
+        if (list ==null || list.size()==0){
+            return useMap;
+        }
+        for (Map<String, Integer> map : list) {
+            useMap.put(map.get("goodsId"),map.get("num"));
+        }
+        return useMap;
+    }
+
 }

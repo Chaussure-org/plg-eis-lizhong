@@ -48,5 +48,5 @@ public interface IOrderBillService {
      * 初始化成品库订单
      * @return
      */
-    List<OrderBillDto> initFinishProdOrder();
+    List<OrderBillDto> initFinishProdOrder(Map<Integer,Integer> map);
 }

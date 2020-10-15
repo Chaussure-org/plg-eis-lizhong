@@ -5,6 +5,7 @@ import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderDetail;
+import com.prolog.eis.model.station.Station;
 import com.prolog.eis.order.service.IContainerBindingDetailService;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;

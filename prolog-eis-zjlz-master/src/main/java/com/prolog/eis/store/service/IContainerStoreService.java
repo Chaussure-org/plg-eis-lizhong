@@ -3,6 +3,8 @@ package com.prolog.eis.store.service;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 
+import java.util.List;
+
 /**
  * @author dengj
  * @version 1.0
@@ -51,4 +53,11 @@ public interface IContainerStoreService {
      * @return
      */
     boolean setContainerStoreEmpty(String containerNo);
+
+    /**
+     * 根据商品id找容器
+     * @param goodsId 商品id
+     * @return
+     */
+    List<ContainerStore> findContainerListByGoodsId(Integer goodsId);
 }
