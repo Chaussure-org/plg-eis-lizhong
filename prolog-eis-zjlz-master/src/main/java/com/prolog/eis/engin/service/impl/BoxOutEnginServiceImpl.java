@@ -221,7 +221,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
 
         int orderBillId = lineDetailList.get(0).getOrderBillId();
         StringBuffer stringFirst = orderMap.get(orderBillId);
-        orderMap.remove(orderBillId);
+        //orderMap.remove(orderBillId);
         for (Integer orderId : orderMap.keySet()) {
             float ratio = CompareStrSimUtil.getSimilarityRatio(stringFirst, orderMap.get(orderId), true);
             list.add(new OrderSortDto(orderId, ratio));
@@ -232,7 +232,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             return null;
         }
         if (sortList.size() > 10) {
-            return sortList.subList(0, 9).stream().map(OrderSortDto::getOrderBillId).collect(Collectors.toList());
+            return sortList.subList(0, 10).stream().map(OrderSortDto::getOrderBillId).collect(Collectors.toList());
         } else {
             return sortList.subList(0, sortList.size()).stream().map(OrderSortDto::getOrderBillId).collect(Collectors.toList());
         }

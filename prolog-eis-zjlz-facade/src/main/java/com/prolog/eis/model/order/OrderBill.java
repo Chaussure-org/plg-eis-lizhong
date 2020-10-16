@@ -23,6 +23,7 @@ public class OrderBill {
     public static final int THIRD_PRIORITY = 3;
 
     public static final int WMS_PRIORITY=10;
+    public static final int WMS_ADD_PRIORITY=20;
 
     public static final int ORDER_STATUS_START_OUT=10;
     public static final int ORDER_STATUS_OUTING=20;

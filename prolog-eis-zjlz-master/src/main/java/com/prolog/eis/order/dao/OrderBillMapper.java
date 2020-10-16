@@ -7,6 +7,7 @@ import com.prolog.eis.model.order.OrderDetailCountsDto;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -40,25 +41,4 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "GROUP BY od.order_bill_id order by\n" +
             "            ob.create_time asc,count desc")
     List<OrderBillDto> initFinishProdOrder();
-
-    /**
-     * 回告wms实体查询
-     * @param orderBillId
-     * @return
-     */
-    @Select("SELECT\n" +
-            "\tb.task_id AS TASKID,\n" +
-            "\tb.order_no AS BILLNO,\n" +
-            "\tb.bill_date AS BILLDATE,\n" +
-            "\tb.order_type AS BILLTYPE,\n" +
-            "\td.goods_id AS ITEMID,\n" +
-            "\td.lot_id AS LOTID,\n" +
-            "\td.complete_qty AS QTY,\n" +
-            "\tb.order_no as BRANCHAREA\n" +
-            "FROM\n" +
-            "\torder_bill b\n" +
-            "\tJOIN order_detail d ON b.id = d.order_bill_id \n" +
-            "WHERE\n" +
-            "\td.id = #{orderBillId}")
-    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
 }
