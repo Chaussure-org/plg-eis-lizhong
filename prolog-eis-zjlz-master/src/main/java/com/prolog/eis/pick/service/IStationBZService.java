@@ -34,6 +34,14 @@ public interface IStationBZService {
     boolean checkContainerExist(String containerNo,int stationId);
 
     /**
+     * 检查订单拖是否在当前拣选站
+     * @param orderTrayNo
+     * @param stationId 
+     * @return
+     */
+    boolean checkOrderTrayNo(String orderTrayNo,int stationId);
+
+    /**
      * 订单转历史
       * @param orderBillId   订单汇总id
      */
@@ -47,13 +55,13 @@ public interface IStationBZService {
     void  containerNoLeave(String containerNo,int stationId) throws Exception;
 
     /**
-     * 订单拖放行
+     * 订单拖放行 或换拖
      * @param orderTrayNo
-     * @param stationId
+     *
      * @param orderBillId
      * @throws Exception
      */
-    void orderTrayLeave(String orderTrayNo,int stationId,int orderBillId) throws Exception;
+    void orderTrayLeave(String orderTrayNo,int orderBillId) throws Exception;
 
     /**
      * 计算尾拖
@@ -82,4 +90,12 @@ public interface IStationBZService {
      * @param containerBindingDetail
      */
     void seedToWms(ContainerBindingDetail containerBindingDetail);
+
+
+    /**
+     * 更换订单拖
+     * @param orderTrayNo
+     * @param stationId
+     */
+    void changeOrderTray(String orderTrayNo,int stationId) throws Exception;
 }
