@@ -183,7 +183,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //todo：订单拖放行 贴标区或非贴标区
-            this.orderTrayLeave(containerNo, stationId, orderBillId);
+            this.orderTrayLeave(containerNo,orderBillId);
 
 
         }
@@ -198,6 +198,11 @@ public class StationBZServiceImpl implements IStationBZService {
 
     @Override
     public boolean checkContainerExist(String containerNo, int stationId) {
+        return false;
+    }
+
+    @Override
+    public boolean checkOrderTrayNo(String orderTrayNo, int stationId) {
         return false;
     }
 
@@ -243,7 +248,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
 
     @Override
-    public void orderTrayLeave(String orderTrayNo, int stationId, int orderBillId) throws Exception {
+    public void orderTrayLeave(String orderTrayNo, int orderBillId) throws Exception {
         //订单拖是否有贴标商品，有贴标区
         boolean flag = orderDetailService.findOrderTrayGoodsLabel(orderBillId, orderTrayNo);
         if (flag) {
@@ -330,6 +335,13 @@ public class StationBZServiceImpl implements IStationBZService {
         wmsOrderBill.setCONTAINERNO(containerBindingDetail.getContainerNo());
         //回告wms
         wmsService.outboundTaskCallBack(wmsOrderBill);
+
+    }
+
+    @Override
+    public void changeOrderTray(String orderTrayNo,int stationId) throws Exception {
+        List<Integer> orderBillId = stationService.findPickingOrderBillId(stationId);
+        this.orderTrayLeave(orderTrayNo,orderBillId.get(0));
 
     }
 
