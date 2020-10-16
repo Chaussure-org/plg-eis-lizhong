@@ -20,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,7 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     @Autowired
     private IContainerStoreService containerStoreService;
 
-    @ApiModelProperty
+    @Autowired
     private IContainerBindingDetailService containerBindingDetailService;
 
     /**
@@ -118,6 +120,7 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
      * 出库托盘
      * @param containerStore
      */
+    @Transactional(rollbackFor = Exception.class)
     private void getOutTray(ContainerStore containerStore,OrderDetail orderDetail,int bindingNum) throws Exception {
         /**
          * 修改订单状态
@@ -141,6 +144,7 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         containerBindingDetail.setOrderBillId(orderDetail.getOrderBillId());
         containerBindingDetail.setOrderDetailId(orderDetail.getId());
         containerBindingDetail.setBindingNum(bindingNum);
+        containerBindingDetail.setSeedNum(bindingNum);
         containerBindingDetailService.saveInfo(containerBindingDetail);
     }
 
@@ -186,14 +190,15 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         Map<Integer,Integer> usedGoodsCount = changeList(mapper.findUsedGoodsCount());
         //可使用成品拖
         Map<Integer,Integer> canBeUsedStore = new HashMap<>();
-        if (usedGoodsCount != null || usedGoodsCount.size() != 0) {
+        if (usedGoodsCount == null || usedGoodsCount.size() == 0) {
             return allGoodsCount;
         }
-        usedGoodsCount.forEach((k, v) -> {
-                if (allGoodsCount.get(k)!=null){
-                    allGoodsCount.put(k,allGoodsCount.get(k)-v);
-                }
-            });
+        for (Map.Entry<Integer, Integer> integerIntegerEntry : usedGoodsCount.entrySet()) {
+            int key = integerIntegerEntry.getKey();
+            System.out.println(integerIntegerEntry.getValue());
+            Integer value = new BigDecimal(integerIntegerEntry.getValue()).intValue();
+            allGoodsCount.put(key, allGoodsCount.get(key) - value);
+        }
         canBeUsedStore.putAll(allGoodsCount);
         return canBeUsedStore;
     }

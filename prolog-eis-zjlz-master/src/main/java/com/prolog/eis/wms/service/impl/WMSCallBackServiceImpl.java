@@ -101,6 +101,8 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
                 orderBill.setOrderNo(s);
                 orderBill.setOrderType(order.get(0).getBILLTYPE());
                 orderBill.setOrderTaskState(0);
+                orderBill.setBillDate(order.get(0).getBILLDATE());
+                orderBill.setTaskId(order.get(0).getTASKID());
                 orderBillService.saveOrderBill(orderBill);
                 List<OrderDetail> orderDetails = null;
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {

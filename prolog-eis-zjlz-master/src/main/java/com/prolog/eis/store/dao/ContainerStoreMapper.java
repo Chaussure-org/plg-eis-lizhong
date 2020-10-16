@@ -77,10 +77,23 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
 	void setContainerStoreEmpty(@Param("containerNo") String containerNo);
 
 
-	@Select("select * from container_store cs\n" +
-			"join container_path_task cpt on cs.container_no = cpt.container_no\n" +
-			"join sx_store_location sl on cpt.source_location = sl.id\n" +
-			"where cs.task_type=0 #and cs.goods_id = #{goodsId}\n" +
-			"order by sl.y,cs.qty asc")
+	@Select("select cs.id as id,\n" +
+			"cs.container_no as containerNo,\n" +
+			"cs.container_type as containerType,\n" +
+			"cs.task_type as taskType,\n" +
+			"cs.work_count as workCount,\n" +
+			"cs.owner_id as ownerId,\n" +
+			"cs.goods_id AS goodsId,\n" +
+			"cs.lot_id as lotId,\n" +
+			"cs.goods_order_no as goodsOrderNo,\n" +
+			"cs.qty as qty,\n" +
+			"cs.create_time as createTime,\n" +
+			"cs.update_time as updateTime\n" +
+			"\n" +
+			"from container_store cs \n" +
+			"\t\t\tjoin container_path_task cpt on cs.container_no = cpt.container_no \n" +
+			"\t\t\tjoin sx_store_location sl on cpt.source_location = sl.id \n" +
+			"\t\t\twhere cs.task_type=0 and cs.goods_id = #{goodsId}\n" +
+			"\t\t\torder by sl.y,cs.qty asc")
     List<ContainerStore> findBestContainerSeq(@Param("goodsId") Integer goodsId);
 }

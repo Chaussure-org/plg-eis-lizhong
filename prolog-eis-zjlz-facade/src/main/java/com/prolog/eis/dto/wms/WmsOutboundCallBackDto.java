@@ -28,7 +28,7 @@ public class WmsOutboundCallBackDto {
     private Date SJC;
 
     @ApiModelProperty("单据类型")
-    private Integer BILLTYPE;
+    private String BILLTYPE;
 
     @ApiModelProperty("库区")
     private String BRANCHAREA;
@@ -85,11 +85,11 @@ public class WmsOutboundCallBackDto {
         this.SJC = SJC;
     }
 
-    public Integer getBILLTYPE() {
+    public String getBILLTYPE() {
         return BILLTYPE;
     }
 
-    public void setBILLTYPE(Integer BILLTYPE) {
+    public void setBILLTYPE(String BILLTYPE) {
         this.BILLTYPE = BILLTYPE;
     }
 

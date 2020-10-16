@@ -31,9 +31,20 @@ public interface FinishedProdOutEnginMapper extends BaseMapper {
      * 商品使用库存
      * @return
      */
-    @Select("select us.goods_id as goodsId, sum(us.qty) as num from (select od.goods_id, od.plan_qty - od" +
-            ".complete_qty as qty from \n" +
-            "container_binding_detail cbd join order_detail od on cbd.order_detail_id = od.id) us\n" +
-            "group by us.goods_id")
+    @Select("SELECT\n" +
+            "\tus.goods_id AS goodsId,\n" +
+            "\tsum( us.qty ) AS num \n" +
+            "FROM\n" +
+            "\t(\n" +
+            "\tSELECT\n" +
+            "\t\tod.goods_id,\n" +
+            "\t\tcbd.binding_num\n" +
+            "\t\tAS qty \n" +
+            "\tFROM\n" +
+            "\t\tcontainer_binding_detail cbd\n" +
+            "\t\tJOIN order_detail od ON cbd.order_detail_id = od.id \n" +
+            "\t) us \n" +
+            "GROUP BY\n" +
+            "\tus.goods_id")
     List<Map<String, Integer>> findUsedGoodsCount();
 }

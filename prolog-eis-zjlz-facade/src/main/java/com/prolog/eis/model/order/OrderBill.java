@@ -85,6 +85,18 @@ public class OrderBill {
     @ApiModelProperty("任务id")
     private String taskId;
 
+    @Column("bill_date")
+    @ApiModelProperty("单据日期")
+    private Date billDate;
+
+    public Date getBillDate() {
+        return billDate;
+    }
+
+    public void setBillDate(Date billDate) {
+        this.billDate = billDate;
+    }
+
     public Integer getWmsOrderPriority() {
         return wmsOrderPriority;
     }
