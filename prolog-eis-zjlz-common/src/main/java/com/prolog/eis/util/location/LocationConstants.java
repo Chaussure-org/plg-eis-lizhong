@@ -6,6 +6,7 @@ package com.prolog.eis.util.location;
  * @Version: V1.0
  */
 public final class LocationConstants {
+
     private LocationConstants() {
         throw new IllegalStateException("Utility class");
     }
@@ -23,6 +24,11 @@ public final class LocationConstants {
      * SAS设备厂商
      */
     public static final String DEVICE_SYSTEM_SAS = "SAS";
+    /**
+     * WCS设备厂商
+     */
+    public static final String DEVICE_SYSTEM_WCS = "WCS";
+
     //----------------------------------下游WCS系统end----------------------------------//
 
     //----------------------------------RCS任务类型start----------------------------------//
