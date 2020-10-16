@@ -48,7 +48,8 @@ public interface TrayOutMapper {
             "\tabd.order_mx_id AS detailId\n" +
             "FROM\n" +
             "\tagv_binding_detail abd\n" +
-            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where abd.goodsId=#{goodsId} order by cs.qty DESC")
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where " +
+            "abd.goodsId=#{goodsId} and abd.wms_order_priority != 10 order by cs.qty DESC")
     List<RoadWayGoodsCountDto> findAgvGoodsCount(@Param("goodsId")int goodsId);
 
     @Select("SELECT\n" +

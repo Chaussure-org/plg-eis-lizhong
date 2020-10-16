@@ -24,7 +24,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "ob.wms_order_priority AS wmsOrderPriority,\n" +
             "od.id AS detailId,\n" +
             "\tod.goods_id AS goodsId,\n" +
-            "\tod.plan_qty AS planQty \n" +
+            "\tIF(od.tray_plan_qty=0,od.plan_qty,od.tray_plan_qty) AS planQty \n" +
             "FROM\n" +
             "order_bill ob JOIN\n" +
             "\torder_detail od on ob.id=od.order_bill_id\n" +
@@ -46,7 +46,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\torder_detail od on ob.id=od.order_bill_id\n" +
             "WHERE\n" +
             "\tod.id NOT IN ( SELECT abd.order_mx_id FROM line_binding_detail abd ) \n" +
-            "\tAND od.area_no=#{areaNo}\n" +
+            "\tAND od.area_no=#{areaNo} or od.area_no='AL'\n" +
             "ORDER BY\n" +
             "\tod.create_time DESC")
     List<OutDetailDto> findLineDetail(@Param("areaNo")String areaNo);
@@ -59,7 +59,8 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\tod.plan_qty AS planQty\n" +
             "FROM\n" +
             "\torder_bill ob\n" +
-            "\tLEFT JOIN order_detail od ON ob.id = od.order_bill_id")
+            "\tLEFT JOIN order_detail od ON ob.id = od.order_bill_id " +
+            "where od.area_no ='' or od.area_no is null")
     List<OutDetailDto> findOutDetails();
     /**
      * 查当前播种商品信息
