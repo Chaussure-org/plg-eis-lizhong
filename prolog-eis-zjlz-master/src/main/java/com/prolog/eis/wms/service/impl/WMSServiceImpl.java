@@ -78,7 +78,7 @@ public class WMSServiceImpl implements IWMSService {
             RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsOutboundCallBackDto),new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
-            logger.warn("EIS -> WCS 出库任务完成回告异常", e);
+            logger.warn("EIS -> WCS 出库任务完成回告异常订单编号", e,wmsOutboundCallBackDto.getBILLNO());
             return RestMessage.newInstance(false, "500", e.getMessage(), null);
         }
     }

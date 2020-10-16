@@ -1,6 +1,7 @@
 package com.prolog.eis.order.service.impl;
 
 import com.prolog.eis.dto.OrderBillDto;
+import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
 import com.prolog.eis.model.order.OrderDetail;
@@ -112,6 +113,11 @@ public class OrderBillServiceImpl implements IOrderBillService {
         orderDetail.setUpdateTime(new Date());
         orderDetailService.updateOrderDetail(orderDetail);
 
+    }
+
+    @Override
+    public List<WmsOutboundCallBackDto> findWmsOrderBill(int orderBillId) {
+        return orderBillMapper.findWmsOrderBill(orderBillId);
     }
 
 }

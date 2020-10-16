@@ -5,6 +5,7 @@ import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.PickingOrderHistory;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.pick.service.IStationBZService;
@@ -21,6 +22,8 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
+import com.prolog.eis.wms.service.IWMSService;
+import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.slf4j.Logger;
@@ -60,6 +63,8 @@ public class StationBZServiceImpl implements IStationBZService {
     private IPickingOrderService pickingOrderService;
     @Autowired
     private IPickingOrderHistoryService pickingOrderHistoryService;
+    @Autowired
+    private IWMSService wmsService;
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -317,6 +322,15 @@ public class StationBZServiceImpl implements IStationBZService {
     public void seedToWms(ContainerBindingDetail containerBindingDetail) {
        //todo:
         WmsOutboundCallBackDto wmsOutboundCallBackDto = new WmsOutboundCallBackDto();
+        if (containerBindingDetail == null){
+            return;
+        }
+        WmsOutboundCallBackDto wmsOrderBill = orderBillService.findWmsOrderBill(containerBindingDetail.getOrderBillId()).get(0);
+        wmsOrderBill.setSJC(new Date());
+        wmsOrderBill.setCONTAINERNO(containerBindingDetail.getContainerNo());
+        //回告wms
+        wmsService.outboundTaskCallBack(wmsOrderBill);
+
     }
 
 

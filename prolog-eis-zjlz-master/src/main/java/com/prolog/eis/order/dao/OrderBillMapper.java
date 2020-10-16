@@ -1,6 +1,7 @@
 package com.prolog.eis.order.dao;
 
 import com.prolog.eis.dto.OrderBillDto;
+import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetailCountsDto;
 import com.prolog.framework.dao.mapper.BaseMapper;
@@ -35,8 +36,29 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "            ob.wms_order_priority as wmsOrderPriority, \n" +
             "            count(od.order_bill_id) as count \n" +
             "            from order_bill ob join order_detail od on ob.id = od.order_bill_id \n" +
-            "            where (od.plan_qty-od.out_qty)>0\n" +
+            "            where (od.plan_qty-od.out_qty)>0 and ob.order_type=\"C\"\n" +
             "GROUP BY od.order_bill_id order by\n" +
             "            ob.create_time asc,count desc")
     List<OrderBillDto> initFinishProdOrder();
+
+    /**
+     * 回告wms实体查询
+     * @param orderBillId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tb.task_id AS TASKID,\n" +
+            "\tb.order_no AS BILLNO,\n" +
+            "\tb.bill_date AS BILLDATE,\n" +
+            "\tb.order_type AS BILLTYPE,\n" +
+            "\td.goods_id AS ITEMID,\n" +
+            "\td.lot_id AS LOTID,\n" +
+            "\td.complete_qty AS QTY,\n" +
+            "\tb.order_no as BRANCHAREA\n" +
+            "FROM\n" +
+            "\torder_bill b\n" +
+            "\tJOIN order_detail d ON b.id = d.order_bill_id \n" +
+            "WHERE\n" +
+            "\td.id = #{orderBillId}")
+    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
 }

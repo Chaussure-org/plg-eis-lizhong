@@ -1,8 +1,10 @@
 package com.prolog.eis.order.service;
 
 import com.prolog.eis.dto.OrderBillDto;
+import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -56,4 +58,11 @@ public interface IOrderBillService {
      * @param orderDetail 订单详情
      */
     void updateOrderBillStatus(OrderDetail orderDetail) throws Exception;
+
+    /**
+     * 订单明细级别回告wms
+     * @param orderBillId
+     * @return
+     */
+    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
 }
