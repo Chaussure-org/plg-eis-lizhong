@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -36,4 +38,10 @@ public interface StationMapper extends BaseMapper<Station> {
      */
     @Select("update station set current_station_pick_id = null where station_id = #{stationId}")
     void updateStationPickingOrderId(@Param("stationId") int stationId);
+
+    /**
+     * 切换站台是否索取订单
+     */
+    @Update("update station set is_lock = #{isLock} WHERE id = #{stationId}")
+    void updateStationLock(@Param("isLock") int isLock,@Param("stationId") int stationId);
 }
