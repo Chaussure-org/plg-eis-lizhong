@@ -3,15 +3,15 @@ package com.prolog.eis.sas.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.sas.SasMoveTaskDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.CarListDTO;
 import com.prolog.eis.dto.wcs.HoisterInfoDto;
+import com.prolog.eis.dto.wcs.SasMoveCarDto;
 import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
-import com.prolog.eis.wcs.service.IWCSService;
-import com.prolog.eis.wcs.service.impl.WCSServiceImpl;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
@@ -92,19 +92,17 @@ public class SASServiceImpl implements ISASService {
     /**
      * 小车换层
      *
-     * @param taskId
-     * @param carId
-     * @param sourceLayer
-     * @param targetLayer
+     * @param sasMoveCarDto 小车换层实体
      * @return
      */
     @Override
     @LogInfo(desci = "eis请求小车换层",direction = "eis->sas",type = LogDto.SAS_TYPE_CHANGE_LAYER,systemType = LogDto.SAS)
-    public  RestMessage<String> moveCar(String taskId, int carId, int sourceLayer, int targetLayer) {
+    public  RestMessage<String> moveCar(SasMoveCarDto sasMoveCarDto) {
         String url = this.getUrl(properties.getWcs().getMoveCarUrl());
         logger.info("EIS -> SAS 请求小车换层:{}",url);
         try {
-            RestMessage<String> result = httpUtils.post(url, MapUtils.put("taskId", taskId).put("source", sourceLayer).put("target", targetLayer).put("bankId", properties.getWcs().getBankId()).getMap(), new TypeReference<RestMessage<String>>() {});
+            RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto),
+                    new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
             logger.warn("EIS -> SAS 请求小车换层异常",e);
@@ -116,33 +114,17 @@ public class SASServiceImpl implements ISASService {
     /**
      * 出入库指令
      *
-     * @param taskId
-     * @param type
-     * @param containerNo
-     * @param address
-     * @param target
-     * @param weight
-     * @param priority
+     * @param sasMoveTaskDto
      * @return
      */
     @Override
     @LogInfo(desci = "eis出入库任务",direction = "eis->sas",type = LogDto.SAS_TYPE_SEND_TASK,systemType =
             LogDto.SAS)
-    public RestMessage<String> sendContainerTask(String taskId, int type, String containerNo, String address, String target, String weight, String priority,int status) {
+    public RestMessage<String> sendContainerTask(SasMoveTaskDto sasMoveTaskDto) {
         String url = this.getUrl(properties.getWcs().getTaskUrl());
         logger.info("EIS -> WCS 任务请求:{}",url);
-        List<Map<String,Object>> list = new ArrayList<>();
-        Map<String, Object> map = MapUtils.put("taskId", taskId)
-                .put("type", type)
-                .put("bankId", properties.getWcs().getBankId())
-                .put("containerNo", containerNo)
-                .put("address", address)
-                .put("target", target)
-                .put("weight", weight)
-                .put("priority", priority)
-                .put("status",status)
-                .getMap();
-        list.add(map);
+        List<SasMoveTaskDto> list = new ArrayList<>();
+        list.add(sasMoveTaskDto);
         try {
             RestMessage<String> result = httpUtils.post(url,MapUtils.put("carryList",list.toArray()).getMap(),new TypeReference<RestMessage<String>>() {});
             return result;
