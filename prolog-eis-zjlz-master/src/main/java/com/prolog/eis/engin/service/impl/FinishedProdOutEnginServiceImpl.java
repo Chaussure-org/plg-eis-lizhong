@@ -121,7 +121,7 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
      * @param containerStore
      */
     @Transactional(rollbackFor = Exception.class)
-    private void getOutTray(ContainerStore containerStore,OrderDetail orderDetail,int bindingNum) throws Exception {
+    public void getOutTray(ContainerStore containerStore, OrderDetail orderDetail, int bindingNum) throws Exception {
         /**
          * 修改订单状态
          * 生产绑定明细

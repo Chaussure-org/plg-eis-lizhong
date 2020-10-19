@@ -17,7 +17,7 @@ public class LayerGoodsCountDto {
     private int layer;
     private int qty;
     private Double rate;
-    private String ContainerNo;
+    private String containerNo;
     private String storeLocation;
     private int deptNum;
 

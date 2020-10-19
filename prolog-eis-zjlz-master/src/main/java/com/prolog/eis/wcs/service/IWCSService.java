@@ -2,6 +2,7 @@ package com.prolog.eis.wcs.service;
 
 import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.HoisterInfoDto;
+import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.framework.common.message.RestMessage;
 
 import java.util.List;
@@ -12,14 +13,10 @@ public interface IWCSService {
     /**
      * 输送线行走
      *
-     * @param taskId
-     * @param address
-     * @param target
-     * @param containerNo
-     * @param type
+     * @param wcsLineMoveDto 输送线实体
      * @return
      */
-    RestMessage<String> lineMove(String taskId, String address, String target, String containerNo, int type);
+    RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto);
 
 
 //    /**
