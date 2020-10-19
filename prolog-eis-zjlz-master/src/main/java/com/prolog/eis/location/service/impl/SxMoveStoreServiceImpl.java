@@ -216,6 +216,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
 	/**
 	 * 四向库出库任务
+	 * @param mcsTaskType
 	 * @param containerPathTask
 	 * @param containerPathTaskDetailDTO
 	 */
@@ -513,6 +514,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 								.put("sourceLocation",containerPathTaskDetail.getNextLocation())
 								.put("targetLocation",containerPathTaskDetail.getNextLocation())
 								.put("taskState", LocationConstants.PATH_TASK_STATE_NOTSTARTED)
+                                .put("taskType",LocationConstants.PATH_TASK_TYPE_NONE)
 								.put("updateTime",time).getMap(),
 						ContainerPathTask.class);
 			}else{

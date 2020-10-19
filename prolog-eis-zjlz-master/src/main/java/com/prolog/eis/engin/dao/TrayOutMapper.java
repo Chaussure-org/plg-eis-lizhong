@@ -40,26 +40,29 @@ public interface TrayOutMapper {
             "\tWHERE cpt.task_type=0 and cpt.source_area in ('D010','D020','D030','D040')  and cs.goods_id=#{goodsId} order by cs.qty DESC")
     List<RoadWayGoodsCountDto> findRoadWayGoodsCount(@Param("goodsId")int goodsId);
 
-    @Select("SELECT\n" +
-            "\tabd.goodsId AS goodsId,\n" +
+    @Select("SELECT DISTINCT\n" +
+            "\tabd.goods_id AS goodsId,\n" +
             "\tabd.container_no AS containerNo,\n" +
-            "\tcs.qty - (SELECT SUM(a.binding_num) FROM agv_binding_detail a WHERE a.container_no=abd.container_no) AS qty,\n" +
-            "g.last_container_rate AS rate, "+
-            "\tabd.order_mx_id AS detailId\n" +
+            "\tcs.qty - ( SELECT SUM( a.binding_num ) FROM agv_binding_detail a WHERE a.container_no = abd.container_no ) AS qty,\n" +
+            "\tg.last_container_rate AS rate \n" +
             "FROM\n" +
             "\tagv_binding_detail abd\n" +
-            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where " +
-            "abd.goodsId=#{goodsId} order by cs.qty DESC")
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no\n" +
+            "\tLEFT JOIN goods g ON cs.goods_id = g.id \n" +
+            "WHERE\n" +
+            "\tabd.goods_id = #{goodsId} \n" +
+            "ORDER BY\n" +
+            "\tqty")
     List<RoadWayGoodsCountDto> findAgvGoodsCount(@Param("goodsId")int goodsId);
 
     @Select("SELECT\n" +
-            "\tabd.goodsId AS goodsId,\n" +
+            "\tabd.goods_id AS goodsId,\n" +
             "\tabd.container_no AS containerNo,\n" +
             "\tcs.qty AS qty,\n" +
             "g.last_container_rate AS rate, "+
             "\tabd.order_mx_id AS detailId\n" +
             "FROM\n" +
             "\tagv_binding_detail abd\n" +
-            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where abd.goodsId=#{goodsId} order by cs.qty DESC")
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where abd.goods_id=#{goodsId} order by cs.qty DESC")
     List<RoadWayGoodsCountDto> findWmsAgvGoods(@Param("goodsId")int goodsId);
 }

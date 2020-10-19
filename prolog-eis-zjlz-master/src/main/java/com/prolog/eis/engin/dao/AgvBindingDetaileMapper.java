@@ -3,7 +3,9 @@ package com.prolog.eis.engin.dao;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -30,5 +32,8 @@ public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
 
     @Select("\tSELECT abd.goodsId AS goodsId,cs.qty AS qty FROM agv_binding_detail abd LEFT JOIN container_store cs ON abd.container_no=cs.container_no\n")
     List<OutDetailDto> findAgvBindingsStore();
+
+    @Update("UPDATE agv_binding_detail abd set abd.detail_status=20 WHERE abd.container_no=#{containerNo}")
+    void updateAgvStatus(@Param("containerNo")String containerNo);
 
 }

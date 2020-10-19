@@ -20,7 +20,7 @@ public interface PathSchedulingService {
     void inboundTask(String palletNo, String containerNo, String sourceArea, String sourceLocation, String targetArea) throws Exception;
 
     /**
-     * 出库任务-修改任务类型
+     * 出库任务-修改任务类型 根据商品id 和站台出库 任务表 更新 更新 task_type
      * @param goodsId
      * @param stationId
      * @return
@@ -45,9 +45,9 @@ public interface PathSchedulingService {
     String outboundTaskForFail(ContainerPathTaskDTO containerPathTaskDTO) throws Exception;
 
     /**
-     * 托盘移动任务
+     * 托盘 移动
      * @param palletNo  载具号
-     * @param targetArea    目标区域
+     * @param targetArea    目标区域 更新 task_status
      * @throws Exception
      */
     void containerMoveTask(String palletNo, String targetArea) throws Exception;

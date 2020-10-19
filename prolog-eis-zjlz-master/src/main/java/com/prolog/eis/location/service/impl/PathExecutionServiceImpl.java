@@ -9,6 +9,7 @@ import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.rcs.service.IRCSService;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +29,21 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doRcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         //找货位
-        AgvStoragelocationDTO agvStoragelocationDTO = agvLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea()
-                , containerPathTaskDetailDTO.getSourceLocation(), 0);
-        if (null == agvStoragelocationDTO) {
-            throw new Exception("货位已满");
+        String location = containerPathTask.getTargetLocation();
+        if (StringUtils.isBlank(location)) {
+            AgvStoragelocationDTO agvStoragelocationDTO = agvLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea()
+                    , containerPathTaskDetailDTO.getSourceLocation(), 0);
+
+            if (null == agvStoragelocationDTO) {
+                throw new Exception("货位已满");
+            }
+            location = agvStoragelocationDTO.getLocationNo();
         }
-        containerPathTaskDetailDTO.setNextLocation(agvStoragelocationDTO.getLocationNo());
+        containerPathTaskDetailDTO.setNextLocation(location);
         String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
-        RcsTaskDto rcsTaskDto = new RcsTaskDto(taskId, containerPathTaskDetailDTO.getPalletNo()
-                , containerPathTaskDetailDTO.getSourceLocation(), agvStoragelocationDTO.getLocationNo(), "1", "1");
         //给rcs发送移动指令
-        RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
+        RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(taskId, containerPathTaskDetailDTO.getPalletNo()
+                , containerPathTaskDetailDTO.getSourceLocation(), agvStoragelocationDTO.getLocationNo(), "1", "1");
 
         //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
         if ("0".equals(rcsRequestResultDto.getCode())) {
@@ -48,6 +53,8 @@ public class PathExecutionServiceImpl implements PathExecutionService {
             //...重发等相关
         }
         //rcs回告到位后改汇总和明细，并判断是否最终任务
+
+
     }
 
 //    public void doMcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
@@ -59,35 +66,35 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 //        String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
 //        // TODO 发送mcs指令
 //    }
-    
+
     @Override
     public void doMcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
         // TODO 发送mcs指令
-        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
+        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
     }
 
     @Override
     public void doMcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
+        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
     }
 
     @Override
     public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
+        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
     }
 
     @Override
     public void doWcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         // 将当前路径初始点位改为RCS接驳口点位
-        this.doRcsToRcsTask(containerPathTask,containerPathTaskDetailDTO);
+        this.doRcsToRcsTask(containerPathTask, containerPathTaskDetailDTO);
 
     }
 
     @Override
     public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        this.doRcsToRcsTask(containerPathTask,containerPathTaskDetailDTO);
+        this.doRcsToRcsTask(containerPathTask, containerPathTaskDetailDTO);
     }
 
     @Override
@@ -107,6 +114,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 
     /**
      * 记录taskId
+     *
      * @param containerPathTask
      * @param containerPathTaskDetailDTO
      * @return

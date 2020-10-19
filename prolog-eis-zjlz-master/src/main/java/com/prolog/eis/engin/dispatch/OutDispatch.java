@@ -31,7 +31,7 @@ public class OutDispatch {
     @Autowired
     private FinishedProdOutEnginService finishedProdOutEnginService;
 
-    @Scheduled(initialDelay = 3000, fixedDelay = 6000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 4000)
     public void trayOutDispatch() {
         try {
            trayOutEnginService.initOrder();
