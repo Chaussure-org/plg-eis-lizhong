@@ -50,7 +50,7 @@ public interface PathSchedulingService {
      * @param targetArea    目标区域 更新 task_status
      * @throws Exception
      */
-    void containerMoveTask(String palletNo, String targetArea) throws Exception;
+    void containerMoveTask(String palletNo, String targetArea,String targetLocation) throws Exception;
 
     /**
      * 复位载具位置

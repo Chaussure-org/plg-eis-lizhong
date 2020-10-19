@@ -152,7 +152,7 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
      * @throws Exception
      */
     @Override
-    public void containerMoveTask(String palletNo, String targetArea) throws Exception {
+    public void containerMoveTask(String palletNo, String targetArea,String targetLocation) throws Exception {
         //TODO 参数校验先放着
 
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.findByMap(
@@ -168,7 +168,7 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
         containerPathTaskMapper.updateMapById(containerPathTask.getId()
                 , MapUtils.put("targetArea", targetArea)
                         .put("taskType",LocationConstants.PATH_TASK_TYPE_OUTBOUND)
-                        .put("targetLocation", null).getMap()
+                        .put("targetLocation", targetLocation).getMap()
                 , ContainerPathTask.class);
 
         locationService.doContainerPathTaskAndExecutionByContainer(containerPathTask.getPalletNo(), containerPathTask.getContainerNo());
