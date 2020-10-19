@@ -191,19 +191,18 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('M015','A118',100,10,1);
 
 -- 箱库
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark) VALUES('G101',10,'GCS',100,1,100,'箱库1层货位区');
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark) VALUES('G102',10,'GCS',100,1,100,'箱库2层货位区');
--- 箱库提升机点位
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,x,y) VALUES('G111',20,'GCS',100,1,10,'箱库1层提升机','0101110001',1,111,1);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,x,y) VALUES('G122',20,'GCS',100,1,10,'箱库2层提升机','0201220002',2,122,2);
--- 箱库-箱库提升机点位-方向
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G101','G111',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G111','G101',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G111','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','G111',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','G102',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G102','G122',100,10,1);
--- 箱库2楼提升机点位-AGV站台-方向
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark) VALUES('G100',10,'GCS',100,1,100,'箱库货位区');
+-- 箱库输送线点位
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,x,y) VALUES('G111',20,'GCS',100,1,10,'箱库1层输送线入库点位','0101110001',1,111,1);
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,x,y) VALUES('G112',20,'GCS',100,1,10,'箱库1层输送线出库点位','0101120002',1,112,2);
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,x,y) VALUES('G121',20,'GCS',100,1,10,'箱库2层输送线入库点位','0201210001',2,121,1);
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,x,y) VALUES('G122',20,'GCS',100,1,10,'箱库2层输送线出库点位','0201220002',2,122,2);
+-- 箱库-箱库输送线-方向
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G100','G112',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G100','G122',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G111','G100',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G121','G100',100,10,1);
+-- 箱库2楼输送线-AGV站台-方向
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','A101',100,10,1);
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','A102',100,10,1);
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','A103',100,10,1);
@@ -215,15 +214,15 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','A109',100,10,1);
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('G122','A110',100,10,1);
 
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A101','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A102','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A103','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A104','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A105','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A106','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A107','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A108','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A109','G122',100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A110','G122',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A101','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A102','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A103','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A104','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A105','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A106','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A107','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A108','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A109','G121',100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('A110','G121',100,10,1);
 COMMIT;
 

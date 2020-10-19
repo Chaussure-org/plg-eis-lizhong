@@ -40,7 +40,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     private ContainerPathTaskService containerPathTaskService;
 
     @Override
-    @LogInfo(desci = "mcs任务回告",direction = "mcs->eis",type = LogDto.MCS_TYPE_CALLBACK,systemType = LogDto.MCS)
+    @LogInfo(desci = "堆垛机mcs任务回告",direction = "mcs->eis",type = LogDto.MCS_TYPE_CALLBACK,systemType = LogDto.MCS)
     @Transactional(rollbackFor = Exception.class)
     public void mcsCallback(String taskCode, int state) throws Exception {
         if (StringUtils.isEmpty(taskCode)) {
@@ -131,6 +131,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         Integer taskState = containerPathTaskDetail.getTaskState();
 
         switch (taskState) {
+            //先回告了开始，才能改成完成状态
             case LocationConstants.PATH_TASK_DETAIL_STATE_START :
                 sxMoveStoreService.mcsCallBackComplete(containerPathTaskDetail,nowTime);
                 break;

@@ -4,10 +4,11 @@ import com.prolog.eis.dto.store.SxStoreGroupDto;
 import com.prolog.eis.dto.store.SxStoreLockDto;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+@Repository
 public interface SxStoreMapper {
 
 	/**
@@ -27,7 +28,7 @@ public interface SxStoreMapper {
     		"sl.y \r\n" + 
     		"from container_path_task ss\r\n" + 
     		"left join sx_store_location sl on \r\n" + 
-    		"sl.store_no = ss.source_location and sl.area_no = ss.source_area\r\n" + 
+    		"sl.store_no = ss.source_location and sl.area_no = ss.source_area\r\n" +
     		"left join sx_store_location_group sslp on \r\n" + 
     		"sl.store_location_group_id = sslp.id\r\n" + 
     		"where ss.container_no = #{containerNo}")

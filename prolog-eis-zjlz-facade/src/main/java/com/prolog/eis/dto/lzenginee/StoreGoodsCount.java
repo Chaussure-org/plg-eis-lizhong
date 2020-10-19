@@ -19,7 +19,7 @@ public class StoreGoodsCount {
     /**
      * 路径任务类型
      */
-    private int task_type;
+    private int taskType;
     /**
      * 商品库存数量
      */

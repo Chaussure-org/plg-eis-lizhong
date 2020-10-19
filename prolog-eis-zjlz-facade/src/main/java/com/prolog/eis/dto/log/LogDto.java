@@ -89,7 +89,7 @@ public class LogDto {
     /**
      * eis下发输送线行走至wcs
      */
-    public static final int WCS_TYPE_lINE_MOVE = 3;
+    public static final int WCS_TYPE_LINE_MOVE = 3;
 
     /**
      * sas入库任务回告eis
@@ -177,6 +177,9 @@ public class LogDto {
     @ApiModelProperty("系统类型")
     private int systemType;
 
+    @ApiModelProperty("本机地址")
+    private String hostPort;
+
     public Integer getId() {
         return id;
     }
@@ -257,6 +260,14 @@ public class LogDto {
         this.systemType = systemType;
     }
 
+    public String getHostPort() {
+        return hostPort;
+    }
+
+    public void setHostPort(String hostPort) {
+        this.hostPort = hostPort;
+    }
+
     @Override
     public String toString() {
         return "LogDto{" +
@@ -270,6 +281,7 @@ public class LogDto {
                 ", exception='" + exception + '\'' +
                 ", createTime=" + createTime +
                 ", systemType=" + systemType +
+                ", hostPort=" + hostPort +
                 '}';
     }
 }

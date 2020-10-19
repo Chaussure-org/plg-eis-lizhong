@@ -59,6 +59,18 @@ public class SasLog {
     @ApiModelProperty("系统类型")
     private int systemType;
 
+    @Column("host_port")
+    @ApiModelProperty("本机IP和PORT")
+    private String hostPort;
+
+    public String getHostPort() {
+        return hostPort;
+    }
+
+    public void setHostPort(String hostPort) {
+        this.hostPort = hostPort;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -152,6 +164,7 @@ public class SasLog {
                 ", exception='" + exception + '\'' +
                 ", createTime=" + createTime +
                 ", systemType=" + systemType +
+                ", hostPort=" + hostPort +
                 '}';
     }
 }
