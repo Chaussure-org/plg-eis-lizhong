@@ -30,9 +30,9 @@ public interface BoxOutMapper {
             "\tLEFT JOIN goods g ON cs.goods_id = g.id\n" +
             "\tLEFT JOIN sx_store_location sl ON sl.id = cpt.source_location \n" +
             "WHERE\n" +
-            "\tcpt.task_type = null\n" +
+            "\tcpt.task_type = 0\n" +
             "\tAND cs.goods_id = #{goodsId}\n" +
-            "\tAND source_area='b'\n" +
+            "\tAND source_area='B100'\n" +
             "ORDER BY\n" +
             "\tcs.qty DESC")
     List<LayerGoodsCountDto> findLayerGoodsCount(@Param("goodsId")int goodsId);

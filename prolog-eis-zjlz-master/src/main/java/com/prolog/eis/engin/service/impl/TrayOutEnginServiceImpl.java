@@ -72,11 +72,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<OrderBill> wmsAddOrder = orderBillMapper.findByMap(MapUtils.put("wmsOrderPriority", OrderBill.WMS_ADD_PRIORITY).getMap(), OrderBill.class);
         //如果订单数据中 有wms的订单 则进行订单的更新 和agv
         if (wmsAddOrder.size() > 0) {
-            orderBillMapper.updateDetailsArea();
-            List<Integer> ids = wmsAddOrder.stream().map(OrderBill::getId).collect(Collectors.toList());
-            orderBillMapper.updateWmsPriority(StringUtils.join(ids, ","));
-            //删除agv 和 输送线的绑定明细
-            deleteAgvAndLineBinding(ids);
+            this.updateAllStore(wmsAddOrder);
         }
 
         //orderBillId  没有指定目的区域 的 订单明细
@@ -121,9 +117,9 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //判断agv_binding_detail 里有状态为10 的，判断agv空闲位置，生成路径
         List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), AgvBindingDetail.class);
         if (!detailStatus.isEmpty()) {
-             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "A100",null);
-             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo());
-             return;
+            pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "A100", null);
+            agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo());
+            return;
         }
         //1.要去往agv区域的订单明细,排除已经生成agv任务计划的， 然后按时间排序
         List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail("A100");
@@ -160,7 +156,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     public List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception {
         List<OutContainerDto> outContainerList = new ArrayList<OutContainerDto>();
         int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
-        //把wms优先级 按 商品分组
+        // 商品分组
         Map<Integer, List<OutDetailDto>> goodsIdMap = detailDtos.stream().collect(Collectors.groupingBy(x -> x.getGoodsId()));
 
         for (Map.Entry<Integer, List<OutDetailDto>> map : goodsIdMap.entrySet()) {
@@ -270,7 +266,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerDtoList;
     }
 
-    private void sendPathTask(){
+    private void sendPathTask() {
 
     }
 
@@ -427,14 +423,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     }
 
     /**
-     * 更新订单的目的区域
-     *
      * @throws Exception
      */
-    private void deleteAgvAndLineBinding(List<Integer> ids) throws Exception {
-        Criteria ctr = new Criteria(AgvBindingDetail.class);
-        ctr.setRestriction(Restrictions.in("orderBillId", ids.toArray()));
-        agvBindingDetaileMapper.deleteByCriteria(ctr);
-        lineBindingDetailMapper.deleteByCriteria(ctr);
+    private void updateAllStore(List<OrderBill> wmsAddOrder) throws Exception {
+        orderBillMapper.updateDetailsArea();
+        List<Integer> ids = wmsAddOrder.stream().map(OrderBill::getId).collect(Collectors.toList());
+        orderBillMapper.updateWmsPriority(StringUtils.join(ids, ","));
+        //删除agv 和 输送线的绑定明细
+        agvBindingDetaileMapper.deleteWmsAgvBindingDetail();
+        lineBindingDetailMapper.deleteWmsAgvBindingDetails();
     }
 }
