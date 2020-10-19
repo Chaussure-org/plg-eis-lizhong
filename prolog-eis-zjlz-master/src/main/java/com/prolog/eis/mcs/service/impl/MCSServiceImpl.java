@@ -2,6 +2,7 @@ package com.prolog.eis.mcs.service.impl;
 
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.dto.mcs.McsSendTaskDto;
 import com.prolog.eis.mcs.service.IMCSService;
@@ -37,20 +38,19 @@ public class MCSServiceImpl implements IMCSService {
 
     @Override
     @LogInfo(desci = "eis发起托盘移动任务",direction = "eis->mcs",type = LogDto.MCS_TYPE_CONTIANER_MOVE,systemType = LogDto.MCS)
-    public McsResultDto mcsContainerMove(String taskId, String containerNo, int type, String address, String target,
-                                         String priority) throws Exception {
-        List<McsSendTaskDto> mcsSendTaskDtos = new ArrayList<McsSendTaskDto>();
-        McsSendTaskDto mcsSendTaskDto = new McsSendTaskDto();
-        mcsSendTaskDto.setTaskId(taskId);
-        mcsSendTaskDto.setType(type);
-        mcsSendTaskDto.setBankId(1);
-        mcsSendTaskDto.setContainerNo(containerNo);
-        mcsSendTaskDto.setAddress(address);
-        mcsSendTaskDto.setTarget(target);
-        mcsSendTaskDto.setPriority(priority);
-        mcsSendTaskDto.setWeight("");
-        mcsSendTaskDto.setStatus(0);
-        mcsSendTaskDtos.add(mcsSendTaskDto);
+    public McsResultDto mcsContainerMove(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
+        List<McsMoveTaskDto> mcsSendTaskDtos = new ArrayList<McsMoveTaskDto>();
+//        McsSendTaskDto mcsSendTaskDto = new McsSendTaskDto();
+//        mcsSendTaskDto.setTaskId(taskId);
+//        mcsSendTaskDto.setType(type);
+//        mcsSendTaskDto.setBankId(1);
+//        mcsSendTaskDto.setContainerNo(containerNo);
+//        mcsSendTaskDto.setAddress(address);
+//        mcsSendTaskDto.setTarget(target);
+//        mcsSendTaskDto.setPriority(priority);
+//        mcsSendTaskDto.setWeight("");
+//        mcsSendTaskDto.setStatus(0);
+        mcsSendTaskDtos.add(mcsMoveTaskDto);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("carryList", mcsSendTaskDtos);
 

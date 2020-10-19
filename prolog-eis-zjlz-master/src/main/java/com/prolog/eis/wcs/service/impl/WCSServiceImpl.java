@@ -3,6 +3,7 @@ package com.prolog.eis.wcs.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.wcs.service.IWCSService;
@@ -36,21 +37,17 @@ public class WCSServiceImpl implements IWCSService {
     /**
      * 输送线行走
      *
-     * @param taskId
-     * @param address
-     * @param target
-     * @param containerNo
-     * @param type
+     * @param wcsLineMoveDto 输送线行走实体
      * @return
      */
     @Override
-    @LogInfo(desci = "eis发送输送线行走命令",direction = "eis->wcs",type = LogDto.WCS_TYPE_lINE_MOVE,systemType = LogDto.WCS)
-    public RestMessage<String> lineMove(String taskId, String address, String target, String containerNo, int type) {
+    @LogInfo(desci = "eis发送输送线行走命令",direction = "eis->wcs",type = LogDto.WCS_TYPE_LINE_MOVE,systemType = LogDto.WCS)
+    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto) {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 输送线行走:{}",url);
         try {
-            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address)
-                    .put("containerNo",containerNo).put("type",type).put("target",target).getMap(),new TypeReference<RestMessage<String>>() {});
+            RestMessage<String> result = httpUtils.post(url,MapUtils.convertBean(wcsLineMoveDto),
+                    new TypeReference<RestMessage<String>>() {});
             return result;
         } catch (Exception e) {
             logger.warn("EIS -> WCS 请求输送线行走异常",e);

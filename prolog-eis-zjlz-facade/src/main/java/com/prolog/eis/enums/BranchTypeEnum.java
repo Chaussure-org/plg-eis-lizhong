@@ -6,7 +6,14 @@ package com.prolog.eis.enums;
  * @CreateTime 2020-10-14 14:57
  */
 public enum BranchTypeEnum {
+
+    /**
+     * 箱式库
+     */
     XSK("XSK","A"),
+    /**
+     * 立体库
+     */
     LTK("LTK","B");
 
     /**

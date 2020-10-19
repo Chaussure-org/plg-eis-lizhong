@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
+import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.rcs.service.IRCSService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologHttpUtils;
@@ -26,27 +27,27 @@ public class RcsServiceImpl implements IRCSService {
 	
 	@Override
 	@LogInfo(desci = "eis发起rcs任务",direction = "eis->rcs",type = LogDto.RCS_TYPE_SEND_TASK,systemType = LogDto.RCS)
-	public RcsRequestResultDto sendTask(String reqCode,String containerNo,String startPosition,String endPosition,String taskTyp,String priority) {
+	public RcsRequestResultDto sendTask(RcsTaskDto rcsTaskDto) {
 
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("reqCode", reqCode);
+		jsonObject.put("reqCode", rcsTaskDto.getReqCode());
 		jsonObject.put("reqTime", (new SimpleDateFormat("yyyy MM dd HH:mm:ss")).format(new Date()));
 		jsonObject.put("clientCode", "");
 		jsonObject.put("tokenCode", "");
 		jsonObject.put("interfaceName", "genAgvSchedulingTask");
 
-		jsonObject.put("taskTyp", taskTyp);
+		jsonObject.put("taskTyp", rcsTaskDto.getTaskType());
 		jsonObject.put("wbCode", "");
 
 		JSONArray jsonArray = new JSONArray();
 
 		JSONObject startPositionJson = new JSONObject();
-		startPositionJson.put("positionCode", startPosition);
+		startPositionJson.put("positionCode", rcsTaskDto.getStartPosition());
 		startPositionJson.put("type", "00");
 		jsonArray.add(startPositionJson);
 
 		JSONObject endPositionJson = new JSONObject();
-		endPositionJson.put("positionCode", endPosition);
+		endPositionJson.put("positionCode", rcsTaskDto.getEndPosition());
 		endPositionJson.put("type", "00");
 
 		jsonArray.add(endPositionJson);
@@ -55,9 +56,9 @@ public class RcsServiceImpl implements IRCSService {
 		//盲举全部不传货架号
 		jsonObject.put("podCode", "");
 		jsonObject.put("podDir", "");
-		jsonObject.put("priority", priority);
+		jsonObject.put("priority", rcsTaskDto.getPriority());
 		jsonObject.put("agvCode", "");
-		jsonObject.put("taskCode", reqCode);
+		jsonObject.put("taskCode", rcsTaskDto.getReqCode());
 		jsonObject.put("data", "");
 
 		String data = jsonObject.toString();
