@@ -42,8 +42,9 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         containerPathTaskDetailDTO.setNextLocation(location);
         String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
         //给rcs发送移动指令
-        RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(taskId, containerPathTaskDetailDTO.getPalletNo()
-                , containerPathTaskDetailDTO.getSourceLocation(), agvStoragelocationDTO.getLocationNo(), "1", "1");
+        RcsTaskDto rcsTaskDto=new RcsTaskDto(taskId, containerPathTaskDetailDTO.getPalletNo()
+                , containerPathTaskDetailDTO.getSourceLocation(), location, "1", "1");
+        RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
 
         //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
         if ("0".equals(rcsRequestResultDto.getCode())) {

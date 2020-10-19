@@ -121,7 +121,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //判断agv_binding_detail 里有状态为10 的，判断agv空闲位置，生成路径
         List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), AgvBindingDetail.class);
         if (!detailStatus.isEmpty()) {
-             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "A100");
+             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "A100",null);
              agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo());
              return;
         }
