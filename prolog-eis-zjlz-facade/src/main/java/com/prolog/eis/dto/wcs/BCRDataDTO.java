@@ -76,4 +76,17 @@ public class BCRDataDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return "BCRDataDTO{" +
+                "taskId='" + taskId + '\'' +
+                ", type=" + type +
+                ", containerNo='" + containerNo + '\'' +
+                ", shapeInspect=" + shapeInspect +
+                ", shapeInspectDesc='" + shapeInspectDesc + '\'' +
+                ", weightInspect='" + weightInspect + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

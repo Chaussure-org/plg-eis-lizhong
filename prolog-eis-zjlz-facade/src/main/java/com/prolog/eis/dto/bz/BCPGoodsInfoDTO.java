@@ -47,4 +47,14 @@ public class BCPGoodsInfoDTO {
     public void setGoodsNo(String goodsNo) {
         this.goodsNo = goodsNo;
     }
+
+    @Override
+    public String toString() {
+        return "BCPGoodsInfoDTO{" +
+                "orderNo=" + orderNo +
+                ", graphNo='" + graphNo + '\'' +
+                ", goodsname='" + goodsname + '\'' +
+                ", goodsNo='" + goodsNo + '\'' +
+                '}';
+    }
 }

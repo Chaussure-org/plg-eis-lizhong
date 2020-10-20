@@ -11,17 +11,17 @@ public class TaskCallbackDTO {
     public static final int STATUS_FINISH=2;
 
     @ApiModelProperty("任务id")
-    private String taskId;//任务id
+    private String taskId;
     @ApiModelProperty("状态 1-开始 2-完成")
-    private short status;//状态 1-开始 2-完成
-    @ApiModelProperty("任务类型")
-    private short type; //任务类型 1：入库 2：出库 3:移库 4:小车换层 5:输送线行走
+    private short status;
+    @ApiModelProperty("任务类型1：入库 2：出库 3:移库 4:小车换层 5:输送线行走")
+    private short type;
     @ApiModelProperty("料箱编号")
-    private String containerNo; //料箱编号
+    private String containerNo;
     @ApiModelProperty("小车编号")
-    private String rgvId;//小车编号
+    private String rgvId;
     @ApiModelProperty("当前坐标")
-    private String address;//当前坐标
+    private String address;
 
     public String getTaskId() {
         return taskId;
@@ -69,5 +69,17 @@ public class TaskCallbackDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskCallbackDTO{" +
+                "taskId='" + taskId + '\'' +
+                ", status=" + status +
+                ", type=" + type +
+                ", containerNo='" + containerNo + '\'' +
+                ", rgvId='" + rgvId + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }

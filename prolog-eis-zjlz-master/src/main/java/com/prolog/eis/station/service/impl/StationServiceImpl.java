@@ -1,5 +1,7 @@
 package com.prolog.eis.station.service.impl;
 
+import com.prolog.eis.dto.station.ContainerTaskDto;
+import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
@@ -47,6 +49,11 @@ public class StationServiceImpl implements IStationService {
     @Override
     public void clearStationPickingOrder(int stationId) {
         stationMapper.updateStationPickingOrderId(stationId);
+    }
+
+    @Override
+    public List<ContainerTaskDto> getTaskByContainerNo(String containerNo) {
+        return stationMapper.getTaskByContainerNo(containerNo);
     }
 
     @Override

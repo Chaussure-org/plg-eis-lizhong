@@ -31,4 +31,12 @@ public class OrderDetailLabelDTO {
     public void setPastLabelFlg(Integer pastLabelFlg) {
         this.pastLabelFlg = pastLabelFlg;
     }
+
+    @Override
+    public String toString() {
+        return "OrderDetailLabelDTO{" +
+                "goodsId=" + goodsId +
+                ", pastLabelFlg=" + pastLabelFlg +
+                '}';
+    }
 }

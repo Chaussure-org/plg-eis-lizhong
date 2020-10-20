@@ -1,6 +1,5 @@
 package com.prolog.eis.wms.service.impl;
 
-import com.netflix.discovery.converters.Auto;
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wms.*;
@@ -15,10 +14,9 @@ import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.util.LogInfo;
-import com.prolog.eis.wms.dao.WMSMapper;
+import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWMSCallBackService;
 import com.prolog.framework.utils.MapUtils;
-import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +36,7 @@ import java.util.stream.Collectors;
 public class WMSCallBackServiceImpl implements IWMSCallBackService {
 
     @Autowired
-    private WMSMapper mapper;
+    private WareHousingMapper mapper;
 
     @Autowired
     private IOrderBillService orderBillService;

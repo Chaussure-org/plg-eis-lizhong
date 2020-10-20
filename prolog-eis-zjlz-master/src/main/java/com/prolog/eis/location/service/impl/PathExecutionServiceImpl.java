@@ -105,7 +105,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 
     @Override
     public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-
+        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
     }
 
     @Override
