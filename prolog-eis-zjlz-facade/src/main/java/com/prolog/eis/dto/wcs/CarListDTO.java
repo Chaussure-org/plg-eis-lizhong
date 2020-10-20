@@ -15,4 +15,11 @@ public class CarListDTO {
     public void setCarryList(List<CarInfoDTO> carryList) {
         this.carryList = carryList;
     }
+
+    @Override
+    public String toString() {
+        return "CarListDTO{" +
+                "carryList=" + carryList +
+                '}';
+    }
 }

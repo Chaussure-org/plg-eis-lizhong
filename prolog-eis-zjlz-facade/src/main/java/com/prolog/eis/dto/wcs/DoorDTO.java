@@ -19,4 +19,12 @@ public class DoorDTO {
     public void setOpen(boolean open) {
         this.open = open;
     }
+
+    @Override
+    public String toString() {
+        return "DoorDTO{" +
+                "doorNo='" + doorNo + '\'' +
+                ", open=" + open +
+                '}';
+    }
 }
