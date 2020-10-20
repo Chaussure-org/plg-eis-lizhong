@@ -4,6 +4,8 @@ import com.prolog.eis.ZjlzApplication;
 import com.prolog.eis.dto.store.InitStoreDto;
 import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.impl.FinishedProdOutEnginServiceImpl;
+import com.prolog.eis.location.dao.AgvStoragelocationMapper;
+import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.store.service.IStoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,8 @@ public class InitStoreTest {
 
     @Autowired
     private IStoreService storeService;
+    @Autowired
+    private AgvStoragelocationMapper agvStoragelocationMapper;
 
     @Autowired
     private FinishedProdOutEnginService finishedProdOutEnginService;

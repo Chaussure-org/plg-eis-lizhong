@@ -1,6 +1,8 @@
 package com.prolog.eis.order.service;
 
 import com.prolog.eis.dto.OrderBillDto;
+import com.prolog.eis.dto.bz.FinishNotSeedDTO;
+import com.prolog.eis.dto.bz.FinishTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
@@ -65,4 +67,26 @@ public interface IOrderBillService {
      * @return
      */
     List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
+
+    /**
+     * 获取成品库未完成订单总量及明细情况
+     * @return
+     */
+    FinishNotSeedDTO getNoSeedCount();
+
+    /**
+     * 校验容器是否在当前站台有播种任务
+     * @param stationId
+     * @param containerNo
+     * @return
+     */
+    int checkContainer(int stationId,String containerNo);
+
+
+    /**
+     * 成品库播种详情
+     * @param containerNo
+     * @return
+     */
+    List<FinishTrayDTO> getFinishSeedInfo(String containerNo,int pickingOrderId);
 }

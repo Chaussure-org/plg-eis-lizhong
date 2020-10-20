@@ -8,6 +8,7 @@ import com.prolog.eis.model.location.StoreArea;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wuxl
@@ -59,4 +60,12 @@ public interface ContainerPathTaskService {
      * @return
      */
     List<StoreArea> findBestStoreAreaList(List<StoreAreaPriorityDTO> spList);
+
+    /**
+     * 根据map查询
+     * @param map
+     * @return
+     * @throws Exception
+     */
+    List<ContainerPathTask> findByMap(Map map) throws Exception;
 }

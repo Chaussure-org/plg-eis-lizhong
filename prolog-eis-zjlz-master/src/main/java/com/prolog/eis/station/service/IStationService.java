@@ -53,4 +53,12 @@ public interface IStationService {
      * 清空站台拣选单id
      */
     void clearStationPickingOrder(int stationId);
+
+
+    /**
+     * 成品库站台索取订单
+     * @throws Exception
+     * @param isLock
+     */
+    void changeFinishStationStatus(int isLock) throws Exception;
 }

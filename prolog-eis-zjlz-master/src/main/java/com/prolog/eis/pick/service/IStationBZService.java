@@ -31,7 +31,7 @@ public interface IStationBZService {
     /**
      * 校验托盘或料箱是否在拣选站
      */
-    boolean checkContainerExist(String containerNo,int stationId);
+    boolean checkContainerExist(String containerNo,int stationId) throws Exception;
 
     /**
      * 检查订单拖是否在当前拣选站
@@ -39,7 +39,7 @@ public interface IStationBZService {
      * @param stationId 
      * @return
      */
-    boolean checkOrderTrayNo(String orderTrayNo,int stationId);
+    boolean checkOrderTrayNo(String orderTrayNo,int stationId) throws Exception;
 
     /**
      * 订单转历史
@@ -98,4 +98,16 @@ public interface IStationBZService {
      * @param stationId
      */
     void changeOrderTray(String orderTrayNo,int stationId) throws Exception;
+
+
+    /**
+     * 进行播种
+     * @param stationId
+     * @param containerNo
+     * @param completeNum
+     * @param orderBillId
+     * @param orderBoxNo
+     * @throws Exception
+     */
+    void doPicking(int stationId, String containerNo,int completeNum,int orderBillId,String orderBoxNo) throws Exception;
 }

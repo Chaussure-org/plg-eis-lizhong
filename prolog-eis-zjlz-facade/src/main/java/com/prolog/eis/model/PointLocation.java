@@ -16,6 +16,14 @@ import io.swagger.annotations.ApiModelProperty;
 @Table ("point_location")
 public class PointLocation {
 
+  /**
+   * 拣选站任务托盘
+   */
+  public static final int POINT_TYPE_TASK_TRAY = 21;
+  /**
+   * 拣选站订单拖
+   */
+  public static final int POINT_TYPE_ORDER_TRAY = 22;
   @Column("point_id")
   @ApiModelProperty("POINTID")
   private String pointId;
