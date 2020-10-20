@@ -167,7 +167,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     }
 
     @Override
-    public synchronized List<OutContainerDto> outByGoodsId(int goodsId,int count,int wmsPriority) throws Exception {
+    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count, int wmsPriority) throws Exception {
 
         //1.优先出小车所在的层的库存 移位数量由低到高 2.出库任务数从低到高排序 3.按照入库任务数从低到高 4.离出库位置最近的位置
         List<OutContainerDto> outContainerDtoList = new ArrayList<>();
@@ -176,7 +176,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         //找层的任务数出库任务数和入库任务数
         List<LayerTaskDto> layerTaskCounts = boxOutMapper.findLayerTaskCount();
         //输送线上绑定了订单 的  剩余库存
-        //List<RoadWayGoodsCountDto> agvGoodsCounts = boxOutMapper.findAgvGoodsCount(goodsId);
+        List<LayerGoodsCountDto> agvGoodsCounts = boxOutMapper.findLineGoodsCount(goodsId);
         //小车所在的层
         List<CarInfoDTO> conformCars = this.getConformCars();
         if (conformCars.isEmpty()) {
@@ -196,12 +196,27 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         if (carLayerGoodCounts.isEmpty()) {
 
             // TODO: 2020/10/10 跨层
-        } else {
+        }
+        boolean isContinue = true;
+        int sumCount = 0;
+//        //优先从agv库存找
+        for (LayerGoodsCountDto goodsCountDto : agvGoodsCounts) {
+            if (goodsCountDto.getQty() <= 0) {
+                continue;
+            }
+            if (sumCount >= count) {
+                isContinue = false;
+                break;
+            }
+            OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
+            outContainerDtoList.add(outContainer);
+            sumCount += goodsCountDto.getQty();
+        }
+        if (isContinue) {
             //1.移位数量由低到高2.出库任务数从低到高排序 3.按照入库任务数从低到高
             layerGoodsCounts.stream().sorted(
                     Comparator.comparing(LayerGoodsCountDto::getDeptNum).
                             thenComparing(LayerGoodsCountDto::getOutCount).reversed().thenComparing(LayerGoodsCountDto::getInCount).reversed());
-            int sumCount = 0;
             for (LayerGoodsCountDto goodsCountDto : layerGoodsCounts) {
                 if (sumCount >= count) {
                     break;
@@ -245,7 +260,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
      * 返回订单id 集合
      */
     @Override
-    public List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) throws Exception{
+    public List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) throws Exception {
         Map<Integer, List<OutDetailDto>> mapTemp = lineDetailList.stream().collect(Collectors.groupingBy(OutDetailDto::getOrderBillId));
         Map<Integer, StringBuffer> orderMap = new HashMap<>();
         for (Integer orderId : mapTemp.keySet()) {
