@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,5 +111,10 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 		ContainerPathTaskDTO containerPathTaskDTO = containerPathTaskDTOList.get(0);
 		containerPathTaskDTO.setTargetArea(agvStoragelocationDTOList.get(0).getAreaNo());
 		return containerPathTaskDTO;
+	}
+
+	@Override
+	public List<AgvStoragelocation> findByMap(Map map) throws Exception {
+		return agvStoragelocationMapper.findByMap(map,AgvStoragelocation.class);
 	}
 }

@@ -36,10 +36,11 @@ public interface IStationBZService {
     /**
      * 检查订单拖是否在当前拣选站
      * @param orderTrayNo
-     * @param stationId 
+     * @param stationId
+     * @param areaNo
      * @return
      */
-    boolean checkOrderTrayNo(String orderTrayNo,int stationId) throws Exception;
+    boolean checkOrderTrayNo(String orderTrayNo,int stationId,String areaNo) throws Exception;
 
     /**
      * 订单转历史

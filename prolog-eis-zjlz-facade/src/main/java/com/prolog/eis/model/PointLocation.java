@@ -20,18 +20,9 @@ public class PointLocation {
      */
     public static final int POINT_TYPE_IN_BCR = 1;
 
-    /**
-     * 拣选站任务托盘
-     */
-    public static final int POINT_TYPE_TASK_TRAY = 21;
-    /**
-     * 拣选站订单拖
-     */
-    public static final int POINT_TYPE_ORDER_TRAY = 22;
-
-    @Column("point_id")
-    @ApiModelProperty("点位id")
-    private String pointId;
+  @Column("point_id")
+  @ApiModelProperty("POINTID")
+  private String pointId;
 
     @Column("point_name")
     @ApiModelProperty("POINT名称")
