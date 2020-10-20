@@ -31,4 +31,13 @@ public class CarInfoDTO {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "CarInfoDTO{" +
+                "rgvId='" + rgvId + '\'' +
+                ", layer=" + layer +
+                ", status=" + status +
+                '}';
+    }
 }

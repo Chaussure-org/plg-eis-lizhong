@@ -82,4 +82,17 @@ public class BCPPcikingDTO {
     public void setSurplusOrderDetailCount(int surplusOrderDetailCount) {
         this.surplusOrderDetailCount = surplusOrderDetailCount;
     }
+
+    @Override
+    public String toString() {
+        return "BCPPcikingDTO{" +
+                "orderId=" + orderId +
+                ", orderNo=" + orderNo +
+                ", graphNo='" + graphNo + '\'' +
+                ", goodsname='" + goodsname + '\'' +
+                ", goodsNo='" + goodsNo + '\'' +
+                ", pickNum=" + pickNum +
+                ", surplusOrderDetailCount=" + surplusOrderDetailCount +
+                '}';
+    }
 }

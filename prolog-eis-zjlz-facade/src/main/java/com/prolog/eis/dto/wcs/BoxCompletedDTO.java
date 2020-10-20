@@ -25,4 +25,12 @@ public class BoxCompletedDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return "BoxCompletedDTO{" +
+                "containerNo='" + containerNo + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

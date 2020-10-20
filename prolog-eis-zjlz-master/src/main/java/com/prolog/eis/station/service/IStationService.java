@@ -1,5 +1,7 @@
 package com.prolog.eis.station.service;
 
+import com.prolog.eis.dto.station.ContainerTaskDto;
+import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
 
 import java.util.List;
@@ -53,4 +55,11 @@ public interface IStationService {
      * 清空站台拣选单id
      */
     void clearStationPickingOrder(int stationId);
+
+    /**
+     * 通过containerNo在站台找到相应的绑定任务
+     * @param containerNo
+     * @return
+     */
+    List<ContainerTaskDto> getTaskByContainerNo(String containerNo);
 }

@@ -31,7 +31,7 @@ public class AgvBindingDetail {
     @ApiModelProperty("订单明细id")
     private Integer orderMxId;
 
-    @Column("goodsId")
+    @Column("goods_id")
     @ApiModelProperty("商品id")
     private Integer goodsId;
 

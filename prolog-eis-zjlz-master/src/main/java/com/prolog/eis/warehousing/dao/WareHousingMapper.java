@@ -1,4 +1,4 @@
-package com.prolog.eis.wms.dao;
+package com.prolog.eis.warehousing.dao;
 
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.framework.dao.mapper.BaseMapper;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Repository;
 
 /**
  * @Author wangkang
- * @Description
- * @CreateTime 2020-09-25 17:15
+ * @Description 入库任务数据处理层
+ * @CreateTime 2020-10-19 10:10
  */
 @Repository
-public interface WMSMapper extends BaseMapper<WmsInboundTask> {
+public interface WareHousingMapper extends BaseMapper<WmsInboundTask> {
 }

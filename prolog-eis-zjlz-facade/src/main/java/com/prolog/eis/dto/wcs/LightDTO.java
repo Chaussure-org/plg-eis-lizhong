@@ -33,4 +33,12 @@ public class LightDTO {
     public void setLightNo(String lightNo) {
         this.lightNo = lightNo;
     }
+
+    @Override
+    public String toString() {
+        return "LightDTO{" +
+                "stationNo='" + stationNo + '\'' +
+                ", lightNo='" + lightNo + '\'' +
+                '}';
+    }
 }
