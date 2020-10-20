@@ -17,4 +17,11 @@ public interface IPointLocationService {
      * @return
      */
     List<PointLocation> getPointByType(int type);
+
+    /**
+     * 通过id找点位
+     * @param address 原位子
+     * @return
+     */
+    List<PointLocation> getPointByPointId(String address);
 }

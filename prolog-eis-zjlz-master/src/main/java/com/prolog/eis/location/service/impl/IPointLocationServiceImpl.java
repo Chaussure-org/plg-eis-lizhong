@@ -33,4 +33,16 @@ public class IPointLocationServiceImpl implements IPointLocationService {
         criteria.setRestriction(Restrictions.eq("pointType",type));
         return mapper.findByCriteria(criteria);
     }
+
+    /**
+     * 通过id找点位
+     * @param address 原位子
+     * @return
+     */
+    @Override
+    public List<PointLocation> getPointByPointId(String address) {
+        Criteria criteria = Criteria.forClass(PointLocation.class);
+        criteria.setRestriction(Restrictions.eq("pointId",address));
+        return mapper.findByCriteria(criteria);
+    }
 }

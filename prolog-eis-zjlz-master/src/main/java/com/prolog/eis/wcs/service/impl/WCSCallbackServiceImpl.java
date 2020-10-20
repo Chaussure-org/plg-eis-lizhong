@@ -11,6 +11,7 @@ import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.station.service.IStationService;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
@@ -49,6 +50,9 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
 
     @Autowired
     private IWCSService wcsService;
+
+    @Autowired
+    private IContainerStoreService containerStoreService;
 
 
     private final RestMessage<String> success = RestMessage.newInstance(true, "200", "操作成功", null);
@@ -180,13 +184,12 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      */
     private void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
         String containerNo = bcrDataDTO.getContainerNo();
-
-        List<PointLocation> pointLocations = pointLocationService.getPointByType(PointLocation.TYPE_IN_BCR);
+        String address = bcrDataDTO.getAddress();
+        List<PointLocation> pointLocations = pointLocationService.getPointByPointId(address);
 
         if (pointLocations.size() == 0) {
             throw new RuntimeException("找不到入口点位");
         }
-        String address = pointLocations.get(0).getPointId();
 
         //外形检测不合格
         if (!bcrDataDTO.isShapeInspect()) {
@@ -205,12 +208,28 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         }
 
         //查询是否存在入库任务
-        List<WmsInboundTask> wareHousingByContainer = wareHousingService.getWareHousingByContainer(containerNo);
-        if (wareHousingByContainer.size() > 0) {
+        List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
+        if (wareHousings.size() > 0) {
+            // 生成库存
+            createContainerInfo(wareHousings,pointLocations.get(0));
+            if ("箱库入库bcr".equals(pointLocations.get(0).getPointType())){
+
+            }
             //先找入库点位
             //调用入库方法
             pathSchedulingService.inboundTask(containerNo, containerNo, "c", "BCR0101", "A");
         }
+    }
+
+    /**
+     * 生成库存
+     * @param wareHousings 入库任务
+     * @param pointLocation 点位
+     */
+    private void createContainerInfo(List<WmsInboundTask> wareHousings, PointLocation pointLocation) {
+        // 生成container_store
+
+        // 生成container_path_task
     }
 
     /**
