@@ -36,4 +36,6 @@ public interface AgvLocationService {
 	 * @throws Exception
 	 */
 	List<AgvStoragelocation> findByMap(Map map) throws Exception;
+
+    public List<StationTrayDTO> findTrayTaskStation(List<Integer> list);
 }
