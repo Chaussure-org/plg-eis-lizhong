@@ -107,7 +107,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                     if (station.getCurrentStationPickId().equals(pickingOrder.getPickingOrderId())) {
                         //1.站台agv位置为空
                         List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
-                                MapUtils.put("deviceNo", station.getId()).put("areaNo", "SA").put("taskLock", 1).getMap(), AgvStoragelocation.class);
+                                MapUtils.put("deviceNo", station.getId()).put("areaNo", "SA").put("taskLock", 1).put("storageLocK",0).getMap(), AgvStoragelocation.class);
                         if (list.isEmpty()) {
                             //站台无空位
                             return;

@@ -13,6 +13,7 @@ import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.line.LineBindingDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
@@ -64,7 +65,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             return;
         }
         //1.要去往循环线区域的订单明细
-        List<OutDetailDto> lineDetailList = orderDetailMapper.findLineDetail("B100");
+        List<OutDetailDto> lineDetailList = orderDetailMapper.findLineDetail(StoreArea.L01);
         if (lineDetailList.isEmpty()) {
             return;
         }

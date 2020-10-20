@@ -8,6 +8,7 @@ import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.agv.AgvBindingDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
@@ -84,27 +85,27 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         Map<Integer, List<OutDetailDto>> orderDetailMap = outDetails.stream().sorted(Comparator.comparing(OutDetailDto::getWmsOrderPriority).reversed()).collect(
                 Collectors.groupingBy(OutDetailDto::getOrderBillId));
 
-        //排除 已经指定了目的 区域的明细的数量 和agv区域没有绑定明细的 的数量
-        List<StoreGoodsCount> storeGoodsCount = containerStoreMapper.findStoreGoodsCount("A100,D010,D020,D030");
+        //堆垛机 agv 区域 所有的库存减掉 已经占用的库存
+        List<StoreGoodsCount> storeGoodsCount = containerStoreMapper.findStoreGoodsCount("MCS01,MCS02,MCS03,MCS04,RCS01");
         Map<Integer, Integer> containerStoreMap = storeGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
 
         // 箱库的库存 再加上循环线的库存（待加）
-        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("B100");
+        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("SAS01,L01");
         Map<Integer, Integer> boxStoreMap = boxGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
 
 
         //计算 立库和 agv 的库存  可以满足的 订单的所需数量 的订单
-        boolean b = this.computeAreaByOrder(orderDetailMap, containerStoreMap, OrderBill.FIRST_PRIORITY, "A100");
+        boolean b = this.computeAreaByOrder(orderDetailMap, containerStoreMap, OrderBill.FIRST_PRIORITY, StoreArea.RCS01);
         if (b) {
             //直到把 1类 的算完
             return;
         } else {
             //计算 箱库 可以满足的 订单的所需数量 的订单
-            boolean bool = this.computeAreaByOrder(orderDetailMap, boxStoreMap, OrderBill.SECOND_PRIORITY, "L100");
+            boolean bool = this.computeAreaByOrder(orderDetailMap, boxStoreMap, OrderBill.SECOND_PRIORITY, StoreArea.L01);
             if (bool == false) {
                 //这一部分订单是由两个库区的库存组成的
                 this.computeAllStoreByOrder(orderDetailMap, containerStoreMap, boxStoreMap);
@@ -375,10 +376,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         if (trayDetailIds.size() > 0) {
-            updateOrderDetailArea(trayDetailIds, "A100");
+            updateOrderDetailArea(trayDetailIds, StoreArea.RCS01);
         }
         if (boxDetailIds.size() > 0) {
-            updateOrderDetailArea(boxDetailIds, "L100");
+            updateOrderDetailArea(boxDetailIds, StoreArea.L01);
         }
         if (!ids.isEmpty()) {
             updateBillPriority(ids, OrderBill.THIRD_PRIORITY);
