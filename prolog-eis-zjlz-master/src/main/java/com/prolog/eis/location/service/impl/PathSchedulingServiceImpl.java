@@ -145,8 +145,14 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
         return CommonConstants.SUCCESS;
     }
 
+    /**
+     *
+     * @param palletNo  容器号
+     * @param targetArea    目标区域 更新 task_status
+     * @throws Exception
+     */
     @Override
-    public void containerMoveTask(String palletNo, String targetArea) throws Exception {
+    public void containerMoveTask(String palletNo, String targetArea,String targetLocation) throws Exception {
         //TODO 参数校验先放着
 
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.findByMap(
@@ -154,13 +160,15 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
                         .put("taskState", LocationConstants.PATH_TASK_STATE_NOTSTARTED).getMap()
                 , ContainerPathTask.class);
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
-            throw new Exception("载具不存在或正在进行任务");
+           //throw new Exception("");
+            return;
         }
 
         ContainerPathTask containerPathTask = containerPathTaskList.get(0);
         containerPathTaskMapper.updateMapById(containerPathTask.getId()
                 , MapUtils.put("targetArea", targetArea)
-                        .put("targetLocation", null).getMap()
+                        .put("taskType",LocationConstants.PATH_TASK_TYPE_OUTBOUND)
+                        .put("targetLocation", targetLocation).getMap()
                 , ContainerPathTask.class);
 
         locationService.doContainerPathTaskAndExecutionByContainer(containerPathTask.getPalletNo(), containerPathTask.getContainerNo());

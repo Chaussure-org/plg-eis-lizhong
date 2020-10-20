@@ -193,12 +193,11 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         if (usedGoodsCount == null || usedGoodsCount.size() == 0) {
             return allGoodsCount;
         }
-        for (Map.Entry<Integer, Integer> integerIntegerEntry : usedGoodsCount.entrySet()) {
-            int key = integerIntegerEntry.getKey();
-            System.out.println(integerIntegerEntry.getValue());
-            Integer value = new BigDecimal(integerIntegerEntry.getValue()).intValue();
-            allGoodsCount.put(key, allGoodsCount.get(key) - value);
-        }
+        usedGoodsCount.forEach((k, v) -> {
+                if (allGoodsCount.get(k)!=null){
+                    allGoodsCount.put(k,allGoodsCount.get(k)-v);
+                }
+            });
         canBeUsedStore.putAll(allGoodsCount);
         return canBeUsedStore;
     }

@@ -199,6 +199,11 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         return result;
     }
 
+    @Override
+    public List<ContainerPathTask> findByMap(Map map) throws Exception {
+        return containerPathTaskMapper.findByMap(map,ContainerPathTask.class);
+    }
+
     private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){
 
         List<StoreAreaPriorityDTO> result = new ArrayList<>();

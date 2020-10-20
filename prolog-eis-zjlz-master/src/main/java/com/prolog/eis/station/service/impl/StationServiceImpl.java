@@ -57,6 +57,18 @@ public class StationServiceImpl implements IStationService {
     }
 
     @Override
+    public void changeFinishStationStatus(int isLock) throws Exception {
+        List<Station> stations =
+                stationMapper.findByMap(MapUtils.put("stationType", Station.STATION_TYPE_FINISHEDPROD).getMap(),
+                        Station.class);
+        if (stations.size() != 0){
+            throw new Exception("成品库站台配置有问题");
+        }
+        stationMapper.updateStationLock(isLock,stations.get(0).getId());
+
+    }
+
+    @Override
     public void updateStation(Station station) throws Exception {
         stationMapper.update(station);
     }

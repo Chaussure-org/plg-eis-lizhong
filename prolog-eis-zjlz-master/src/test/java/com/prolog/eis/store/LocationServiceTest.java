@@ -23,6 +23,6 @@ public class LocationServiceTest {
 
     @Test
     public void doTask() throws Exception {
-        pathSchedulingService.containerMoveTask("1","RCS01");
+        pathSchedulingService.containerMoveTask("1","RCS01",null);
     }
 }

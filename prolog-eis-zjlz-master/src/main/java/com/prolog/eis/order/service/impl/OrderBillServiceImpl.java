@@ -1,6 +1,8 @@
 package com.prolog.eis.order.service.impl;
 
 import com.prolog.eis.dto.OrderBillDto;
+import com.prolog.eis.dto.bz.FinishNotSeedDTO;
+import com.prolog.eis.dto.bz.FinishTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
@@ -117,7 +119,23 @@ public class OrderBillServiceImpl implements IOrderBillService {
 
     @Override
     public List<WmsOutboundCallBackDto> findWmsOrderBill(int orderBillId) {
-        return orderBillMapper.findWmsOrderBill(orderBillId);
+       // return orderBillMapper.findWmsOrderBill(orderBillId);
+        return null;
+    }
+
+    @Override
+    public FinishNotSeedDTO getNoSeedCount() {
+        return orderBillMapper.getFinishSeedCount();
+    }
+
+    @Override
+    public int checkContainer(int stationId,String containerNo) {
+        return orderBillMapper.checkContainer(stationId,containerNo);
+    }
+
+    @Override
+    public List<FinishTrayDTO> getFinishSeedInfo(String containerNo,int pickingOerderId) {
+        return orderBillMapper.getFinishSeedInfo(containerNo,pickingOerderId);
     }
 
 }

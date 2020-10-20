@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -53,4 +55,9 @@ public interface StationMapper extends BaseMapper<Station> {
             "    left join order_bill ob on po.id = ob.picking_order_id\n" +
             "    left join line_binding_detail lbc on ob.id = lbc.order_bill_id where s.container_no = #{containerNo};")
     List<ContainerTaskDto> getTaskByContainerNo(@Param("containerNo") String containerNo);
+    /**
+     * 切换站台是否索取订单
+     */
+    @Update("update station set is_lock = #{isLock} WHERE id = #{stationId}")
+    void updateStationLock(@Param("isLock") int isLock,@Param("stationId") int stationId);
 }

@@ -62,4 +62,11 @@ public interface IStationService {
      * @return
      */
     List<ContainerTaskDto> getTaskByContainerNo(String containerNo);
+
+    /**
+     * 成品库站台索取订单
+     * @throws Exception
+     * @param isLock
+     */
+    void changeFinishStationStatus(int isLock) throws Exception;
 }
