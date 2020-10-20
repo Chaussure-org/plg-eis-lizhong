@@ -18,4 +18,6 @@ import lombok.NoArgsConstructor;
 public class OrderSortDto {
     private Integer orderBillId;
     private float rate;
+
+    StringBuffer strTest;
 }

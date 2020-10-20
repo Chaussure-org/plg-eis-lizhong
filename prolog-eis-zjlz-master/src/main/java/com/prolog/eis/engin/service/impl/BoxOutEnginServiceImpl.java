@@ -265,7 +265,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         //orderMap.remove(orderBillId);
         for (Integer orderId : orderMap.keySet()) {
             float ratio = CompareStrSimUtil.getSimilarityRatio(stringFirst, orderMap.get(orderId), true);
-            list.add(new OrderSortDto(orderId, ratio));
+            //list.add(new OrderSortDto(orderId, ratio,));
         }
         //订单重复度最高的排再最前面
         List<OrderSortDto> sortList = list.stream().sorted(Comparator.comparing(OrderSortDto::getRate).reversed()).collect(Collectors.toList());
