@@ -4,11 +4,15 @@ import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.base.service.IPointLocationService;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
+import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
+import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.PointLocation;
+import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.PickingOrderHistory;
@@ -31,6 +35,7 @@ import com.prolog.eis.wms.service.IWMSService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -74,6 +79,15 @@ public class StationBZServiceImpl implements IStationBZService {
     private ContainerPathTaskService containerPathTaskService;
     @Autowired
     private IPointLocationService pointLocationService;
+    @Autowired
+    private AgvLocationService agvLocationService;
+
+    @Autowired
+    private AgvBindingDetaileMapper agvBindingDetaileMapper;
+
+
+
+
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -104,8 +118,9 @@ public class StationBZServiceImpl implements IStationBZService {
         if (b1){
              throw new Exception("容器【"+containerNo+"】不在站台");
         }
-        //todo：校验订单拖是否在拣选站
-        boolean b2 = checkOrderTrayNo(orderBoxNo, stationId);
+        //校验订单拖是否在拣选站
+        String areaNo = "OT";
+        boolean b2 = checkOrderTrayNo(orderBoxNo, stationId,areaNo);
         if (b2){
             throw new Exception("订单拖【"+orderBoxNo+"】不在站台");
         }
@@ -171,6 +186,7 @@ public class StationBZServiceImpl implements IStationBZService {
         int orderBillId = orderBillIds.get(0);
         //执行播种
         this.doPicking(stationId,containerNo,completeNum,orderBillIds.get(0),orderBoxNo);
+        agvBindingDetaileMapper.deleteByMap(MapUtils.put("orderBillId",orderBillId).put("containerNo",containerNo).getMap(), AgvBindingDetail.class);
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
             //切换拣选单
@@ -210,32 +226,30 @@ public class StationBZServiceImpl implements IStationBZService {
         if (stations.size() == 0) {
             return true;
         }
-        //下层任务拖
-        List<PointLocation> pointLocations = pointLocationService.findByMap(MapUtils.put("stationId", stationId).
-                put("pointType", PointLocation.POINT_TYPE_TASK_TRAY).getMap());
-        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", containerNo).
-                put("source_area",pointLocations.get(0).getPointId()).getMap());
-        if (containerPathTasks.size() == 0 || containerPathTasks.get(0).getTargetArea() != null){
+        String areaNo = "OD01";
+        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
+        if (b){
             return true;
         }
-
         return false;
     }
 
     @Override
-    public boolean checkOrderTrayNo(String orderTrayNo, int stationId) throws Exception {
-        List<PointLocation> pointLocations = pointLocationService.findByMap(MapUtils.put("stationId", stationId).
-                put("pointType", PointLocation.POINT_TYPE_ORDER_TRAY).getMap());
-        if (pointLocations.size() != 2){
-            throw new Exception("站台【"+stationId+"】订单框点位配置有错");
+    public boolean checkOrderTrayNo(String orderTrayNo, int stationId,String areaNo) throws Exception {
+        List<AgvStoragelocation> agvStoragelocations = agvLocationService.findByMap(MapUtils.put("deviceNo", stationId)
+                .put("areaNo",areaNo).getMap());
+        if (agvStoragelocations.size() == 0){
+            throw new Exception("站台【"+stationId+"】点位配置错误");
         }
-        for (PointLocation pointLocation : pointLocations) {
+        for (AgvStoragelocation agvStoragelocation : agvStoragelocations) {
             List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", orderTrayNo).
-                    put("sourceLocation",pointLocation.getPointId()).getMap());
-            if (containerPathTasks.size() == 0 || containerPathTasks.get(0).getTargetArea() != null){
+                    put("sourceLocation",agvStoragelocation.getLocationNo())
+                    .put("taskState",ContainerPathTask.TASK_STATE_NOT).getMap());
+            if (containerPathTasks.size() == 0){
                 return true;
             }
         }
+
         return false;
     }
 
@@ -255,9 +269,9 @@ public class StationBZServiceImpl implements IStationBZService {
         if (stationIds.size() == 0) {
             //直接放行
             if (stations.size() > 0) {
-                //上层输送线 回暂存区
+                //上层输送线  循环线点位
             } else {
-                //下层agv  循环线点位
+                //下层agv 回暂存区
             }
         } else {
             //计算合适站台
@@ -320,7 +334,7 @@ public class StationBZServiceImpl implements IStationBZService {
             targetStationId = stationIds.get(0);
         } else {
             for (Integer stationId : stationIds) {
-                //先找到一个比当前站台id且最近的站台
+                //先找到一个比当前站台id小且最近的站台
                 if (sourceStation > stationId) {
                     targetStationId = stationId;
                     return targetStationId;
@@ -358,8 +372,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
     @Override
     public void seedToWms(ContainerBindingDetail containerBindingDetail) {
-       //todo:
-        WmsOutboundCallBackDto wmsOutboundCallBackDto = new WmsOutboundCallBackDto();
+
         if (containerBindingDetail == null){
             return;
         }

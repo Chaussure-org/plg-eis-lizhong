@@ -19,7 +19,27 @@ import java.util.Date;
 @Table("container_path_task")
 public class ContainerPathTask implements Serializable {
   private static final long serialVersionUID = 8099230143022035155L;
+  /**
+   * 任务状态：无任务
+   */
+  public static final int TASK_STATE_NOT = 0;
+  /**
+   * 任务状态：无任务
+   */
+  public static final int TASK_STATE_WAIT_SEND = 10;
+  /**
+   * 任务状态：已发送任务
+   */
+  public static final int TASK_STATE_SEND = 20;
+  /**
+   * 任务状态：设备回告
+   */
+  public static final int TASK_STATE_FACILITY_RESPONSE = 30;
 
+  /**
+   * 任务状态：离开原位置
+   */
+  public static final int TASK_STATE_LEAVE = 40;
   @Id
   @Column("id")
   @ApiModelProperty("id")
