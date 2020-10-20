@@ -12,7 +12,6 @@ import java.util.List;
  * @version 1.0
  * @date 2020/10/10 14:59
  */
-@Service
 public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindingDetail> {
     /**
      * 获取绑定明细站台
