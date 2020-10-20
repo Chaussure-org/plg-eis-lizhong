@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 
 @EnableScheduling
 @EnablePrologResourceServer
-@MapperScan({"com.prolog.eis.dao","com.prolog.eis.*.dao"})
+@MapperScan(basePackages={"com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService
 public class ZjlzApplication {

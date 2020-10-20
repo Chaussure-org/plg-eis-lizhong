@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * 货位组Mapper
  */
-@Repository
 public interface SxStoreLocationGroupMapper extends EisBaseMapper<SxStoreLocationGroup> {
 
 	/**

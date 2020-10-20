@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
 
 	@Select("select s.container_no as containerNo,\n"

@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
  * @Description 入库任务数据处理层
  * @CreateTime 2020-10-19 10:10
  */
-@Repository
 public interface WareHousingMapper extends BaseMapper<WmsInboundTask> {
 }

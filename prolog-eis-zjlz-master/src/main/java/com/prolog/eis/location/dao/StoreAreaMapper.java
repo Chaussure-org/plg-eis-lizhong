@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
  * @create: 2020-08-25 15:18
  * @Version: V1.0
  */
-@Repository
 public interface StoreAreaMapper extends EisBaseMapper<StoreArea> {
 
 }

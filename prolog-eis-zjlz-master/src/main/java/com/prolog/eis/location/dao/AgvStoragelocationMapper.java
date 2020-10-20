@@ -14,7 +14,6 @@ import java.util.List;
  * @create: 2020-09-08 16:26
  * @Version: V1.0
  */
-@Repository
 public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocation> {
 
     /**

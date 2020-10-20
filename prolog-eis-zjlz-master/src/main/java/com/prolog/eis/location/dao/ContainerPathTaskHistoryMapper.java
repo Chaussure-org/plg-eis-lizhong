@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
  * @create: 2020-09-23 11:22:24
  * @Version: V1.0
  */
-@Repository
 public interface ContainerPathTaskHistoryMapper extends EisBaseMapper<ContainerPathTaskHistory> {
 }

@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
  * @Description
  * @CreateTime 2020-10-19 9:58
  */
-@Repository
 public interface PointLocationMapper extends BaseMapper<PointLocation> {
 }

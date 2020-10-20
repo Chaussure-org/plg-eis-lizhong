@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
  * @version 1.0
  * @date 2020/10/10 15:27
  */
-@Repository
 public interface StationMapper extends BaseMapper<Station> {
 
 
