@@ -5,6 +5,7 @@ import com.prolog.eis.base.service.IPointLocationService;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
+import com.prolog.eis.engin.service.IAgvBindingDetailService;
 import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.model.ContainerStore;
@@ -83,7 +84,7 @@ public class StationBZServiceImpl implements IStationBZService {
     private AgvLocationService agvLocationService;
 
     @Autowired
-    private AgvBindingDetaileMapper agvBindingDetaileMapper;
+    private IAgvBindingDetailService agvBindingDetailService;
 
 
 
@@ -186,7 +187,9 @@ public class StationBZServiceImpl implements IStationBZService {
         int orderBillId = orderBillIds.get(0);
         //执行播种
         this.doPicking(stationId,containerNo,completeNum,orderBillIds.get(0),orderBoxNo);
-        agvBindingDetaileMapper.deleteByMap(MapUtils.put("orderBillId",orderBillId).put("containerNo",containerNo).getMap(), AgvBindingDetail.class);
+        //删除agv绑定明细
+        agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderBillId",orderBillId).put("containerNo",containerNo).getMap());
+        //校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
             //切换拣选单
