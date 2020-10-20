@@ -17,7 +17,6 @@ import java.util.List;
  * @create: 2020-08-25 15:18
  * @Version: V1.0
  */
-@Repository
 public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPathTaskDetail> {
 
     /**

@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
  * @Description
  * @CreateTime 2020-09-27 11:13
  */
-@Repository
 public interface GoodsMapper extends BaseMapper<Goods> {
 }

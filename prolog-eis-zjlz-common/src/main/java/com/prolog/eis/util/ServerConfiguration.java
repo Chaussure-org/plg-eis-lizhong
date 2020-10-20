@@ -1,4 +1,4 @@
-package com.prolog.eis.configuration;
+package com.prolog.eis.util;
 
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
  
-@Component
 public class ServerConfiguration implements ApplicationListener<WebServerInitializedEvent> {
     private int serverPort;
 

@@ -19,7 +19,6 @@ import java.util.List;
  * @Description
  * @CreateTime 2020-09-27 10:53
  */
-@Repository
 public interface OrderBillMapper extends BaseMapper<OrderBill> {
 
     @Select("SELECT\n" +

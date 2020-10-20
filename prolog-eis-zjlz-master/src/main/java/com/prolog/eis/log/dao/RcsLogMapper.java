@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
  * @Description
  * @CreateTime 2020/7/20 21:40
  */
-@Repository
 public interface RcsLogMapper extends BaseMapper<RcsLog> {
 
 }

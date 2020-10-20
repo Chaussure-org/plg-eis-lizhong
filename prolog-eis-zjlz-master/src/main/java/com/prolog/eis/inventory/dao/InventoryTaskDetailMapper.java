@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
  * @Description 盘点详情数据层
  * @CreateTime 2020-10-14 14:51
  */
-@Repository
 public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetail> {
 }
