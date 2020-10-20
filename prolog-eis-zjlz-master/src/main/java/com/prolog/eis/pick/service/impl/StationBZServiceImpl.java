@@ -443,7 +443,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //去往对应站台
             int targetStationId = trayTaskStation.get(0).getStationId();
             List<AgvStoragelocation> agvStoragelocations = agvLocationService.findByMap(MapUtils.put("deviceNo", targetStationId).put("taskLock",0)
-                    .put("storageLock",0).put("areaNo","OT").getMap());
+                    .put("storageLock",0).put("areaNo","SN01").getMap());
             if (agvStoragelocations.size() == 0){
                 throw new Exception("【"+targetStationId+"】未找到可用库区");
             }
