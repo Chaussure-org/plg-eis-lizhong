@@ -34,7 +34,7 @@ public class LocationServiceTest {
         pathSchedulingService.containerMoveTask("1","RCS01",null);
     }
     @Test
-    private void testTrayTask(){
+    public void testTrayTask(){
         System.out.println("aaaa");
         List<Integer> list = Arrays.asList(1,2,3);
         List<StationTrayDTO> stations = agvLocationService.findTrayTaskStation(list);
