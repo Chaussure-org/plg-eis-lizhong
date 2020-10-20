@@ -27,12 +27,11 @@ public interface AgvLocationService {
 	 */
 	ContainerPathTaskDTO agvOutboundTask(int goodsId, String stationNo) throws Exception;
 
-
-	/**
-	 * 根据map查询
-	 * @param map
-	 * @return
-	 * @throws Exception
-	 */
-	List<AgvStoragelocation> findByMap(Map map) throws Exception;
+    /**
+     *
+     * @param map
+     * @return
+     * @throws Exception
+     */
+    List<AgvStoragelocation> findByMap(Map map) throws Exception;
 }

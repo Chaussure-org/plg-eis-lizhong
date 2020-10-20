@@ -16,10 +16,15 @@ import java.util.List;
  * @author:SunPP
  */
 public interface PickingOrderMapper extends BaseMapper<PickingOrder> {
-    @Select("SELECT \n" +
-            "po.id AS pickingOrderId,\n" +
-            "po.station_id AS stationId,\n" +
-            "ob.id AS orderBillId\n" +
-            "FROM picking_order po LEFT JOIN order_bill ob on po.id=ob.picking_order_id")
+    @Select("SELECT\n" +
+            "\tpo.id AS pickingOrderId,\n" +
+            "\tpo.station_id AS stationId,\n" +
+            "\tob.id AS orderBillId,\n" +
+            "\ta.location_no AS locationNo \n" +
+            "FROM\n" +
+            "\tpicking_order po\n" +
+            "\tLEFT JOIN order_bill ob ON po.id = ob.picking_order_id\n" +
+            "\tLEFT JOIN agv_storagelocation a ON po.station_id = a.device_no \n" +
+            "\tAND a.area_no = 'SA'")
     List<StationPickingOrderDto> findPickOrder();
 }

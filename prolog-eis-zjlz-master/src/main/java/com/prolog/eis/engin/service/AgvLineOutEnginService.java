@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface AgvLineOutEnginService {
 
-    List<OrderBill> computerPickOrder() throws Exception;
+    void computerPickOrder() throws Exception;
 }

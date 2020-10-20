@@ -181,7 +181,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
     private void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
         String containerNo = bcrDataDTO.getContainerNo();
 
-        List<PointLocation> pointLocations = pointLocationService.getPointByType(PointLocation.TYPE_IN_BCR);
+        List<PointLocation> pointLocations = pointLocationService.getPointByType(PointLocation.POINT_TYPE_IN_BCR);
 
         if (pointLocations.size() == 0) {
             throw new RuntimeException("找不到入口点位");

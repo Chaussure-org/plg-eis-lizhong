@@ -5,6 +5,7 @@ import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,4 +32,7 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
 
     @Select("select count(*) from agv_storagelocation t where t.area_no = #{areaNo}")
     int getAreaLocationCount(@Param("areaNo")String areaNo);
+
+    @Update("update agv_storagelocation a set a.task_lock =1 where a.location_no = #{locationNo}")
+    void updateLocationLock(@Param("locationNo")String location);
 }
