@@ -20,6 +20,7 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
 
     /**
      * 根据站台号查询所有托盘位
+     *
      * @param stationId
      * @return
      * @throws Exception
@@ -31,11 +32,15 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
     List<AgvStoragelocationDTO> listAgvStoragelocationXyByStationNo(@Param("stationId") String stationId);
 
     @Select("select count(*) from agv_storagelocation t where t.area_no = #{areaNo}")
-    int getAreaLocationCount(@Param("areaNo")String areaNo);
+    int getAreaLocationCount(@Param("areaNo") String areaNo);
 
 
     @Select("<script> select device_no,COUNT(*) from agv_storagelocation a where a.storage_lock = 0 and a.task_lock = 0 and area_no = 'OT' and  device_no IN " +
             "<foreach  item='item' index='index' collection='list' open='(' separator=',' close=')'> #{item}    " +
             "</foreach> GROUP BY device_no </script>")
     List<StationTrayDTO> findTrayTaskStation(List<Integer> list);
+
+
+    @Update("update agv_storagelocation a set a.task_lock =1 where a.location_no =#{locationNo}")
+    void updateLocationLock(@Param("locationNo") String locationNo);
 }
