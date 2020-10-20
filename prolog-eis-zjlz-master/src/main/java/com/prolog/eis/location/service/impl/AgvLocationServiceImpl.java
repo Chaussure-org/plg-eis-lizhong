@@ -3,6 +3,7 @@ package com.prolog.eis.location.service.impl;
 import com.google.common.collect.Lists;
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
+import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
@@ -117,4 +118,11 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 	public List<AgvStoragelocation> findByMap(Map map) throws Exception {
 		return agvStoragelocationMapper.findByMap(map,AgvStoragelocation.class);
 	}
+
+	@Override
+	public List<StationTrayDTO> findTrayTaskStation(List<Integer> list) {
+		return agvStoragelocationMapper.findTrayTaskStation(list);
+	}
+
+
 }

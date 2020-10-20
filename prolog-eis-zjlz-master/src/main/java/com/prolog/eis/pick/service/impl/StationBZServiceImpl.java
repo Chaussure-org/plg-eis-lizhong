@@ -1,21 +1,18 @@
 package com.prolog.eis.pick.service.impl;
 
 import com.prolog.eis.base.service.IGoodsService;
-import com.prolog.eis.base.service.IPointLocationService;
-import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
-import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.engin.service.IAgvBindingDetailService;
 import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
+import com.prolog.eis.location.service.IPointLocationService;
+import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PickingOrder;
-import com.prolog.eis.model.PointLocation;
-import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
-import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.PickingOrderHistory;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.pick.service.IStationBZService;
@@ -23,7 +20,6 @@ import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderDetail;
-import com.prolog.eis.model.station.Station;
 import com.prolog.eis.order.service.IContainerBindingDetailService;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
@@ -33,10 +29,8 @@ import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
 import com.prolog.eis.wms.service.IWMSService;
-import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -85,6 +79,8 @@ public class StationBZServiceImpl implements IStationBZService {
 
     @Autowired
     private IAgvBindingDetailService agvBindingDetailService;
+    @Autowired
+    private PathSchedulingService pathSchedulingService;
 
 
 
@@ -277,21 +273,24 @@ public class StationBZServiceImpl implements IStationBZService {
                 //下层agv 回暂存区
             }
         } else {
-            //计算合适站台
-            int targetStationId = this.computeTargetStation(stationIds, stationId);
             if (stations.size() > 0) {
-                //上层输送线
+                //计算合适站台
+                int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
+                //上层输送线 发送点位
             } else {
                 //下层agv 只有一条绑定明细尾拖则直接去贴标区或非贴标区
-                if (stationIds.size() == 1) {
-                    //计算是否为尾拖，是则直接直接发往贴标区或非贴标区
-                    boolean flag = this.computeLastTray(containerNo);
-                    if (!flag) {
-                        //不是尾拖，发往拣选站
-                    }
-                } else {
-                    // 计算合适站台
-                }
+//                if (stationIds.size() == 1) {
+//                    //计算是否为尾拖，是则直接直接发往贴标区或非贴标区
+//                    boolean flag = this.computeLastTray(containerNo);
+//                    if (!flag) {
+//                        //不是尾拖，发往拣选站
+//                    }
+//                } else {
+
+//                }
+
+                // 计算合适站台
+                computeTrayStation(stationId,stationIds,containerNo);
             }
         }
     }
@@ -331,7 +330,7 @@ public class StationBZServiceImpl implements IStationBZService {
     }
 
     @Override
-    public int computeTargetStation(List<Integer> stationIds, int sourceStation) {
+    public int computeContainerTargetStation(List<Integer> stationIds, int sourceStation) {
         int targetStationId = 0;
         if (stationIds.size() == 1) {
             targetStationId = stationIds.get(0);
@@ -431,6 +430,27 @@ public class StationBZServiceImpl implements IStationBZService {
         seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum());
 
 
+    }
+
+    @Override
+    public void computeTrayStation(int stationId, List<Integer> stationIds, String containerNo) throws Exception {
+        List<StationTrayDTO> trayTaskStation = agvLocationService.findTrayTaskStation(stationIds);
+        trayTaskStation.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
+        if (trayTaskStation.get(0).getCount() == 0){
+            //站台已满无可用任务拖区域 回暂存区
+            pathSchedulingService.containerMoveTask(containerNo,"RCS01",null);
+        }else {
+            //去往对应站台
+            int targetStationId = trayTaskStation.get(0).getStationId();
+            List<AgvStoragelocation> agvStoragelocations = agvLocationService.findByMap(MapUtils.put("deviceNo", targetStationId).put("taskLock",0)
+                    .put("storageLock",0).put("areaNo","OT").getMap());
+            if (agvStoragelocations.size() == 0){
+                throw new Exception("【"+targetStationId+"】未找到可用库区");
+            }
+            pathSchedulingService.containerMoveTask(containerNo,agvStoragelocations.get(0).getAreaNo(),agvStoragelocations.get(0).getLocationNo());
+        }
+        
+        
     }
 
 

@@ -77,7 +77,7 @@ public interface IStationBZService {
      * @param sourceStation
      * @return
      */
-    int computeTargetStation(List<Integer> stationIds,int sourceStation);
+    int computeContainerTargetStation(List<Integer> stationIds,int sourceStation);
 
 
     /**
@@ -111,4 +111,7 @@ public interface IStationBZService {
      * @throws Exception
      */
     void doPicking(int stationId, String containerNo,int completeNum,int orderBillId,String orderBoxNo) throws Exception;
+
+
+    void  computeTrayStation(int stationId,List<Integer> stationIds,String containerNo) throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.prolog.eis.aspect;
 
-import com.prolog.eis.configuration.ServerConfiguration;
+import com.prolog.eis.util.IPUtils;
+import com.prolog.eis.util.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.util.LogInfo;
@@ -27,9 +28,6 @@ import java.util.Date;
 public class LogAspect {
 
     @Autowired
-    private ServerConfiguration serverConfiguration;
-
-    @Autowired
     private ILogService logService;
 
     @Pointcut("@annotation(com.prolog.eis.util.LogInfo)")
@@ -38,7 +36,8 @@ public class LogAspect {
     @Around("doLog()")
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
         LogDto log = new LogDto();
-        log.setHostPort(serverConfiguration.getUrl());
+        ServerConfiguration serverConfiguration = new ServerConfiguration();
+        log.setHostPort(IPUtils.getIpHost(serverConfiguration));
         Object[] args = joinPoint.getArgs();
 
         String methodName = joinPoint.getSignature().getName();

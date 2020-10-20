@@ -54,7 +54,7 @@ public class AgvStoragelocation implements Serializable {
     private String tallyCode;
 
     @Column("task_lock")
-    @ApiModelProperty("任务锁  0空闲 1锁定")
+    @ApiModelProperty("任务锁  0:无任务 1：任务中")
     private Integer taskLock;
 
     @Column("storage_lock")
