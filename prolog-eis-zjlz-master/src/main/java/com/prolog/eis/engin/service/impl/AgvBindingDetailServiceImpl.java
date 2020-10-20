@@ -4,6 +4,7 @@ import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.engin.service.IAgvBindingDetailService;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import java.util.Map;
  * @version 1.0
  * @date 2020/10/20 11:16
  */
+@Service
 public class AgvBindingDetailServiceImpl implements IAgvBindingDetailService {
 
     @Autowired

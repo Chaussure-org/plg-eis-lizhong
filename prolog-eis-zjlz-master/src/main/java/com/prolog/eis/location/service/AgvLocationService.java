@@ -2,6 +2,7 @@ package com.prolog.eis.location.service;
 
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
+import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
 
 import java.util.List;
@@ -27,11 +28,12 @@ public interface AgvLocationService {
 	 */
 	ContainerPathTaskDTO agvOutboundTask(int goodsId, String stationNo) throws Exception;
 
-    /**
-     *
-     * @param map
-     * @return
-     * @throws Exception
-     */
-    List<AgvStoragelocation> findByMap(Map map) throws Exception;
+
+	/**
+	 * 根据map查询
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	List<AgvStoragelocation> findByMap(Map map) throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.prolog.eis.location.dao;
 
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
+import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,7 +33,4 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
 
     @Select("select count(*) from agv_storagelocation t where t.area_no = #{areaNo}")
     int getAreaLocationCount(@Param("areaNo")String areaNo);
-
-    @Update("update agv_storagelocation a set a.task_lock =1 where a.location_no = #{locationNo}")
-    void updateLocationLock(@Param("locationNo")String location);
 }
