@@ -35,18 +35,20 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\tod.create_time DESC")
     List<OutDetailDto> findAgvDetail(@Param("areaNo")String areaNo);
 
+
     @Select("SELECT\n" +
             "ob.id AS orderBillId,\n" +
             "ob.order_priority AS orderPriority,\n" +
+            "ob.wms_order_priority AS wmsOrderPriority,\n" +
             "od.id AS detailId,\n" +
             "\tod.goods_id AS goodsId,\n" +
-            "\tod.plan_qty AS qty \n" +
+            "\tIF(od.tray_plan_qty=0,od.plan_qty,od.tray_plan_qty) AS planQty \n" +
             "FROM\n" +
             "order_bill ob JOIN\n" +
             "\torder_detail od on ob.id=od.order_bill_id\n" +
             "WHERE\n" +
             "\tod.id NOT IN ( SELECT abd.order_mx_id FROM line_binding_detail abd ) \n" +
-            "\tAND od.area_no=#{areaNo} or od.area_no='AL'\n" +
+            "\tAND od.area_no=#{areaNo} \n" +
             "ORDER BY\n" +
             "\tod.create_time DESC")
     List<OutDetailDto> findLineDetail(@Param("areaNo")String areaNo);

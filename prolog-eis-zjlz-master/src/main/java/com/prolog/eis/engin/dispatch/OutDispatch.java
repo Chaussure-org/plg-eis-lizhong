@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @date:2020/10/14 11:10
  * @author:SunPP
  */
-@Component
+//@Component
 public class OutDispatch {
 
     @Autowired
@@ -54,7 +54,7 @@ public class OutDispatch {
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void boxOutDispatch() {
         try {
-            //boxOutEnginService.BoxOutByOrder();
+            boxOutEnginService.BoxOutByOrder();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +63,7 @@ public class OutDispatch {
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void lineAndAgvOutDispatch() {
         try {
-            //agvLineOutEnginService.computerPickOrder();
+            agvLineOutEnginService.computerPickOrder();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package com.prolog.eis.engin.dao;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -35,5 +36,9 @@ public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
 
     @Update("UPDATE agv_binding_detail abd set abd.detail_status=20 WHERE abd.container_no=#{containerNo}")
     void updateAgvStatus(@Param("containerNo")String containerNo);
+
+    @Delete("DELETE FROM agv_binding_detail a WHERE a.order_bill_id NOT IN (SELECT DISTINCT IFNULL(t.id,0) FROM (SELECT ob.id FROM station s LEFT JOIN order_bill ob ON s.current_station_pick_id =ob.picking_order_id UNION ALL\n" +
+            "            SELECT a.order_bill_id FROM agv_binding_detail a WHERE a.wms_order_priority = 10 ) t)")
+    void deleteWmsAgvBindingDetail();
 
 }

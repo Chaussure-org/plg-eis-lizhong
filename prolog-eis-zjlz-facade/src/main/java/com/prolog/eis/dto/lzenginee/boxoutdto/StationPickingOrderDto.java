@@ -15,4 +15,5 @@ public class StationPickingOrderDto {
     private int pickingOrderId;
     private int stationId;
     private int orderBillId;
+    private String locationNo;
 }

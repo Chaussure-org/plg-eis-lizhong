@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengj
@@ -18,7 +20,7 @@ public class SeedInfoServiceImpl implements ISeedInfoService {
     @Autowired
     private SeedInfoMapper seedInfoMapper;
     @Override
-    public void saveSeedInfo(String containerNo,String orderTrayNo,int orderBillId,int orderDetailId,int stationId,int num) {
+    public void saveSeedInfo(String containerNo,String orderTrayNo,int orderBillId,int orderDetailId,int stationId,int num,int goodsId) {
         SeedInfo seedInfo = new SeedInfo();
         seedInfo.setContainerNo(containerNo);
         seedInfo.setNum(num);
@@ -28,5 +30,15 @@ public class SeedInfoServiceImpl implements ISeedInfoService {
         seedInfo.setStationId(stationId);
         seedInfo.setCreateTime(new Date());
         seedInfoMapper.save(seedInfo);
+    }
+
+    @Override
+    public SeedInfo findSeedInfoByOrderDetail(int orderDetailId) {
+        return seedInfoMapper.findSeedInfoByOrderDetail(orderDetailId);
+    }
+
+    @Override
+    public List<SeedInfo> findSeedInfoByMap(Map map) {
+        return seedInfoMapper.findByMap(map,SeedInfo.class);
     }
 }

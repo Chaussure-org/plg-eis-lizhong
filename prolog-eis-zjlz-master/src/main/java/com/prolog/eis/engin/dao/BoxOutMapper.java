@@ -30,9 +30,9 @@ public interface BoxOutMapper {
             "\tLEFT JOIN goods g ON cs.goods_id = g.id\n" +
             "\tLEFT JOIN sx_store_location sl ON sl.id = cpt.source_location \n" +
             "WHERE\n" +
-            "\tcpt.task_type = null\n" +
+            "\tcpt.task_type = 0\n" +
             "\tAND cs.goods_id = #{goodsId}\n" +
-            "\tAND source_area='b'\n" +
+            "\tAND source_area='B100'\n" +
             "ORDER BY\n" +
             "\tcs.qty DESC")
     List<LayerGoodsCountDto> findLayerGoodsCount(@Param("goodsId")int goodsId);
@@ -47,5 +47,21 @@ public interface BoxOutMapper {
             "GROUP BY\n" +
             "\tsl.layer")
         List<LayerTaskDto> findLayerTaskCount();
+
+
+    @Select("SELECT DISTINCT\n" +
+            "\tabd.goods_id AS goodsId,\n" +
+            "\tabd.container_no AS containerNo,\n" +
+            "\tcs.qty - ( SELECT SUM( a.binding_num ) FROM line_binding_detail a WHERE a.container_no = abd.container_no ) AS qty,\n" +
+            "\tg.last_container_rate AS rate \n" +
+            "FROM\n" +
+            "\tagv_binding_detail abd\n" +
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no\n" +
+            "\tLEFT JOIN goods g ON cs.goods_id = g.id \n" +
+            "WHERE\n" +
+            "\tabd.goods_id = #{goodsId} \n" +
+            "ORDER BY\n" +
+            "\tqty")
+    List<LayerGoodsCountDto> findLineGoodsCount(@Param("goodsId")int goodsId);
 
 }

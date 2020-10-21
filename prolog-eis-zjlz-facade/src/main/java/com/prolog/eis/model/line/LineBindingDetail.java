@@ -42,15 +42,39 @@ public class LineBindingDetail {
     @ApiModelProperty("绑定数量")
     private Integer bindingNum;
 
+    @Column("order_priority")
+    @ApiModelProperty("eis优先级")
+    private Integer orderPriority;
+
+
 
     @Column("wms_order_priority")
-    @ApiModelProperty("绑定数量")
+    @ApiModelProperty("wms优先级")
     private Integer wmsOrderPriority;
+
+    @Column("detail_status")
+    @ApiModelProperty("明细状态")
+    private Integer detailStatus;
 
     @Column("update_time")
     @ApiModelProperty("更新时间")
     private java.util.Date updateTime;
 
+    public Integer getOrderPriority() {
+        return orderPriority;
+    }
+
+    public void setOrderPriority(Integer orderPriority) {
+        this.orderPriority = orderPriority;
+    }
+
+    public Integer getDetailStatus() {
+        return detailStatus;
+    }
+
+    public void setDetailStatus(Integer detailStatus) {
+        this.detailStatus = detailStatus;
+    }
 
     public Integer getWmsOrderPriority() {
         return wmsOrderPriority;

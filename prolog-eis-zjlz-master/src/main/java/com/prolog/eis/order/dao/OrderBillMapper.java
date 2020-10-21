@@ -45,7 +45,7 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
 
     @Update("UPDATE order_detail t \n" +
             "SET t.area_no = NULL \n" +
-            "WHERE t.id NOT IN (SELECT DISTINCT t.id FROM (SELECT ob.id FROM station s LEFT JOIN order_bill ob ON s.current_station_pick_id =ob.picking_order_id UNION ALL\n" +
+            "WHERE t.id NOT IN (SELECT DISTINCT IFNULL(t.id,0) FROM (SELECT ob.id FROM station s LEFT JOIN order_bill ob ON s.current_station_pick_id =ob.picking_order_id UNION ALL\n" +
             "SELECT a.order_bill_id FROM agv_binding_detail a WHERE a.wms_order_priority = 10 ) t)")
     void updateDetailsArea();
 

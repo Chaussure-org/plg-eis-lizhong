@@ -8,6 +8,7 @@ import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.agv.AgvBindingDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
@@ -72,11 +73,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<OrderBill> wmsAddOrder = orderBillMapper.findByMap(MapUtils.put("wmsOrderPriority", OrderBill.WMS_ADD_PRIORITY).getMap(), OrderBill.class);
         //如果订单数据中 有wms的订单 则进行订单的更新 和agv
         if (wmsAddOrder.size() > 0) {
-            orderBillMapper.updateDetailsArea();
-            List<Integer> ids = wmsAddOrder.stream().map(OrderBill::getId).collect(Collectors.toList());
-            orderBillMapper.updateWmsPriority(StringUtils.join(ids, ","));
-            //删除agv 和 输送线的绑定明细
-            deleteAgvAndLineBinding(ids);
+            this.updateAllStore(wmsAddOrder);
         }
 
         //orderBillId  没有指定目的区域 的 订单明细
@@ -88,27 +85,27 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         Map<Integer, List<OutDetailDto>> orderDetailMap = outDetails.stream().sorted(Comparator.comparing(OutDetailDto::getWmsOrderPriority).reversed()).collect(
                 Collectors.groupingBy(OutDetailDto::getOrderBillId));
 
-        //排除 已经指定了目的 区域的明细的数量 和agv区域没有绑定明细的 的数量
-        List<StoreGoodsCount> storeGoodsCount = containerStoreMapper.findStoreGoodsCount("A100,D010,D020,D030");
+        //堆垛机 agv 区域 所有的库存减掉 已经占用的库存
+        List<StoreGoodsCount> storeGoodsCount = containerStoreMapper.findStoreGoodsCount("MCS01,MCS02,MCS03,MCS04,RCS01");
         Map<Integer, Integer> containerStoreMap = storeGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
 
         // 箱库的库存 再加上循环线的库存（待加）
-        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("B100");
+        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("SAS01,L01");
         Map<Integer, Integer> boxStoreMap = boxGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
 
 
         //计算 立库和 agv 的库存  可以满足的 订单的所需数量 的订单
-        boolean b = this.computeAreaByOrder(orderDetailMap, containerStoreMap, OrderBill.FIRST_PRIORITY, "A100");
+        boolean b = this.computeAreaByOrder(orderDetailMap, containerStoreMap, OrderBill.FIRST_PRIORITY, StoreArea.RCS01);
         if (b) {
             //直到把 1类 的算完
             return;
         } else {
             //计算 箱库 可以满足的 订单的所需数量 的订单
-            boolean bool = this.computeAreaByOrder(orderDetailMap, boxStoreMap, OrderBill.SECOND_PRIORITY, "L100");
+            boolean bool = this.computeAreaByOrder(orderDetailMap, boxStoreMap, OrderBill.SECOND_PRIORITY, StoreArea.L01);
             if (bool == false) {
                 //这一部分订单是由两个库区的库存组成的
                 this.computeAllStoreByOrder(orderDetailMap, containerStoreMap, boxStoreMap);
@@ -121,12 +118,12 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //判断agv_binding_detail 里有状态为10 的，判断agv空闲位置，生成路径
         List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), AgvBindingDetail.class);
         if (!detailStatus.isEmpty()) {
-             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "A100",null);
-             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo());
-             return;
+            pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.RCS01, null);
+            agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo());
+            return;
         }
         //1.要去往agv区域的订单明细,排除已经生成agv任务计划的， 然后按时间排序
-        List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail("A100");
+        List<OutDetailDto> agvDetailList = orderDetailMapper.findAgvDetail(StoreArea.RCS01);
         if (agvDetailList.isEmpty()) {
             return;
         }
@@ -160,7 +157,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     public List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception {
         List<OutContainerDto> outContainerList = new ArrayList<OutContainerDto>();
         int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
-        //把wms优先级 按 商品分组
+        // 商品分组
         Map<Integer, List<OutDetailDto>> goodsIdMap = detailDtos.stream().collect(Collectors.groupingBy(x -> x.getGoodsId()));
 
         for (Map.Entry<Integer, List<OutDetailDto>> map : goodsIdMap.entrySet()) {
@@ -252,10 +249,15 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         if (isContinue) {
             //先找移位数最少 再找巷道任务数最少
 
-            //当需要用到stram多条件排序的时候，需要最后排序的字段需要放在前面排
-            List<RoadWayGoodsCountDto> sortList = roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getTaskCount).
-                    thenComparing(RoadWayGoodsCountDto::getQty).reversed().
-                    thenComparing(RoadWayGoodsCountDto::getDeptNum)).collect(Collectors.toList());
+            //1. Comparator.comparing(类::属性一).reversed();
+            //2. Comparator.comparing(类::属性一,Comparator.reverseOrder());
+            //两种排序是完全不一样的,一定要区分开来 1 是得到排序结果后再排序,2是直接进行排序,很多人会混淆导致理解出错,2更好理解,建议使用2
+
+           //1移位数最少 2.巷道任务数最少的 3.箱子数量最多的
+            List<RoadWayGoodsCountDto> sortList = roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).
+                    thenComparing(RoadWayGoodsCountDto::getTaskCount).
+                    thenComparing(RoadWayGoodsCountDto::getQty,Comparator.reverseOrder())).
+                    collect(Collectors.toList());
 
             for (RoadWayGoodsCountDto goodsCountDto : sortList) {
                 if (sumCount >= count) {
@@ -270,7 +272,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerDtoList;
     }
 
-    private void sendPathTask(){
+    private void sendPathTask() {
 
     }
 
@@ -379,10 +381,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         if (trayDetailIds.size() > 0) {
-            updateOrderDetailArea(trayDetailIds, "A100");
+            updateOrderDetailArea(trayDetailIds, StoreArea.RCS01);
         }
         if (boxDetailIds.size() > 0) {
-            updateOrderDetailArea(boxDetailIds, "L100");
+            updateOrderDetailArea(boxDetailIds, StoreArea.L01);
         }
         if (!ids.isEmpty()) {
             updateBillPriority(ids, OrderBill.THIRD_PRIORITY);
@@ -427,14 +429,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     }
 
     /**
-     * 更新订单的目的区域
-     *
      * @throws Exception
      */
-    private void deleteAgvAndLineBinding(List<Integer> ids) throws Exception {
-        Criteria ctr = new Criteria(AgvBindingDetail.class);
-        ctr.setRestriction(Restrictions.in("orderBillId", ids.toArray()));
-        agvBindingDetaileMapper.deleteByCriteria(ctr);
-        lineBindingDetailMapper.deleteByCriteria(ctr);
+    private void updateAllStore(List<OrderBill> wmsAddOrder) throws Exception {
+        orderBillMapper.updateDetailsArea();
+        List<Integer> ids = wmsAddOrder.stream().map(OrderBill::getId).collect(Collectors.toList());
+        orderBillMapper.updateWmsPriority(StringUtils.join(ids, ","));
+        //删除agv 和 输送线的绑定明细
+        agvBindingDetaileMapper.deleteWmsAgvBindingDetail();
+        lineBindingDetailMapper.deleteWmsAgvBindingDetails();
     }
 }

@@ -20,6 +20,7 @@ import java.util.Date;
 public class StoreArea implements Serializable {
     private static final long serialVersionUID = 746423221831281311L;
 
+
     @Id
     @Column("area_no")
     @ApiModelProperty("区域编号")
@@ -72,5 +73,40 @@ public class StoreArea implements Serializable {
     @Column("update_time")
     @ApiModelProperty("修改时间")
     private Date updateTime;
+
+
+    /**
+     * 堆垛机库 1 区
+     */
+    public static final String MCS01="MCS01";
+    /**
+     * 堆垛机库 2 区
+     */
+    public static final String MCS02="MCS02";
+    /**
+     * 堆垛机库 3 区
+     */
+    public static final String MCS03="MCS03";
+    /**
+     * 堆垛机库 4 区
+     */
+    public static final String MCS04="MCS04";
+    /**
+     * 堆垛机库 5 区
+     */
+    public static final String MCS05="MCS05";
+
+    /**
+     * agv库区
+     */
+    public static final String RCS01="RCS01";
+    /**
+     * 箱库 区
+     */
+    public static final String SAS01="SAS01";
+    /**
+     * 输送线 区
+     */
+    public static final String L01="L01";
 
 }

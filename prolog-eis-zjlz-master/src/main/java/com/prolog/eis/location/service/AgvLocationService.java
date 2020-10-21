@@ -37,11 +37,10 @@ public interface AgvLocationService {
 	 */
 	List<AgvStoragelocation> findByMap(Map map) throws Exception;
 
-
 	/**
-	 * 筛选可分配托盘的站台
+	 * 查询站台集合的可用任务拖区域
 	 * @param list
 	 * @return
 	 */
-	List<StationTrayDTO> findTrayTaskStation(List<Integer> list);
+    public List<StationTrayDTO> findTrayTaskStation(List<Integer> list);
 }

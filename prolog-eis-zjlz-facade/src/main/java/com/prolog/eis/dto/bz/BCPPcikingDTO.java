@@ -11,8 +11,9 @@ import java.io.Serializable;
  */
 public class BCPPcikingDTO {
     //订单id
-    private int orderId;
-
+    private int orderBillId;
+    //清单id
+    private int orderDetailId;
     //订单编号
     private int orderNo;
     //图号
@@ -26,13 +27,20 @@ public class BCPPcikingDTO {
     //剩余拣选的商品条数
     private int surplusOrderDetailCount;
 
-
-    public int getOrderId() {
-        return orderId;
+    public int getOrderDetailId() {
+        return orderDetailId;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setOrderDetailId(int orderDetailId) {
+        this.orderDetailId = orderDetailId;
+    }
+
+    public int getOrderBillId() {
+        return orderBillId;
+    }
+
+    public void setOrderBillId(int orderBillId) {
+        this.orderBillId = orderBillId;
     }
 
     public int getOrderNo() {
@@ -86,7 +94,8 @@ public class BCPPcikingDTO {
     @Override
     public String toString() {
         return "BCPPcikingDTO{" +
-                "orderId=" + orderId +
+                "orderBillId=" + orderBillId +
+                ", orderDetailId=" + orderDetailId +
                 ", orderNo=" + orderNo +
                 ", graphNo='" + graphNo + '\'' +
                 ", goodsname='" + goodsname + '\'' +

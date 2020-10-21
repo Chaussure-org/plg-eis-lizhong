@@ -48,6 +48,18 @@ public class SeedInfo {
   @ApiModelProperty("创建时间")
   private java.util.Date createTime;
 
+  @Column("goods_id")
+  @ApiModelProperty("商品id")
+  private Integer goodsId;
+
+  public Integer getGoodsId() {
+    return goodsId;
+  }
+
+  public void setGoodsId(Integer goodsId) {
+    this.goodsId = goodsId;
+  }
+
   public Integer getId() {
     return id;
   }

@@ -19,6 +19,9 @@ import java.io.Serializable;
 @Table("agv_storagelocation")
 public class AgvStoragelocation implements Serializable {
     private static final long serialVersionUID = -41236769428637108L;
+    public static final String AGV_STATION_LOCATION="SA";
+
+
 
     @Id
     @Column("id")
