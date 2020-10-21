@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ClassName:OrderSortDto
  * Package:com.prolog.eis.dto.lzenginee.boxoutdto
@@ -17,7 +20,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor                //有参构造
 public class OrderSortDto {
     private Integer orderBillId;
-    private float rate;
+    private float levenCount;
 
-    StringBuffer strTest;
+    //测试
+   private int sameCount;
+
+    List<Integer> ids=new ArrayList<>();
+
 }

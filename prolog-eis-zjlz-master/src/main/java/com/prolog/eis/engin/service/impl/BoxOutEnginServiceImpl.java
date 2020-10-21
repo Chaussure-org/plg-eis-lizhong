@@ -247,32 +247,50 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
      * 返回订单id 集合
      */
     @Override
-    public List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) throws Exception {
+    public synchronized List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) throws Exception {
         Map<Integer, List<OutDetailDto>> mapTemp = lineDetailList.stream().collect(Collectors.groupingBy(OutDetailDto::getOrderBillId));
-        Map<Integer, StringBuffer> orderMap = new HashMap<>();
-        for (Integer orderId : mapTemp.keySet()) {
-            StringBuffer str = new StringBuffer();
-            List<OutDetailDto> orderDetails = mapTemp.get(orderId).stream().sorted(Comparator.comparing(OutDetailDto::getGoodsId)).collect(Collectors.toList());
-            for (OutDetailDto detailDto : orderDetails) {
-                str = str.append(detailDto.getGoodsId());
-            }
-            orderMap.put(orderId, str);
-        }
-        List<OrderSortDto> list = new ArrayList<>();
+        List<OrderSortDto> sortList = new ArrayList<>();
 
-        int orderBillId = lineDetailList.get(0).getOrderBillId();
-        StringBuffer stringFirst = orderMap.get(orderBillId);
-        //orderMap.remove(orderBillId);
-        for (Integer orderId : orderMap.keySet()) {
-            float ratio = CompareStrSimUtil.getSimilarityRatio(stringFirst, orderMap.get(orderId), true);
-            //list.add(new OrderSortDto(orderId, ratio,));
+        for (Integer orderId : mapTemp.keySet()) {
+            List<OutDetailDto> orderDetails = mapTemp.get(orderId).stream().sorted(Comparator.comparing(OutDetailDto::getGoodsId)).collect(Collectors.toList());
+            OrderSortDto SortDto=new OrderSortDto();
+            SortDto.setOrderBillId(orderId);
+            List<Integer> ids = orderDetails.stream().map(OutDetailDto::getDetailId).collect(Collectors.toList());
+            SortDto.setIds(ids);
+            sortList.add(SortDto);
         }
-        //订单重复度最高的排再最前面
-        List<OrderSortDto> sortList = list.stream().sorted(Comparator.comparing(OrderSortDto::getRate).reversed()).collect(Collectors.toList());
-        if (sortList.size() == 0) {
-            return null;
+
+        //取 商品品种数最大的订单
+        Collections.sort(sortList, new Comparator<OrderSortDto>() {
+            @Override
+            public int compare(OrderSortDto o1, OrderSortDto o2) {
+                if (o2.getIds().size() - o1.getIds().size() == 0) {
+                    return 0;
+                } else {
+                    return o2.getIds().size() - o1.getIds().size() > 0 ? 1 : -1;
+                }
+            }
+        });
+        int[] s1 = sortList.get(0).getIds().stream().mapToInt(Integer::valueOf).toArray();
+
+        for (OrderSortDto dto : sortList) {
+            int[] s2 = dto.getIds().stream().mapToInt(Integer::valueOf).toArray();
+            int sameCount = 0;
+            for (int i = 0; i < s1.length; i++) {
+                for (int j = 0; j < s2.length; j++) {
+                    if (s1[i] == s2[j]) {
+                        sameCount++;
+                    }
+                }
+            }
+            float ratio = CompareStrSimUtil.getSimilarityRatio(s1, s2, true);
+            dto.setLevenCount(ratio);
+            dto.setSameCount(sameCount);
         }
-        if (sortList.size() > 10) {
+        //先 商品品种相同数最多，然后是不同数最少
+        List<OrderSortDto> list = sortList.stream().sorted(Comparator.comparing(OrderSortDto::getSameCount, Comparator.reverseOrder()).
+                thenComparing(OrderSortDto::getLevenCount)).collect(Collectors.toList());
+        if (list.size() > 10) {
             return sortList.subList(0, 10).stream().map(OrderSortDto::getOrderBillId).collect(Collectors.toList());
         } else {
             return sortList.subList(0, sortList.size()).stream().map(OrderSortDto::getOrderBillId).collect(Collectors.toList());

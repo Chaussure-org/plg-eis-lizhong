@@ -249,10 +249,15 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         if (isContinue) {
             //先找移位数最少 再找巷道任务数最少
 
-            //当需要用到stram多条件排序的时候，需要最后排序的字段需要放在前面排
-            List<RoadWayGoodsCountDto> sortList = roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getTaskCount).
-                    thenComparing(RoadWayGoodsCountDto::getQty).reversed().
-                    thenComparing(RoadWayGoodsCountDto::getDeptNum)).collect(Collectors.toList());
+            //1. Comparator.comparing(类::属性一).reversed();
+            //2. Comparator.comparing(类::属性一,Comparator.reverseOrder());
+            //两种排序是完全不一样的,一定要区分开来 1 是得到排序结果后再排序,2是直接进行排序,很多人会混淆导致理解出错,2更好理解,建议使用2
+
+           //1移位数最少 2.巷道任务数最少的 3.箱子数量最多的
+            List<RoadWayGoodsCountDto> sortList = roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).
+                    thenComparing(RoadWayGoodsCountDto::getTaskCount).
+                    thenComparing(RoadWayGoodsCountDto::getQty,Comparator.reverseOrder())).
+                    collect(Collectors.toList());
 
             for (RoadWayGoodsCountDto goodsCountDto : sortList) {
                 if (sumCount >= count) {
