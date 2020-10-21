@@ -35,6 +35,11 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
     int getAreaLocationCount(@Param("areaNo") String areaNo);
 
 
+    /**
+     * 查询站台集合的可用任务拖区域
+     * @param list
+     * @return
+     */
     @Select("<script> select device_no,COUNT(*) from agv_storagelocation a where a.storage_lock = 0 and a.task_lock = 0 and area_no = 'OT' and  device_no IN " +
             "<foreach  item='item' index='index' collection='list' open='(' separator=',' close=')'> #{item}    " +
             "</foreach> GROUP BY device_no </script>")

@@ -1,6 +1,7 @@
 package com.prolog.eis.pick.service.impl;
 
 import com.prolog.eis.base.service.IGoodsService;
+import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.engin.service.IAgvBindingDetailService;
@@ -9,21 +10,18 @@ import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.OrderBox;
 import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
-import com.prolog.eis.model.order.PickingOrderHistory;
+import com.prolog.eis.model.order.*;
 import com.prolog.eis.model.station.Station;
+import com.prolog.eis.order.service.*;
+import com.prolog.eis.pick.service.ISeedWeighService;
 import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
-import com.prolog.eis.model.order.ContainerBindingDetail;
-import com.prolog.eis.model.order.OrderDetail;
-import com.prolog.eis.order.service.IContainerBindingDetailService;
-import com.prolog.eis.order.service.IOrderBillService;
-import com.prolog.eis.order.service.IOrderDetailService;
-import com.prolog.eis.order.service.ISeedInfoService;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
@@ -38,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,6 +80,10 @@ public class StationBZServiceImpl implements IStationBZService {
     private IAgvBindingDetailService agvBindingDetailService;
     @Autowired
     private PathSchedulingService pathSchedulingService;
+    @Autowired
+    private ISeedWeighService seedWeighService;
+    @Autowired
+    private IOrderBoxService orderBoxService;
 
 
 
@@ -130,10 +133,17 @@ public class StationBZServiceImpl implements IStationBZService {
         if (containerBinDings.size() == 0) {
             throw new Exception("容器【" + containerNo + "】无在播明细");
         }
+
         ContainerBindingDetail bindingDetail = containerBinDings.get(0);
+        //判断当前订单托是否是第一次播种，是则请求wms获取订单拖重量并保存
+        //todo:请求wms获取重量
+        BigDecimal trayWeigh = new BigDecimal(0);
+        saveTrayWeigh(bindingDetail.getOrderBillId(),orderBoxNo,trayWeigh);
+
         BCPPcikingDTO picking = new BCPPcikingDTO();
-        picking.setOrderId(bindingDetail.getOrderBillId());
+        picking.setOrderBillId(bindingDetail.getOrderBillId());
         picking.setPickNum(bindingDetail.getSeedNum());
+        picking.setOrderDetailId(bindingDetail.getOrderDetailId());
         BCPGoodsInfoDTO bcpGoodsDTO = orderDetailService.findPickingGoods(bindingDetail.getOrderDetailId()).get(0);
         picking.setGoodsname(bcpGoodsDTO.getGoodsname());
         picking.setGraphNo(bcpGoodsDTO.getGraphNo());
@@ -192,7 +202,7 @@ public class StationBZServiceImpl implements IStationBZService {
             this.changePickingOrder(station);
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
-            //todo：订单拖放行 贴标区或非贴标区
+            //订单拖放行 贴标区或非贴标区
             this.orderTrayLeave(containerNo,orderBillId);
 
 
@@ -290,7 +300,7 @@ public class StationBZServiceImpl implements IStationBZService {
 //                }
 
                 // 计算合适站台
-                computeTrayStation(stationId,stationIds,containerNo);
+                computeTrayStation(stationIds,containerNo);
             }
         }
     }
@@ -301,9 +311,11 @@ public class StationBZServiceImpl implements IStationBZService {
         //订单拖是否有贴标商品，有贴标区
         boolean flag = orderDetailService.findOrderTrayGoodsLabel(orderBillId, orderTrayNo);
         if (flag) {
-            //todo:Agv贴标区
+            //Agv贴标区
+            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
         } else {
-            //todo：agv非贴标
+            //agv非贴标
+            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
         }
     }
 
@@ -319,9 +331,11 @@ public class StationBZServiceImpl implements IStationBZService {
         boolean flag = containerBindingDetails.get(0).getSeedNum() * (1 + goods.getPastLabelFlg()) - containerStore.getQty() >= 0;
         if (flag) {
             if (goods.getPastLabelFlg() == 1) {
-                //:todo:Agv贴标区
+                //Agv贴标区
+                pathSchedulingService.containerMoveTask(containerNo,"LB01",null);
             } else {
-                //：todo：Agv非贴标区
+                //Agv非贴标区
+                pathSchedulingService.containerMoveTask(containerNo,"CH01",null);
             }
             return true;
         }
@@ -419,7 +433,6 @@ public class StationBZServiceImpl implements IStationBZService {
         containerStoreService.updateContainerStoreNum(containerBinDings.getSeedNum(), containerNo);
         // 删除绑定明细
         containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderBillId()).getMap());
-        //todo:   回告wms
         boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
         if (b){
             //当前订单明细完成，回告wms
@@ -427,13 +440,13 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存
-        seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum());
+        seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum(),orderDetail.getGoodsId());
 
 
     }
 
     @Override
-    public void computeTrayStation(int stationId, List<Integer> stationIds, String containerNo) throws Exception {
+    public void computeTrayStation(List<Integer> stationIds, String containerNo) throws Exception {
         List<StationTrayDTO> trayTaskStation = agvLocationService.findTrayTaskStation(stationIds);
         trayTaskStation.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
         if (trayTaskStation.get(0).getCount() == 0){
@@ -445,13 +458,156 @@ public class StationBZServiceImpl implements IStationBZService {
             List<AgvStoragelocation> agvStoragelocations = agvLocationService.findByMap(MapUtils.put("deviceNo", targetStationId).put("taskLock",0)
                     .put("storageLock",0).put("areaNo","SN01").getMap());
             if (agvStoragelocations.size() == 0){
-                throw new Exception("【"+targetStationId+"】未找到可用库区");
+                throw new Exception("站台【"+targetStationId+"】未找到可用区域");
             }
             pathSchedulingService.containerMoveTask(containerNo,agvStoragelocations.get(0).getAreaNo(),agvStoragelocations.get(0).getLocationNo());
         }
         
         
     }
+
+    /**
+     * 重量计算：1、wms获取周转箱重量 2、wms获取托盘总重量
+     * 3、计算托盘内之前商品重量 4、获取订单拖重量 5、计算此次播种商品重量
+     * 6  （托盘重量 + 之前商品重量 +周转箱重量 + 计算播种商品重量 ）- 称重托盘重量 小于误差率
+     * 7、小于 回传前端true，保存称重重量  大于回传false：进行第二次称重判断
+     * 8、第二次回传前端true 保存称重重量
+     *
+     * @param stationId
+     * @param orderDetailId
+     * @param passBoxNo
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public OrderTrayWeighDTO weighCheck(int stationId, int orderDetailId, String passBoxNo) throws Exception {
+        if (StringUtils.isBlank(passBoxNo)){
+            throw new Exception("周转箱号不能为空");
+        }
+        //周转箱重量
+        BigDecimal containerWeigh = new BigDecimal(0);
+        if (!"0".equals(passBoxNo)){
+            //todo:请求wms接口获取重量
+        }
+
+        SeedInfo seedInfo = seedInfoService.findSeedInfoByOrderDetail(orderDetailId);
+
+        //获取托盘重量
+        List<OrderBox> orderBoxs = orderBoxService.findByMap(MapUtils.put("orderBoxNo", seedInfo.getOrderTrayNo()).getMap());
+        if (orderBoxs.size() == 0 || orderBoxs.get(0).getTrayWeigh() == null){
+            throw new Exception("订单拖数据异常");
+        }
+        BigDecimal trayWeigh = orderBoxs.get(0).getTrayWeigh();
+
+        //获取托盘之前商品重量
+        BigDecimal beforeGoodsWeigh = seedWeighService.getBeforeOrderTrayWeight(seedInfo.getOrderBillId(), seedInfo.getOrderTrayNo(), seedInfo.getId());
+
+        //计算当前商品重量
+        Goods goods = goodsService.findGoodsById(seedInfo.getGoodsId());
+        BigDecimal computeGoodsWeigh = goods.getWeight().multiply(new BigDecimal(seedInfo.getNum()));
+
+
+        //todo:wms获取称重重量
+        BigDecimal sumWeigh = new BigDecimal(0);
+        //称重播种商品的实际重量(称重重量 - 托盘重量 - 之前商品重量)
+        BigDecimal realityWeigh = sumWeigh.subtract(trayWeigh).subtract(beforeGoodsWeigh);
+
+        //计算误差率 （托盘重量 + 之前商品重量 +周转箱重量 + 计算播种商品重量 ）- 称重托盘重量 小于误差率(称重)
+        BigDecimal compute1 = trayWeigh.add(beforeGoodsWeigh).add(containerWeigh).add(computeGoodsWeigh).subtract(sumWeigh).abs();
+        BigDecimal errorRate1 = compute1.divide(computeGoodsWeigh);
+
+        OrderTrayWeighDTO orderTrayWeighDTO = new OrderTrayWeighDTO();
+        orderTrayWeighDTO.setContainerWeigh(containerWeigh);
+        orderTrayWeighDTO.setWeigh(sumWeigh);
+        //todo：误差率
+        BigDecimal errorRate =BigDecimal.valueOf(0.5);
+        /**
+         * 计算是否符合误差，是则回告前端true，否则判断第二次称重是否有值
+         * 每次计算的称重重量保存记录;
+         */
+
+        if (errorRate1.compareTo(errorRate) == -1){
+            //小于误差率
+            orderTrayWeighDTO.setFlag(true);
+            List<SeedWeigh> seedWeighs = seedWeighService.findSeedWeighByMap(MapUtils.put("seedInfoId", seedInfo.getId()).getMap());
+
+            if (seedWeighs.size() == 0){
+                SeedWeigh seedWeigh = new SeedWeigh();
+                seedWeigh.setFirstWeigh(realityWeigh);
+                seedWeigh.setSeedInfoId(seedInfo.getId());
+                seedWeigh.setCreateTime(new Date());
+                seedWeigh.setFirstWeighCheck(true);
+                seedWeigh.setAuthorityLeave(false);
+                seedWeighService.saveSeedWeigh(seedWeigh);
+            }else {
+                List<SeedWeigh> collect = seedWeighs.stream().filter(x -> x.getFirstWeigh() != null).collect(Collectors.toList());
+                if (collect.size() == 0){
+                    throw new Exception("第一次称重数据为空");
+                }
+                SeedWeigh seedWeigh = seedWeighs.get(0);
+                seedWeigh.setSecondWeigh(realityWeigh);
+                seedWeigh.setUpdateTime(new Date());
+                seedWeigh.setSecondWeighCheck(true);
+                seedWeigh.setAuthorityLeave(false);
+                seedWeighService.updateSeedWeigh(seedWeigh);
+            }
+
+        }else {
+            //大于误差率
+            List<SeedWeigh> seedWeighs = seedWeighService.findSeedWeighByMap(MapUtils.put("seedInfoId", seedInfo.getId()).getMap());
+            if (seedWeighs.size() == 0){
+                orderTrayWeighDTO.setFlag(false);
+                SeedWeigh seedWeigh = new SeedWeigh();
+                seedWeigh.setFirstWeigh(realityWeigh);
+                seedWeigh.setSeedInfoId(seedInfo.getId());
+                seedWeigh.setCreateTime(new Date());
+                seedWeigh.setFirstWeighCheck(false);
+                seedWeighService.saveSeedWeigh(seedWeigh);
+            }else {
+                List<SeedWeigh> collect = seedWeighs.stream().filter(x -> x.getFirstWeigh() != null).collect(Collectors.toList());
+                if (collect.size() == 0){
+                    throw new Exception("第一次称重数据为空");
+                }
+                orderTrayWeighDTO.setFlag(true);
+
+                SeedWeigh seedWeigh = seedWeighs.get(0);
+                seedWeigh.setSecondWeigh(realityWeigh);
+                seedWeigh.setUpdateTime(new Date());
+                seedWeigh.setSecondWeighCheck(false);
+                seedWeigh.setAuthorityLeave(true);
+                seedWeighService.updateSeedWeigh(seedWeigh);
+            }
+        }
+
+        return orderTrayWeighDTO;
+    }
+
+    @Override
+    public void saveTrayWeigh(int orderBillId, String orderTrayNo,BigDecimal trayWeigh) throws Exception {
+        List<SeedInfo> seedInfos = seedInfoService.findSeedInfoByMap(MapUtils.put("orderBillId", orderBillId).put("orderTrayNo", orderTrayNo).getMap());
+        if (seedInfos.size() > 0){
+            return;
+        }else {
+            List<OrderBox> orderBoxNos = orderBoxService.findByMap(MapUtils.put("orderBoxNo", orderTrayNo).getMap());
+            if (orderBoxNos.size() == 1){
+                OrderBox orderBox = orderBoxNos.get(0);
+                orderBox.setTrayWeigh(trayWeigh);
+                orderBox.setCreateTime(new Date());
+                orderBoxService.updateOrderBox(orderBox);
+            }else if(orderBoxNos.size() == 0){
+                OrderBox orderBox = new OrderBox();
+                orderBox.setOrderBoxNo(orderTrayNo);
+                orderBox.setTrayWeigh(trayWeigh);
+                orderBox.setCreateTime(new Date());
+                orderBoxService.saveOrderBox(orderBox);
+            }else {
+                throw new Exception("订单拖【"+orderTrayNo+"】查询到【"+orderBoxNos.size()+"】条数据");
+            }
+        }
+
+    }
+
+
 
 
 }

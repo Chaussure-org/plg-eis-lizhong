@@ -1,9 +1,11 @@
 package com.prolog.eis.pick.service;
 
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
+import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.station.Station;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -112,6 +114,28 @@ public interface IStationBZService {
      */
     void doPicking(int stationId, String containerNo,int completeNum,int orderBillId,String orderBoxNo) throws Exception;
 
+    /**
+     * 找寻站台托盘到达的合适点位
+     * @param stationIds
+     * @param containerNo
+     * @throws Exception
+     */
+    void  computeTrayStation(List<Integer> stationIds,String containerNo) throws Exception;
 
-    void  computeTrayStation(int stationId,List<Integer> stationIds,String containerNo) throws Exception;
+    /**
+     * 称重校验
+     * @param stationId
+     * @param orderDetailId
+     * @param passBoxNo
+     * @return
+     * @throws Exception
+     */
+    OrderTrayWeighDTO weighCheck(int stationId, int orderDetailId, String passBoxNo) throws Exception;
+
+    /**
+     * 保存订单拖重量
+     * @param orderBillId
+     * @param orderTrayNo
+     */
+    void saveTrayWeigh(int orderBillId, String orderTrayNo, BigDecimal trayWeigh) throws Exception;
 }

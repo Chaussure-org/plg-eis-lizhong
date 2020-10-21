@@ -6,6 +6,8 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
+
 
 /**
  * @Description  
@@ -47,7 +49,7 @@ public class Goods {
 
   @Column("weight")
   @ApiModelProperty("重量（克：g）")
-  private Double weight;
+  private BigDecimal weight;
 
   @Column("package_number")
   @ApiModelProperty("包装数量")
@@ -141,11 +143,11 @@ public class Goods {
     this.goodsType = goodsType;
   }
 
-  public Double getWeight() {
+  public BigDecimal getWeight() {
     return weight;
   }
 
-  public void setWeight(Double weight) {
+  public void setWeight(BigDecimal weight) {
     this.weight = weight;
   }
 
