@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @date:2020/10/14 11:10
  * @author:SunPP
  */
-//@Component
+@Component
 public class OutDispatch {
 
     @Autowired
