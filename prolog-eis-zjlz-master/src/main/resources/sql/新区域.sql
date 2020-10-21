@@ -115,29 +115,29 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
                                                                                                        'MCS04',
                                                                                                        100,10,1);
 
--- 二层入库接驳口
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS012',20,'WCS',100,1,10,'二层1入库口','MTR0201',2,0,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS022',20,'WCS',100,1,10,'二层2入库口','MTR0203',2,0,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS032',20,'WCS',100,1,10,'二层3入库口','MTR0205',2,0,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS042',20,'WCS',100,1,10,'二层4入库口','MTR0207',2,0,0);
+-- -- 二层入库接驳口
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS012',20,'WCS',100,1,10,'二层1入库口','MTR0201',2,0,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS022',20,'WCS',100,1,10,'二层2入库口','MTR0203',2,0,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS032',20,'WCS',100,1,10,'二层3入库口','MTR0205',2,0,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS042',20,'WCS',100,1,10,'二层4入库口','MTR0207',2,0,0);
 
--- 方向
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS012',
-                                                                                                       'MCS012',
-                                                                                                       100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS022',
-                                                                                                       'MCS022',
-                                                                                                       100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS032',
-                                                                                                       'MCS032',
-                                                                                                       100,10,1);
-INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS042',
-                                                                                                       'MCS042',
-                                                                                                       100,10,1);
+-- -- 方向
+-- INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS012',
+--                                                                                                        'MCS012',
+--                                                                                                        100,10,1);
+-- INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS022',
+--                                                                                                        'MCS022',
+--                                                                                                        100,10,1);
+-- INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS032',
+--                                                                                                        'MCS032',
+--                                                                                                        100,10,1);
+-- INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS042',
+--                                                                                                        'MCS042',
+--                                                                                                        100,10,1);
 
 -- 二层agv入库接驳口
 INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
@@ -206,15 +206,15 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
 
 
 
--- 二层堆垛机导轨出库口
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('MCS013',20,'MCS',100,1,10,'堆垛机库导轨1出库口','090001000002',9,1,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('MCS023',20,'MCS',100,1,10,'堆垛机库导轨2出库口','090002000002',9,2,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('MCS033',20,'MCS',100,1,10,'堆垛机库导轨3出库口','090003000002',9,3,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('MCS043',20,'MCS',100,1,10,'堆垛机库导轨4出库口','090004000002',9,4,0);
+-- -- 二层堆垛机导轨出库口
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('MCS013',20,'MCS',100,1,10,'堆垛机库导轨1出库口','090001000002',9,1,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('MCS023',20,'MCS',100,1,10,'堆垛机库导轨2出库口','090002000002',9,2,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('MCS033',20,'MCS',100,1,10,'堆垛机库导轨3出库口','090003000002',9,3,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('MCS043',20,'MCS',100,1,10,'堆垛机库导轨4出库口','090004000002',9,4,0);
 
 -- 堆垛机方向
 
@@ -230,16 +230,16 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('MCS04',
                                                                                                        'MCS043',
                                                                                                        100,10,1);
-
--- 二层出库接驳口
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS013',20,'WCS',100,1,10,'堆垛机库导轨1出库接驳口','RTM0201',2,0,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS023',20,'WCS',100,1,10,'堆垛机库导轨2出库接驳口','RTM0203',2,0,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS033',20,'WCS',100,1,10,'堆垛机库导轨3出库接驳口','RTM0205',2,0,0);
-INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS043',20,'WCS',100,1,10,'堆垛机库导轨4出库接驳口','RTM0207',2,0,0);
+--
+-- -- 二层出库接驳口
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS013',20,'WCS',100,1,10,'堆垛机库导轨1出库接驳口','RTM0201',2,0,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS023',20,'WCS',100,1,10,'堆垛机库导轨2出库接驳口','RTM0203',2,0,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS033',20,'WCS',100,1,10,'堆垛机库导轨3出库接驳口','RTM0205',2,0,0);
+-- INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+--                        x,y) VALUES('WCS043',20,'WCS',100,1,10,'堆垛机库导轨4出库接驳口','RTM0207',2,0,0);
 
 
 -- 方向

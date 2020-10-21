@@ -1,5 +1,6 @@
 package com.prolog.eis;
 
+import com.prolog.framework.authority.annotation.EnablePrologEmptySecurityServer;
 import com.prolog.framework.authority.annotation.EnablePrologResourceServer;
 import com.prolog.framework.microservice.annotation.EnablePrologService;
 import org.mybatis.spring.annotation.MapperScan;
@@ -15,7 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 
 @EnableScheduling
-@EnablePrologResourceServer
+//@EnablePrologResourceServer
+@EnablePrologEmptySecurityServer //无权限控制
 @MapperScan(basePackages={"com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService

@@ -4,15 +4,22 @@ import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
+import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.enums.PointChangeEnum;
 import com.prolog.eis.location.service.*;
+import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.rcs.service.IRCSService;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.eis.wcs.service.IWCSService;
 import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author 13622
+ */
 @Service
 public class PathExecutionServiceImpl implements PathExecutionService {
     @Autowired
@@ -25,6 +32,8 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     private ContainerPathTaskService containerPathTaskService;
     @Autowired
     private SxkLocationService sxkLocationService;
+    @Autowired
+    private IWCSService wcsService;
 
     @Override
     public void doRcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
@@ -58,60 +67,63 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 
     }
 
-//    public void doMcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-//        //直接发送一个rcs移动任务即可
-//        this.doRcsToRcsTask(containerPathTask, containerPathTaskDetailDTO);
-//    }
-//
-//    public void doRcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-//        String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
-//        // TODO 发送mcs指令
-//    }
-
-    @Override
-    public void doMcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
-        // TODO 发送mcs指令
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
-    }
 
     @Override
     public void doMcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
+        System.out.println("mcs to wcs");
+        //此处只用发到出库接驳口，然后更改此条的状态
+        containerPathTaskDetailDTO.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
+        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
     }
 
     @Override
     public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
+        System.out.println("wcs to mcs");
+        containerPathTaskDetailDTO.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
+        containerPathTaskDetailDTO.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
+        String taskId = PrologStringUtils.newGUID();
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,containerPathTaskDetailDTO.getSourceLocation(),
+                containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
+        wcsService.lineMove(wcsLineMoveDto);
     }
 
     @Override
     public void doWcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        // 将当前路径初始点位改为RCS接驳口点位
-        this.doRcsToRcsTask(containerPathTask, containerPathTaskDetailDTO);
-
+        System.out.println("wcs to rcs");
+        containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
+                , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
     }
 
     @Override
     public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        this.doRcsToRcsTask(containerPathTask, containerPathTaskDetailDTO);
+        System.out.println("rcs to wcs");
+        containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
+                , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
     }
 
     @Override
     public void doSasToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-
+        System.out.println("sas to wcs");
+        containerPathTaskDetailDTO.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
+        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
     }
 
     @Override
     public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
+        System.out.println("wcs to sas");
+        containerPathTaskDetailDTO.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
+        containerPathTaskDetailDTO.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
+        String taskId = PrologStringUtils.newGUID();
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,containerPathTaskDetailDTO.getSourceLocation(),
+                containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
+        wcsService.lineMove(wcsLineMoveDto);
     }
 
-    @Override
-    public void doSasToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
-    }
 
     /**
      * 记录taskId

@@ -9,7 +9,7 @@ eureka:
     statusPageUrlPath: /${server.servlet.contextpath:}/apidoc.html
     leaseRenewalIntervalInSeconds: 20 #租期更新时间间隔（默认30秒）
     leaseExpirationDurationInSeconds: 60 #租期到期时间（默认90秒）
-    ipAddress: 127.0.0.1 # 根据项目部署地址变动，指定此实例部署的主机ip
+    ipAddress: 192.168.41.55 # 根据项目部署地址变动，指定此实例部署的主机ip
 
 
 server:

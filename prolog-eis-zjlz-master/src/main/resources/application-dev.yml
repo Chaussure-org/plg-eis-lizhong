@@ -6,14 +6,14 @@ prolog.tx.url: http://192.168.1.21:7000/tx/manager/
 spring:
   application.name: service-ai-eis-zjlz-master
   #redis配置
-#  redis:
-#    cluster:
-#      nodes: 192.168.1.17:6379,192.168.1.17:6380,192.168.1.18:6379,192.168.1.18:6380,192.168.1.19:6379,192.168.1.19:6380
-#    password: prolog-redis-0212
-#    host: 192.168.0.167
-#    port: 6379
+  redis:
+    cluster:
+      nodes: 192.168.1.17:6379,192.168.1.17:6380,192.168.1.18:6379,192.168.1.18:6380,192.168.1.19:6379,192.168.1.19:6380
+    password: prolog-redis-0212
+    host: 192.168.0.167
+    port: 6379
 #    password: prolog0212
-#    database: 0
+    database: 0
   #链路跟踪  
   zipkin:
     sender.type: rabbit
