@@ -519,7 +519,7 @@ public class StationBZServiceImpl implements IStationBZService {
         BigDecimal errorRate1 = compute1.divide(computeGoodsWeigh);
 
         OrderTrayWeighDTO orderTrayWeighDTO = new OrderTrayWeighDTO();
-        orderTrayWeighDTO.setWeigh(containerWeigh);
+        orderTrayWeighDTO.setPassBoxWeigh(containerWeigh);
         orderTrayWeighDTO.setWeigh(sumWeigh);
         //todo：误差率
         BigDecimal errorRate =BigDecimal.valueOf(0.5);
