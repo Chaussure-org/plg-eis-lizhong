@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class OrderTrayWeighDTO {
 
     @ApiModelProperty("容器重量")
-    private BigDecimal containerWeigh;
+    private BigDecimal passBoxWeigh;
 
     @ApiModelProperty("称重重量")
     private BigDecimal weigh;
@@ -22,12 +22,12 @@ public class OrderTrayWeighDTO {
     private boolean flag;
 
 
-    public BigDecimal getContainerWeigh() {
-        return containerWeigh;
+    public BigDecimal getPassBoxWeigh() {
+        return passBoxWeigh;
     }
 
-    public void setContainerWeigh(BigDecimal containerWeigh) {
-        this.containerWeigh = containerWeigh;
+    public void setPassBoxWeigh(BigDecimal passBoxWeigh) {
+        this.passBoxWeigh = passBoxWeigh;
     }
 
     public BigDecimal getWeigh() {
