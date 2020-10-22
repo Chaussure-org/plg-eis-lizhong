@@ -408,6 +408,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void doPicking(int stationId, String containerNo, int completeNum,int orderBillId,String orderBoxNo) throws Exception {
         ContainerBindingDetail containerBinDings = containerBindingDetailService.findMap(MapUtils.put("containerNo", containerNo)
