@@ -27,4 +27,16 @@ public class StationBzController {
         return RestMessage.newInstance(true,"200","查询成功",bcpPcikingDTO);
     }
 
+    @ApiOperation(value = "拣选页面推送", notes = "拣选页面推送")
+    @RequestMapping("/init")
+    public RestMessage<BCPPcikingDTO> pickConfirm(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam int completeNum) throws Exception {
+        try {
+            stationBZService.pickingConfirm(stationId, containerNo, orderBoxNo,completeNum);
+            return RestMessage.newInstance(true,"200","操作成功",null);
+        } catch (Exception e) {
+            return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
+        }
+
+    }
+
 }
