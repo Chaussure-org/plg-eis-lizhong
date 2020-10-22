@@ -232,14 +232,15 @@ public class StationBZServiceImpl implements IStationBZService {
 
         //上层输送线
         List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("stationId", stationId).getMap());
-        if (stations.size() == 0) {
+        int containerArrive = agvLocationService.findContainerArrive(containerNo, stationId);
+        if (stations.size() == 0 && containerArrive == 0) {
             return true;
         }
-        String areaNo = "OD01";
-        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
-        if (b){
-            return true;
-        }
+//        String areaNo = "OD01";
+//        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
+//        if (b){
+//            return true;
+//        }
         return false;
     }
 

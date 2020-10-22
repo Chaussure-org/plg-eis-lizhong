@@ -147,5 +147,10 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 		return agvStoragelocationMapper.getUsableStore(storeArea,stationId);
 	}
 
+	@Override
+	public int findContainerArrive(String containerNo, int stationId) {
+		return agvStoragelocationMapper.findContainerArrive(containerNo,stationId);
+	}
+
 
 }

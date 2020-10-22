@@ -75,4 +75,14 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
             "\tAND a.device_no = #{stationId}\n" +
             "\tand c.container_no is null")
     List<String> getUsableStore(@Param("storeArea") String storeArea,@Param("stationId") int stationId);
+
+    /**
+     *查托盘到位
+     * @param containerNo
+     * @param stationId
+     * @return
+     */
+    @Select("SELECT * FROM agv_storagelocation a left join container_path_task c on a.location_no=c.target_location \n" +
+            "where c.task_state=0 AND c.container_no=#{containerNo} AND a.device_no=#{stationId} AND c.target_area='SN01';")
+    int findContainerArrive(@Param("containerNo") String containerNo, @Param("stationId") int stationId);
 }

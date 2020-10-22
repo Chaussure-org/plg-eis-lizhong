@@ -4,6 +4,7 @@ import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -53,4 +54,13 @@ public interface AgvLocationService {
 	 * @return
 	 */
 	List<String> getUsableStore(String storeArea,int stationId);
+
+
+	/**
+	 * 查料箱是否到位
+	 * @param containerNo
+	 * @param stationId
+	 * @return
+	 */
+	int findContainerArrive(String containerNo,int stationId);
 }
