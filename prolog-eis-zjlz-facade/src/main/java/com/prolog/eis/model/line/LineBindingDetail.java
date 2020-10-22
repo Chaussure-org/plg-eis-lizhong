@@ -33,11 +33,6 @@ public class LineBindingDetail {
     private Integer goodsId;
 
 
-    @Column("qty")
-    @ApiModelProperty("容器库存数量")
-    private Integer qty;
-
-
     @Column("binding_num")
     @ApiModelProperty("绑定数量")
     private Integer bindingNum;
@@ -84,13 +79,7 @@ public class LineBindingDetail {
         this.wmsOrderPriority = wmsOrderPriority;
     }
 
-    public Integer getQty() {
-        return qty;
-    }
 
-    public void setQty(Integer qty) {
-        this.qty = qty;
-    }
 
     public Integer getBindingNum() {
         return bindingNum;

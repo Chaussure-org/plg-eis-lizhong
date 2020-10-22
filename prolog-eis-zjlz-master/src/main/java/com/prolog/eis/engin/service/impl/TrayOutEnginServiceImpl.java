@@ -233,22 +233,22 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         boolean isContinue = true;
         int sumCount = 0;
 //        //优先从agv库存找
-        for (RoadWayGoodsCountDto goodsCountDto : agvGoodsCounts) {
-            if (goodsCountDto.getQty() <= 0) {
-                continue;
+        if (agvGoodsCounts.size()>0) {
+            for (RoadWayGoodsCountDto goodsCountDto : agvGoodsCounts) {
+                if (goodsCountDto.getQty() <= 0) {
+                    continue;
+                }
+                if (sumCount >= count) {
+                    isContinue = false;
+                    break;
+                }
+                OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
+                outContainerDtoList.add(outContainer);
+                sumCount += goodsCountDto.getQty();
             }
-            if (sumCount >= count) {
-                isContinue = false;
-                break;
-            }
-            OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
-            outContainerDtoList.add(outContainer);
-            sumCount += goodsCountDto.getQty();
         }
 
         if (isContinue) {
-            //先找移位数最少 再找巷道任务数最少
-
             //1. Comparator.comparing(类::属性一).reversed();
             //2. Comparator.comparing(类::属性一,Comparator.reverseOrder());
             //两种排序是完全不一样的,一定要区分开来 1 是得到排序结果后再排序,2是直接进行排序,很多人会混淆导致理解出错,2更好理解,建议使用2
@@ -369,6 +369,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.containsKey(orderDetail.getGoodsId()) &&
                             (containerTrayMap.get(orderDetail.getGoodsId()) + containerBoxMap.get(orderDetail.getGoodsId()) - orderDetail.getPlanQty()) >= 0) {
                         orderDetailMapper.updateMapById(orderDetail.getDetailId(), MapUtils.put("trayPlanQty", containerTrayMap.get(orderDetail.getGoodsId())).getMap(), OrderDetail.class);
+                        //更新目的位置
                     } else {
                         isAdd = false;
                         //logger.info("明细" + orderDetail.getDetailId() + "商品" + orderDetail.getGoodsId() + "==============库存不足========");
