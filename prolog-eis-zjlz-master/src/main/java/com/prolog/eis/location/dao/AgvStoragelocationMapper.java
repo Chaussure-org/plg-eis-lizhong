@@ -40,12 +40,39 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
      * @param list
      * @return
      */
-    @Select("<script> select device_no,COUNT(*) from agv_storagelocation a where a.storage_lock = 0 and a.task_lock = 0 and area_no = 'OT' and  device_no IN " +
+    @Select("<script> SELECT\n" +
+            "\ta.device_no AS stationId,\n" +
+            "\tCOUNT( a.id ) - count( c.target_location ) AS count \n" +
+            "FROM\n" +
+            "\tagv_storagelocation a\n" +
+            "\tLEFT JOIN container_path_task c ON a.location_no = c.target_location \n" +
+            "WHERE\n" +
+            "\ta.storage_lock = 0 \n" +
+            "\tAND a.area_no = #{storeArea} \n" +
+            "\tAND a.device_no in" +
             "<foreach  item='item' index='index' collection='list' open='(' separator=',' close=')'> #{item}    " +
-            "</foreach> GROUP BY device_no </script>")
-    List<StationTrayDTO> findTrayTaskStation(List<Integer> list);
+            "</foreach> GROUP BY a.device_no </script>")
+    List<StationTrayDTO> findTrayTaskStation(@Param("storeArea") String storeArea, List<Integer> list);
 
 
     @Update("update agv_storagelocation a set a.task_lock =1 where a.location_no =#{locationNo}")
     void updateLocationLock(@Param("locationNo") String locationNo);
+
+    /**
+     * 根据站台区域找寻一个可用位置
+     * @param storeArea
+     * @param stationId
+     * @return
+     */
+    @Select("SELECT\n" +
+            " a.area_no\n" +
+            "FROM\n" +
+            "\tagv_storagelocation a\n" +
+            "\tLEFT JOIN container_path_task c ON a.location_no = c.target_location \n" +
+            "WHERE\n" +
+            "\ta.storage_lock = 0 \n" +
+            "\tAND a.area_no = #{storeArea} \n" +
+            "\tAND a.device_no = #{stationId}\n" +
+            "\tand c.container_no is null")
+    List<String> getUsableStore(@Param("storeArea") String storeArea,@Param("stationId") int stationId);
 }

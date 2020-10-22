@@ -15,6 +15,14 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel("站台表")
 @Table("station")
 public class Station {
+    /**
+     * 站台作业类型：播种
+     */
+    public static final int TASK_TYPE_SEED = 20;
+    /**
+     * 站台作业类型：空闲
+     */
+    public static final int TASK_TYPE_INVENTORY = 10;
 
     public static final int STATION_TYPE_UNFINISHEDPROD = 1;
     public static final int STATION_TYPE_FINISHEDPROD = 2;

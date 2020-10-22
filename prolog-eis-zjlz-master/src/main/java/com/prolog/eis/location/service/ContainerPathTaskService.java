@@ -68,4 +68,13 @@ public interface ContainerPathTaskService {
      * @throws Exception
      */
     List<ContainerPathTask> findByMap(Map map) throws Exception;
+
+
+    /**
+     * 获取接驳点位是否有容器
+     * @param storeArea
+     * @return
+     * @throws Exception
+     */
+    List<ContainerPathTask> getContainerByPath(String storeArea) throws Exception;
 }
