@@ -232,6 +232,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
         //上层输送线
         List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("stationId", stationId).getMap());
+
         if (stations.size() == 0) {
             return true;
         }
