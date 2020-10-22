@@ -8,7 +8,7 @@ package com.prolog.eis.dto.bz;
 public class BCPGoodsInfoDTO {
 
     //订单编号
-    private int orderNo;
+    private String orderNo;
     //图号
     private String graphNo;
     //商品名称
@@ -16,11 +16,11 @@ public class BCPGoodsInfoDTO {
     //商品编号
     private String goodsNo;
 
-    public int getOrderNo() {
+    public String getOrderNo() {
         return orderNo;
     }
 
-    public void setOrderNo(int orderNo) {
+    public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
     }
 

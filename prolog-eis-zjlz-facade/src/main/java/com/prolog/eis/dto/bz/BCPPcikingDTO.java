@@ -15,7 +15,7 @@ public class BCPPcikingDTO {
     //清单id
     private int orderDetailId;
     //订单编号
-    private int orderNo;
+    private String orderNo;
     //图号
     private String graphNo;
     //商品名称
@@ -43,11 +43,11 @@ public class BCPPcikingDTO {
         this.orderBillId = orderBillId;
     }
 
-    public int getOrderNo() {
+    public String getOrderNo() {
         return orderNo;
     }
 
-    public void setOrderNo(int orderNo) {
+    public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
     }
 

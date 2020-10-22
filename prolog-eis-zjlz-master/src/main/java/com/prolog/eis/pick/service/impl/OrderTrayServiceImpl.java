@@ -1,6 +1,8 @@
 package com.prolog.eis.pick.service.impl;
 
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
+import com.prolog.eis.engin.service.TrayOutEnginService;
 import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.PathSchedulingService;
@@ -8,6 +10,7 @@ import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.pick.service.IOrderTrayService;
 import com.prolog.eis.station.service.IStationService;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,10 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
     private AgvLocationService agvLocationService;
     @Autowired
     private PathSchedulingService pathSchedulingService;
+    @Autowired
+    private TrayOutEnginService trayOutEnginService;
+    @Autowired
+    private IContainerStoreService containerStoreService;
     @Override
     public void requestOrderTray() throws Exception {
         //检测拆盘机出口是否有料箱
@@ -80,8 +87,14 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
         if (containerByPaths.size() != 0){
             return;
         }
+        //查询空订单框
+//        containerStoreService.findByMap(MapUtils.put())
         //todo:调度托盘出库
-
+        //空订单拖id
+        int goodsId = 1111;
+        List<OutContainerDto> outContainerDtos = trayOutEnginService.outByGoodsId(goodsId, 1);
+        OutContainerDto outContainerDto = outContainerDtos.get(0);
+        pathSchedulingService.containerMoveTask(outContainerDto.getContainerNo(),bkArea,null);
 
     }
 
