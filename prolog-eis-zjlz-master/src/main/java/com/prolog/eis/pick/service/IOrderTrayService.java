@@ -8,4 +8,17 @@ package com.prolog.eis.pick.service;
 public interface IOrderTrayService {
 
 
+    /**
+     * 请求订单拖
+     */
+    void requestOrderTray() throws Exception;
+
+
+
+    /**
+     * 订单拖出库
+     */
+    void orderTrayOut() throws Exception;
+
+
 }

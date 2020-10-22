@@ -138,8 +138,13 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 	}
 
 	@Override
-	public List<StationTrayDTO> findTrayTaskStation(List<Integer> list) {
-		return agvStoragelocationMapper.findTrayTaskStation(list);
+	public List<StationTrayDTO> findTrayTaskStation(String storeArea,List<Integer> list) {
+		return agvStoragelocationMapper.findTrayTaskStation(storeArea,list);
+	}
+
+	@Override
+	public List<String> getUsableStore(String storeArea, int stationId) {
+		return agvStoragelocationMapper.getUsableStore(storeArea,stationId);
 	}
 
 
