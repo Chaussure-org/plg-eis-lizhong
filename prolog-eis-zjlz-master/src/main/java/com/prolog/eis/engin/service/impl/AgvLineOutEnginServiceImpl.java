@@ -57,19 +57,21 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     @Override
     public void computerPickOrder() throws Exception {
         List<AgvBindingDetail> agvDetailsTemp = agvBindingDetaileMapper.findAgvBindingDetails();
-        if (!agvDetailsTemp.isEmpty()) {
-            List<AgvBindingDetail> agvDetails = agvDetailsTemp.stream().filter(x -> x.getOrderPriority().equals(OrderBill.FIRST_PRIORITY)).collect(Collectors.toList());
-            if (agvDetails.isEmpty()) {
-                //找已经到达循环线的箱子
-                List<AgvBindingDetail> lineDetails = lineBindingDetailMapper.findLineDetails();
-                if (lineDetails.isEmpty()){
-                    return;
-                }
-                this.takePickOrder(lineDetails);
-            } else {
-                this.takePickOrder(agvDetails);
-            }
+        if (agvDetailsTemp.isEmpty()) {
+            return;
         }
+        List<AgvBindingDetail> agvDetails = agvDetailsTemp.stream().filter(x -> x.getOrderPriority().equals(OrderBill.FIRST_PRIORITY)).collect(Collectors.toList());
+        if (agvDetails.isEmpty()) {
+            //找已经到达循环线的箱子
+            List<AgvBindingDetail> lineDetails = lineBindingDetailMapper.findLineDetails();
+            if (lineDetails.isEmpty()) {
+                return;
+            }
+            this.takePickOrder(lineDetails);
+        } else {
+            this.takePickOrder(agvDetails);
+        }
+
     }
 
 
@@ -81,7 +83,8 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     public void takePickOrder(List<AgvBindingDetail> bindingDetails) throws Exception {
         //所有的站台集合
         List<Station> stationsTemp = stationMapper.findByMap(null, Station.class);
-        List<Station> stations = stationsTemp.stream().filter(x -> x.getIsLock().equals(Station.UN_LOCK)).collect(Collectors.toList());
+        //不锁定的 半成品站台
+        List<Station> stations = stationsTemp.stream().filter(x -> x.getIsLock().equals(Station.UN_LOCK) && x.getStationType().equals(Station.STATION_TYPE_UNFINISHEDPROD)).collect(Collectors.toList());
         List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
         //如果没用开启的站台
         if (stations.isEmpty()) {
@@ -99,7 +102,9 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                 for (Map.Entry<Integer, List<AgvBindingDetail>> orderMap : map.entrySet()) {
                     this.savePickOrder(station, orderMap.getKey());
                     //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
-                    this.saveAgvContainerBindingDetail(orderMap.getValue());
+                    this.saveContainerBindingDetail(orderMap.getValue());
+                    map.remove(orderMap.getKey());
+                    break;
                 }
             } else {
                 //如果站台有拣选单
@@ -107,7 +112,8 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                     if (station.getCurrentStationPickId().equals(pickingOrder.getPickingOrderId())) {
                         //1.站台agv位置为空
                         List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
-                                MapUtils.put("deviceNo", station.getId()).put("areaNo", "SA").put("taskLock", 1).put("storageLocK",0).getMap(), AgvStoragelocation.class);
+                                MapUtils.put("deviceNo", station.getId()).
+                                        put("areaNo", "SA").put("taskLock", 1).put("storageLock", 0).getMap(), AgvStoragelocation.class);
                         if (list.isEmpty()) {
                             //站台无空位
                             return;
@@ -130,12 +136,13 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
 
         }
     }
+
     private List<AgvBindingDetail> sortDetails(List<AgvBindingDetail> detailList) {
 
         String ids = detailList.stream().map(AgvBindingDetail::getOrderBillId).collect(Collectors.toSet()).toString();
         //判断agv区域订单全部到齐的订单优先索取
         List<OrderDetailCountsDto> orderDetailCounts = orderBillMapper.findOrderDetailCount(ids);
-        Map<Integer, List<AgvBindingDetail>> orderMapTemp = detailList.stream().sorted(Comparator.comparing(AgvBindingDetail::getUpdateTime)).collect(Collectors.groupingBy(AgvBindingDetail::getOrderBillId));
+        Map<Integer, List<AgvBindingDetail>> orderMapTemp = detailList.stream().collect(Collectors.groupingBy(AgvBindingDetail::getOrderBillId));
         //先按照wms优先级排序  到达明细最多的 排在前面
         Collections.sort(detailList, new Comparator<AgvBindingDetail>() {
             @Override
@@ -159,7 +166,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     /**
      * 保存容器绑定明细
      */
-    private void saveAgvContainerBindingDetail(List<AgvBindingDetail> detailList) {
+    private void saveContainerBindingDetail(List<AgvBindingDetail> detailList) {
         List<ContainerBindingDetail> containerBindingDetails = new ArrayList<>();
         for (AgvBindingDetail agvBindingDetail : detailList) {
             ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
@@ -167,24 +174,14 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             containerBindingDetail.setBindingNum(agvBindingDetail.getBindingNum());
             containerBindingDetail.setOrderBillId(agvBindingDetail.getOrderBillId());
             containerBindingDetail.setOrderDetailId(agvBindingDetail.getOrderMxId());
+            containerBindingDetails.add(containerBindingDetail);
         }
         containerBindingDetailMapper.saveBatch(containerBindingDetails);
     }
 
-    private void saveLineContainerDetail(List<LineBindingDetail> detailList) {
-        List<ContainerBindingDetail> containerBindingDetails = new ArrayList<>();
-        for (LineBindingDetail lineBindingDetail : detailList) {
-            ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
-            containerBindingDetail.setContainerNo(lineBindingDetail.getContainerNo());
-            containerBindingDetail.setBindingNum(lineBindingDetail.getBindingNum());
-            containerBindingDetail.setOrderBillId(lineBindingDetail.getOrderBillId());
-            containerBindingDetail.setOrderDetailId(lineBindingDetail.getOrderMxId());
-        }
-        containerBindingDetailMapper.saveBatch(containerBindingDetails);
-    }
 
     @Transactional(rollbackFor = Exception.class)
-    public void savePickOrder(Station station, Integer orderBillId) {
+    public void savePickOrder(Station station, Integer orderBillId) throws Exception {
         //保存拣选单
         PickingOrder pickingOrder = new PickingOrder();
         String pickOrderNo = PrologStringUtils.newGUID();
@@ -197,11 +194,22 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
         //更新站台的拣选单
         stationMapper.updateMapById(station.getId(), MapUtils.put("currentStationPickId", pickingOrder.getId()).getMap(), Station.class);
         //更新订单的 拣选单id
-        orderBillMapper.updateMapById(orderBillId, MapUtils.put("pickOrderId", pickingOrder.getId()).getMap(), OrderBill.class);
+        orderBillMapper.updateMapById(orderBillId, MapUtils.put("pickingOrderId", pickingOrder.getId()).getMap(), OrderBill.class);
     }
 
 
-
+/*    private void saveLineContainerDetail(List<LineBindingDetail> detailList) {
+        List<ContainerBindingDetail> containerBindingDetails = new ArrayList<>();
+        for (LineBindingDetail lineBindingDetail : detailList) {
+            ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
+            containerBindingDetail.setContainerNo(lineBindingDetail.getContainerNo());
+            containerBindingDetail.setBindingNum(lineBindingDetail.getBindingNum());
+            containerBindingDetail.setOrderBillId(lineBindingDetail.getOrderBillId());
+            containerBindingDetail.setOrderDetailId(lineBindingDetail.getOrderMxId());
+            containerBindingDetails.add(containerBindingDetail);
+        }
+        containerBindingDetailMapper.saveBatch(containerBindingDetails);
+    }*/
 
 /*    List<LineBindingDetail> sortLineDetails(List<LineBindingDetail> detailList) {
 

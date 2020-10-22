@@ -15,6 +15,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletRequest;
+import javax.xml.ws.RequestWrapper;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -63,8 +65,10 @@ public class LogAspect {
                 log.setDirect(logInfo.direction());
                 log.setSystemType(logInfo.systemType());
                 log.setType(logInfo.type());
-                Object arg = args[0];
-                log.setParams(JsonUtils.toString(arg));
+                if (args !=null) {
+                    Object arg = args[0];
+                    log.setParams(JsonUtils.toString(arg));
+                }
                 log.setMethodName(methodName);
                 try{
                     Object proceed = joinPoint.proceed();

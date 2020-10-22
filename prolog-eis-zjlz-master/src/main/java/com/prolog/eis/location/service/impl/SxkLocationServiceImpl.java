@@ -314,7 +314,6 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	 * @param area
 	 * @param originX
 	 * @param originY
-	 * @param reserveCount
 	 * @param weight
 	 * @param taskProperty1
 	 * @param taskProperty2

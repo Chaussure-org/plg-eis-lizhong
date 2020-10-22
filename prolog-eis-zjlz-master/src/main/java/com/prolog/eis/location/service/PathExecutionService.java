@@ -4,6 +4,8 @@ import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
 import com.prolog.eis.model.location.ContainerPathTask;
 
 public interface PathExecutionService {
+    //SAS TO WCS
+    //WCS TO SAS
 
     /**
      * 执行rcs-rcs路径任务(agv区)
@@ -13,20 +15,6 @@ public interface PathExecutionService {
      */
     void doRcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception;
 
-    /**
-     * 执行sas-sas路径任务
-     * @param containerPathTask 路径任务
-     * @param containerPathTaskDetailDTO 详情实体
-     */
-    void doSasToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception;
-    
-    /**
-     * 执行mcs-mcs路径任务(堆垛机区)
-     * @param containerPathTask 路径任务
-     * @param containerPathTaskDetailDTO 详情实体
-     * @throws Exception
-     */
-    void doMcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception;
 
     /**
      * 执行mcs-wcs路径任务(堆垛机到输送线)

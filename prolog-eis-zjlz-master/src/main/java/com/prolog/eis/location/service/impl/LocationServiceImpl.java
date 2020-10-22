@@ -65,15 +65,19 @@ public class LocationServiceImpl implements LocationService {
             throw new Exception("请初始化区域表！");
         }
         //获取区域方向集合
-        List<StoreAreaDirection> storeAreaDirectionList = storeAreaDirectionMapper.findByMap(Maps.newHashMap(), StoreAreaDirection.class);
+        List<StoreAreaDirection> storeAreaDirectionList = storeAreaDirectionMapper.findByMap(Maps.newHashMap(),
+                StoreAreaDirection.class);
         if (CollectionUtils.isEmpty(storeAreaDirectionList)) {
             logger.error("区域方向表没有初始化");
             throw new Exception("请初始化区域方向表！");
         }
         //参数为Null则遍历容器任务，否则查询单个容器任务
-        List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo, containerNo, LocationConstants.PATH_TASK_STATE_NOTSTARTED);
+        List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo,
+                containerNo, LocationConstants.PATH_TASK_STATE_NOTSTARTED);
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
-            throw new Exception("当前没有容器任务！");
+//            throw new Exception("当前没有容器任务！");
+            logger.info("生成容器任务结束");
+            return;
         }
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
             this.addContainerPathTaskDetail(containerPathTask, storeAreaList, storeAreaDirectionList);
@@ -83,13 +87,15 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public void doPathExecutionByContainer(String palletNo, String containerNo) throws Exception {
-        List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo, containerNo, LocationConstants.PATH_TASK_STATE_TOBESENT);
+        List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo,
+                containerNo, LocationConstants.PATH_TASK_STATE_TOBESENT);
 
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
             throw new Exception("当前没有可执行的容器任务！");
         }
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
-            List<ContainerPathTaskDetailDTO> containerPathTaskDetailList = containerPathTaskDetailMapper.listContainerPathTaskDetais(containerPathTask.getPalletNo()
+            List<ContainerPathTaskDetailDTO> containerPathTaskDetailList =
+                    containerPathTaskDetailMapper.listContainerPathTaskDetais(containerPathTask.getPalletNo()
                     , containerPathTask.getContainerNo(), LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
             if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
                 throw new Exception("当前没有可执行的容器任务！");
@@ -97,26 +103,26 @@ public class LocationServiceImpl implements LocationService {
             String sourceDeviceSystem = containerPathTaskDetailList.get(0).getSourceDeviceSystem();
             String nextDeviceSystem = containerPathTaskDetailList.get(0).getNextDeviceSystem();
             //设备厂商先直接写死
-            if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
-                //Rcs to Rcs
-                pathExecutionService.doRcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
-                //Mcs to Mcs
-                pathExecutionService.doMcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
-                //Sas to Sas
-                pathExecutionService.doSasToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //Rcs to Mcs
-                pathExecutionService.doRcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //Mcs to Rcs
+            if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                //MCS TO WCS
                 pathExecutionService.doMcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
+                //WCS TO MCS
+                pathExecutionService.doWcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
+                //WCS TO RCS
+                pathExecutionService.doWcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+            } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                //RCS TO WCS
+                pathExecutionService.doRcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+            } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
+                //RCS TO RCS
+                pathExecutionService.doRcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //Sas to Wcs
+                //SAS TO WCS
                 pathExecutionService.doSasToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
-                //Wcs to Sas
+                //WCS TO SAS
                 pathExecutionService.doWcsToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
             }
         }
@@ -130,11 +136,14 @@ public class LocationServiceImpl implements LocationService {
 
     /**
      * 生成容器任务明细
+     *
      * @param containerPathTask 路径任务汇总
      * @throws Exception
      */
-    private void addContainerPathTaskDetail(ContainerPathTask containerPathTask, List<StoreArea> storeAreaList, List<StoreAreaDirection> storeAreaDirectionList) throws Exception{
-        List<PathDTO> pathDTOList = this.getPathForContainerTask(containerPathTask, storeAreaList, storeAreaDirectionList);
+    private void addContainerPathTaskDetail(ContainerPathTask containerPathTask, List<StoreArea> storeAreaList,
+                                            List<StoreAreaDirection> storeAreaDirectionList) throws Exception {
+        List<PathDTO> pathDTOList = this.getPathForContainerTask(containerPathTask, storeAreaList,
+                storeAreaDirectionList);
         if (CollectionUtils.isEmpty(pathDTOList)) {
             logger.info("容器路径生成失败，没有可执行的路径");
             return;
@@ -165,16 +174,17 @@ public class LocationServiceImpl implements LocationService {
                     int targetTemporaryArea = storeAreaDirectionDTO.getTargetTemporaryArea();
                     //现有任务中接驳点容器数量
                     int jointPointCount = storeAreaDirectionDTO.getJointPointCount();
-                    if(jointPointCount >= maxCount){
+                    if (jointPointCount >= maxCount) {
                         break;
                     }
 
                     if (realCount < maxCount  //该区域是否已达到最大托盘容量
                             || (realCount >= maxCount && preemptCount < maxCount)  //该区域预占的托盘数量是否达到最大托盘容量
-                            || (realCount >= maxCount && preemptCount >= maxCount && sourceTemporaryArea == 0 && targetTemporaryArea == 1 )) {   //该区域是否可暂存
+                            || (realCount >= maxCount && preemptCount >= maxCount && sourceTemporaryArea == 0 && targetTemporaryArea == 1)) {   //该区域是否可暂存
                         containerPathTaskDetail = this.setContainerPathTaskDetail(containerPathTask
                                 , storeAreaDirectionDTO.getSourceAreaNo(), storeAreaDirectionDTO.getSourceLocationNo()
-                                , storeAreaDirectionDTO.getTargetAreaNo(), storeAreaDirectionDTO.getTargetLocationNo(), i++);
+                                , storeAreaDirectionDTO.getTargetAreaNo(),
+                                storeAreaDirectionDTO.getTargetLocationNo(), i++);
                         containerPathTaskDetailList.add(containerPathTaskDetail);
                         if (realCount >= maxCount) {
                             break;
@@ -196,8 +206,8 @@ public class LocationServiceImpl implements LocationService {
         // 该区域所有路径都不满足，直接存一条起点为当前位，终点为空的数据
         if (CollectionUtils.isEmpty(containerPathTaskDetailList) && isMaxCount) {
             containerPathTaskDetail = this.setContainerPathTaskDetail(containerPathTask
-                    ,containerPathTask.getSourceArea(), null, null
-                    ,null, 0);
+                    , containerPathTask.getSourceArea(), null, null
+                    , null, 0);
             containerPathTaskDetailList.add(containerPathTaskDetail);
         }
         if (!CollectionUtils.isEmpty(containerPathTaskDetailList)) {
@@ -214,11 +224,13 @@ public class LocationServiceImpl implements LocationService {
 
     /**
      * 生成容器任务路径
+     *
      * @param containerPathTask 路径任务汇总
      * @return
      * @throws Exception
      */
-    private List<PathDTO> getPathForContainerTask(ContainerPathTask containerPathTask, List<StoreArea> storeAreaList, List<StoreAreaDirection> storeAreaDirectionList) throws Exception {
+    private List<PathDTO> getPathForContainerTask(ContainerPathTask containerPathTask, List<StoreArea> storeAreaList,
+                                                  List<StoreAreaDirection> storeAreaDirectionList) throws Exception {
         if (StringUtils.isEmpty(containerPathTask.getPalletNo()) || StringUtils.isEmpty(containerPathTask.getContainerNo())) {
             logger.error("载具编号或容器编号为空");
             throw new Exception("载具编号或容器编号为空！");
@@ -247,9 +259,11 @@ public class LocationServiceImpl implements LocationService {
 
     /**
      * 计算总步长并进行其他相关判断逻辑
+     *
      * @return
      */
-    private List<PathDTO> getPathValidate(List<String> locations, int actualHeight, ContainerPathTask containerPathTask){
+    private List<PathDTO> getPathValidate(List<String> locations, int actualHeight,
+                                          ContainerPathTask containerPathTask) {
         if (CollectionUtils.isEmpty(locations)) {
             return Lists.newArrayList();
         }
@@ -267,20 +281,23 @@ public class LocationServiceImpl implements LocationService {
                 String sourceAreaNo = paths.get(i);
                 String targetAreaNo = paths.get(i + 1);
                 //查询该路径相关信息
-                List<StoreAreaDirectionDTO> storeAreaDirectionDTOS = storeAreaDirectionMapper.listStoreAreaDirectionsByParam(sourceAreaNo, targetAreaNo, containerPathTask.getContainerNo());
+                List<StoreAreaDirectionDTO> storeAreaDirectionDTOS =
+                        storeAreaDirectionMapper.listStoreAreaDirectionsByParam(sourceAreaNo, targetAreaNo,
+                                containerPathTask.getContainerNo());
                 //高度限制，容量限制
                 if (CollectionUtils.isEmpty(storeAreaDirectionDTOS)
                         || storeAreaDirectionDTOS.get(0).getMaxHeight() < actualHeight
                         || storeAreaDirectionDTOS.get(0).getPlaceCount() >= storeAreaDirectionDTOS.get(0).getMaxCount()) {
-                    isMax= true;
+                    isMax = true;
                     break;
                 }
                 //计算步长
                 pathStepSum += storeAreaDirectionDTOS.get(0).getPathStep();
                 //区域最大容器数逻辑
-                int realCount = storeAreaDirectionDTOS.get(0).getPreemptCount() + storeAreaDirectionDTOS.get(0).getPlaceCount();
+                int realCount =
+                        storeAreaDirectionDTOS.get(0).getPreemptCount() + storeAreaDirectionDTOS.get(0).getPlaceCount();
                 if (realCount >= storeAreaDirectionDTOS.get(0).getMaxCount()
-                        || storeAreaDirectionDTOS.get(0).getJointPointCount() >= storeAreaDirectionDTOS.get(0).getMaxCount()){
+                        || storeAreaDirectionDTOS.get(0).getJointPointCount() >= storeAreaDirectionDTOS.get(0).getMaxCount()) {
                     isMaxCount = true;
                 }
                 StoreAreaDirectionDTO storeAreaDirectionDTO = storeAreaDirectionDTOS.get(0);
@@ -316,10 +333,11 @@ public class LocationServiceImpl implements LocationService {
 
     /**
      * 容器路径明细赋值
+     *
      * @param containerPathTask 路径任务汇总
-     * @param sourceAreaNo  起点区域
+     * @param sourceAreaNo      起点区域
      * @param sourceLocationNo  起点点位
-     * @param targetAreaNo  终点区域
+     * @param targetAreaNo      终点区域
      * @param targetLocationNo  终点点位
      * @param i
      * @return
@@ -334,9 +352,10 @@ public class LocationServiceImpl implements LocationService {
         containerPathTaskDetail.setSourceLocation(sourceLocationNo);
         containerPathTaskDetail.setNextArea(targetAreaNo);
         containerPathTaskDetail.setNextLocation(targetLocationNo);
-        containerPathTaskDetail.setTaskState(i==0 ? LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE : LocationConstants.PATH_TASK_DETAIL_STATE_NOTSTARTED);
-        containerPathTaskDetail.setSortIndex(i+1);
-        containerPathTaskDetail.setArriveTime(i==0 ? PrologDateUtils.parseObject(new Date()) : null);
+        containerPathTaskDetail.setTaskState(i == 0 ? LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE :
+                LocationConstants.PATH_TASK_DETAIL_STATE_NOTSTARTED);
+        containerPathTaskDetail.setSortIndex(i + 1);
+        containerPathTaskDetail.setArriveTime(i == 0 ? PrologDateUtils.parseObject(new Date()) : null);
         containerPathTaskDetail.setCreateTime(PrologDateUtils.parseObject(new Date()));
         return containerPathTaskDetail;
     }

@@ -81,7 +81,9 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             List<OutDetailDto> details = agvDetails.stream().filter(x -> orderIds.contains(x.getOrderBillId())).collect(Collectors.toList());
             if (!details.isEmpty()) {
                 List<OutContainerDto> outContainerDtoList = this.outByDetails(details);
-                this.saveLineBindingDetail(outContainerDtoList);
+                if (outContainerDtoList.size() > 0) {
+                    this.saveLineBindingDetail(outContainerDtoList);
+                }
             }
         }
     }
@@ -99,6 +101,9 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
 
             //商品id，总数，算出所需要出的总箱子
             List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum, wmsPriority);
+            if (outContainersByGoods.size() == 0) {
+                return outContainerList;
+            }
             for (OutDetailDto outDetailDto : map.getValue()) {
                 //循环每个商品下的明细集合 进行箱子分配 订单明细
                 for (OutContainerDto outContainerDto : outContainersByGoods) {
@@ -148,8 +153,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<LayerGoodsCountDto> agvGoodsCounts = boxOutMapper.findLineGoodsCount(goodsId);
         //小车所在的层
         List<CarInfoDTO> conformCars = this.getConformCars();
-        if (conformCars.isEmpty()) {
-            return null;
+        if (conformCars.size() == 0) {
+            return outContainerDtoList;
         }
         for (LayerTaskDto layerTaskDto : layerTaskCounts) {
             for (LayerGoodsCountDto layerGoodsCountDto : layerGoodsCounts) {
@@ -234,11 +239,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {
-        List<CarInfoDTO> carInfos = sasService.getCarInfo();
+        List<CarInfoDTO> carInfos = new ArrayList<>();//sasService.getCarInfo();
         List<CarInfoDTO> cars = carInfos.stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
-        if (cars.size() == 0) {
-            return null;
-        }
         return cars;
     }
 
@@ -253,7 +255,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
 
         for (Integer orderId : mapTemp.keySet()) {
             List<OutDetailDto> orderDetails = mapTemp.get(orderId).stream().sorted(Comparator.comparing(OutDetailDto::getGoodsId)).collect(Collectors.toList());
-            OrderSortDto SortDto=new OrderSortDto();
+            OrderSortDto SortDto = new OrderSortDto();
             SortDto.setOrderBillId(orderId);
             List<Integer> ids = orderDetails.stream().map(OutDetailDto::getDetailId).collect(Collectors.toList());
             SortDto.setIds(ids);
