@@ -81,7 +81,8 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     public void takePickOrder(List<AgvBindingDetail> bindingDetails) throws Exception {
         //所有的站台集合
         List<Station> stationsTemp = stationMapper.findByMap(null, Station.class);
-        List<Station> stations = stationsTemp.stream().filter(x -> x.getIsLock().equals(Station.UN_LOCK)).collect(Collectors.toList());
+        //不锁定的 半成品站台
+        List<Station> stations = stationsTemp.stream().filter(x -> x.getIsLock().equals(Station.UN_LOCK)&& x.getStationType().equals(Station.STATION_TYPE_UNFINISHEDPROD)).collect(Collectors.toList());
         List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
         //如果没用开启的站台
         if (stations.isEmpty()) {
@@ -135,7 +136,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
         String ids = detailList.stream().map(AgvBindingDetail::getOrderBillId).collect(Collectors.toSet()).toString();
         //判断agv区域订单全部到齐的订单优先索取
         List<OrderDetailCountsDto> orderDetailCounts = orderBillMapper.findOrderDetailCount(ids);
-        Map<Integer, List<AgvBindingDetail>> orderMapTemp = detailList.stream().sorted(Comparator.comparing(AgvBindingDetail::getUpdateTime)).collect(Collectors.groupingBy(AgvBindingDetail::getOrderBillId));
+        Map<Integer, List<AgvBindingDetail>> orderMapTemp = detailList.stream().collect(Collectors.groupingBy(AgvBindingDetail::getOrderBillId));
         //先按照wms优先级排序  到达明细最多的 排在前面
         Collections.sort(detailList, new Comparator<AgvBindingDetail>() {
             @Override
