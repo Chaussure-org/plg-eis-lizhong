@@ -6,14 +6,21 @@ import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.enums.PointChangeEnum;
-import com.prolog.eis.location.service.*;
-import com.prolog.eis.model.PointLocation;
+import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
+import com.prolog.eis.location.service.AgvLocationService;
+import com.prolog.eis.location.service.ContainerPathTaskService;
+import com.prolog.eis.location.service.PathExecutionService;
+import com.prolog.eis.location.service.SxMoveStoreService;
+import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.rcs.service.IRCSService;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +28,7 @@ import org.springframework.stereotype.Service;
  * @author 13622
  */
 @Service
+@Slf4j
 public class PathExecutionServiceImpl implements PathExecutionService {
     @Autowired
     private AgvLocationService agvLocationService;
@@ -34,6 +42,8 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     private SxkLocationService sxkLocationService;
     @Autowired
     private IWCSService wcsService;
+    @Autowired
+    private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
 
     @Override
     public void doRcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
@@ -43,28 +53,35 @@ public class PathExecutionServiceImpl implements PathExecutionService {
             AgvStoragelocationDTO agvStoragelocationDTO = agvLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea()
                     , containerPathTaskDetailDTO.getSourceLocation(), 0);
 
-            if (null == agvStoragelocationDTO) {
-                throw new Exception("货位已满");
+            if(null == agvStoragelocationDTO){
+                log.error(String.format("载具{%s}/容器{%s}申请货位失败！", containerPathTask.getPalletNo(), containerPathTask.getContainerNo()));
+                return;
             }
             location = agvStoragelocationDTO.getLocationNo();
         }
         containerPathTaskDetailDTO.setNextLocation(location);
         String taskId = this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
         //给rcs发送移动指令
-        RcsTaskDto rcsTaskDto=new RcsTaskDto(taskId, containerPathTaskDetailDTO.getPalletNo()
-                , containerPathTaskDetailDTO.getSourceLocation(), location, "1", "1");
-        RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
+        try {
+            RcsTaskDto rcsTaskDto=new RcsTaskDto(taskId, containerPathTaskDetailDTO.getPalletNo()
+                    , containerPathTaskDetailDTO.getSourceLocation(), location, "1", "1");
+            RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
 
-        //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
-        if ("0".equals(rcsRequestResultDto.getCode())) {
-            containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
-                    , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
-        } else {
-            //...重发等相关
+            //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
+            if ("0".equals(rcsRequestResultDto.getCode())) {
+                containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
+                        , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
+            } else {
+                //...重发等相关
+            }
+        } catch (Exception e) {
+            containerPathTaskDetailMapper.updateMapById(
+                    containerPathTaskDetailDTO.getId()
+                    , MapUtils.put("taskId", null)
+                            .put("nextLocation", null).getMap()
+                    , ContainerPathTaskDetail.class);
+            log.error(String.format("载具{%s}/容器{%s}rcs-rcs发送rcs指令失败[%s]！", containerPathTask.getPalletNo(), containerPathTask.getContainerNo()), e.getMessage());
         }
-        //rcs回告到位后改汇总和明细，并判断是否最终任务
-
-
     }
 
 
