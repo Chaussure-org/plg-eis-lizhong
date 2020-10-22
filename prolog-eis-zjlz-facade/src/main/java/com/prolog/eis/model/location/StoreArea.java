@@ -109,4 +109,9 @@ public class StoreArea implements Serializable {
      */
     public static final String L01="L01";
 
+    /**
+     * 站台agv 区
+     */
+    public static final String SN01="SN01";
+
 }

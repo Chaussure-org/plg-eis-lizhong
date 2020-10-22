@@ -22,7 +22,6 @@ import com.prolog.eis.pick.service.ISeedWeighService;
 import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
-import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
@@ -85,9 +84,6 @@ public class StationBZServiceImpl implements IStationBZService {
     private ISeedWeighService seedWeighService;
     @Autowired
     private IOrderBoxService orderBoxService;
-
-    @Autowired
-    private StationMapper stationMapper;
 
 
 
@@ -235,16 +231,15 @@ public class StationBZServiceImpl implements IStationBZService {
     public boolean checkContainerExist(String containerNo, int stationId) throws Exception {
 
         //上层输送线
-        int count = stationMapper.cheackContainerNo(containerNo, stationId);
         List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("stationId", stationId).getMap());
-        if (stations.size() == 0 && count == 0) {
+        if (stations.size() == 0) {
             return true;
         }
-//        String areaNo = "OD01";
-//        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
-//        if (b){
-//            return true;
-//        }
+        String areaNo = "OD01";
+        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
+        if (b){
+            return true;
+        }
         return false;
     }
 
@@ -523,7 +518,7 @@ public class StationBZServiceImpl implements IStationBZService {
         BigDecimal errorRate1 = compute1.divide(computeGoodsWeigh);
 
         OrderTrayWeighDTO orderTrayWeighDTO = new OrderTrayWeighDTO();
-        orderTrayWeighDTO.setPassBoxWeigh(containerWeigh);
+        orderTrayWeighDTO.setWeigh(containerWeigh);
         orderTrayWeighDTO.setWeigh(sumWeigh);
         //todo：误差率
         BigDecimal errorRate =BigDecimal.valueOf(0.5);
@@ -639,8 +634,6 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //物料容器放行
         this.containerNoLeave(containerNo,stationId);
-
-        //todo:打印
     }
 
 

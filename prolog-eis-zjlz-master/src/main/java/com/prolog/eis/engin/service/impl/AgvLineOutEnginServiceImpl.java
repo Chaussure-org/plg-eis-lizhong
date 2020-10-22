@@ -11,6 +11,7 @@ import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.location.AgvStoragelocation;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetailCountsDto;
@@ -113,7 +114,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                         //1.站台agv位置为空
                         List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
                                 MapUtils.put("deviceNo", station.getId()).
-                                        put("areaNo", "SA").put("taskLock", 1).put("storageLock", 0).getMap(), AgvStoragelocation.class);
+                                        put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
                         if (list.isEmpty()) {
                             //站台无空位
                             return;
@@ -122,13 +123,11 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                         Optional<AgvBindingDetail> first = sortDetails.stream().filter(x -> x.getOrderBillId().equals(pickingOrder.getOrderBillId())).findFirst();
                         if (first.isPresent()) {
                             //尾托的概念不考虑，生成路径
-                            List<AgvStoragelocation> cintainerNos = agvStoragelocationMapper.findByMap(MapUtils.put("cintainerNo", first.get().getContainerNo()).getMap(), AgvStoragelocation.class);
-                            if (!cintainerNos.isEmpty()) {
-                                //发送任务 1.此站台没有任务正在执行
-                                pathSchedulingService.containerMoveTask(first.get().getContainerNo(), AgvStoragelocation.AGV_STATION_LOCATION, pickingOrder.getLocationNo());
-                                //锁定此位置的状态
-                                agvStoragelocationMapper.updateLocationLock(pickingOrder.getLocationNo());
-                            }
+                            //发送任务 1.此站台没有任务正在执行
+                            pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
+                            //锁定此位置的状态
+                            agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo());
+
                         }
                     }
                 }
@@ -172,6 +171,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
             containerBindingDetail.setContainerNo(agvBindingDetail.getContainerNo());
             containerBindingDetail.setBindingNum(agvBindingDetail.getBindingNum());
+            containerBindingDetail.setSeedNum(agvBindingDetail.getBindingNum());
             containerBindingDetail.setOrderBillId(agvBindingDetail.getOrderBillId());
             containerBindingDetail.setOrderDetailId(agvBindingDetail.getOrderMxId());
             containerBindingDetails.add(containerBindingDetail);

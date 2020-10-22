@@ -31,9 +31,6 @@ public interface TrayOutEnginService {
 
     /**
      * 1.根据goodsId count 找到具体的托盘进行出库
-     * 规则：
-     * 其实 也就是 生成 料箱出库明细  料箱出库汇总
-     * 生成路径 path 给点位
      * @throws Exception
      */
     List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception;

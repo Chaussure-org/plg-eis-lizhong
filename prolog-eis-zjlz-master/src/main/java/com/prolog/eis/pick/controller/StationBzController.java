@@ -21,7 +21,7 @@ public class StationBzController {
     @Autowired
     private IStationBZService stationBZService;
     @ApiOperation(value = "拣选页面推送", notes = "拣选页面推送")
-    @RequestMapping("/init")
+    @RequestMapping(value = "/init")
     public RestMessage<BCPPcikingDTO> beginPicking(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo) throws Exception {
         BCPPcikingDTO bcpPcikingDTO = stationBZService.startBZPicking(stationId, containerNo, orderBoxNo);
         return RestMessage.newInstance(true,"200","查询成功",bcpPcikingDTO);
