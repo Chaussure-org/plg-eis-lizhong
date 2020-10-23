@@ -30,7 +30,7 @@ public interface StationMapper extends BaseMapper<Station> {
             "\torder_bill ob\n" +
             "\tJOIN station s ON s.current_station_pick_id = ob.picking_order_id \n" +
             "WHERE\n" +
-            "\tpo.station_id = #{stationId}")
+            "\ts.id = #{stationId}")
     List<Integer> getStationOrderBillId(@Param("stationId") int stationId);
 
     /**

@@ -57,6 +57,10 @@ public class RcsController {
     }
 
 
+    @PostMapping("test")
+    public void test(){
+
+    }
     private String returnSuccess(String reqCode) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", "0");
