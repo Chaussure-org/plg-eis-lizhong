@@ -1,6 +1,7 @@
 package com.prolog.eis.pick.service.impl;
 
 import com.prolog.eis.base.service.IGoodsService;
+import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
@@ -84,6 +85,8 @@ public class StationBZServiceImpl implements IStationBZService {
     private ISeedWeighService seedWeighService;
     @Autowired
     private IOrderBoxService orderBoxService;
+    @Autowired
+    private EisProperties eisProperties;
 
 
 
@@ -522,7 +525,7 @@ public class StationBZServiceImpl implements IStationBZService {
         orderTrayWeighDTO.setPassBoxWeigh(containerWeigh);
         orderTrayWeighDTO.setWeigh(sumWeigh);
         //todo：误差率
-        BigDecimal errorRate =BigDecimal.valueOf(0.5);
+        BigDecimal errorRate = eisProperties.getErrorRate();
         /**
          * 计算是否符合误差，是则回告前端true，否则判断第二次称重是否有值
          * 每次计算的称重重量保存记录;
