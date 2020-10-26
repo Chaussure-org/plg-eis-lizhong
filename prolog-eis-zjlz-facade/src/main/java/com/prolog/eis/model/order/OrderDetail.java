@@ -72,9 +72,6 @@ public class OrderDetail {
   @ApiModelProperty("修改时间")
   private java.util.Date updateTime;
 
-  @Column("graph_no")
-  @ApiModelProperty("图号")
-  private String graphNo;
 
   @Column("out_qty")
   @ApiModelProperty("出库数量")
@@ -184,14 +181,7 @@ public class OrderDetail {
   public void setAreaNo(String areaNo) {
     this.areaNo = areaNo;
   }
-
-  public String getGraphNo() {
-    return graphNo;
-  }
-
-  public void setGraphNo(String graphNo) {
-    this.graphNo = graphNo;
-  }
+  
 
   public Integer getOutQty() {
     return outQty;

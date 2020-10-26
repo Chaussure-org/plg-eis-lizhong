@@ -198,6 +198,7 @@ public class StationBZServiceImpl implements IStationBZService {
         this.doPicking(stationId,containerNo,completeNum,orderBillIds.get(0),orderBoxNo);
         //删除agv绑定明细
         agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderBillId",orderBillId).put("containerNo",containerNo).getMap());
+        /**  放行逻辑放到称重检测后
         //校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -212,6 +213,7 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //物料容器放行
         this.containerNoLeave(containerNo,stationId);
+         */
     }
 
     @Override
@@ -234,7 +236,7 @@ public class StationBZServiceImpl implements IStationBZService {
     public boolean checkContainerExist(String containerNo, int stationId) throws Exception {
 
         //上层输送线
-        List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("stationId", stationId).getMap());
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("id", stationId).getMap());
         int containerArrive = agvLocationService.findContainerArrive(containerNo, stationId);
         if (stations.size() == 0 && containerArrive == 0) {
             return true;
@@ -276,7 +278,7 @@ public class StationBZServiceImpl implements IStationBZService {
         /**
          * 拣选站容器放行， 上层输送线放行，下层任务拖放行 容器无绑定明细则放行，有则找寻下一个站台完成播种
          */
-        List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("stationId", stationId).getMap());
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("id", stationId).getMap());
         //判断当容器是否还有绑定明细
         List<Integer> stationIds = containerBindingDetailService.getContainerBindingToStation(containerNo);
         if (stationIds.size() == 0) {
@@ -313,13 +315,17 @@ public class StationBZServiceImpl implements IStationBZService {
     @Override
     public void orderTrayLeave(String orderTrayNo, int orderBillId) throws Exception {
         //订单拖是否有贴标商品，有贴标区
+        List<SeedInfo> seedInfos = seedInfoService.findSeedInfoByMap(MapUtils.put("orderBillId", orderBillId).put("orderTrayNo", orderTrayNo).getMap());
+        if (seedInfos.size() == 0){
+            throw new Exception("【"+orderTrayNo+"】托盘离开失败，无播种作业");
+        }
         boolean flag = orderDetailService.findOrderTrayGoodsLabel(orderBillId, orderTrayNo);
         if (flag) {
             //Agv贴标区
-            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
+//            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
         } else {
             //agv非贴标
-            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
+//            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
         }
     }
 
@@ -455,18 +461,18 @@ public class StationBZServiceImpl implements IStationBZService {
         String storeArea = "SN01";
         List<StationTrayDTO> trayTaskStation = agvLocationService.findTrayTaskStation(storeArea,stationIds);
         //大到小排序
-        trayTaskStation.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
-        if (trayTaskStation.get(0).getCount() == 0){
+        List<StationTrayDTO> collect = trayTaskStation.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
+        if (collect.get(0).getCount() == 0){
             //站台已满无可用任务拖区域 回暂存区
             pathSchedulingService.containerMoveTask(containerNo,"RCS01",null);
         }else {
             //去往对应站台
-            int targetStationId = trayTaskStation.get(0).getStationId();
+            int targetStationId = collect.get(0).getStationId();
             List<String> usableStore = agvLocationService.getUsableStore(storeArea,targetStationId);
             if (usableStore.size() == 0){
                 throw new Exception("站台【"+targetStationId+"】没找到可用区域");
             }
-            pathSchedulingService.containerMoveTask(containerNo,usableStore.get(0),usableStore.get(0));
+            pathSchedulingService.containerMoveTask(containerNo,storeArea,usableStore.get(0));
         }
         
         
@@ -614,6 +620,7 @@ public class StationBZServiceImpl implements IStationBZService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void pickingComplete(int stationId, String containerNo, String orderTrayNo, int orderBillId) throws Exception {
         if (StringUtils.isBlank(containerNo)){
              throw new Exception("容器号不能为空");
@@ -625,7 +632,7 @@ public class StationBZServiceImpl implements IStationBZService {
         if (station == null) {
             throw new RuntimeException(stationId + "站台不存在");
         }
-        //校验订单是否完成
+//        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
             //切换拣选单
@@ -633,7 +640,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
-            this.orderTrayLeave(orderTrayNo,orderBillId);
+//            this.orderTrayLeave(orderTrayNo,orderBillId);
 
 
         }

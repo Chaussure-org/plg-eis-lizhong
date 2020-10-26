@@ -60,7 +60,7 @@ public class OrderBill {
 
     @Column("order_area")
     @ApiModelProperty("区域")
-    private String receiver;
+    private String orderArea;
 
     @Column("start_time")
     @ApiModelProperty("开始入库时间")
@@ -154,12 +154,12 @@ public class OrderBill {
         this.orderTaskState = orderTaskState;
     }
 
-    public String getReceiver() {
-        return receiver;
+    public String getOrderArea() {
+        return orderArea;
     }
 
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
+    public void setOrderArea(String orderArea) {
+        this.orderArea = orderArea;
     }
 
     public Date getStartTime() {

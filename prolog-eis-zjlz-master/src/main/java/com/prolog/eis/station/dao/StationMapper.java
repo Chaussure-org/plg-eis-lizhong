@@ -37,7 +37,7 @@ public interface StationMapper extends BaseMapper<Station> {
      * 清空站台拣选单id
      * @param stationId
      */
-    @Select("update station set current_station_pick_id = null where station_id = #{stationId}")
+    @Update("update station set current_station_pick_id = null where id = #{stationId}")
     void updateStationPickingOrderId(@Param("stationId") int stationId);
 
     /**

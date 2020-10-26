@@ -10,9 +10,9 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description  
  * @Author  Hunter
- * @Date 2020-10-12 
+ * @Date 2020-10-26 
  */
-@ApiModel ("null")
+@ApiModel ("订单明细表")
 @Table ("order_detail_history")
 public class OrderDetailHistory {
 
@@ -41,6 +41,10 @@ public class OrderDetailHistory {
   @ApiModelProperty("商品id")
   private Integer goodsId;
 
+  @Column("area_no")
+  @ApiModelProperty("区域")
+  private String areaNo;
+
   @Column("goods_order_no")
   @ApiModelProperty("商品订单号")
   private String goodsOrderNo;
@@ -65,17 +69,13 @@ public class OrderDetailHistory {
   @ApiModelProperty("修改时间")
   private java.util.Date updateTime;
 
-  @Column("area_no")
-  @ApiModelProperty("区域")
-  private String areaNo;
+  @Column("tray_plan_qty")
+  @ApiModelProperty("堆垛机区域计划出库数量")
+  private Integer trayPlanQty;
 
-  @Column("graph_no")
-  @ApiModelProperty("图号")
-  private String graphNo;
-
-  @Column("order_detail_status")
-  @ApiModelProperty("订单明细状态")
-  private Integer orderDetailStatus;
+  @Column("out_qty")
+  @ApiModelProperty("成品库出库数量")
+  private Integer outQty;
 
   public Integer getId() {
     return id;
@@ -123,6 +123,14 @@ public class OrderDetailHistory {
 
   public void setGoodsId(Integer goodsId) {
     this.goodsId = goodsId;
+  }
+
+  public String getAreaNo() {
+    return areaNo;
+  }
+
+  public void setAreaNo(String areaNo) {
+    this.areaNo = areaNo;
   }
 
   public String getGoodsOrderNo() {
@@ -173,28 +181,20 @@ public class OrderDetailHistory {
     this.updateTime = updateTime;
   }
 
-  public String getAreaNo() {
-    return areaNo;
+  public Integer getTrayPlanQty() {
+    return trayPlanQty;
   }
 
-  public void setAreaNo(String areaNo) {
-    this.areaNo = areaNo;
+  public void setTrayPlanQty(Integer trayPlanQty) {
+    this.trayPlanQty = trayPlanQty;
   }
 
-  public String getGraphNo() {
-    return graphNo;
+  public Integer getOutQty() {
+    return outQty;
   }
 
-  public void setGraphNo(String graphNo) {
-    this.graphNo = graphNo;
-  }
-
-  public Integer getOrderDetailStatus() {
-    return orderDetailStatus;
-  }
-
-  public void setOrderDetailStatus(Integer orderDetailStatus) {
-    this.orderDetailStatus = orderDetailStatus;
+  public void setOutQty(Integer outQty) {
+    this.outQty = outQty;
   }
 
 }

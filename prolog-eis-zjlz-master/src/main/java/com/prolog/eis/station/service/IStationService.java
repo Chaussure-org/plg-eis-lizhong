@@ -4,6 +4,7 @@ import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -69,4 +70,20 @@ public interface IStationService {
      * @param isLock
      */
     void changeFinishStationStatus(int isLock) throws Exception;
+
+    /**
+     * 原料拣选站播种切换
+     * @param stationId
+     * @param isLock
+     * @throws Exception
+     */
+    void changeStationIsLock(int stationId,int isLock) throws Exception;
+
+
+    /**
+     * 获取站台id
+     * @param request
+     * @return
+     */
+    int getStationId(HttpServletRequest request) throws Exception;
 }
