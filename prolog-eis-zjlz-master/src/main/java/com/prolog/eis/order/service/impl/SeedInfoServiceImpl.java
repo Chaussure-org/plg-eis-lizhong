@@ -29,6 +29,7 @@ public class SeedInfoServiceImpl implements ISeedInfoService {
         seedInfo.setOrderTrayNo(orderTrayNo);
         seedInfo.setStationId(stationId);
         seedInfo.setCreateTime(new Date());
+        seedInfo.setGoodsId(goodsId);
         seedInfoMapper.save(seedInfo);
     }
 

@@ -15,6 +15,7 @@ import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.rcs.service.IRCSService;
+import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.wcs.service.IWCSService;
@@ -24,6 +25,9 @@ import org.springframework.beans.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * @author 13622
@@ -115,15 +119,19 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doWcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to rcs");
-        containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
-                , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
+        ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),
+                ContainerPathTaskDetail.class);
+        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail,containerPathTask,
+                PrologDateUtils.parseObject(new Date()));
     }
 
     @Override
     public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("rcs to wcs");
-        containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
-                , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
+        ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),
+                ContainerPathTaskDetail.class);
+        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail,containerPathTask,
+                PrologDateUtils.parseObject(new Date()));
     }
 
     @Override

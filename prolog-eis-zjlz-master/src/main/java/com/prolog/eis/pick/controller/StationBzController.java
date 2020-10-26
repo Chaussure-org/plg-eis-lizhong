@@ -5,6 +5,7 @@ import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
 import com.prolog.framework.common.message.RestMessage;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,22 @@ public class StationBzController {
 
     @ApiOperation(value = "拣选确认", notes = "拣选确认")
     @RequestMapping("/confirm")
-    public RestMessage<String> pickConfirm(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam int completeNum) throws Exception {
+    public RestMessage<String> pickConfirm(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam(defaultValue = "-1") int completeNum) throws Exception {
         try {
             stationBZService.pickingConfirm(stationId, containerNo, orderBoxNo,completeNum);
+            return RestMessage.newInstance(true,"200","操作成功",null);
+        } catch (Exception e) {
+            return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
+        }
+
+    }
+
+
+    @ApiOperation(value = "拣选完成放行", notes = "拣选完成放行")
+    @RequestMapping("/complete")
+    public RestMessage<String> pickingComplete(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderTrayNo,@RequestParam(defaultValue = "0") int orderBillId) throws Exception {
+        try {
+            stationBZService.pickingComplete(stationId,containerNo,orderTrayNo,orderBillId);
             return RestMessage.newInstance(true,"200","操作成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
@@ -59,6 +73,18 @@ public class StationBzController {
             return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
         }
 
+    }
+
+
+    @ApiModelProperty(value = "更换订单框",notes = "更换订单框")
+    @RequestMapping("/change")
+    public RestMessage changeOrderTray(@RequestParam(defaultValue = "0") int stationId,@RequestParam String orderTrayNo){
+        try {
+            stationBZService.changeOrderTray(orderTrayNo,stationId);
+            return RestMessage.newInstance(true,"200","换拖成功",null);
+        } catch (Exception e) {
+            return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
+        }
     }
 
 }

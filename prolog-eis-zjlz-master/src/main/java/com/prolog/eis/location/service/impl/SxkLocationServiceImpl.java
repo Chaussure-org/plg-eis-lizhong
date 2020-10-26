@@ -128,7 +128,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			} else {
 				haveStoreIndex = 1;
 				List<SxStoreLocation> sxStoreLocations2 = sxStoreLocationMapper.findByMap(
-						MapUtils.put("storeLocationGroupId", sxStoreLocationGroupId).put("locationIndex", 1).getMap(),
+						MapUtils.put("storeLocationGroupId", sxStoreLocationGroupId).put("locationIndex", 4).getMap(),
 						SxStoreLocation.class);
 				sxStoreLocationMapper.updateMapById(sxStoreLocations2.get(0).getId(),
 						MapUtils.put("deptNum", 0).put("isInBoundLocation", 1).getMap(), SxStoreLocation.class);

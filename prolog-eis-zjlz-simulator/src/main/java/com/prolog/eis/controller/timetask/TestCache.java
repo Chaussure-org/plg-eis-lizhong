@@ -4,6 +4,7 @@ import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.sas.SasMoveTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.enums.PointChangeEnum;
 import com.prolog.eis.service.McsService;
 import com.prolog.eis.service.RcsService;
 import com.prolog.eis.service.SasService;
@@ -40,6 +41,20 @@ public class TestCache {
             System.out.println(CacheListUtils.getMcslist().get(0));
             McsMoveTaskDto mcsMoveTaskDto = CacheListUtils.getMcslist().get(0);
             mcsService.doCallBack(mcsMoveTaskDto);
+            if (PointUtils.isContain(mcsMoveTaskDto.getTarget())==3){
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto();
+                wcsLineMoveDto.setAddress(PointChangeEnum.getPoint(mcsMoveTaskDto.getTarget()));
+                wcsLineMoveDto.setTaskId(null);
+                wcsLineMoveDto.setContainerNo(mcsMoveTaskDto.getContainerNo());
+                wcsLineMoveDto.setType(1);
+                if (PointUtils.isContain(wcsLineMoveDto.getTarget())==1){
+                    wcsService.doBcrRequest(wcsLineMoveDto,1);
+                }else if (PointUtils.isContain(wcsLineMoveDto.getTarget())==2) {
+                    wcsService.doBcrRequest(wcsLineMoveDto,2);
+                }else {
+                    wcsService.doBcrRequest(wcsLineMoveDto,2);
+                }
+            }
             CacheListUtils.getMcslist().remove(CacheListUtils.getMcslist().get(0));
         }
     }

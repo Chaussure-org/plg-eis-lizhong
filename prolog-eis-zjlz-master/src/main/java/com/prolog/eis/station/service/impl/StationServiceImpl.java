@@ -5,10 +5,13 @@ import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
+import com.prolog.eis.util.IPUtils;
 import com.prolog.framework.utils.MapUtils;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +72,30 @@ public class StationServiceImpl implements IStationService {
     }
 
     @Override
+    public void changeStationIsLock(int stationId, int flag) throws Exception {
+        List<Station> stations = stationMapper.findByMap(MapUtils.put("stationId", stationId).put("stationType", Station.STATION_TYPE_FINISHEDPROD).getMap(), Station.class);
+        if (stations.size() == 0){
+            throw new Exception("站台【"+stationId+"】不存在");
+        }
+        Station station = stations.get(0);
+        if (station.getStationTaskType() != Station.TASK_TYPE_SEED){
+            throw new Exception("站台【"+stationId+"】不存在");
+        }
+        station.setIsLock(flag);
+        stationMapper.update(station);
+    }
+
+    @Override
+    public int getStationId(HttpServletRequest request) throws Exception {
+        String ipAddr = IPUtils.getIpAddr(request);
+        List<Station> stations = stationMapper.findByMap(MapUtils.put("stationIp", ipAddr).getMap(), Station.class);
+        if (stations.size() > 1 || stations.size() < 1){
+            throw new Exception("站台配置有问题请检查");
+        }
+        return stations.get(0).getId();
+    }
+
+    @Override
     public void updateStation(Station station) throws Exception {
         stationMapper.update(station);
     }
@@ -82,4 +109,6 @@ public class StationServiceImpl implements IStationService {
     public List<Integer> findPickingOrderBillId(int stationId) {
         return stationMapper.getStationOrderBillId(stationId);
     }
+
+
 }
