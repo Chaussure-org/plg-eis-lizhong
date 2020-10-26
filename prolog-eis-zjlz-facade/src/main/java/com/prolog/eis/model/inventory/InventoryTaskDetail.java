@@ -20,8 +20,8 @@ public class InventoryTaskDetail {
   @Id
   private Integer id;
 
-  @Column("pd_task_id")
-  @ApiModelProperty("盘点任务id")
+  @Column("inventory_task_id")
+  @ApiModelProperty("盘点计划id")
   private Integer inventoryTaskId;
 
   @Column("container_no")
