@@ -165,7 +165,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
             // 根据wms下发的相关信息找到需盘点的料箱
             List detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
             if (detailsByMap.size()==0 || detailsByMap == null) {
-                throw new Exception("未找到满足盘点规则的容器");
+                throw new Exception("【"+wmsInventoryTask.getBILLNO()+"】未找到满足盘点规则的容器");
             }
             InventoryTask inventoryTask = new InventoryTask();
             inventoryTask.setBillNo(wmsInventoryTask.getBILLNO());
@@ -177,6 +177,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
             inventoryTask.setInventoryType(InventoryTask.WMS_INVENTORY);
             inventoryTask.setCreateTime(new Date());
             inventoryTask.setIssueTime(inventoryTask.getCreateTime());
+            inventoryTask.setTaskId(wmsInventoryTask.getTASKID());
 
 
 
