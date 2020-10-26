@@ -9,7 +9,7 @@ public class RCSProperties {
     private String host;
     private int port;
 
-    private String sendTaskUrl="/cms/services/rest/hikRpcService/genAgvSchedulingTask";
+    private String agvmoveUrl="/eis/agvMove";
 
     public String getHost() {
         return host;
@@ -27,11 +27,11 @@ public class RCSProperties {
         this.port = port;
     }
 
-    public String getSendTaskUrl() {
-        return sendTaskUrl;
+    public String getAgvmoveUrl() {
+        return agvmoveUrl;
     }
 
-    public void setSendTaskUrl(String sendTaskUrl) {
-        this.sendTaskUrl = sendTaskUrl;
+    public void setAgvmoveUrl(String agvmoveUrl) {
+        this.agvmoveUrl = agvmoveUrl;
     }
 }

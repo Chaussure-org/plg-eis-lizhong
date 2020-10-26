@@ -19,12 +19,18 @@
 
         <dependency>
             <groupId>com.prolog.eis</groupId>
-            <artifactId>prolog-eis-zjlz-common</artifactId>
+            <artifactId>prolog-eis-zjlz-facade</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.prolog.framework</groupId>
             <artifactId>plg-fx-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.prolog.framework</groupId>
+                    <artifactId>plg-fx-starter-distributedLock</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

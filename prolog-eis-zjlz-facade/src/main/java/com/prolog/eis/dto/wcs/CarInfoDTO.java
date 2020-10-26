@@ -1,6 +1,8 @@
 package com.prolog.eis.dto.wcs;
 
-public class CarInfoDTO {
+import java.io.Serializable;
+
+public class CarInfoDTO implements Serializable {
 
 
     private String rgvId;

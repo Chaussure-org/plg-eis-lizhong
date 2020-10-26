@@ -2,12 +2,14 @@ package com.prolog.eis.dto.rcs;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 /**
  * @Author wangkang
  * @Description rcs任务实体
  * @CreateTime 2020-10-18 20:27
  */
-public class RcsTaskDto {
+public class RcsTaskDto implements Serializable {
 
     @ApiModelProperty("任务编号")
     private String reqCode;

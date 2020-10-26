@@ -204,6 +204,15 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         return containerPathTaskMapper.findByMap(map,ContainerPathTask.class);
     }
 
+    /**
+     * 更新路径任务
+     * @param containerPathTask 路径任务
+     */
+    @Override
+    public void updateTask(ContainerPathTask containerPathTask) {
+        containerPathTaskMapper.update(containerPathTask);
+    }
+
     @Override
     public List<ContainerPathTask> getContainerByPath(String storeArea) throws Exception {
         List<ContainerPathTask> containerPathTasks = containerPathTaskMapper.findByMap(MapUtils.put("sourceArea", storeArea).

@@ -2,12 +2,14 @@ package com.prolog.eis.dto.sas;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 /**
  * @Author wangkang
  * @Description 出入库任务实体
  * @CreateTime 2020-10-18 17:21
  */
-public class SasMoveTaskDto {
+public class SasMoveTaskDto implements Serializable {
 
     @ApiModelProperty("任务id")
     private String taskId;

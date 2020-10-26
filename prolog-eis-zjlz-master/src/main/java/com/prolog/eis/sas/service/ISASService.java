@@ -34,7 +34,7 @@ public interface ISASService {
      * @param sasMoveTaskDto 出入库实体
      * @return
      */
-    RestMessage<String> sendContainerTask(SasMoveTaskDto sasMoveTaskDto) throws IOException;
+    RestMessage<String> sendContainerTask(SasMoveTaskDto sasMoveTaskDto) throws Exception;
 
 
     /**

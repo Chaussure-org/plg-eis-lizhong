@@ -24,7 +24,12 @@ public class RcsServiceImpl implements IRCSService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
+	private String getUrl(String url){
+		return String.format("http://%s%s",properties.getRcs().getHost(),url);
+	}
+
+
 	@Override
 	@LogInfo(desci = "eis发起rcs任务",direction = "eis->rcs",type = LogDto.RCS_TYPE_SEND_TASK,systemType = LogDto.RCS)
 	public RcsRequestResultDto sendTask(RcsTaskDto rcsTaskDto) {
@@ -64,7 +69,7 @@ public class RcsServiceImpl implements IRCSService {
 		String data = jsonObject.toString();
 		//	TODO 先改为模拟器方式
 		//String postUrl = String.format("http://%s:%s%s", properties.getRcs().getHost(), properties.getRcs().getPort(),properties.getRcs().getSendTaskUrl());
-		String postUrl = String.format("http://%s/api/v1/agv/rcsRequest/agvMove", "service-ai-eis-zjlz-simulator");
+		String postUrl = getUrl(properties.getRcs().getAgvmoveUrl());
 		String result = restTemplate.postForObject(postUrl, PrologHttpUtils.getRequestEntity(data), String.class);
 		//LogServices.logRcs(postUrl,data,"",result);
 		RcsRequestResultDto resultObj = JSONObject.parseObject(result, RcsRequestResultDto.class);

@@ -1,7 +1,11 @@
 package com.prolog.eis.mcs.service;
 
+import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
+import com.prolog.eis.dto.wcs.HoisterInfoDto;
+
+import java.util.List;
 
 /**
  * @Author wangkang
@@ -17,4 +21,10 @@ public interface IMCSService {
      * @throws Exception
      */
     McsResultDto mcsContainerMove(McsMoveTaskDto mcsMoveTaskDto) throws Exception;
+
+    /**
+     * 获取三个提升机的信息
+     * @return
+     */
+    List<McsCarInfoDto> getMcsCarInfo() throws Exception;
 }
