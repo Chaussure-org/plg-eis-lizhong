@@ -92,7 +92,7 @@ public interface IStationBZService {
      * 播种明细回告wms
      * @param containerBindingDetail
      */
-    void seedToWms(ContainerBindingDetail containerBindingDetail);
+    void seedToWms(ContainerBindingDetail containerBindingDetail) throws Exception;
 
 
     /**
