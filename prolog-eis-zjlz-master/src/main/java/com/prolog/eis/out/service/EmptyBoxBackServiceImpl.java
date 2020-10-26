@@ -11,6 +11,7 @@ import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.wcs.service.IWCSService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.security.sasl.SaslServer;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  * @return
  * @date:2020/10/26 10:49
  */
+@Service
 public class EmptyBoxBackServiceImpl implements EmptyBoxBackService {
 
     @Autowired

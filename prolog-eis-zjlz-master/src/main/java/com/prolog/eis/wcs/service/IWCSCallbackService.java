@@ -18,28 +18,6 @@ public interface IWCSCallbackService {
      */
     RestMessage<String> executeBcrCallback(BCRDataDTO bcrDataDTO) throws Exception;
 
-    /**
-     * 料箱、订单框到位回告
-     * @param boxCallbackDTO
-     * @return
-     */
-    RestMessage<String> executeBoxArriveCallback(BoxCallbackDTO boxCallbackDTO);
-
-    /**
-     * 料箱弹出完成回告
-     * @param boxCompletedDTO
-     * @return
-     */
-    RestMessage<String> executeCompleteBoxCallback(BoxCompletedDTO boxCompletedDTO);
-
-
-    /**
-     * 拍灯回告
-     * @param lightDTO
-     * @return
-     */
-    RestMessage<String> executeLightCallback(LightDTO lightDTO);
-
 
 
 }

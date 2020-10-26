@@ -27,11 +27,12 @@ public class WCSServiceImpl implements IWCSService {
 
     /**
      * 获取完整路径
+     *
      * @param path
      * @return
      */
-    private String getUrl(String path){
-        return String.format("http://%s%s",properties.getWcs().getHost(),path);
+    private String getUrl(String path) {
+        return String.format("http://%s%s", properties.getWcs().getHost(), path);
     }
 
     /**
@@ -41,18 +42,14 @@ public class WCSServiceImpl implements IWCSService {
      * @return
      */
     @Override
-    @LogInfo(desci = "eis发送输送线行走命令",direction = "eis->wcs",type = LogDto.WCS_TYPE_LINE_MOVE,systemType = LogDto.WCS)
-    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto) {
+    @LogInfo(desci = "eis发送输送线行走命令", direction = "eis->wcs", type = LogDto.WCS_TYPE_LINE_MOVE, systemType = LogDto.WCS)
+    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
-        logger.info("EIS -> WCS 输送线行走:{}",url);
-        try {
-            RestMessage<String> result = httpUtils.post(url,MapUtils.convertBean(wcsLineMoveDto),
-                    new TypeReference<RestMessage<String>>() {});
-            return result;
-        } catch (Exception e) {
-            logger.warn("EIS -> WCS 请求输送线行走异常",e);
-            return RestMessage.newInstance(false,"500",e.getMessage(),null);
-        }
+        logger.info("EIS -> WCS 输送线行走:{}", url);
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
+                new TypeReference<RestMessage<String>>() {
+                });
+        return result;
     }
 
 //    /**
@@ -67,7 +64,8 @@ public class WCSServiceImpl implements IWCSService {
 //        String url = this.getUrl(properties.getWcs().getOrderBoxReqUrl());
 //        logger.info("EIS -> WCS 订单框请求:{}",url);
 //        try {
-//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address).getMap(),new TypeReference<RestMessage<String>>() {});
+//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address)
+//            .getMap(),new TypeReference<RestMessage<String>>() {});
 //            return result;
 //        } catch (Exception e) {
 //            logger.warn("EIS -> WCS 请求订单框异常",e);
@@ -87,7 +85,8 @@ public class WCSServiceImpl implements IWCSService {
 //        String url = this.getUrl(properties.getWcs().getLightControlUrl());
 //        logger.info("EIS -> WCS 灯光控制请求:{}",url);
 //        try {
-//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("stationNo",pickStationNo).put("lights",lights).getMap(),new TypeReference<RestMessage<String>>() {});
+//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("stationNo",pickStationNo).put("lights",
+//            lights).getMap(),new TypeReference<RestMessage<String>>() {});
 //            return result;
 //        } catch (Exception e) {
 //            logger.warn("EIS -> WCS 请求灯光异常",e);

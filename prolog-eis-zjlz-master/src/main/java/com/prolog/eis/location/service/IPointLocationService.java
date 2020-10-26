@@ -23,5 +23,12 @@ public interface IPointLocationService {
      * @param address 原位子
      * @return
      */
-    List<PointLocation> getPointByPointId(String address);
+    PointLocation getPointByPointId(String address);
+
+    /**
+     * 通过站台号找站台点位
+     * @param stationId 站台号
+     * @return
+     */
+    PointLocation getPointByStationId(Integer stationId);
 }

@@ -11,6 +11,7 @@
         <module>prolog-eis-zjlz-facade</module>
         <module>prolog-eis-zjlz-master</module>
         <module>prolog-eis-zjlz-common</module>
+        <module>prolog-eis-zjlz-simulator</module>
     </modules>
     <packaging>pom</packaging>
 
