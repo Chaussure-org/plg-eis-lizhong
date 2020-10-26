@@ -1,5 +1,8 @@
 package com.prolog.eis.store.dao;
 
+import com.prolog.eis.dto.lzenginee.LayerContainerTaskDto;
+import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.store.AgvContainerStoreDto;
 import com.prolog.eis.dto.store.ContainerStoreInfoDto;
 import com.prolog.eis.model.ContainerStore;
@@ -95,4 +98,10 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
 			"\t\t\twhere cs.task_type=0 and cs.goods_id = #{goodsId}\n" +
 			"\t\t\torder by sl.y,cs.qty asc")
     List<ContainerStore> findBestContainerSeq(@Param("goodsId") Integer goodsId);
+
+	@Select("SELECT c.container_no AS containerNo,\n" +
+            "LEFT(cpt.source_location,2) as layer\n" +
+            "FROM container_store c LEFT JOIN container_path_task cpt on c.container_no=cpt.container_no\n" +
+            "WHERE cpt.task_type=0 and cpt.target_area='SAS01' and c.container_type=2")
+    List<LayerGoodsCountDto> findEmptyBox();
 }

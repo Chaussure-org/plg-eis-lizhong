@@ -20,7 +20,7 @@ public interface BoxOutEnginService {
      */
     void BoxOutByOrder() throws Exception;
 
-    List<OutContainerDto> outByGoodsId(int goodsId,int count,int wmsPriority) throws Exception;
+    List<OutContainerDto> outByGoodsId(int goodsId,int count) throws Exception;
 
     List<Integer> computeRepeat(List<OutDetailDto> lineDetailList) throws Exception;
 
