@@ -3,6 +3,8 @@ package com.prolog.eis.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.math.BigDecimal;
+
 @ConfigurationProperties(prefix = com.prolog.eis.configuration.EisProperties.PREFIX)
 public class EisProperties {
     public static final String PREFIX = "prolog.eis";
@@ -53,6 +55,11 @@ public class EisProperties {
      * 拍灯间隔
      */
     private int bzInterval = 1500;
+
+    /**
+     * 称重误差率
+     */
+    private BigDecimal errorRate = new BigDecimal("0.05");
     private WCSProperties wcs = new WCSProperties();
 
     private RCSProperties rcs = new RCSProperties();
@@ -214,5 +221,13 @@ public class EisProperties {
 
     public static String getPREFIX() {
         return PREFIX;
+    }
+
+    public BigDecimal getErrorRate() {
+        return errorRate;
+    }
+
+    public void setErrorRate(BigDecimal errorRate) {
+        this.errorRate = errorRate;
     }
 }

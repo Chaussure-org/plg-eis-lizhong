@@ -165,7 +165,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
 
             //商品id，总数，算出所需要出的总箱子
-            List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum, wmsPriority);
+            List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum);
             for (OutDetailDto outDetailDto : map.getValue()) {
                 //循环每个商品下的明细集合 进行箱子分配 订单明细
                 for (OutContainerDto outContainerDto : outContainersByGoods) {
@@ -209,7 +209,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
      * @throws Exception
      */
     @Override
-    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count, int wmsPriority) throws Exception {
+    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception {
         /**1.移位数最少 2.巷道任务数最少
          2.找到本层 该商品的货位和数量 以及移位数 最少的
          满足明细数量的，注：尾托的 概念 以及比例的选择
@@ -233,27 +233,27 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         boolean isContinue = true;
         int sumCount = 0;
 //        //优先从agv库存找
-        for (RoadWayGoodsCountDto goodsCountDto : agvGoodsCounts) {
-            if (goodsCountDto.getQty() <= 0) {
-                continue;
+        if (agvGoodsCounts.size()>0) {
+            for (RoadWayGoodsCountDto goodsCountDto : agvGoodsCounts) {
+                if (goodsCountDto.getQty() <= 0) {
+                    continue;
+                }
+                if (sumCount >= count) {
+                    isContinue = false;
+                    break;
+                }
+                OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
+                outContainerDtoList.add(outContainer);
+                sumCount += goodsCountDto.getQty();
             }
-            if (sumCount >= count) {
-                isContinue = false;
-                break;
-            }
-            OutContainerDto outContainer = this.getOutContainer(goodsCountDto, goodsId);
-            outContainerDtoList.add(outContainer);
-            sumCount += goodsCountDto.getQty();
         }
 
         if (isContinue) {
-            //先找移位数最少 再找巷道任务数最少
-
             //1. Comparator.comparing(类::属性一).reversed();
             //2. Comparator.comparing(类::属性一,Comparator.reverseOrder());
             //两种排序是完全不一样的,一定要区分开来 1 是得到排序结果后再排序,2是直接进行排序,很多人会混淆导致理解出错,2更好理解,建议使用2
 
-           //1移位数最少 2.巷道任务数最少的 3.箱子数量最多的
+           //1移位数最少 2.巷道任务数最少的 3.箱子库存数量最多的
             List<RoadWayGoodsCountDto> sortList = roadWayGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getDeptNum).
                     thenComparing(RoadWayGoodsCountDto::getTaskCount).
                     thenComparing(RoadWayGoodsCountDto::getQty,Comparator.reverseOrder())).
@@ -369,6 +369,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.containsKey(orderDetail.getGoodsId()) &&
                             (containerTrayMap.get(orderDetail.getGoodsId()) + containerBoxMap.get(orderDetail.getGoodsId()) - orderDetail.getPlanQty()) >= 0) {
                         orderDetailMapper.updateMapById(orderDetail.getDetailId(), MapUtils.put("trayPlanQty", containerTrayMap.get(orderDetail.getGoodsId())).getMap(), OrderDetail.class);
+                        //更新目的位置
                     } else {
                         isAdd = false;
                         //logger.info("明细" + orderDetail.getDetailId() + "商品" + orderDetail.getGoodsId() + "==============库存不足========");

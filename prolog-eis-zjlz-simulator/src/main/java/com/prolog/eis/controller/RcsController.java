@@ -30,5 +30,6 @@ public class RcsController {
     public RestMessage<String> agvMove(@RequestBody RcsTaskDto rcsTaskDto) throws IOException {
         CacheListUtils.getRcslist().add(rcsTaskDto);
         return RestMessage.newInstance(true,"操作成功");
+
     }
 }

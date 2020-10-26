@@ -138,4 +138,14 @@ public interface IStationBZService {
      * @param orderTrayNo
      */
     void saveTrayWeigh(int orderBillId, String orderTrayNo, BigDecimal trayWeigh) throws Exception;
+
+
+    /**
+     * 拣选完成操作
+     * @param stationId
+     * @param containerNo
+     * @param orderTrayNo
+     * @param orderBillId
+     */
+    void pickingComplete(int stationId,String containerNo,String orderTrayNo,int orderBillId) throws Exception;
 }

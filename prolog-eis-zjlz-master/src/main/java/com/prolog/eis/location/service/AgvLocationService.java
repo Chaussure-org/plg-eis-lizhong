@@ -4,6 +4,7 @@ import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,26 @@ public interface AgvLocationService {
 	/**
 	 * 查询站台集合的可用任务拖区域
 	 * @param list
+	 * @param storeArea
 	 * @return
 	 */
-    public List<StationTrayDTO> findTrayTaskStation(List<Integer> list);
+    public List<StationTrayDTO> findTrayTaskStation(String storeArea,List<Integer> list);
+
+
+	/**
+	 * 查找区域一个可用位置
+	 * @param storeArea
+	 * @param stationId
+	 * @return
+	 */
+	List<String> getUsableStore(String storeArea,int stationId);
+
+
+	/**
+	 * 查料箱是否到位
+	 * @param containerNo
+	 * @param stationId
+	 * @return
+	 */
+	int findContainerArrive(String containerNo,int stationId);
 }

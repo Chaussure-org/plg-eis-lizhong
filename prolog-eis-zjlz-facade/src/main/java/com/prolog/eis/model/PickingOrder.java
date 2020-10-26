@@ -1,5 +1,6 @@
 package com.prolog.eis.model;
 
+import com.prolog.framework.core.annotation.AutoKey;
 import com.prolog.framework.core.annotation.Column;
 import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
@@ -18,6 +19,7 @@ public class PickingOrder {
 
   @Column("id")
   @Id
+  @AutoKey(type=AutoKey.TYPE_IDENTITY)
   @ApiModelProperty("拣选单ID")
   private Integer id;
 

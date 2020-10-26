@@ -30,7 +30,7 @@ public interface StationMapper extends BaseMapper<Station> {
             "\torder_bill ob\n" +
             "\tJOIN station s ON s.current_station_pick_id = ob.picking_order_id \n" +
             "WHERE\n" +
-            "\tpo.station_id = #{stationId}")
+            "\ts.id = #{stationId}")
     List<Integer> getStationOrderBillId(@Param("stationId") int stationId);
 
     /**
@@ -59,4 +59,8 @@ public interface StationMapper extends BaseMapper<Station> {
      */
     @Update("update station set is_lock = #{isLock} WHERE id = #{stationId}")
     void updateStationLock(@Param("isLock") int isLock,@Param("stationId") int stationId);
+
+    @Select("SELECT * FROM agv_storagelocation a left join container_path_task c on a.location_no=c.target_location \n" +
+            "where c.task_state=0 AND c.container_no=#{containerNo} AND a.device_no=#{stationId} AND c.target_area='SN01';")
+    int cheackContainerNo(@Param("containerNo")String containerNo,@Param("stationId")int stationId);
 }

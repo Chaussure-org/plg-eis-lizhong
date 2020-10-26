@@ -74,4 +74,12 @@ public interface ContainerPathTaskService {
      * @param containerPathTask 路径任务
      */
     void updateTask(ContainerPathTask containerPathTask);
+
+    /**
+     * 获取接驳点位是否有容器
+     * @param storeArea
+     * @return
+     * @throws Exception
+     */
+    List<ContainerPathTask> getContainerByPath(String storeArea) throws Exception;
 }

@@ -213,6 +213,13 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         containerPathTaskMapper.update(containerPathTask);
     }
 
+    @Override
+    public List<ContainerPathTask> getContainerByPath(String storeArea) throws Exception {
+        List<ContainerPathTask> containerPathTasks = containerPathTaskMapper.findByMap(MapUtils.put("sourceArea", storeArea).
+                put("targetArea", storeArea).getMap(), ContainerPathTask.class);
+        return containerPathTasks;
+    }
+
     private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){
 
         List<StoreAreaPriorityDTO> result = new ArrayList<>();

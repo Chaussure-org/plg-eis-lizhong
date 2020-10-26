@@ -33,11 +33,5 @@ public class LocationServiceTest {
     public void doTask() throws Exception {
         pathSchedulingService.containerMoveTask("1","RCS01",null);
     }
-    @Test
-    public void testTrayTask(){
-        System.out.println("aaaa");
-        List<Integer> list = Arrays.asList(1,2,3);
-        List<StationTrayDTO> stations = agvLocationService.findTrayTaskStation(list);
-        return;
-    }
+
 }

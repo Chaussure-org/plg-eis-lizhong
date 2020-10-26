@@ -7,9 +7,11 @@ import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
+import com.prolog.eis.location.dao.StoreAreaMapper;
 import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -33,12 +35,28 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 	private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
 	@Autowired
 	private ContainerPathTaskMapper containerPathTaskMapper;
+	@Autowired
+	private StoreAreaMapper storeAreaMapper;
 
 	@Override
 	public AgvStoragelocationDTO findLoacationByArea(String area, String locationNo, int reserveCount) throws Exception {
 		if (StringUtils.isEmpty(area)) {
 			throw new Exception("区域不可为空！");
 		}
+		//如果当前区域是接驳点，则直接取坐标即可
+		StoreArea storeArea = storeAreaMapper.findByMap(
+				MapUtils.put("areaNo", area).getMap()
+				, StoreArea.class)
+				.stream()
+				.filter(s -> LocationConstants.AREA_TYPE_POINT == s.getAreaType())
+				.findAny()
+				.orElse(null);
+		if (null != storeArea) {
+			AgvStoragelocationDTO agvStoragelocationDTO = new AgvStoragelocationDTO();
+			agvStoragelocationDTO.setLocationNo(storeArea.getLocationNo());
+			return agvStoragelocationDTO;
+		}
+
 		List<String> locationList = containerPathTaskDetailMapper.findByMap(
 				MapUtils.put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap()
 				, ContainerPathTaskDetail.class)
@@ -120,8 +138,18 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 	}
 
 	@Override
-	public List<StationTrayDTO> findTrayTaskStation(List<Integer> list) {
-		return agvStoragelocationMapper.findTrayTaskStation(list);
+	public List<StationTrayDTO> findTrayTaskStation(String storeArea,List<Integer> list) {
+		return agvStoragelocationMapper.findTrayTaskStation(storeArea,list);
+	}
+
+	@Override
+	public List<String> getUsableStore(String storeArea, int stationId) {
+		return agvStoragelocationMapper.getUsableStore(storeArea,stationId);
+	}
+
+	@Override
+	public int findContainerArrive(String containerNo, int stationId) {
+		return agvStoragelocationMapper.findContainerArrive(containerNo,stationId);
 	}
 
 
