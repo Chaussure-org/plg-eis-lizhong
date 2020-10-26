@@ -80,4 +80,16 @@ public class OutDispatch {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 小车跨层调度
+     */
+    public void crossLayer(){
+        try{
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 }

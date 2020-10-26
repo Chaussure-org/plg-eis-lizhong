@@ -52,7 +52,7 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
             "\tAND a.device_no in" +
             "<foreach  item='item' index='index' collection='list' open='(' separator=',' close=')'> #{item}    " +
             "</foreach> GROUP BY a.device_no </script>")
-    List<StationTrayDTO> findTrayTaskStation(@Param("storeArea") String storeArea, List<Integer> list);
+    List<StationTrayDTO> findTrayTaskStation(@Param("storeArea") String storeArea,@Param("list") List<Integer> list);
 
 
     @Update("update agv_storagelocation a set a.task_lock =1 where a.location_no =#{locationNo}")
@@ -65,7 +65,7 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
      * @return
      */
     @Select("SELECT\n" +
-            " a.area_no\n" +
+            " a.location_no\n" +
             "FROM\n" +
             "\tagv_storagelocation a\n" +
             "\tLEFT JOIN container_path_task c ON a.location_no = c.target_location \n" +
@@ -82,7 +82,7 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
      * @param stationId
      * @return
      */
-    @Select("SELECT * FROM agv_storagelocation a left join container_path_task c on a.location_no=c.target_location \n" +
+    @Select("SELECT count(*) FROM agv_storagelocation a left join container_path_task c on a.location_no=c.target_location \n" +
             "where c.task_state=0 AND c.container_no=#{containerNo} AND a.device_no=#{stationId} AND c.target_area='SN01';")
     int findContainerArrive(@Param("containerNo") String containerNo, @Param("stationId") int stationId);
 }

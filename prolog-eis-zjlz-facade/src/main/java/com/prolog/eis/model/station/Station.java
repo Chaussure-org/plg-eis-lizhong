@@ -78,6 +78,11 @@ public class Station {
     @ApiModelProperty("站台类型（1-半成品站台，2-成品站台）")
     private Integer stationType;
 
+    @Column("station_ip")
+    @ApiModelProperty("站台ip")
+    private String stationIp;
+
+
     public Integer getId() {
         return id;
     }
@@ -174,4 +179,12 @@ public class Station {
         this.stationType = stationType;
     }
 
+    public String getStationIp() {
+        return stationIp;
+    }
+
+    public void setStationIp(String stationIp) {
+        this.stationIp = stationIp;
+    }
 }
+

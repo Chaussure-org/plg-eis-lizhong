@@ -70,8 +70,8 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     }
 
     @Override
-    public void orderDetailToHistory(int orderBillTd) {
-        List<OrderDetail> orderDetails = orderDetailMapper.findByMap(MapUtils.put("orderBillId", orderBillTd).getMap(), OrderDetail.class);
+    public void orderDetailToHistory(int orderBillId) {
+        List<OrderDetail> orderDetails = orderDetailMapper.findByMap(MapUtils.put("orderBillId", orderBillId).getMap(), OrderDetail.class);
         if (orderDetails.size() > 0) {
             List<OrderDetailHistory> orderDetailHistories = new ArrayList<>();
             for (OrderDetail orderDetail : orderDetails) {
@@ -82,7 +82,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
             }
             orderDetailHistoryService.saveBatch(orderDetailHistories);
             //删除明细
-            orderDetailMapper.deleteByMap(MapUtils.put("orderBillTd", orderBillTd).getMap(), OrderDetail.class);
+            orderDetailMapper.deleteByMap(MapUtils.put("orderBillId", orderBillId).getMap(), OrderDetail.class);
         }
 
     }

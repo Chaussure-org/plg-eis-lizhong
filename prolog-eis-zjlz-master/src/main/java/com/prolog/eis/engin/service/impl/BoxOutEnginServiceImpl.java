@@ -11,6 +11,7 @@ import com.prolog.eis.engin.dao.BoxOutMapper;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.location.StoreArea;
@@ -18,11 +19,14 @@ import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.CompareStrSimUtil;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
+import com.prolog.framework.utils.StringUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +35,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * ClassName:BoxOutEnginServiceImpl
- * Package:com.prolog.eis.engin.service.impl
  * Description:
  *
  * @date:2020/9/30 11:47
@@ -54,6 +56,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     private LineBindingDetailMapper lineBindingDetailMapper;
     @Autowired
     private PathSchedulingService pathSchedulingService;
+    @Autowired
+    private ContainerStoreMapper containerStoreMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -141,7 +145,6 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     }
 
     /**
-     *
      * @param goodsId
      * @param count
      * @return
@@ -157,7 +160,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         //找层的任务数出库任务数和入库任务数
         List<LayerTaskDto> layerTaskCounts = boxOutMapper.findLayerTaskCount();
         //输送线上绑定了订单 的  剩余库存
-        List<LayerGoodsCountDto> agvGoodsCounts = boxOutMapper.findLineGoodsCount(goodsId);
+        List<LayerGoodsCountDto> lineGoodsCounts = boxOutMapper.findLineGoodsCount(goodsId);
         //小车所在的层
         List<CarInfoDTO> conformCars = this.getConformCars();
         if (conformCars.size() == 0) {
@@ -172,16 +175,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             }
         }
         List<Integer> carLayers = conformCars.stream().map(CarInfoDTO::getLayer).collect(Collectors.toList());
-        //小车所在的层的库存
-        List<LayerGoodsCountDto> carLayerGoodCounts = layerGoodsCounts.stream().filter(x -> carLayers.contains(x.getLayer())).collect(Collectors.toList());
-        if (carLayerGoodCounts.isEmpty()) {
-
-            // TODO: 2020/10/10 跨层
-        }
         boolean isContinue = true;
         int sumCount = 0;
-//        //优先从agv库存找
-        for (LayerGoodsCountDto goodsCountDto : agvGoodsCounts) {
+        //优先从 line 库存找
+        for (LayerGoodsCountDto goodsCountDto : lineGoodsCounts) {
             if (goodsCountDto.getQty() <= 0) {
                 continue;
             }
@@ -194,11 +191,38 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             sumCount += goodsCountDto.getQty();
         }
         if (isContinue) {
-            //1.移位数量由低到高2.出库任务数从低到高排序 3.按照入库任务数从低到高
-            layerGoodsCounts.stream().sorted(
-                    Comparator.comparing(LayerGoodsCountDto::getInCount).reversed().
-                            thenComparing(LayerGoodsCountDto::getOutCount).reversed().
-                            thenComparing(LayerGoodsCountDto::getDeptNum));
+            Collections.sort(layerGoodsCounts, new Comparator<LayerGoodsCountDto>() {
+                @Override
+                public int compare(LayerGoodsCountDto o1, LayerGoodsCountDto o2) {
+                    if (carLayers.contains(o1.getLayer()) && !carLayers.contains(o2.getLayer())) {
+                        return -1;
+                    }
+                    if (!carLayers.contains(o1.getLayer()) && carLayers.contains(o2.getLayer())) {
+                        return 1;
+                    }
+                    //1.小车所在的层
+                    if (carLayers.contains(o1.getLayer()) && carLayers.contains(o2.getLayer())) {
+                        //2.移位数量由低到高
+                        if (o1.getDeptNum() == o2.getDeptNum()) {
+                            //.3.出库任务数从低到高排序
+                            if (o1.getOutCount() == o2.getOutCount()) {
+                                //4.入库库任务数从低到高排序
+                                if (o1.getInCount() == o2.getInCount()) {
+                                    return 0;
+                                } else {
+                                    return o1.getInCount() < o2.getInCount() ? -1 : 1;
+                                }
+                            } else {
+                                return o1.getOutCount() < o2.getOutCount() ? -1 : 1;
+                            }
+                        } else {
+                            return o1.getDeptNum() < o2.getDeptNum() ? -1 : 1;
+                        }
+                    }
+                    //两者都不是小车所在的层
+                    return 0;
+                }
+            });
             for (LayerGoodsCountDto goodsCountDto : layerGoodsCounts) {
                 if (sumCount >= count) {
                     break;
@@ -222,9 +246,9 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     }
 
     //更新line_binding_detail
-    private void saveLineBindingDetail(List<OutContainerDto> outList) {
+    @Transactional(rollbackFor = Exception.class)
+    public void saveLineBindingDetail(List<OutContainerDto> outList) {
         List<LineBindingDetail> list = new ArrayList<>();
-
         for (OutContainerDto containerDto : outList) {
             for (OutDetailDto detailDto : containerDto.getDetailList()) {
                 LineBindingDetail lineBindingDetail = new LineBindingDetail();
@@ -242,7 +266,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
                 list.add(lineBindingDetail);
             }
         }
+        List<String> containers = outList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
+        String strs = String.join(",", containers);
         lineBindingDetailMapper.saveBatch(list);
+        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND);
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {

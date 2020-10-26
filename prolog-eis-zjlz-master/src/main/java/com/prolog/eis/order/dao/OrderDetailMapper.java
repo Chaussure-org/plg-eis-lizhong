@@ -72,7 +72,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
      */
     @Select("SELECT\n" +
             "\tb.order_no AS orderNo,\n" +
-            "\td.graph_no AS graphNo,\n" +
+            "\tg.owner_drawn_no AS graphNo,\n" +
             "\tg.goods_name AS goodsName,\n" +
             "\tg.goods_no AS goodsNo \n" +
             "FROM\n" +

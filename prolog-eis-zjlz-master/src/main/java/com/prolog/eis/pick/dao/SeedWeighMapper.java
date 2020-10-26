@@ -2,6 +2,7 @@ package com.prolog.eis.pick.dao;
 
 import com.prolog.eis.model.order.SeedWeigh;
 import com.prolog.framework.dao.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ public interface SeedWeighMapper extends BaseMapper<SeedWeigh> {
      * @return
      */
     @Select("SELECT\n" +
-            "\tsum( IF ( w.second_weigh IS NULL, w.first_weigh, w.second_weigh ) ) \n" +
+            "\t IFNULL((sum( IF ( w.second_weigh IS NULL, w.first_weigh, w.second_weigh ) ) ),0) \n" +
             "FROM\n" +
             "\tseed_info s\n" +
             "\tJOIN seed_weigh w ON w.seed_info_id = s.id \n" +
@@ -29,5 +30,5 @@ public interface SeedWeighMapper extends BaseMapper<SeedWeigh> {
             "\ts.order_bill_id = #{orderBillId} \n" +
             "\tAND s.order_tray_no = #{orderTrayNo} \n" +
             "\tAND s.id <> #{seedId}")
-    BigDecimal getBeforeOrderTrayWeight(int orderBillId, String orderTrayNo, int seedId);
+    BigDecimal getBeforeOrderTrayWeight(@Param("orderBillId") int orderBillId,@Param("orderTrayNo") String orderTrayNo,@Param("seedId") int seedId);
 }
