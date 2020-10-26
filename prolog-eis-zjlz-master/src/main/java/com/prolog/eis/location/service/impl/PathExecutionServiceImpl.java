@@ -69,7 +69,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
             RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
 
             //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
-            if ("0".equals(rcsRequestResultDto.getCode())) {
+            if ("200".equals(rcsRequestResultDto.getCode())) {
                 containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
                         , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
             } else {
@@ -138,9 +138,36 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to sas");
         this.updateTaskId(containerPathTask,containerPathTaskDetailDTO);
-        containerPathTaskDetailDTO.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
-        containerPathTaskDetailDTO.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
-        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
+        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
+        BeanUtils.copyProperties(containerPathTaskDetailDTO,containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
+        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
+                containerPathTaskDetailDTO.getSourceLocation(),
+                containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
+        wcsService.lineMove(wcsLineMoveDto);
+    }
+
+    /**
+     * 执行wcs-wcs路径任务(借道)
+     * @param containerPathTask 路径任务
+     * @param containerPathTaskDetailDTO 详情实体
+     */
+    @Override
+    public void doWcsToWcsTask(ContainerPathTask containerPathTask,
+                               ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+        System.out.println("wcs to wcs");
+        this.updateTaskId(containerPathTask,containerPathTaskDetailDTO);
+        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
+        BeanUtils.copyProperties(containerPathTaskDetailDTO,containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
+        containerPathTaskDetailDTO1.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
+        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getSourceLocation()));
+        containerPathTaskDetailDTO1.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);

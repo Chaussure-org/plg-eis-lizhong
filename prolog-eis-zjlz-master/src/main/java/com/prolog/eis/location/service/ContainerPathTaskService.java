@@ -82,4 +82,10 @@ public interface ContainerPathTaskService {
      * @throws Exception
      */
     List<ContainerPathTask> getContainerByPath(String storeArea) throws Exception;
+
+    /**
+     * 半成品立库分配堆垛机逻辑
+     * @return
+     */
+    String computeAreaIn();
 }

@@ -16,7 +16,7 @@ public interface IWCSService {
      * @param wcsLineMoveDto 输送线实体
      * @return
      */
-    RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto);
+    RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto) throws Exception;
 
 
 //    /**

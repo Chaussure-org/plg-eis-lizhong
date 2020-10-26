@@ -2,6 +2,7 @@ package com.prolog.eis.location.dao;
 
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
 import com.prolog.eis.dto.location.StoreAreaContainerCountDTO;
+import com.prolog.eis.dto.location.TaskCountDto;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -96,4 +97,12 @@ public interface ContainerPathTaskMapper extends EisBaseMapper<ContainerPathTask
             @Result(property = "updateTime",  column = "update_time")
     })
     List<ContainerPathTaskDTO> listContainerPathTaskByGoodsId(@Param("goodsId") int goodsId);
+
+    /**
+     * 查询每个入库口任务
+     * @return
+     */
+    @Select("select c.target_area as areaNo,COUNT(c.target_area) as taskCount\n" +
+            "from container_path_task c where c.source_location in (\"BCR0102\",\"BCR0103\") group by c.target_area;")
+    List<TaskCountDto> findInTaskCount();
 }

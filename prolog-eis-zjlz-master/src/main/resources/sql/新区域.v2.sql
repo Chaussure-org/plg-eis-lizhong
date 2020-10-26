@@ -166,6 +166,62 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
                                                                                                        'MCS05',
                                                                                                        100,10,1);
 
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+                       x,y) VALUES('WCS091',20,'WCS',100,1,10,'堆垛机库借道左BCR','BCR0209',2,5,0);
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+                       x,y) VALUES('WCS092',20,'WCS',100,1,10,'堆垛机库借道右BCR','BCR0210',2,5,0);
+
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+                       x,y) VALUES('WCS052',20,'WCS',100,1,10,'堆垛机库导轨5BCR','C0102',2,5,0);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS051',
+                                                                                                       'MCS05',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('BCR0209',
+                                                                                                       'WCS052',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('BCR0210',
+                                                                                                       'WCS052',
+                                                                                                       100,10,1);
+
+--  一层堆垛机导轨5入库接驳口
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+                       x,y) VALUES('WCS071',20,'WCS',100,1,10,'堆垛机库导轨1-4BCR','BCR0102',2,5,0);
+INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
+                       x,y) VALUES('WCS072',20,'WCS',100,1,10,'堆垛机库导轨1-4BCR','BCR0103',2,5,0);
+
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS071',
+                                                                                                       'MCS04',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS071',
+                                                                                                       'MCS03',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS071',
+                                                                                                       'MCS02',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS071',
+                                                                                                       'MCS01',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS072',
+                                                                                                       'MCS04',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS072',
+                                                                                                       'MCS03',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS072',
+                                                                                                       'MCS02',
+                                                                                                       100,10,1);
+INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('WCS072',
+                                                                                                       'MCS01',
+                                                                                                       100,10,1);
+
+
+
+
+
+
+
+
+
 
 
 -- agv
@@ -280,11 +336,11 @@ INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_s
                                                                                                        100,10,1);
 
 INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS071',20,'WCS',100,1,10,'四向库二楼出库BCR','LXJZ01',15,0,0);
+                       x,y) VALUES('WCS081',20,'WCS',100,1,10,'四向库二楼出库BCR','LXJZ01',15,0,0);
 
 
 INSERT INTO store_area(area_no,area_type,device_system,max_height,temporary_area,max_count,remark,location_no,layer,
-                       x,y) VALUES('WCS072',20,'WCS',100,1,10,'四向库二楼入库BCR','LXHK02',15,0,0);
+                       x,y) VALUES('WCS082',20,'WCS',100,1,10,'四向库二楼入库BCR','LXHK02',15,0,0);
 
 
 INSERT INTO store_area_direction(source_area_no,target_area_no,max_height,path_step,path_power) VALUES('SAS01',

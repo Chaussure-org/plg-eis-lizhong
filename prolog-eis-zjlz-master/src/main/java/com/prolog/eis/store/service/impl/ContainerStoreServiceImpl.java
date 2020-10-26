@@ -104,6 +104,15 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         containerStoreMapper.update(containerStore);
     }
 
+    /**
+     * 新建库存
+     * @param containerStore
+     */
+    @Override
+    public void saveContainerStore(ContainerStore containerStore) {
+        containerStoreMapper.save(containerStore);
+    }
+
     private GoodsInfo getEmptyGoods() {
 		GoodsInfo goodsInfo = new GoodsInfo();
 		goodsInfo.setOwnerId("");

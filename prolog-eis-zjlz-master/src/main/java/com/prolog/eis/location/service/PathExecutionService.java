@@ -65,4 +65,10 @@ public interface PathExecutionService {
     void doWcsToSasTask(ContainerPathTask containerPathTask,ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception;
 
 
+    /**
+     * 执行wcs-wcs路径任务(借道)
+     * @param containerPathTask 路径任务
+     * @param containerPathTaskDetailDTO 详情实体
+     */
+    void doWcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception;
 }

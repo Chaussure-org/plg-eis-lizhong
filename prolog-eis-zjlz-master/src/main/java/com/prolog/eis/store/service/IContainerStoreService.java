@@ -74,4 +74,10 @@ public interface IContainerStoreService {
      * @param containerStore
      */
     void updateContainerTaskType(ContainerStore containerStore);
+
+    /**
+     * 新建库存
+     * @param containerStore
+     */
+    void saveContainerStore(ContainerStore containerStore);
 }
