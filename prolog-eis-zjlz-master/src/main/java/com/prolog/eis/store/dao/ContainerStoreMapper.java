@@ -1,5 +1,8 @@
 package com.prolog.eis.store.dao;
 
+import com.prolog.eis.dto.lzenginee.LayerContainerTaskDto;
+import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.store.AgvContainerStoreDto;
 import com.prolog.eis.dto.store.ContainerStoreInfoDto;
 import com.prolog.eis.model.ContainerStore;
@@ -95,4 +98,17 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
 			"\t\t\twhere cs.task_type=0 and cs.goods_id = #{goodsId}\n" +
 			"\t\t\torder by sl.y,cs.qty asc")
     List<ContainerStore> findBestContainerSeq(@Param("goodsId") Integer goodsId);
+
+	@Select("SELECT c.container_no AS containerNo,\n" +
+            "LEFT(cpt.source_location,2) as layer\n" +
+            "FROM container_store c LEFT JOIN container_path_task cpt on c.container_no=cpt.container_no\n" +
+            "WHERE cpt.task_type=0 and cpt.target_area='SAS01' and c.container_type=2")
+    List<LayerGoodsCountDto> findEmptyBox();
+
+	@Update("UPDATE container_store c set c.task_type=#{taskType} WHERE FIND_IN_SET(c.container_no,#{strContainers})")
+    void updateContainerStatus(@Param("strContainers")String strContainers,@Param("taskType")int taskType);
+
+	@Select("SELECT LEFT(cpt.source_location,2) AS layer  from container_store c LEFT JOIN container_path_task cpt on c.container_no=cpt.container_no\n" +
+            "WHERE  FIND_IN_SET(c.task_type,'20,21,22,23,1') AND cpt.source_area='SAS01'")
+    List<OutContainerDto> findOutContainers();
 }

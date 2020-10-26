@@ -31,6 +31,9 @@ public class OutDispatch {
     @Autowired
     private FinishedProdOutEnginService finishedProdOutEnginService;
 
+    /**
+     * 托盘库 出库
+     */
     @Scheduled(initialDelay = 3000, fixedDelay = 4000)
     public void trayOutDispatch() {
         try {
@@ -41,6 +44,9 @@ public class OutDispatch {
         }
     }
 
+    /**
+     * 成品库出库
+     */
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void finishProdOutDispatch() {
         try {
@@ -51,6 +57,9 @@ public class OutDispatch {
 
     }
 
+    /**
+     * 箱库出库
+     */
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void boxOutDispatch() {
         try {
@@ -60,6 +69,9 @@ public class OutDispatch {
         }
     }
 
+    /**
+     * 站台调度
+     */
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void lineAndAgvOutDispatch() {
         try {
@@ -67,5 +79,17 @@ public class OutDispatch {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 小车跨层调度
+     */
+    public void crossLayer(){
+        try{
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

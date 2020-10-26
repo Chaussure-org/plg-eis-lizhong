@@ -114,4 +114,13 @@ public class StoreArea implements Serializable {
      */
     public static final String SN01="SN01";
 
+    /**
+     * 四向库一楼BCR
+     */
+    public static final String WCS061="WCS061";
+    /**
+     * 四向库 二楼出库BCR
+     */
+    public static final String WCS071="WCS071";
+
 }

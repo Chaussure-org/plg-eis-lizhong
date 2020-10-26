@@ -3,6 +3,7 @@ package com.prolog.eis.location.service.impl;
 import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
 import com.prolog.eis.dto.location.StoreAreaContainerCountDTO;
 import com.prolog.eis.dto.location.StoreAreaPriorityDTO;
+import com.prolog.eis.dto.location.TaskCountDto;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskHistoryMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
@@ -15,6 +16,8 @@ import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PowerCalculation;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author: wuxl
@@ -218,6 +222,37 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         List<ContainerPathTask> containerPathTasks = containerPathTaskMapper.findByMap(MapUtils.put("sourceArea", storeArea).
                 put("targetArea", storeArea).getMap(), ContainerPathTask.class);
         return containerPathTasks;
+    }
+
+    /**
+     * 半成品入库分配堆垛机
+     * @return
+     */
+    @Override
+    public String computeAreaIn() {
+        List<TaskCountDto> taskCountDtos = containerPathTaskMapper.findInTaskCount();
+        //04区3个   03区2个  02 01 区一个
+        List<TaskCountDto> mcs04 =
+                taskCountDtos.stream().filter(taskCountDto -> "MCS04".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 2).collect(Collectors.toList());
+        if (mcs04.size() == 0){
+            return "MCS04";
+        }
+        List<TaskCountDto> mcs03 =
+                taskCountDtos.stream().filter(taskCountDto -> "MCS03".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 1).collect(Collectors.toList());
+        if (mcs03.size() == 0) {
+            return "MCS03";
+        }
+        List<TaskCountDto> mcs02 =
+                taskCountDtos.stream().filter(taskCountDto -> "MCS02".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
+        if (mcs02.size() == 0) {
+            return "MCS02";
+        }
+        List<TaskCountDto> mcs01 =
+                taskCountDtos.stream().filter(taskCountDto -> "MCS01".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
+        if (mcs01.size() == 0) {
+            return "MCS01";
+        }
+        return taskCountDtos.get(0).getAreaNo();
     }
 
     private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){

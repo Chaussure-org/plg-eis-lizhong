@@ -24,7 +24,7 @@ public class RcsServiceImpl implements RcsService {
     private HttpUtils httpUtils;
     @Override
     public void doCallBack(RcsTaskDto rcsTaskDto) {
-        String startUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvcallback";
+        String startUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvCallback";
         try{
             RestMessage<String> result = httpUtils.post(startUrl, MapUtils.put("reqCode",rcsTaskDto.getReqCode()).put("taskCode",
                     rcsTaskDto.getReqCode()).put("method","outbin").getMap(),
@@ -36,7 +36,7 @@ public class RcsServiceImpl implements RcsService {
 
 
 
-        String endUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvcallback";
+        String endUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvCallback";
         try{
             RestMessage<String> result = httpUtils.post(endUrl, MapUtils.put("reqCode",rcsTaskDto.getReqCode()).put("taskCode",
                     rcsTaskDto.getReqCode()).put("method","end").getMap(),

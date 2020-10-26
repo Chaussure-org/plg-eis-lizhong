@@ -397,7 +397,7 @@ public class StationBZServiceImpl implements IStationBZService {
     }
 
     @Override
-    public void seedToWms(ContainerBindingDetail containerBindingDetail) {
+    public void seedToWms(ContainerBindingDetail containerBindingDetail) throws Exception {
 
         if (containerBindingDetail == null){
             return;

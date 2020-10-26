@@ -124,6 +124,9 @@ public class LocationServiceImpl implements LocationService {
             } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
                 //WCS TO SAS
                 pathExecutionService.doWcsToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
+            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                //WCS TO WCS
+                pathExecutionService.doWcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             }
         }
     }

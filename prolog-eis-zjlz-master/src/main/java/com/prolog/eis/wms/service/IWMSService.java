@@ -19,19 +19,19 @@ public interface IWMSService {
      * @param wmsInboundCallBackDto 回告实体
      * @return
      */
-    RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto);
+    RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception;
 
     /**
      * 拣货完成回告wms
      * @param wmsOutboundCallBackDto 回告实体
      * @return
      */
-    RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto);
+    RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception;
 
     /**
      * 盘点完成回告wms
      * @param wmsInventoryCallBackDto 回告实体
      * @return
      */
-    RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto);
+    RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception;
 }

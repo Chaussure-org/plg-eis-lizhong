@@ -71,7 +71,7 @@ public class TestCache {
 
     @Scheduled(initialDelay = 3000,fixedDelay = 3000)
     public void testRcs(){
-        if (CacheListUtils.getWcslist().size()>0) {
+        if (CacheListUtils.getRcslist().size()>0) {
             System.out.println(CacheListUtils.getRcslist().get(0));
             RcsTaskDto rcsTaskDto = CacheListUtils.getRcslist().get(0);
             rcsService.doCallBack(rcsTaskDto);

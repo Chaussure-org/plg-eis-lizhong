@@ -1,9 +1,8 @@
 package com.prolog.eis.util;
 
 /**
- * Description:比较两个字符串相似度的算法
+ * Description:可编辑距离算法
  * 由俄罗斯的科学家  1965 年提出
- *
  * @date:2020/10/9 15:43
  * @author:SunPP
  */
@@ -45,6 +44,8 @@ public class CompareStrSimUtil {
             for (j = 1; j <= m; j++) {
                 sch2 = s2[j - 1];
                 //goodsId 不考虑大小写
+                // if (isIgnore) {
+                //   if (ch1 == ch2 || ch1 == ch2 + 32 || ch1 + 32 == ch2) { }
                 if (sch1==sch2) {
                     temp = 0;
                 } else {
@@ -67,10 +68,7 @@ public class CompareStrSimUtil {
      * @return s1 与 s2 的重合度
      */
     public static float getSimilarityRatio(int[] s1, int[] s2, boolean isIgnore) {
-
         float ret = 0;
-
-        //编辑距离
         ret = compare(s1, s2, isIgnore);
         return ret;
     }

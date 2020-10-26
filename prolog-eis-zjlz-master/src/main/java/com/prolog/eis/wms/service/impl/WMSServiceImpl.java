@@ -51,16 +51,11 @@ public class WMSServiceImpl implements IWMSService {
      */
     @Override
     @LogInfo(desci = "EIS入库任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INBOUND_CALLBACK,systemType = LogDto.WMS)
-    public RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) {
+    public RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WMS 入库任务回告:{}",url);
-        try {
             RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsInboundCallBackDto),new TypeReference<RestMessage<String>>() {});
             return result;
-        } catch (Exception e) {
-            logger.warn("EIS -> WCS 入库任务完成回告异常", e);
-            return RestMessage.newInstance(false, "500", e.getMessage(), null);
-        }
     }
 
     /**
@@ -71,29 +66,19 @@ public class WMSServiceImpl implements IWMSService {
     @Override
     @LogInfo(desci = "Eis出库任务完成回告",direction = "eis->wms",type = LogDto.WMS_TYPE_OUTBOUND_CALLBACK,systemType =
             LogDto.WMS)
-    public RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) {
+    public RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 出库任务完成回告:{}",url);
-        try {
             RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsOutboundCallBackDto),new TypeReference<RestMessage<String>>() {});
             return result;
-        } catch (Exception e) {
-            logger.warn("EIS -> WCS 出库任务完成回告异常订单编号", e,wmsOutboundCallBackDto.getBILLNO());
-            return RestMessage.newInstance(false, "500", e.getMessage(), null);
-        }
     }
 
     @Override
     @LogInfo(desci = "eis盘点任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INVENTORY_CALLBACK,systemType = LogDto.WMS)
-    public RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) {
+    public RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 出库任务完成回告:{}",url);
-        try {
             RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wmsInventoryCallBackDto),new TypeReference<RestMessage<String>>() {});
             return result;
-        } catch (Exception e) {
-            logger.warn("EIS -> WCS 出库任务完成回告异常", e);
-            return RestMessage.newInstance(false, "500", e.getMessage(), null);
-        }
     }
 }

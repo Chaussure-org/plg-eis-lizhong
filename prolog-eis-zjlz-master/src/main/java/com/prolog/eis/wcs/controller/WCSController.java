@@ -41,25 +41,25 @@ public class WCSController {
 
     }
 
-    @ApiOperation(value="箱到位请求",notes="此接口包含料箱到位、订单框到位")
-    @PostMapping("/box/arrive")
-    public RestMessage<String> boxArriveCallback(@RequestBody BoxCallbackDTO boxCallbackDTO) throws Exception{
-        logger.info("箱到位请求,{}",JsonUtils.toString(boxCallbackDTO));
-        return wcsService.executeBoxArriveCallback(boxCallbackDTO);
-    }
-
-    @ApiOperation(value="料箱弹出完成回告",notes="料箱弹出完成时，请求此接口")
-    @PostMapping("/box/complete")
-    public RestMessage<String> boxCompleteCallback(@RequestBody BoxCompletedDTO boxCompletedDTO) throws Exception{
-        logger.info("料箱弹出完成回告,{}",JsonUtils.toString(boxCompletedDTO));
-        return wcsService.executeCompleteBoxCallback(boxCompletedDTO);
-    }
-
-    @ApiOperation(value="拍灯回告",notes="拍灯完成时，WCS请求此接口")
-    @PostMapping("/light")
-    public RestMessage<String> lightCallback(@RequestBody LightDTO lightDTO) throws Exception{
-        logger.info("拍灯回告,{}",JsonUtils.toString(lightDTO));
-        return wcsService.executeLightCallback(lightDTO);
-    }
+//    @ApiOperation(value="箱到位请求",notes="此接口包含料箱到位、订单框到位")
+//    @PostMapping("/box/arrive")
+//    public RestMessage<String> boxArriveCallback(@RequestBody BoxCallbackDTO boxCallbackDTO) throws Exception{
+//        logger.info("箱到位请求,{}",JsonUtils.toString(boxCallbackDTO));
+//        return wcsService.executeBoxArriveCallback(boxCallbackDTO);
+//    }
+//
+//    @ApiOperation(value="料箱弹出完成回告",notes="料箱弹出完成时，请求此接口")
+//    @PostMapping("/box/complete")
+//    public RestMessage<String> boxCompleteCallback(@RequestBody BoxCompletedDTO boxCompletedDTO) throws Exception{
+//        logger.info("料箱弹出完成回告,{}",JsonUtils.toString(boxCompletedDTO));
+//        return wcsService.executeCompleteBoxCallback(boxCompletedDTO);
+//    }
+//
+//    @ApiOperation(value="拍灯回告",notes="拍灯完成时，WCS请求此接口")
+//    @PostMapping("/light")
+//    public RestMessage<String> lightCallback(@RequestBody LightDTO lightDTO) throws Exception{
+//        logger.info("拍灯回告,{}",JsonUtils.toString(lightDTO));
+//        return wcsService.executeLightCallback(lightDTO);
+//    }
 
 }
