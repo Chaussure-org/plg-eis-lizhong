@@ -11,6 +11,7 @@ import com.prolog.eis.engin.dao.BoxOutMapper;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.location.StoreArea;
@@ -18,11 +19,14 @@ import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.CompareStrSimUtil;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
+import com.prolog.framework.utils.StringUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +35,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- *
  * Description:
+ *
  * @date:2020/9/30 11:47
  * @author:SunPP
  */
@@ -52,6 +56,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     private LineBindingDetailMapper lineBindingDetailMapper;
     @Autowired
     private PathSchedulingService pathSchedulingService;
+    @Autowired
+    private ContainerStoreMapper containerStoreMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -171,7 +177,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<Integer> carLayers = conformCars.stream().map(CarInfoDTO::getLayer).collect(Collectors.toList());
         boolean isContinue = true;
         int sumCount = 0;
-         //优先从 line 库存找
+        //优先从 line 库存找
         for (LayerGoodsCountDto goodsCountDto : lineGoodsCounts) {
             if (goodsCountDto.getQty() <= 0) {
                 continue;
@@ -240,9 +246,9 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     }
 
     //更新line_binding_detail
-    private void saveLineBindingDetail(List<OutContainerDto> outList) {
+    @Transactional(rollbackFor = Exception.class)
+    public void saveLineBindingDetail(List<OutContainerDto> outList) {
         List<LineBindingDetail> list = new ArrayList<>();
-
         for (OutContainerDto containerDto : outList) {
             for (OutDetailDto detailDto : containerDto.getDetailList()) {
                 LineBindingDetail lineBindingDetail = new LineBindingDetail();
@@ -260,7 +266,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
                 list.add(lineBindingDetail);
             }
         }
+        List<String> containers = outList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
+        String strs = String.join(",", containers);
         lineBindingDetailMapper.saveBatch(list);
+        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND);
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {
