@@ -1,17 +1,20 @@
 package com.prolog.eis.engin.service.impl;
 
+import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.engin.service.CrossLayerEnginService;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.StoreArea;
+import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -24,11 +27,14 @@ import java.util.stream.Collectors;
 public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
 
     @Autowired
-  private ContainerStoreMapper containerStoreMapper;
+    private ContainerStoreMapper containerStoreMapper;
+    @Autowired
+    private ISASService isasService;
+
     @Override
     public void findCrossLayerTask() throws Exception {
-        List<OutContainerDto> outContainers = containerStoreMapper.findOutContainers();
-        //outContainers.stream().collect(Collectors.groupingBy(x->x.get)
+        List<LayerGoodsCountDto> outContainers = containerStoreMapper.findOutContainers();
+        isasService.getCarInfo();
     }
 
     @Override
