@@ -1,5 +1,6 @@
 package com.prolog.eis.model.inventory;
 
+import com.prolog.framework.core.annotation.AutoKey;
 import com.prolog.framework.core.annotation.Column;
 import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
@@ -34,7 +35,7 @@ public class InventoryTask {
   /**
    * 上传完成
    */
-  public static final int STATE_SEND_TO_WMS = 30;
+  public static final int STATE_SEND_TO_WMS = 40;
 
 
   /**
@@ -49,6 +50,7 @@ public class InventoryTask {
 
   @Column("id")
   @Id
+  @AutoKey(type = AutoKey.TYPE_IDENTITY)
   @ApiModelProperty("盘点计划id")
   private Integer id;
 
@@ -95,6 +97,10 @@ public class InventoryTask {
   @Column("end_time")
   @ApiModelProperty("任务完成时间")
   private java.util.Date endTime;
+
+  @Column("task_id")
+  @ApiModelProperty("wms任务id")
+  private String taskId;
 
   public Integer getId() {
     return id;
@@ -192,4 +198,11 @@ public class InventoryTask {
     this.endTime = endTime;
   }
 
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
 }

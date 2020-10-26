@@ -100,7 +100,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
 
             //商品id，总数，算出所需要出的总箱子
-            List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum, wmsPriority);
+            List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum);
             if (outContainersByGoods.size() == 0) {
                 return outContainerList;
             }
@@ -140,8 +140,15 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         return outContainerList;
     }
 
+    /**
+     *
+     * @param goodsId
+     * @param count
+     * @return
+     * @throws Exception
+     */
     @Override
-    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count, int wmsPriority) throws Exception {
+    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception {
 
         //1.优先出小车所在的层的库存 移位数量由低到高 2.出库任务数从低到高排序 3.按照入库任务数从低到高 4.离出库位置最近的位置
         List<OutContainerDto> outContainerDtoList = new ArrayList<>();
@@ -289,7 +296,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             dto.setLevenCount(ratio);
             dto.setSameCount(sameCount);
         }
-        //先 商品品种相同数最多，然后是不同数最少
+        //商品品种相同数最多，然后是不同数最少
         List<OrderSortDto> list = sortList.stream().sorted(Comparator.comparing(OrderSortDto::getSameCount, Comparator.reverseOrder()).
                 thenComparing(OrderSortDto::getLevenCount)).collect(Collectors.toList());
         if (list.size() > 10) {
