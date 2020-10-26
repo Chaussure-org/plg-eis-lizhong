@@ -2,26 +2,26 @@ package com.prolog.eis.enums;
 
 public enum PointChangeEnum {
 
-    RTM0201("RTM0201","090001000101"),
-    RTM0202("RTM0201","090001000102"),
-    RTM0203("RTM0201","090002000101"),
-    RTM0204("RTM0201","090002000102"),
-    RTM0205("RTM0201","090003000101"),
-    RTM0206("RTM0201","090003000102"),
-    RTM0207("RTM0201","090004000101"),
-    RTM0208("RTM0201","090004000102"),
-    LXJZ01("LXJZ01","150000000001"),
-    LXHK02("LXHK02","150000000001"),
+    RTM0201("RTM0201","090001000101","MTR0201"),
+    RTM0202("RTM0202","090001000102","MTR0202"),
+    RTM0203("RTM0203","090002000101","MTR0203"),
+    RTM0204("RTM0204","090002000102","MTR0204"),
+    RTM0205("RTM0205","090003000101","MTR0205"),
+    RTM0206("RTM0206","090003000102","MTR0206"),
+    RTM0207("RTM0207","090004000101","MTR0207"),
+    RTM0208("RTM0208","090004000102","MTR0208"),
+    LXJZ01("LXJZ01","150000000001","C0201"),
+    LXHK02("LXHK02","150000000001","R0201"),
 
 
-    BCR0101("BCR0101","020000000001"),
-    C0101("C0101","020000000001"),
+    BCR0101("BCR0101","020000000001","R0101"),
+    C0101("C0101","020000000001","C0101"),
 
 
-    MCS01("MCS01","020001000101"),
-    MCS02("MCS02","020002000101"),
-    MCS03("MCS03","020003000101"),
-    MCS04("MCS04","020004000101");
+    MCS01("MCS01","020001000101","MCS01"),
+    MCS02("MCS02","020002000101","MCS02"),
+    MCS03("MCS03","020003000101","MCS03"),
+    MCS04("MCS04","020004000101","MCS04");
 
 
     /**
@@ -34,10 +34,15 @@ public enum PointChangeEnum {
      */
     private String target;
 
+    /**
+     * 对应点
+     */
+    private String corr;
 
-    PointChangeEnum(String point,String target){
+    PointChangeEnum(String point,String target,String corr){
         this.point = point;
         this.target = target;
+        this.corr = corr;
     }
 
 
@@ -57,7 +62,13 @@ public enum PointChangeEnum {
         this.target = target;
     }
 
+    public String getCorr() {
+        return corr;
+    }
 
+    public void setCorr(String corr) {
+        this.corr = corr;
+    }
 
     public static String getPoint(String target){
         for (PointChangeEnum pointChangeEnum : PointChangeEnum.values()) {
@@ -72,6 +83,15 @@ public enum PointChangeEnum {
         for (PointChangeEnum pointChangeEnum : PointChangeEnum.values()) {
             if (pointChangeEnum.point.equals(point)) {
                 return pointChangeEnum.target;
+            }
+        }
+        return null;
+    }
+
+    public static String getCorr(String point){
+        for (PointChangeEnum pointChangeEnum : PointChangeEnum.values()) {
+            if (pointChangeEnum.point.equals(point)) {
+                return pointChangeEnum.corr;
             }
         }
         return null;

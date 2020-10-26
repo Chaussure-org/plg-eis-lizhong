@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
  * @Version: V1.0
  */
 @Component
-@EnableAsync
 public class LocationTimeTask {
 
     @Autowired
@@ -25,7 +24,6 @@ public class LocationTimeTask {
      * @throws Exception
      */
     @Scheduled(initialDelay = 10000, fixedDelay = 15000)
-    @Async
     public void doContainerPathTask() throws Exception {
         locationService.doContainerPathTaskAndExecutionByContainer(null, null);
     }

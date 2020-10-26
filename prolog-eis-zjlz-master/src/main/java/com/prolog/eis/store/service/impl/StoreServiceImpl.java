@@ -34,7 +34,6 @@ public class StoreServiceImpl implements IStoreService {
 
 
     @Override
-    //@LogInfo(direction = "eis->eis",desci = "生成货位",systemType = LogDto.SAS,type = 1)使用方法
     public void initStore(InitStoreDto initStoreDto) throws Exception {
         int layerCount = initStoreDto.getLayerCount();
         int xStart = initStoreDto.getxStart();
@@ -143,12 +142,5 @@ public class StoreServiceImpl implements IStoreService {
             logger.info("add location "+point);
         }
         storeLocationService.saveBatchStoreLocation(listSxStoreLocations);
-    }
-
-
-    //
-    @Override
-    public void initCntainerPatch() {
-
     }
 }

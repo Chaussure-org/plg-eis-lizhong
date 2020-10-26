@@ -1,12 +1,8 @@
 package com.prolog.eis.util;
 
-import org.springframework.boot.web.context.WebServerInitializedEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
+import com.prolog.eis.configuration.ServerConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @Author wangkang
@@ -51,12 +47,4 @@ public class IPUtils {
         return ip;
     }
 
-    /**
-     * 通过服务获取服务端ip
-     * @param serverConfiguration 服务配置
-     * @return
-     */
-    public static String getIpHost(ServerConfiguration serverConfiguration){
-        return serverConfiguration.getUrl();
-    }
 }

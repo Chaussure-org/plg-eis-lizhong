@@ -1,5 +1,7 @@
 package com.prolog.eis.dto.store;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -9,18 +11,25 @@ import java.util.List;
  */
 public class InitStoreDto {
 
+    @ApiModelProperty("层 实际层+1")
     private Integer layerCount;
 
+    @ApiModelProperty("起始巷道  0开始")
     private Integer xStart;
 
+    @ApiModelProperty("实际巷道")
     private Integer xCount;
 
+    @ApiModelProperty("列数  实际列数+1")
     private Integer yCount;
 
+    @ApiModelProperty("深位")
     private Integer ascent;
 
+    @ApiModelProperty("排除列  没有则为空")
     private List<Integer> exList;
 
+    @ApiModelProperty("区域")
     private String areaNo;
 
     public Integer getLayerCount() {

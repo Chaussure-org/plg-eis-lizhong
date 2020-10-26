@@ -9,14 +9,24 @@ public class MCSProperties {
     private String host;
     private int port;
 
-    private String taskUrl="/Interface/Request";//出库（入库/同层移库）任务接口
+    private String mcsContainerMoveUrl="/eis/mcsContainerMove";//出库（入库/同层移库）任务接口
 
-    public String getTaskUrl() {
-        return taskUrl;
+    private String getMcsCarInfoUrl="/eis/getMcsCarInfo";
+
+    public String getGetMcsCarInfoUrl() {
+        return getMcsCarInfoUrl;
     }
 
-    public void setTaskUrl(String taskUrl) {
-        this.taskUrl = taskUrl;
+    public void setGetMcsCarInfoUrl(String getMcsCarInfoUrl) {
+        this.getMcsCarInfoUrl = getMcsCarInfoUrl;
+    }
+
+    public String getMcsContainerMoveUrl() {
+        return mcsContainerMoveUrl;
+    }
+
+    public void setMcsContainerMoveUrl(String mcsContainerMoveUrl) {
+        this.mcsContainerMoveUrl = mcsContainerMoveUrl;
     }
 
     public String getHost() {

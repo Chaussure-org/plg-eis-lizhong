@@ -86,7 +86,7 @@ public class SxStoreLocationGroup {
 
   @Column("belong_area")
   @ApiModelProperty("所属区域")
-  private Integer belongArea;
+  private String belongArea;
 
   @Column("create_time")
   @ApiModelProperty("创建时间")
@@ -220,11 +220,11 @@ public class SxStoreLocationGroup {
     this.reservedLocation = reservedLocation;
   }
 
-  public Integer getBelongArea() {
+  public String getBelongArea() {
     return belongArea;
   }
 
-  public void setBelongArea(Integer belongArea) {
+  public void setBelongArea(String belongArea) {
     this.belongArea = belongArea;
   }
 

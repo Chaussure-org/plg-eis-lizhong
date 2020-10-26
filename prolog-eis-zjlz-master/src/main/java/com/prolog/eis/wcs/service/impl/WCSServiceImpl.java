@@ -31,7 +31,7 @@ public class WCSServiceImpl implements IWCSService {
      * @return
      */
     private String getUrl(String path){
-        return String.format("http://%s:%s%s",properties.getWcs().getHost(),properties.getWcs().getPort(),path);
+        return String.format("http://%s%s",properties.getWcs().getHost(),path);
     }
 
     /**

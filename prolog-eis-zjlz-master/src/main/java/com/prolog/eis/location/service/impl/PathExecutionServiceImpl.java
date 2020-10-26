@@ -14,6 +14,7 @@ import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.wcs.service.IWCSService;
 import com.prolog.framework.utils.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +57,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
 
         //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
-        if ("0".equals(rcsRequestResultDto.getCode())) {
+        if ("200".equals(rcsRequestResultDto.getCode())) {
             containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
                     , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
         } else {
@@ -81,11 +82,15 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to mcs");
-        containerPathTaskDetailDTO.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
-        containerPathTaskDetailDTO.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
-        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
-        String taskId = PrologStringUtils.newGUID();
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,containerPathTaskDetailDTO.getSourceLocation(),
+        this.updateTaskId(containerPathTask,containerPathTaskDetailDTO);
+        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
+        BeanUtils.copyProperties(containerPathTaskDetailDTO,containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
+        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
+                containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
         wcsService.lineMove(wcsLineMoveDto);
     }
@@ -115,11 +120,12 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to sas");
+        this.updateTaskId(containerPathTask,containerPathTaskDetailDTO);
         containerPathTaskDetailDTO.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
         containerPathTaskDetailDTO.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
         sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
-        String taskId = PrologStringUtils.newGUID();
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,containerPathTaskDetailDTO.getSourceLocation(),
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
+                containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
         wcsService.lineMove(wcsLineMoveDto);
     }

@@ -45,7 +45,7 @@ public class SASServiceImpl implements ISASService {
      * @return
      */
     private String getUrl(String path) {
-        return String.format("http://%s:%s%s", properties.getSas().getHost(), properties.getSas().getPort(), path);
+        return String.format("http://%s%s", properties.getSas().getHost(), path);
     }
 
     /**
@@ -56,7 +56,7 @@ public class SASServiceImpl implements ISASService {
     @Override
     @LogInfo(desci = "sas请求小车信息", direction = "eis->sas", type = LogDto.SAS_TYPE_GET_CARINFO, systemType = LogDto.SAS)
     public List<CarInfoDTO> getCarInfo() throws IOException {
-        String url = this.getUrl(properties.getWcs().getRequestCarUrl());
+        String url = this.getUrl(properties.getSas().getGetCarInfoUrl());
         logger.info("EIS -> SAS 请求小车信息:{}", url);
         RestMessage<CarListDTO> result = httpUtils.post(url, null, new TypeReference<RestMessage<CarListDTO>>() {
         });
@@ -72,7 +72,7 @@ public class SASServiceImpl implements ISASService {
     @LogInfo(desci = "sas获取提升机信息", direction = "eis->sas", type = LogDto.SAS_TYPE_GET_HOISTERINFO, systemType =
             LogDto.SAS)
     public List<HoisterInfoDto> getHoisterInfoDto() throws Exception {
-        String url = this.getUrl(properties.getWcs().getRequestHoisterUrl());
+        String url = this.getUrl(properties.getSas().getGetHoisterInfoDtoUrl());
         logger.info("EIS -> SAS 获取提升机信息:{}", url);
         String data = this.restTemplate.postForObject(url, null, String.class);
         logger.info("+++++++++++++++提升机:" + data + "++++++++++++++++++");
@@ -90,12 +90,12 @@ public class SASServiceImpl implements ISASService {
     @Override
     @LogInfo(desci = "eis请求小车换层", direction = "eis->sas", type = LogDto.SAS_TYPE_CHANGE_LAYER, systemType = LogDto.SAS)
     public RestMessage<String> moveCar(SasMoveCarDto sasMoveCarDto) throws Exception {
-        String url = this.getUrl(properties.getWcs().getMoveCarUrl());
-        logger.info("EIS -> SAS 请求小车换层:{}", url);
-        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto),
-                new TypeReference<RestMessage<String>>() {
-                });
-        return result;
+//        String url = this.getUrl(properties.getSas().);
+//        logger.info("EIS -> SAS 请求小车换层:{}", url);
+//        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto),
+//                new TypeReference<RestMessage<String>>() {
+//                });
+        return null;
     }
 
 
@@ -108,12 +108,10 @@ public class SASServiceImpl implements ISASService {
     @Override
     @LogInfo(desci = "eis出入库任务", direction = "eis->sas", type = LogDto.SAS_TYPE_SEND_TASK, systemType =
             LogDto.SAS)
-    public RestMessage<String> sendContainerTask(SasMoveTaskDto sasMoveTaskDto) throws IOException {
-        String url = this.getUrl(properties.getWcs().getTaskUrl());
+    public RestMessage<String> sendContainerTask(SasMoveTaskDto sasMoveTaskDto) throws Exception {
+        String url = this.getUrl(properties.getSas().getSendContainerTaskUrl());
         logger.info("EIS -> WCS 任务请求:{}", url);
-        List<SasMoveTaskDto> list = new ArrayList<>();
-        list.add(sasMoveTaskDto);
-        RestMessage<String> result = httpUtils.post(url, MapUtils.put("carryList", list.toArray()).getMap(),
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveTaskDto),
                 new TypeReference<RestMessage<String>>() {
                 });
         return result;
@@ -122,12 +120,13 @@ public class SASServiceImpl implements ISASService {
 
     @Override
     public RestMessage<String> deleteAbnormalContainerNo(String taskId, String containerNo) throws Exception {
-        String url = this.getUrl(properties.getWcs().getRequestBankTaskUrl());
-        logger.info("EIS -> WCS 删除异常入库料箱:{}", url);
-
-        RestMessage<String> result = httpUtils.post(url, MapUtils.put("taskId", taskId).put("containerNo",
-                containerNo).getMap(), new TypeReference<RestMessage<String>>() {
-        });
-        return result;
+//        String url = this.getUrl(properties.getWcs().getRequestBankTaskUrl());
+//        logger.info("EIS -> WCS 删除异常入库料箱:{}", url);
+//
+//        RestMessage<String> result = httpUtils.post(url, MapUtils.put("taskId", taskId).put("containerNo",
+//                containerNo).getMap(), new TypeReference<RestMessage<String>>() {
+//        });
+//        return result;
+        return null;
     }
 }

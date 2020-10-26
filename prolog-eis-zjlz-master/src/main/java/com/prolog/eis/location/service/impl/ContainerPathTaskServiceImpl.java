@@ -204,6 +204,15 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         return containerPathTaskMapper.findByMap(map,ContainerPathTask.class);
     }
 
+    /**
+     * 更新路径任务
+     * @param containerPathTask 路径任务
+     */
+    @Override
+    public void updateTask(ContainerPathTask containerPathTask) {
+        containerPathTaskMapper.update(containerPathTask);
+    }
+
     private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){
 
         List<StoreAreaPriorityDTO> result = new ArrayList<>();

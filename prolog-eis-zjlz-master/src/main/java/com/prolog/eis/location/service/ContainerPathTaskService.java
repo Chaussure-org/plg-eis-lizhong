@@ -68,4 +68,10 @@ public interface ContainerPathTaskService {
      * @throws Exception
      */
     List<ContainerPathTask> findByMap(Map map) throws Exception;
+
+    /**
+     * 更新路径任务
+     * @param containerPathTask 路径任务
+     */
+    void updateTask(ContainerPathTask containerPathTask);
 }

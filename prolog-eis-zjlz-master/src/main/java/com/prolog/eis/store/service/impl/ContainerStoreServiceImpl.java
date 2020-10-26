@@ -73,7 +73,7 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 	
 	@Override
 	public String buildTaskProperty1(GoodsInfo goodsInfo) {
-        if (goodsInfo.getOwnerId() == null || goodsInfo.getGoodsCode() == null ){
+        if (goodsInfo == null ||goodsInfo.getOwnerId() == null || goodsInfo.getGoodsCode() == null ){
             return null;
         }
 		return goodsInfo.getOwnerId() + "And" + goodsInfo.getGoodsCode();
@@ -81,7 +81,7 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 
 	@Override
 	public String buildTaskProperty2(GoodsInfo goodsInfo) {
-        if (goodsInfo.getLotId() == null || goodsInfo.getGoodsOrderNo() == null){
+        if (goodsInfo == null ||goodsInfo.getLotId() == null || goodsInfo.getGoodsOrderNo() == null){
             return null;
         }
 		return goodsInfo.getLotId() + "And" + goodsInfo.getGoodsOrderNo();

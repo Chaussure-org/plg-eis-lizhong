@@ -1,7 +1,7 @@
 package com.prolog.eis.aspect;
 
 import com.prolog.eis.util.IPUtils;
-import com.prolog.eis.util.ServerConfiguration;
+import com.prolog.eis.configuration.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.util.LogInfo;
@@ -15,8 +15,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletRequest;
-import javax.xml.ws.RequestWrapper;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -32,14 +30,16 @@ public class LogAspect {
     @Autowired
     private ILogService logService;
 
+    @Autowired
+    private ServerConfiguration serverConfiguration;
+
     @Pointcut("@annotation(com.prolog.eis.util.LogInfo)")
     public void doLog(){}
 
     @Around("doLog()")
-    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         LogDto log = new LogDto();
-        ServerConfiguration serverConfiguration = new ServerConfiguration();
-        log.setHostPort(IPUtils.getIpHost(serverConfiguration));
+        log.setHostPort(serverConfiguration.getUrl());
         Object[] args = joinPoint.getArgs();
 
         String methodName = joinPoint.getSignature().getName();
@@ -76,6 +76,7 @@ public class LogAspect {
                     log.setCreateTime(new Date());
                     System.out.println(log);
                     logService.save(log);
+                    return proceed;
                 }catch (Exception e){
                     log.setSuccess(false);
                     log.setException(e.getMessage().toString());
@@ -83,10 +84,11 @@ public class LogAspect {
                     logService.save(log);
                 }
             }else {
-                joinPoint.proceed();
+                return joinPoint.proceed();
             }
         }else {
-            joinPoint.proceed();
+            return joinPoint.proceed();
         }
+        return null;
     }
 }

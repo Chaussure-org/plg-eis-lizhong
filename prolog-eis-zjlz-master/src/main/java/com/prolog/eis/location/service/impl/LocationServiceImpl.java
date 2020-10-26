@@ -91,7 +91,7 @@ public class LocationServiceImpl implements LocationService {
                 containerNo, LocationConstants.PATH_TASK_STATE_TOBESENT);
 
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
-            throw new Exception("当前没有可执行的容器任务！");
+            return;
         }
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
             List<ContainerPathTaskDetailDTO> containerPathTaskDetailList =
