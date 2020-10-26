@@ -1,11 +1,13 @@
 package com.prolog.eis.dto.wcs;
 
+import java.io.Serializable;
+
 /**
  * @author LuoLi
  * @version 1.0
  * @date 2020/7/13 20:06
  */
-public class HoisterInfoDto {
+public class HoisterInfoDto implements Serializable {
 
     private String hoist;
 

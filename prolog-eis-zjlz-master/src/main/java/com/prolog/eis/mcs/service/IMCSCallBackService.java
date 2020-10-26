@@ -1,5 +1,7 @@
 package com.prolog.eis.mcs.service;
 
+import com.prolog.eis.dto.mcs.McsCallBackDto;
+
 /**
  * @Author wangkang
  * @Description
@@ -7,5 +9,11 @@ package com.prolog.eis.mcs.service;
  */
 public interface IMCSCallBackService {
 
-    void mcsCallback(String taskId,int status) throws Exception;
+
+    /**
+     * 根据回告内容执行操作
+     * @param mcsCallBackDto 回告内容
+     * @throws Exception
+     */
+    void mcsCallback(McsCallBackDto mcsCallBackDto) throws Exception;
 }

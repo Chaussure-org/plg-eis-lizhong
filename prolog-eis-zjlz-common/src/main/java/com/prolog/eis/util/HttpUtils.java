@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class HttpUtils {
 	private RestTemplate restTemplate;
 	private final Logger logger = LoggerFactory.getLogger(HttpUtils.class);

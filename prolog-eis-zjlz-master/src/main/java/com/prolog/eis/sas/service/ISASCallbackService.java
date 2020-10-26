@@ -9,6 +9,6 @@ public interface ISASCallbackService {
      * @param taskCallbackDTO
      * @return
      */
-    RestMessage<String> executeTaskCallback(TaskCallbackDTO taskCallbackDTO);
+    RestMessage<String> executeTaskCallback(TaskCallbackDTO taskCallbackDTO) throws Exception;
 
 }

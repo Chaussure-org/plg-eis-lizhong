@@ -2,12 +2,14 @@ package com.prolog.eis.dto.wcs;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 /**
  * @Author wangkang
  * @Description 输送线行走实体
  * @CreateTime 2020-10-18 19:17
  */
-public class WcsLineMoveDto {
+public class WcsLineMoveDto implements Serializable {
 
     @ApiModelProperty("任务id")
     private String taskId;

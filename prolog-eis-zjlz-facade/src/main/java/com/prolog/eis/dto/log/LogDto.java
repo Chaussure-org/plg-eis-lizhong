@@ -146,6 +146,11 @@ public class LogDto {
      */
     public static final int MCS_TYPE_CONTIANER_MOVE = 2;
 
+    /**
+     * eis查询堆垛机信息
+     */
+    public static final int MCS_TYPE_GETCATINFO = 3;
+
 
     @ApiModelProperty("id")
     private Integer id;

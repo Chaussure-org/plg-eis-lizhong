@@ -4,12 +4,14 @@ import com.prolog.eis.dto.sas.SasMoveTaskDto;
 import com.prolog.eis.dto.wcs.SasMoveCarDto;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 /**
  * @Author wangkang
  * @Description mcs出入库实体
  * @CreateTime 2020-10-18 20:56
  */
-public class McsMoveTaskDto {
+public class McsMoveTaskDto implements Serializable {
 
     @ApiModelProperty("任务id")
     private String taskId;

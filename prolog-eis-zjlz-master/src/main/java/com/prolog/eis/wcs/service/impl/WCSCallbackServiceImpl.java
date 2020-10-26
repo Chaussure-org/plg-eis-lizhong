@@ -217,7 +217,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             }
             //先找入库点位
             //调用入库方法
-            pathSchedulingService.inboundTask(containerNo, containerNo, "c", "BCR0101", "A");
+            pathSchedulingService.inboundTask(containerNo, containerNo, "WCS", address, "A");
         }
     }
 
