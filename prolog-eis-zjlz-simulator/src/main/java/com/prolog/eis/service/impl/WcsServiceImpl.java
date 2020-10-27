@@ -43,7 +43,7 @@ public class WcsServiceImpl implements WcsService {
     }
 
     @Override
-    public void doBcrRequest(WcsLineMoveDto wcsLineMoveDto, int type) {
+    public synchronized void doBcrRequest(WcsLineMoveDto wcsLineMoveDto, int type) {
         String url = "http://service-ai-eis-zjlz-master-wk/wcs/bcr";
         try {
             BCRDataDTO bcrDataDTO = new BCRDataDTO();
