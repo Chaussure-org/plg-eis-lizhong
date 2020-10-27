@@ -134,8 +134,8 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "ob.id AS orderBillId,\n" +
             "od.id AS detailId,\n" +
             "od.goods_id AS goodsId,\n" +
-            "od.plan_qty AS planQty\n" +
+            "od.plan_qty AS planQty,ob.branch_type as orderPriority \n" +
             "FROM order_bill ob LEFT JOIN order_detail od on ob.id=od.order_bill_id\n" +
             "WHERE ob.order_type=3")
-    List<OutContainerDto> findTransfer();
+    List<OutDetailDto> findTransfer();
 }

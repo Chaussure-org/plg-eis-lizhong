@@ -1,6 +1,7 @@
 package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
+import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TransferEnginService;
 import com.prolog.eis.order.dao.OrderDetailMapper;
@@ -26,8 +27,8 @@ public class TransferEnginServiceImpl implements TransferEnginService {
 
     @Override
     public void init() throws Exception {
-        //1.订单查询 移库类型 2.调度出库
-        List<OutContainerDto> transfers = orderDetailMapper.findTransfer();
+        //1.订单查询 移库类型 2.每次出库一个订单明细
+        List<OutDetailDto> transfers = orderDetailMapper.findTransfer();
 
     }
 }
