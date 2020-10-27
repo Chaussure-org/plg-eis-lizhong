@@ -37,5 +37,5 @@ public class ConstantEnum {
     /**
      * 立库入库bcr
      */
-    public static final int BCR_TYPE_LKRK = 2;
+    public static final int BCR_TYPE_LKRK = 4;
 }

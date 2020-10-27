@@ -184,9 +184,9 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
                 // 生成库存
                 createContainerInfo(wareHousings.get(0));
                 String target = null;
-                if (String.valueOf(ConstantEnum.BCR_TYPE_XKRK).equals(point.getPointType())) {
+                if (ConstantEnum.BCR_TYPE_XKRK==point.getPointType()) {
                     target = "SAS01";
-                } else if (String.valueOf(ConstantEnum.BCR_TYPE_LKRK).equals(point.getPointType())) {
+                } else if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
                     //先分配堆垛机
                     target = containerPathTaskService.computeAreaIn();
                 } else {

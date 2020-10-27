@@ -111,6 +111,7 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
                             .put("updateTime", nowTime).getMap()
                     , ContainerPathTaskDetail.class);
         } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
+            // TODO: 2020/10/27  agv 最终到达agv区域
             containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
         }
         //历史表
