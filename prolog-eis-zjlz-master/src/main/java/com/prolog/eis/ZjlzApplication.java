@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 @MapperScan(basePackages={"com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService
-public class ZjlzApplication {
+public class  ZjlzApplication {
 	public static void main( String[] args )
     {
     	SpringApplication.run(ZjlzApplication.class, args);

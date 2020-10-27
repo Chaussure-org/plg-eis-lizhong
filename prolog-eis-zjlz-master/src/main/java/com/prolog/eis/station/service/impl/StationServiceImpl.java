@@ -90,7 +90,7 @@ public class StationServiceImpl implements IStationService {
         String ipAddr = IPUtils.getIpAddr(request);
         List<Station> stations = stationMapper.findByMap(MapUtils.put("stationIp", ipAddr).getMap(), Station.class);
         if (stations.size() > 1 || stations.size() < 1){
-            throw new Exception("站台配置有问题请检查");
+            throw new Exception("站台配置有问题请检查站台配置");
         }
         return stations.get(0).getId();
     }
