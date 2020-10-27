@@ -552,7 +552,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                             .put("sourceLocation", containerPathTaskDetail.getNextLocation())
                             .put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE)
                             .put("arriveTime", time)
-                            .put("sortIndex", 1).getMap(),
+                            .put("sortIndex", 1).put("taskId",null).getMap(),
                     ContainerPathTaskDetail.class);
 
             //判断整个任务是否完成
@@ -564,7 +564,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                                 .put("targetLocation", containerPathTaskDetail.getNextLocation())
                                 .put("taskState", LocationConstants.PATH_TASK_STATE_NOTSTARTED)
                                 .put("taskType", LocationConstants.PATH_TASK_TYPE_NONE)
-                                .put("updateTime", time).put("taskId",null).getMap(),
+                                .put("updateTime", time).getMap(),
                         ContainerPathTask.class);
             } else {
                 //整个任务未完成

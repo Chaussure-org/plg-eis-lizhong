@@ -208,6 +208,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
                             if (o1.getOutCount() == o2.getOutCount()) {
                                 //4.入库库任务数从低到高排序
                                 if (o1.getInCount() == o2.getInCount()) {
+                                    //可以加距离
                                     return 0;
                                 } else {
                                     return o1.getInCount() < o2.getInCount() ? -1 : 1;

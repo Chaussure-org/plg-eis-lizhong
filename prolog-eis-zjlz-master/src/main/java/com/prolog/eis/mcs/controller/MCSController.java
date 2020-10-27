@@ -7,6 +7,7 @@ import com.prolog.eis.dto.mcs.McsRequestTaskDto;
 import com.prolog.eis.dto.mcs.TaskReturnInBoundRequestResponseDto;
 import com.prolog.eis.mcs.service.IMCSCallBackService;
 import com.prolog.eis.util.PrologApiJsonHelper;
+import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,8 +42,13 @@ public class MCSController {
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")
-    public void taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
+    public RestMessage<String> taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
-        mcsCallbackService.mcsCallback(mcsCallBackDto);
+        try {
+            mcsCallbackService.mcsCallback(mcsCallBackDto);
+            return RestMessage.newInstance(true,"回告成功");
+        }catch (Exception e){
+            return RestMessage.newInstance(false,"回告失败"+e.getMessage());
+        }
     }
 }
