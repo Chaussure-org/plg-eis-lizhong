@@ -65,7 +65,7 @@ public class LogAspect {
                 log.setDirect(logInfo.direction());
                 log.setSystemType(logInfo.systemType());
                 log.setType(logInfo.type());
-                if (args !=null) {
+                if (args !=null&&args.length>0) {
                     Object arg = args[0];
                     log.setParams(JsonUtils.toString(arg));
                 }

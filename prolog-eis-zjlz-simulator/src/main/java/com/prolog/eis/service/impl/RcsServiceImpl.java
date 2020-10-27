@@ -22,25 +22,32 @@ public class RcsServiceImpl implements RcsService {
 
     @Autowired
     private HttpUtils httpUtils;
+
     @Override
     public void doCallBack(RcsTaskDto rcsTaskDto) {
         String startUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvCallback";
-        try{
-            RestMessage<String> result = httpUtils.post(startUrl, MapUtils.put("reqCode",rcsTaskDto.getReqCode()).put("taskCode",
-                    rcsTaskDto.getReqCode()).put("method","outbin").getMap(),
-                    new TypeReference<RestMessage<String>>() {});
+        try {
+            RestMessage<String> result = httpUtils.post(startUrl, MapUtils.put("reqCode", rcsTaskDto.getReqCode()).put("taskCode",
+                    rcsTaskDto.getReqCode()).put("method", "outbin").getMap(),
+                    new TypeReference<RestMessage<String>>() {
+                    });
             System.out.println("rcscallback成功");
         } catch (Exception e) {
             System.out.println("rcscallback失败");
         }
-
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         String endUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvCallback";
-        try{
-            RestMessage<String> result = httpUtils.post(endUrl, MapUtils.put("reqCode",rcsTaskDto.getReqCode()).put("taskCode",
-                    rcsTaskDto.getReqCode()).put("method","end").getMap(),
-                    new TypeReference<RestMessage<String>>() {});
+        try {
+            RestMessage<String> result = httpUtils.post(endUrl, MapUtils.put("reqCode", rcsTaskDto.getReqCode()).put("taskCode",
+                    rcsTaskDto.getReqCode()).put("method", "end").getMap(),
+                    new TypeReference<RestMessage<String>>() {
+                    });
             System.out.println("rcscallback成功");
         } catch (Exception e) {
             System.out.println("rcscallback失败");

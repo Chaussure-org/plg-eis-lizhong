@@ -32,7 +32,7 @@ public class WmsInboundTask {
 
   @Column("branch_type")
   @ApiModelProperty("仓库类型")
-  private Integer branchType;
+  private String branchType;
 
   @Column("bill_type")
   @ApiModelProperty("任务类型")
@@ -98,11 +98,11 @@ public class WmsInboundTask {
     this.id = id;
   }
 
-  public Integer getBranchType() {
+  public String getBranchType() {
     return branchType;
   }
 
-  public void setBranchType(Integer branchType) {
+  public void setBranchType(String branchType) {
     this.branchType = branchType;
   }
 

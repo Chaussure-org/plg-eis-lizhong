@@ -44,6 +44,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
             return;
         }
         //所有的车
+
         List<CarInfoDTO> cars = isasService.getCarInfo().stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
         if (cars.size()==0){
             return;
