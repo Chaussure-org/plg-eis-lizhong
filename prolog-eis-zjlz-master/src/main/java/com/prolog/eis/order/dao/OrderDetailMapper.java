@@ -33,7 +33,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\tAND od.area_no=#{areaNo} \n" +
             "ORDER BY\n" +
             "\tod.create_time DESC")
-    List<OutDetailDto> findAgvDetail(@Param("areaNo")String areaNo);
+    List<OutDetailDto> findAgvDetail(@Param("areaNo") String areaNo);
 
 
     @Select("SELECT\n" +
@@ -51,7 +51,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\tAND od.area_no=#{areaNo} \n" +
             "ORDER BY\n" +
             "\tod.create_time DESC")
-    List<OutDetailDto> findLineDetail(@Param("areaNo")String areaNo);
+    List<OutDetailDto> findLineDetail(@Param("areaNo") String areaNo);
 
     @Select("SELECT\n" +
             "\tod.order_bill_id AS orderBillId,\n" +
@@ -62,10 +62,12 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "FROM\n" +
             "\torder_bill ob\n" +
             "\tLEFT JOIN order_detail od ON ob.id = od.order_bill_id " +
-            "where od.area_no ='' or od.area_no is null")
+            "where od.area_no ='' or od.area_no is null and ob.order_type=1 ")
     List<OutDetailDto> findOutDetails();
+
     /**
      * 查当前播种商品信息
+     *
      * @param orderDetailId
      * @return
      * @throws Exception
@@ -85,6 +87,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
 
     /**
      * 当前订单播种商品条目
+     *
      * @param orderBillId
      * @return
      * @throws Exception
@@ -100,6 +103,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
 
     /**
      * 检查订单播种情况
+     *
      * @param orderBillId
      * @return
      * @throws Exception
@@ -109,6 +113,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
 
     /**
      * 商品是否贴标
+     *
      * @param orderBillId
      * @param orderTrayNo
      * @return
@@ -123,5 +128,14 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "WHERE\n" +
             "\ts.order_bill_id = #{orderBillId} \n" +
             "\tAND s.order_tray_no = #{orderTrayNo}")
-    List<OrderDetailLabelDTO> goodsLabelInfo(@Param("orderBillId") int orderBillId,@Param("orderTrayNo") String orderTrayNo);
+    List<OrderDetailLabelDTO> goodsLabelInfo(@Param("orderBillId") int orderBillId, @Param("orderTrayNo") String orderTrayNo);
+
+    @Select("SELECT \n" +
+            "ob.id AS orderBillId,\n" +
+            "od.id AS detailId,\n" +
+            "od.goods_id AS goodsId,\n" +
+            "od.plan_qty AS planQty\n" +
+            "FROM order_bill ob LEFT JOIN order_detail od on ob.id=od.order_bill_id\n" +
+            "WHERE ob.order_type=3")
+    List<OutContainerDto> findTransfer();
 }

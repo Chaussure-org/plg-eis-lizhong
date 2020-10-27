@@ -8,4 +8,6 @@ package com.prolog.eis.engin.service;
  * @date:2020/10/27 11:07
  */
 public interface TransferEnginService {
+
+    void init() throws Exception;
 }

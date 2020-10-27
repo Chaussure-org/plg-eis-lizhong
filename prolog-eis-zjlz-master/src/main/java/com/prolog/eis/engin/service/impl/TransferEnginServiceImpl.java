@@ -1,7 +1,13 @@
 package com.prolog.eis.engin.service.impl;
 
+import com.prolog.eis.dto.lzenginee.OutContainerDto;
+import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TransferEnginService;
+import com.prolog.eis.order.dao.OrderDetailMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Author SunPP
@@ -12,4 +18,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TransferEnginServiceImpl implements TransferEnginService {
+
+    @Autowired
+    private BoxOutEnginService boxOutEnginService;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
+
+    @Override
+    public void init() throws Exception {
+        //1.订单查询 移库类型 2.调度出库
+        List<OutContainerDto> transfers = orderDetailMapper.findTransfer();
+
+    }
 }
