@@ -1,9 +1,7 @@
 package com.prolog.eis.engin.dispatch;
 
-import com.prolog.eis.engin.service.AgvLineOutEnginService;
-import com.prolog.eis.engin.service.BoxOutEnginService;
-import com.prolog.eis.engin.service.FinishedProdOutEnginService;
-import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.engin.service.*;
+import com.prolog.eis.model.wcs.CrossLayerTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,6 +28,9 @@ public class OutDispatch {
 
     @Autowired
     private FinishedProdOutEnginService finishedProdOutEnginService;
+
+    @Autowired
+    private CrossLayerEnginService crossLayerEnginService;
 
     /**
      * 托盘库 出库
@@ -84,9 +85,10 @@ public class OutDispatch {
     /**
      * 小车跨层调度
      */
+    @Scheduled(initialDelay = 3000, fixedDelay = 4000)
     public void crossLayer(){
         try{
-
+            crossLayerEnginService.findCrossLayerTask();
         }catch (Exception e){
             e.printStackTrace();
         }
