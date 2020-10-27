@@ -21,13 +21,6 @@ public class PointUtils {
             "BCR0207","BCR0208",
             "LXJZ01",};
 
-    public static final String[] OUT_POINT = {
-            "090001000102",
-            "090002000102",
-            "090003000102",
-            "090004000102"
-    };
-
     public static int isContain(String str){
         for (String bcrPoint : PointUtils.BCR_POINTS_IN) {
             if (bcrPoint.equals(str)){
@@ -37,11 +30,6 @@ public class PointUtils {
         for (String bcrPoint : PointUtils.BCR_POINTS_OUT) {
             if (bcrPoint.equals(str)){
                 return 2;
-            }
-        }
-        for (String bcrPoint : PointUtils.OUT_POINT) {
-            if (bcrPoint.equals(str)){
-                return 3;
             }
         }
         return 0;

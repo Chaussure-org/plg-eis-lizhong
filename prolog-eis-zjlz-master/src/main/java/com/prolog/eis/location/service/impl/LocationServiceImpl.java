@@ -86,7 +86,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void doPathExecutionByContainer(String palletNo, String containerNo) throws Exception {
+    public synchronized void doPathExecutionByContainer(String palletNo, String containerNo) throws Exception {
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo,
                 containerNo, LocationConstants.PATH_TASK_STATE_TOBESENT);
 

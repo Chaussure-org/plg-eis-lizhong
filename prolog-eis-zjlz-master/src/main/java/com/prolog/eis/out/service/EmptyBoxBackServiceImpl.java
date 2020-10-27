@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
  * @return
  * @date:2020/10/26 10:49
  */
-@Service
 public class EmptyBoxBackServiceImpl implements EmptyBoxBackService {
 
     @Autowired
