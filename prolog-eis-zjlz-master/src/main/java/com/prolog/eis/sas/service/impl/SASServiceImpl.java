@@ -90,12 +90,10 @@ public class SASServiceImpl implements ISASService {
     @Override
     @LogInfo(desci = "eis请求小车换层", direction = "eis->sas", type = LogDto.SAS_TYPE_CHANGE_LAYER, systemType = LogDto.SAS)
     public RestMessage<String> moveCar(SasMoveCarDto sasMoveCarDto) throws Exception {
-//        String url = this.getUrl(properties.getSas().);
-//        logger.info("EIS -> SAS 请求小车换层:{}", url);
-//        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto),
-//                new TypeReference<RestMessage<String>>() {
-//                });
-        return null;
+        String url = this.getUrl(properties.getSas().getGetCarInfoUrl());
+        logger.info("EIS -> SAS 请求小车换层:{}", url);
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto), new TypeReference<RestMessage<String>>() {});
+        return result;
     }
 
 

@@ -21,6 +21,19 @@ public class OrderBill {
     public static final int FIRST_PRIORITY = 1;
     public static final int SECOND_PRIORITY = 2;
     public static final int THIRD_PRIORITY = 3;
+    /**
+     * 半成品出库
+     */
+    public static final int ORDER_TYPE_PRODUCE=1;
+    /**
+     * 成品出库
+     */
+    public static final int ORDER_TYPE_SALES=2;
+
+    /**
+     * 移库
+     */
+    public static final int ORDER_TYPE_TRANS=3;
 
     public static final int WMS_PRIORITY=10;
     public static final int WMS_ADD_PRIORITY=20;
