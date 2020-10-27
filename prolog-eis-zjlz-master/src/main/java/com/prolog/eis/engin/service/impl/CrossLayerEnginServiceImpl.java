@@ -60,7 +60,8 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         }
         //单次调度只生成一条跨层任务 1.优先任务数最多的层先执行跨层
         tasksNoCars.stream().sorted(Comparator.comparing(LayerGoodsCountDto::getOutCount, Comparator.reverseOrder()));
-        this.sendCrossLayerTask(carNoTasks.get(0).getLayer(), tasksNoCars.get(0).getLayer(), carNoTasks.get(0).getRgvId());
+        CarInfoDTO car=carNoTasks.get(0);
+        this.sendCrossLayerTask(car.getLayer(), tasksNoCars.get(0).getLayer(),car.getRgvId());
     }
 
     @Override
