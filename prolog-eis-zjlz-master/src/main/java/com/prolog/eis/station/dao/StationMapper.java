@@ -21,7 +21,8 @@ public interface StationMapper extends BaseMapper<Station> {
 
 
     /**
-     *   得到当前站台拣选的订单汇总id
+     * 得到当前站台拣选的订单汇总id
+     *
      * @return
      */
     @Select("SELECT\n" +
@@ -35,6 +36,7 @@ public interface StationMapper extends BaseMapper<Station> {
 
     /**
      * 清空站台拣选单id
+     *
      * @param stationId
      */
     @Update("update station set current_station_pick_id = null where id = #{stationId}")
@@ -42,25 +44,23 @@ public interface StationMapper extends BaseMapper<Station> {
 
     /**
      * 通过容器号查询站台任务
+     *
      * @param containerNo
      * @return
      */
     @Select("select lbc.container_no as containerNo,\n" +
-            "       lbc.order_bill_id as orderBillId,\n" +
-            "       po.id as pickOrderId,\n" +
-            "       s.id as stationId from                                                               " +
-            "station s\n" +
-            "    left join picking_order po on s.id = po.station_id\n" +
-            "    left join order_bill ob on po.id = ob.picking_order_id\n" +
-            "    left join line_binding_detail lbc on ob.id = lbc.order_bill_id where s.container_no = #{containerNo};")
+            "       lbc.order_bill_id as orderBillId \n" +
+            "       stationId from                                                               " +
+            "    left join line_binding_detail lbc  where lbc.container_no = #{containerNo};")
     List<ContainerTaskDto> getTaskByContainerNo(@Param("containerNo") String containerNo);
+
     /**
      * 切换站台是否索取订单
      */
     @Update("update station set is_lock = #{isLock} WHERE id = #{stationId}")
-    void updateStationLock(@Param("isLock") int isLock,@Param("stationId") int stationId);
+    void updateStationLock(@Param("isLock") int isLock, @Param("stationId") int stationId);
 
     @Select("SELECT * FROM agv_storagelocation a left join container_path_task c on a.location_no=c.target_location \n" +
             "where c.task_state=0 AND c.container_no=#{containerNo} AND a.device_no=#{stationId} AND c.target_area='SN01';")
-    int cheackContainerNo(@Param("containerNo")String containerNo,@Param("stationId")int stationId);
+    int cheackContainerNo(@Param("containerNo") String containerNo, @Param("stationId") int stationId);
 }
