@@ -7,12 +7,17 @@ import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.mcs.service.IMCSCallBackService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.util.mapper.Query;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
+import com.prolog.framework.utils.MapUtils;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,14 +44,17 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     private SxMoveStoreService sxMoveStoreService;
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
+    @Autowired
+    private ContainerStoreMapper containerStoreMapper;
 
     /**
      * mcs回告
+     *
      * @param mcsCallBackDto 回告内容
      * @throws Exception
      */
     @Override
-    @LogInfo(desci = "堆垛机mcs任务回告",direction = "mcs->eis",type = LogDto.MCS_TYPE_CALLBACK,systemType = LogDto.MCS)
+    @LogInfo(desci = "堆垛机mcs任务回告", direction = "mcs->eis", type = LogDto.MCS_TYPE_CALLBACK, systemType = LogDto.MCS)
     @Transactional(rollbackFor = Exception.class)
     public void mcsCallback(McsCallBackDto mcsCallBackDto) throws Exception {
         String taskCode = mcsCallBackDto.getTaskId();
@@ -57,7 +65,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         }
         Query query = new Query(ContainerPathTaskDetail.class);
         query.addEq("taskId", taskCode);
-        query.addEq("containerNo",containerNo);
+        query.addEq("containerNo", containerNo);
         List<ContainerPathTaskDetail> containerPathTaskDetailList = containerPathTaskDetailMapper.findByEisQuery(query);
         if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
             throw new Exception("任务不存在");
@@ -65,10 +73,10 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         Timestamp nowTime = PrologDateUtils.parseObject(new Date());
 
         switch (state) {
-            case LocationConstants.MCS_TASK_METHOD_START :
+            case LocationConstants.MCS_TASK_METHOD_START:
                 this.callbackStart(containerPathTaskDetailList, nowTime);
                 break;
-            case LocationConstants.MCS_TASK_METHOD_END :
+            case LocationConstants.MCS_TASK_METHOD_END:
                 this.callbackEnd(containerPathTaskDetailList, nowTime);
                 break;
             default:
@@ -78,6 +86,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
 
     /**
      * mcs回告开始
+     *
      * @param containerPathTaskDetailList
      * @param nowTime
      * @throws Exception
@@ -87,10 +96,10 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         Integer taskState = containerPathTaskDetail.getTaskState();
 
         switch (taskState) {
-            case LocationConstants.PATH_TASK_DETAIL_STATE_SEND :
-                sxMoveStoreService.mcsCallBackStart(containerPathTaskDetail,nowTime);
+            case LocationConstants.PATH_TASK_DETAIL_STATE_SEND:
+                sxMoveStoreService.mcsCallBackStart(containerPathTaskDetail, nowTime);
                 break;
-            case LocationConstants.PATH_TASK_DETAIL_STATE_PALLETINPLACE :
+            case LocationConstants.PATH_TASK_DETAIL_STATE_PALLETINPLACE:
                 this.mcsTransferCallbackStart(containerPathTaskDetailList, nowTime);
                 break;
             default:
@@ -99,6 +108,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
 
     /**
      * mcs移载回告开始
+     *
      * @param containerPathTaskDetailList
      * @param nowTime
      * @throws Exception
@@ -131,6 +141,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
 
     /**
      * mcs回告结束
+     *
      * @param containerPathTaskDetailList
      * @param nowTime
      * @throws Exception
@@ -138,13 +149,16 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     private void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime) throws Exception {
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
         Integer taskState = containerPathTaskDetail.getTaskState();
-
+        //当从堆垛机库出库完成时 更改库存离里taskType状态
+        Criteria ctr=Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containernO",containerPathTaskDetail.getContainerNo()));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",0).getMap(),ctr);
         switch (taskState) {
             //先回告了开始，才能改成完成状态
-            case LocationConstants.PATH_TASK_DETAIL_STATE_START :
-                sxMoveStoreService.mcsCallBackComplete(containerPathTaskDetail,nowTime);
+            case LocationConstants.PATH_TASK_DETAIL_STATE_START:
+                sxMoveStoreService.mcsCallBackComplete(containerPathTaskDetail, nowTime);
                 break;
-            case LocationConstants.PATH_TASK_DETAIL_STATE_BINDPALLET :
+            case LocationConstants.PATH_TASK_DETAIL_STATE_BINDPALLET:
                 this.mcsTransferCallbackEnd(containerPathTaskDetailList, nowTime);
                 break;
             default:
@@ -153,6 +167,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
 
     /**
      * mcs移载回告结束
+     *
      * @param containerPathTaskDetailList
      * @param nowTime
      * @throws Exception
@@ -226,6 +241,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
 
     /**
      * 修改任务汇总状态
+     *
      * @param containerPathTaskDetail
      * @return
      * @throws Exception
