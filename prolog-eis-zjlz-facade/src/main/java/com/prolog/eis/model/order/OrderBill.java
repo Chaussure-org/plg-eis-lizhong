@@ -38,6 +38,9 @@ public class OrderBill {
     public static final int WMS_PRIORITY=10;
     public static final int WMS_ADD_PRIORITY=20;
 
+    public static final String BRANCH_TYPE_LTK="LTK";
+    public static final String BRANCH_TYPE_XSK="XSK";
+
     public static final int ORDER_STATUS_START_OUT=10;
     public static final int ORDER_STATUS_OUTING=20;
     public static final int ORDER_STATUS_FINISH=30;
@@ -57,6 +60,11 @@ public class OrderBill {
     @Column("order_type")
     @ApiModelProperty("订单类型）")
     private String orderType;
+
+
+    @Column("branch_type")
+    @ApiModelProperty("移库类型）")
+    private String branchType;
 
     @Column("order_priority")
     @ApiModelProperty("订单优先级")
@@ -95,6 +103,14 @@ public class OrderBill {
     @ApiModelProperty("出库截止时间，越靠小越先出")
     private Date outTime;
 
+    public String getBranchType() {
+        return branchType;
+    }
+
+    public void setBranchType(String branchType) {
+        this.branchType = branchType;
+    }
+
     @Column("task_id")
     @ApiModelProperty("任务id")
     private String taskId;
@@ -102,6 +118,9 @@ public class OrderBill {
     @Column("bill_date")
     @ApiModelProperty("单据日期")
     private Date billDate;
+
+
+
 
     public Date getBillDate() {
         return billDate;

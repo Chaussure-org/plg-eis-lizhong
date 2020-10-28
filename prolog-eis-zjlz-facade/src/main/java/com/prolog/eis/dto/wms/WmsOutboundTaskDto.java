@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
@@ -13,52 +14,68 @@ import java.util.Date;
 public class WmsOutboundTaskDto {
 
     @ApiModelProperty("任务号")
+    @JsonProperty(value = "TASKID")
     private String TASKID;
 
     @ApiModelProperty("业主内码")
+    @JsonProperty(value = "CONSIGNOR")
     private String CONSIGNOR;
 
     @ApiModelProperty("仓库id")
+    @JsonProperty(value = "BRANCHCODE")
     private String BRANCHCODE;
 
     @ApiModelProperty("单据编号")
+    @JsonProperty(value = "BILLNO")
     private String BILLNO;
 
     @ApiModelProperty("单据类型")
+    @JsonProperty(value = "BILLTYPE")
     private String BILLTYPE;
 
     @ApiModelProperty("关联采购单订单号")
+    @JsonProperty(value = "CUSTPONO")
     private String CUSTPONO;
 
     @ApiModelProperty("单据日期")
+    @JsonProperty(value = "BILLDATE")
     private Date BILLDATE;
 
     @ApiModelProperty("单据行号")
+    @JsonProperty(value = "SEQNO")
     private String SEQNO;
 
     @ApiModelProperty("商品编码")
+    @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
     @ApiModelProperty("商品名称")
+    @JsonProperty(value = "ITMENAME")
     private String ITMENAME;
 
     @ApiModelProperty("包装数量")
+    @JsonProperty(value = "JZS")
     private Integer JZS;
 
     @NotNull
     @ApiModelProperty("数量")
+    @JsonProperty(value = "QTY")
     private Double QTY;
 
     @ApiModelProperty("贴标区")
+    @JsonProperty(value = "SFTB")
     private String SFTB;
 
     @ApiModelProperty("时间戳")
+    @JsonProperty(value = "SJC")
     private Date SJC;
 
     @ApiModelProperty("是否订单托")
+    @JsonProperty(value = "SPECIAL")
     private Integer SPECIAL;
 
     @ApiModelProperty("麦头")
+    @JsonProperty(value = "LOTNO")
     private String LOTNO;
 
     @ApiModelProperty("拓展字段1")

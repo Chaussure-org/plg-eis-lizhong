@@ -1,8 +1,11 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,76 +13,100 @@ import java.util.Date;
  * @Description
  * @CreateTime 2020-09-25 16:37
  */
-public class WmsInboundTaskDto {
+
+public class WmsInboundTaskDto implements Serializable {
 
     @ApiModelProperty("行号")
+    @JsonProperty(value = "LINEID")
     private String LINEID;
 
     @ApiModelProperty("仓库id")
+    @JsonProperty(value = "BRANCHCODE")
     private String BRANCHCODE;
 
     @ApiModelProperty("单据编号")
+    @JsonProperty(value = "BILLNO")
     private String BILLNO;
 
     @ApiModelProperty("库别")
-    private Integer BRANCHTYPE;
+    @JsonProperty(value = "BRANCHTYPE")
+    private String BRANCHTYPE;
 
     @ApiModelProperty("关联单据编号")
+    @JsonProperty(value = "REFBILLNO")
     private String REFBILLNO;
 
     @ApiModelProperty("单据类型")
+    @JsonProperty(value = "BILLTYPE")
     private String BILLTYPE;
 
     @ApiModelProperty("入库日期")
+    @JsonProperty(value = "BILLDATE")
     private Date BILLDATE;
 
     @ApiModelProperty("容器号")
+    @JsonProperty(value = "CONTAINERNO")
     private String CONTAINERNO;
 
     @ApiModelProperty("上级容器号")
+    @JsonProperty(value = "PARENTCONTAINERNO")
     private String PARENTCONTAINERNO;
 
     @ApiModelProperty("备注")
+    @JsonProperty(value = "REMARK")
     private String REMARK;
 
     @ApiModelProperty("单据行号")
+    @JsonProperty(value = "SEQNO")
     private String SEQNO;
 
     @ApiModelProperty("商品ID")
+    @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
     @ApiModelProperty("商品名称")
+    @JsonProperty(value = "ITEMNAME")
     private String ITEMNAME;
 
     @ApiModelProperty("包装数量")
+    @JsonProperty(value = "JZS")
     private Integer JZS;
 
     @NotNull
     @ApiModelProperty("数量")
+    @JsonProperty(value = "QTY")
     private Double QTY;
 
     @ApiModelProperty("批号ID")
+    @JsonProperty(value = "PCH")
     private String PCH;
 
     @ApiModelProperty("生产日期")
+    @JsonProperty(value = "PDATEFROM")
     private Date PDATEFROM;
 
     @ApiModelProperty("时间戳")
+    @JsonProperty(value = "SJC")
     private Date SJC;
 
     @ApiModelProperty("是否订单托")
+    @JsonProperty(value = "SPECIAL")
     private Integer SPECIAL;
 
     @ApiModelProperty("麦头")
+    @JsonProperty(value = "LOTNO")
     private String LOTNO;
 
     @ApiModelProperty("拓展字段1")
+    @JsonProperty(value = "PCH")
     private String EXSATTR1;
 
     @ApiModelProperty("拓展字段2")
+    @JsonProperty(value = "EXSATTR2")
     private String EXSATTR2;
 
     @ApiModelProperty("拓展字段3")
+    @JsonProperty(value = "PCH")
     private String EXSATTR3;
 
     @ApiModelProperty("拓展字段4")
@@ -112,11 +139,11 @@ public class WmsInboundTaskDto {
         this.BILLNO = BILLNO;
     }
 
-    public Integer getBRANCHTYPE() {
+    public String getBRANCHTYPE() {
         return BRANCHTYPE;
     }
 
-    public void setBRANCHTYPE(Integer BRANCHTYPE) {
+    public void setBRANCHTYPE(String BRANCHTYPE) {
         this.BRANCHTYPE = BRANCHTYPE;
     }
 
