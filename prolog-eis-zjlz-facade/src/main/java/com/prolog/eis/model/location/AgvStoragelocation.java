@@ -20,7 +20,8 @@ import java.io.Serializable;
 public class AgvStoragelocation implements Serializable {
     private static final long serialVersionUID = -41236769428637108L;
 
-
+    public static final int TASK_LOCK=1;
+    public static final int TASK_EMPTY=0;
 
 
     @Id

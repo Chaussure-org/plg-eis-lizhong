@@ -134,7 +134,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                             //发送任务 1.此站台没有任务正在执行
                             pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
                             //锁定此位置的状态
-                            agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo());
+                            agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(),AgvStoragelocation.TASK_LOCK);
                             logger.info("生成拣选单agv去往"+station.getId()+"站台的路径");
                         }
                     }

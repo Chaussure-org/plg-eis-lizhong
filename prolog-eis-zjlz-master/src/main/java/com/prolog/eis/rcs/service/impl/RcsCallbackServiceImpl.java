@@ -2,9 +2,11 @@ package com.prolog.eis.rcs.service.impl;
 
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
+import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
+import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.order.OrderBill;
@@ -34,6 +36,8 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
     private AgvBindingDetaileMapper agvBindingDetaileMapper;
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
+    @Autowired
+    private AgvStoragelocationMapper agvStoragelocationMapper;
 
     @Override
     @LogInfo(desci = "rcs任务回告",direction = "rcs->eis",type = LogDto.RCS_TYPE_CALLBACK,systemType = LogDto.RCS)
@@ -81,6 +85,7 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
                         .put("moveTime", nowTime)
                         .put("updateTime", nowTime).getMap()
                 , ContainerPathTaskDetail.class);
+        agvStoragelocationMapper.updateLocationLock(containerPathTaskDetail.getSourceLocation(), AgvStoragelocation.TASK_EMPTY);
     }
 
     /**
