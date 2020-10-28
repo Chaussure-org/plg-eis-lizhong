@@ -19,4 +19,7 @@ public class OutDetailDto {
     private int goodsId;
     private int planQty;
 
+    //移库类型
+    private String branchType;
+
 }

@@ -184,8 +184,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             //查询是否存在入库任务
             List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
             if (wareHousings.size() > 0) {
-                // 生成库存
-                createContainerInfo(wareHousings.get(0));
+
                 String target = null;
                 if (ConstantEnum.BCR_TYPE_XKRK==point.getPointType()) {
                     target = "SAS01";
@@ -198,6 +197,8 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
                 //先找入库点位
                 //调用入库方法
                 pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
+                // 生成库存
+                createContainerInfo(wareHousings.get(0));
             }
         }
     }
