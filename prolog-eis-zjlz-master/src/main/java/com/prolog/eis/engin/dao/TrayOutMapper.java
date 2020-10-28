@@ -20,7 +20,7 @@ public interface TrayOutMapper {
     @Select("SELECT\n" +
             "\tsl.x AS roadWay,\n" +
             "\tSUM( CASE cpt.task_type WHEN 20 or 30 THEN 1 ELSE 0 END ) AS outCount,\n" +
-            "\tSUM( CASE cpt.task_type WHEN 0 OR  10 THEN 1 ELSE 0 END ) AS inCount \n" +
+            "\tSUM( CASE cpt.task_type WHEN 10 THEN 1 ELSE 0 END ) AS inCount \n" +
             "FROM\n" +
             "\tcontainer_path_task cpt\n" +
             "\tLEFT JOIN sx_store_location sl ON cpt.source_location = sl.id \n" +
