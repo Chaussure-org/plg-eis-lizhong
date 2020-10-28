@@ -65,7 +65,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
 
         List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), LineBindingDetail.class);
         if (!detailStatus.isEmpty()) {
-            pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "A100", null);
+            pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "WCS081", "LXJZ01");
             return;
         }
         //1.要去往循环线区域的订单明细
