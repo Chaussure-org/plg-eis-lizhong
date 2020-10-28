@@ -41,7 +41,9 @@ public class LocationServiceTest {
 
     @Test
     public void testPd(){
-        List<InventoryGoodsDto> goodsId = mapper.getInventoryGoods(MapUtils.put("goodsId", 1).getMap());
+        List<InventoryGoodsDto> goodsId = mapper.getInventoryGoods(MapUtils.put("goodsId", null).put("goodsType","")
+                .put("branchType","A").getMap());
+
         return;
     }
 

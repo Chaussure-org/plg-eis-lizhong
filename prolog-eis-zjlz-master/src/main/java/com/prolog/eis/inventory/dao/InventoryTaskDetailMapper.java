@@ -17,7 +17,11 @@ import java.util.Map;
  */
 public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetail> {
 
-
+    /**
+     * 查询可盘点容器
+     * @param map
+     * @return
+     */
     @Select("<script> SELECT\n" +
             "\tcs.container_no AS containerNo,\n" +
             "\tg.goods_no AS goodsNo,\n" +
@@ -34,17 +38,17 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "<if test = 'map.goodsId != null '>" +
             "   and g.id = #{map.goodsId}" +
             "</if>" +
-            "<if test = 'map.goodsType != null and map.goods.goodsType != \"\"'>" +
-            "   and g.goodsType = #{map.goodsType}" +
+            "<if test = 'map.goodsType != null and map.goodsType != \"\"'>" +
+            "   and g.goods_type = #{map.goodsType}" +
             "</if>" +
             "<if test = 'map.containerNo != null and map.containerNo != \"\"'>" +
             "   and s.container_no = #{map.containerNo}" +
             "</if>" +
-            "<if test = 'map.branchType = \"A\"'>" +
+            "<if test = 'map.branchType == \"A\"'>" +
             " and cpt.target_area = 'SAS01'" +
             "</if>" +
-            "<if test = 'map.branchType = \"B\"'>" +
-            " and cpt.target_area IN ( 'MCS01','MCS02','MCS03','MCS04','MCS05' )" +
+            "<if test = 'map.branchType == \"B\"'>" +
+            " and cpt.target_area IN ( 'MCS01','MCS02','MCS03','MCS04','MCS05')" +
             "</if>"+
             "</script>")
     List<InventoryGoodsDto> getInventoryGoods(@Param("map") Map<String,Object> map);

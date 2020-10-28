@@ -417,7 +417,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
     }
 
-    @Transactional(rollbackFor = Exception.class)
+
     @Override
     public void doPicking(int stationId, String containerNo, int completeNum,int orderBillId,String orderBoxNo) throws Exception {
         ContainerBindingDetail containerBinDings = containerBindingDetailService.findMap(MapUtils.put("containerNo", containerNo)
@@ -443,7 +443,7 @@ public class StationBZServiceImpl implements IStationBZService {
         //扣减库存
         containerStoreService.updateContainerStoreNum(containerBinDings.getSeedNum(), containerNo);
         // 删除绑定明细
-        containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderBillId()).getMap());
+        containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderDetailId()).getMap());
         boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
         if (b){
             //当前订单明细完成，回告wms

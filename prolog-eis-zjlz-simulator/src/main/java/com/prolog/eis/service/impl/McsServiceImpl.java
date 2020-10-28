@@ -22,7 +22,7 @@ public class McsServiceImpl implements McsService {
     private HttpUtils httpUtils;
 
     @Override
-    public void doCallBack(McsMoveTaskDto mcsMoveTaskDto){
+    public synchronized void doCallBack(McsMoveTaskDto mcsMoveTaskDto){
         String startUrl = "http://service-ai-eis-zjlz-master-wk/mcs/callback";
         try {
             McsCallBackDto mcsCallBackDto = new McsCallBackDto();
