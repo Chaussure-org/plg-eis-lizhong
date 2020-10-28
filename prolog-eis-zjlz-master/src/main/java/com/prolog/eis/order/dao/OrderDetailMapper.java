@@ -29,7 +29,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "order_bill ob JOIN\n" +
             "\torder_detail od on ob.id=od.order_bill_id\n" +
             "WHERE\n" +
-            "\tod.id NOT IN ( SELECT abd.order_mx_id FROM agv_binding_detail abd ) \n" +
+            "\t od.plan_qty != od.has_pick_qty and od.id NOT IN ( SELECT abd.order_mx_id FROM agv_binding_detail abd ) \n" +
             "\tAND od.area_no=#{areaNo} \n" +
             "ORDER BY\n" +
             "\tod.create_time DESC")

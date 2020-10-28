@@ -21,12 +21,14 @@ import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
+import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
@@ -61,19 +63,21 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     private IContainerStoreService containerStoreService;
     @Autowired
     private ISASService sasService;
+    @Autowired
+    private IWareHousingService iWareHousingService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void mcsContainerMove(ContainerPathTask containerPathTask,
-								 ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                                 ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
         //boolean bl = false;
 
         try {
             //检查移动任务类型
             StoreArea sourceStoreArea = storeAreaMapper.findById(containerPathTaskDetailDTO.getSourceArea(),
-					StoreArea.class);
+                    StoreArea.class);
             StoreArea targetStoreArea = storeAreaMapper.findById(containerPathTaskDetailDTO.getNextArea(),
-					StoreArea.class);
+                    StoreArea.class);
 
             int mcsTaskType = this.getMcsTaskType(sourceStoreArea, targetStoreArea);
             switch (mcsTaskType) {
@@ -138,6 +142,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             this.updateContainerPathTaskComplete(containerPathTask, containerPathTaskDetail, time);
             //解锁货位组
             this.unlockCompletekSxStoreLocation(containerPathTaskDetail);
+            //删除入库任务
+            iWareHousingService.deleteInboundTask(containerPathTask.getContainerNo());
         } catch (Exception e) {
             // TODO: handle exception
             //return false;
@@ -153,7 +159,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      * @param containerPathTaskDetailDTO 路径任务明细
      */
     private void sxkThrough(ContainerPathTask containerPathTask,
-							ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                            ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
 
         try {
             String taskId = containerPathTaskDetailDTO.getTaskId();
@@ -178,7 +184,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      * @param containerPathTaskDetailDTO 路径任务明细
      */
     private void sxkInStoreDetail(ContainerPathTask containerPathTask,
-								  ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                                  ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
 
         try {
             String taskId = containerPathTaskDetailDTO.getTaskId();
@@ -189,7 +195,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             if (StringUtils.isBlank(containerPathTaskDetailDTO.getNextLocation())) {
                 //需要自己分货位
                 GoodsInfo goodsInfo =
-						containerStoreService.findContainerStockInfo(containerPathTaskDetailDTO.getContainerNo());
+                        containerStoreService.findContainerStockInfo(containerPathTaskDetailDTO.getContainerNo());
                 //获取商品id
                 String taskProperty1 = null;
                 String taskProperty2 = null;
@@ -199,8 +205,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 }
 
                 SxStoreLocation targetSxStoreLocation =
-						sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
-                        0, 0, 0, 0, taskProperty1, taskProperty2);
+                        sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
+                                0, 0, 0, 0, taskProperty1, taskProperty2);
                 if (null == targetSxStoreLocation) {
                     //找不到货位
                     return;
@@ -210,15 +216,15 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                         containerPathTaskDetailDTO.getSourceLocation(), null,
                         targetSxStoreLocation.getStoreNo(), targetSxStoreLocation.getStoreLocationGroupId(),
                         containerPathTask.getId(), containerPathTaskDetailDTO.getId(),
-						containerPathTaskDetailDTO.getSourceDeviceSystem());
+                        containerPathTaskDetailDTO.getSourceDeviceSystem());
 
                 SxStoreLocationGroup sxStoreLocationGroup =
-						sxStoreLocationGroupMapper.findById(targetSxStoreLocation.getStoreLocationGroupId(),
-								SxStoreLocationGroup.class);
+                        sxStoreLocationGroupMapper.findById(targetSxStoreLocation.getStoreLocationGroupId(),
+                                SxStoreLocationGroup.class);
                 sxkLocationService.computeLocation(sxStoreLocationGroup);
             } else {
                 SxStoreLocation targetSxStoreLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo",
-						containerPathTaskDetailDTO.getNextLocation()).getMap(), SxStoreLocation.class);
+                        containerPathTaskDetailDTO.getNextLocation()).getMap(), SxStoreLocation.class);
                 this.sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 1,
                         containerPathTaskDetailDTO.getSourceLocation(), null,
                         targetSxStoreLocation.getStoreNo(), targetSxStoreLocation.getStoreLocationGroupId(),
@@ -238,7 +244,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      * @param containerPathTaskDetailDTO
      */
     private void sxkOutStore(ContainerPathTask containerPathTask,
-							 ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                             ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
 
         SxStoreLockDto sxStoreLock = sxStoreMapper.findSxStoreLock(containerPathTask.getContainerNo());
         if (sxStoreLock.getAscentGroupLockState() == 1 || sxStoreLock.getAscentLockState() == 1 || sxStoreLock.getIsLock() == 1) {
@@ -261,7 +267,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      * @param containerPathTaskDetailDTO
      */
     private void sxkMoveStore(ContainerPathTask containerPathTask,
-							  ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                              ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
 
         SxStoreLockDto sxStoreLock = sxStoreMapper.findSxStoreLock(containerPathTask.getContainerNo());
         if (sxStoreLock.getAscentGroupLockState() == 1 || sxStoreLock.getAscentLockState() == 1 || sxStoreLock.getIsLock() == 1) {
@@ -278,7 +284,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     }
 
     private void carOutLogic(ContainerPathTask containerPathTask,
-							 ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                             ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
         try {
             String taskId = containerPathTaskDetailDTO.getTaskId();
             if (StringUtils.isBlank(taskId)) {
@@ -287,7 +293,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
             //当前货位
             SxStoreLocation sourceLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo",
-					containerPathTaskDetailDTO.getSourceLocation()).getMap(), SxStoreLocation.class);
+                    containerPathTaskDetailDTO.getSourceLocation()).getMap(), SxStoreLocation.class);
 
             this.sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 2,
                     sourceLocation.getStoreNo(), sourceLocation.getStoreLocationGroupId(),
@@ -306,7 +312,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      * @param containerPathTaskDetailDTO
      */
     private void carMoveLogic(ContainerPathTask containerPathTask,
-							  ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                              ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
         try {
             String taskId = containerPathTaskDetailDTO.getTaskId();
             if (StringUtils.isBlank(taskId)) {
@@ -315,19 +321,19 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
             //当前货位
             SxStoreLocation sourceLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo",
-					containerPathTaskDetailDTO.getSourceLocation()).getMap(), SxStoreLocation.class);
+                    containerPathTaskDetailDTO.getSourceLocation()).getMap(), SxStoreLocation.class);
             SxStoreLocation nextLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo",
-					containerPathTaskDetailDTO.getNextLocation()).getMap(), SxStoreLocation.class);
+                    containerPathTaskDetailDTO.getNextLocation()).getMap(), SxStoreLocation.class);
 
             this.sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 3,
                     sourceLocation.getStoreNo(), sourceLocation.getStoreLocationGroupId(),
                     nextLocation.getStoreNo(), nextLocation.getStoreLocationGroupId(),
                     containerPathTask.getId(), containerPathTaskDetailDTO.getId(),
-					containerPathTaskDetailDTO.getSourceDeviceSystem());
+                    containerPathTaskDetailDTO.getSourceDeviceSystem());
 
             SxStoreLocationGroup sxStoreLocationGroup =
-					sxStoreLocationGroupMapper.findById(nextLocation.getStoreLocationGroupId(),
-							SxStoreLocationGroup.class);
+                    sxStoreLocationGroupMapper.findById(nextLocation.getStoreLocationGroupId(),
+                            SxStoreLocationGroup.class);
             sxkLocationService.computeLocation(sxStoreLocationGroup);
         } catch (Exception e) {
             // TODO: handle exception
@@ -343,15 +349,15 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      * @throws Exception
      */
     private void carPassiveMoveLogic(ContainerPathTask containerPathTask,
-									 ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
+                                     ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
 
         try {
             SxStoreLocation waitLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo",
-					containerPathTaskDetailDTO.getSourceLocation()).getMap(), SxStoreLocation.class);
+                    containerPathTaskDetailDTO.getSourceLocation()).getMap(), SxStoreLocation.class);
             List<SxStoreGroupDto> groupDtoList = sxStoreMapper.findStoreGroup(waitLocation.getStoreLocationGroupId());
             // 找出移库数为0的货位，并且库存状态是已上架
             List<SxStoreGroupDto> dtos = ListHelper.where(groupDtoList,
-					p -> p.getDeptNum() == 0 && p.getStoreState() == LocationConstants.PATH_TASK_STATE_NOTSTARTED);
+                    p -> p.getDeptNum() == 0 && p.getStoreState() == LocationConstants.PATH_TASK_STATE_NOTSTARTED);
 
             //查找需要移动的托盘的起点
             SxStoreGroupDto moveSxStoreGroupDto = null;
@@ -383,8 +389,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
 
             SxStoreLocation targetSxStoreLocation =
-					sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getSourceArea(),
-                    moveSxStoreGroupDto.getX(), moveSxStoreGroupDto.getY(), 0, 0, taskProperty1, taskProperty2);
+                    sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getSourceArea(),
+                            moveSxStoreGroupDto.getX(), moveSxStoreGroupDto.getY(), 0, 0, taskProperty1, taskProperty2);
             if (null == targetSxStoreLocation) {
                 //找不到货位
                 return;
@@ -392,15 +398,15 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
             //修改移动托盘
             ContainerPathTask moveContainerPathTask = containerPathTaskMapper.findFirstByMap(MapUtils.put(
-            		"containerNo", moveSxStoreGroupDto.getContainerNo()).put("taskState",
-					LocationConstants.PATH_TASK_STATE_NOTSTARTED).getMap(), ContainerPathTask.class);
+                    "containerNo", moveSxStoreGroupDto.getContainerNo()).put("taskState",
+                    LocationConstants.PATH_TASK_STATE_NOTSTARTED).getMap(), ContainerPathTask.class);
             if (null == moveContainerPathTask) {
                 return;
             }
             ContainerPathTaskDetail moveContainerPathTaskDetail =
-					containerPathTaskDetailMapper.findFirstByMap(MapUtils.put("containerNo",
-							moveSxStoreGroupDto.getContainerNo()).put("taskState",
-							LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap(), ContainerPathTaskDetail.class);
+                    containerPathTaskDetailMapper.findFirstByMap(MapUtils.put("containerNo",
+                            moveSxStoreGroupDto.getContainerNo()).put("taskState",
+                            LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap(), ContainerPathTaskDetail.class);
             if (null == moveContainerPathTaskDetail) {
                 return;
             }
@@ -415,11 +421,11 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     moveSxStoreGroupDto.getStoreNo(), moveSxStoreGroupDto.getStoreLocationGroupId(),
                     targetSxStoreLocation.getStoreNo(), targetSxStoreLocation.getStoreLocationGroupId(),
                     moveContainerPathTask.getId(), moveContainerPathTaskDetail.getId(),
-					containerPathTaskDetailDTO.getSourceDeviceSystem());
+                    containerPathTaskDetailDTO.getSourceDeviceSystem());
 
             SxStoreLocationGroup sxStoreLocationGroup =
-					sxStoreLocationGroupMapper.findById(targetSxStoreLocation.getStoreLocationGroupId(),
-							SxStoreLocationGroup.class);
+                    sxStoreLocationGroupMapper.findById(targetSxStoreLocation.getStoreLocationGroupId(),
+                            SxStoreLocationGroup.class);
             sxkLocationService.computeLocation(sxStoreLocationGroup);
         } catch (Exception e) {
             // TODO: handle exception
@@ -443,7 +449,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      */
     private void sendMoveTask(String containerNo, String taskId, int taskType, String sourceStoreNo,
                               Integer sourceGroupId, String nextStoreNo, Integer nextGroupId, int pathTaskId,
-							  int pathTaskDetailId, String sourceDeviceSystem) {
+                              int pathTaskDetailId, String sourceDeviceSystem) {
         //发送mcs移动指令
         try {
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem)) {
@@ -454,7 +460,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     //发送成功
                     //修改路径状态
                     this.updateContainerPathTask(pathTaskId, LocationConstants.PATH_TASK_STATE_SEND, pathTaskDetailId
-							, nextStoreNo, taskId, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
+                            , nextStoreNo, taskId, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
 
                     this.lockSxStoreLocation(taskType, sourceGroupId, nextGroupId);
                 }
@@ -467,7 +473,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     //发送成功
                     //修改路径状态
                     this.updateContainerPathTask(pathTaskId, LocationConstants.PATH_TASK_STATE_SEND, pathTaskDetailId
-							, nextStoreNo, taskId, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
+                            , nextStoreNo, taskId, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
 
                     this.lockSxStoreLocation(taskType, sourceGroupId, nextGroupId);
                 }
@@ -485,7 +491,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     private int getMcsTaskType(StoreArea sourceStoreArea, StoreArea targetStoreArea) throws Exception {
         if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceStoreArea.getDeviceSystem()) || LocationConstants.DEVICE_SYSTEM_RCS.equals(targetStoreArea.getDeviceSystem())) {
             throw new Exception(String.format("起点区域:%s,终点区域:%s不是%s", sourceStoreArea, targetStoreArea,
-					LocationConstants.DEVICE_SYSTEM_RCS));
+                    LocationConstants.DEVICE_SYSTEM_RCS));
         }
 
         if (sourceStoreArea.getAreaType() == LocationConstants.AREA_TYPE_AREA && targetStoreArea.getAreaType() == LocationConstants.AREA_TYPE_AREA) {
@@ -506,7 +512,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     }
 
     private void updateContainerPathTask(int taskHzId, int taskHzState, int taskDetailId, String nextStoreNo,
-										 String taskId, int taskDetailState) throws Exception {
+                                         String taskId, int taskDetailState) throws Exception {
         containerPathTaskMapper.updateMapById(taskHzId,
                 MapUtils.put("updateTime", PrologDateUtils.parseObject(new Date()))
                         .put("taskState", taskHzState).getMap(), ContainerPathTask.class);
@@ -533,7 +539,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     }
 
     private void updateContainerPathTaskComplete(ContainerPathTask containerPathTask,
-												 ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception {
+                                                 ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception {
 
         //判断当前的任务节点是否为最后一个节点
         ContainerPathTaskDetail nextContainerPathTaskDetail = containerPathTaskDetailMapper.findFirstByMap(
@@ -541,7 +547,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                         .put("containerNo", containerPathTaskDetail.getContainerNo())
                         .put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_NOTSTARTED)
                         .put("sortIndex", containerPathTaskDetail.getSortIndex() + 1).getMap(),
-				ContainerPathTaskDetail.class);
+                ContainerPathTaskDetail.class);
 
         if (null == nextContainerPathTaskDetail) {
             //属于最后一个节点
@@ -552,7 +558,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                             .put("sourceLocation", containerPathTaskDetail.getNextLocation())
                             .put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE)
                             .put("arriveTime", time)
-                            .put("sortIndex", 1).put("taskId",null).getMap(),
+                            .put("sortIndex", 1).put("taskId", null).getMap(),
                     ContainerPathTaskDetail.class);
 
             //判断整个任务是否完成
@@ -599,21 +605,21 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             //入库锁目标货位
             sxStoreLocationGroupMapper.updateMapById(targetGroupId,
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
-					SxStoreLocationGroup.class);
+                    SxStoreLocationGroup.class);
         } else if (taskType == 2) {
             //出库锁原货位
             sxStoreLocationGroupMapper.updateMapById(sourceGroupId,
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
-					SxStoreLocationGroup.class);
+                    SxStoreLocationGroup.class);
         } else if (taskType == 3) {
             //出库锁原货位
             sxStoreLocationGroupMapper.updateMapById(sourceGroupId,
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
-					SxStoreLocationGroup.class);
+                    SxStoreLocationGroup.class);
 
             sxStoreLocationGroupMapper.updateMapById(targetGroupId,
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
-					SxStoreLocationGroup.class);
+                    SxStoreLocationGroup.class);
         }
     }
 

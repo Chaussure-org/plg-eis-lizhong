@@ -151,7 +151,8 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @param bcrDataDTO
      * @throws Exception
      */
-    private void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
         String containerNo = bcrDataDTO.getContainerNo();
         String address = bcrDataDTO.getAddress();
         PointLocation point = pointLocationService.getPointByPointId(address);

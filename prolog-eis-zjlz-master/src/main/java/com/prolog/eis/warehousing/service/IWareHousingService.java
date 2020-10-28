@@ -13,8 +13,11 @@ public interface IWareHousingService {
 
     /**
      * 通过容器号找wms下发的入库任务
+     *
      * @param containerNo 容器号
      * @return
      */
     List<WmsInboundTask> getWareHousingByContainer(String containerNo);
+
+    void deleteInboundTask(String containerNo) throws Exception;
 }
