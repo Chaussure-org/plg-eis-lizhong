@@ -22,6 +22,8 @@ import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.store.dao.PickingOrderMapper;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.framework.utils.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
+
+    private final Logger logger = LoggerFactory.getLogger(AgvLineOutEnginServiceImpl.class);
 
     @Autowired
     private AgvBindingDetaileMapper agvBindingDetaileMapper;
@@ -62,6 +66,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             return;
         }
         List<AgvBindingDetail> agvDetails = agvDetailsTemp.stream().filter(x -> x.getOrderPriority().equals(OrderBill.FIRST_PRIORITY)).collect(Collectors.toList());
+
         if (agvDetails.isEmpty()) {
             //找已经到达循环线的箱子
             List<AgvBindingDetail> lineDetails = lineBindingDetailMapper.findLineDetails();
@@ -70,6 +75,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             }
             this.takePickOrder(lineDetails);
         } else {
+            logger.info("agv区域的托盘已到达，开始生成拣选单");
             this.takePickOrder(agvDetails);
         }
 
@@ -89,6 +95,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
         List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
         //如果没用开启的站台
         if (stations.isEmpty()) {
+            logger.info("没有可用站台");
             return;
         }
         List<AgvBindingDetail> sortDetails = sortDetails(bindingDetails);
@@ -104,6 +111,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                     this.savePickOrder(station, orderMap.getKey());
                     //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
                     this.saveContainerBindingDetail(orderMap.getValue());
+                    logger.info("生成拣选单"+orderMap.getValue()+station.getId()+"站台");
                     map.remove(orderMap.getKey());
                     break;
                 }
@@ -127,7 +135,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                             pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
                             //锁定此位置的状态
                             agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo());
-
+                            logger.info("生成拣选单agv去往"+station.getId()+"站台的路径");
                         }
                     }
                 }

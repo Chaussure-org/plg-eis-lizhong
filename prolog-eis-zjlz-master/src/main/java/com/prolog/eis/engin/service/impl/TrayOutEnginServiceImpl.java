@@ -120,6 +120,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         if (!detailStatus.isEmpty()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.RCS01, null);
             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
+            logger.info(detailStatus.get(0).getContainerNo()+"生成去往agv区域路径");
             return;
         }
         //1.要去往agv区域的订单明细,排除已经生成agv任务计划的， 然后按时间排序
@@ -331,6 +332,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         if (details.size() > 0) {
+            logger.info(ids.toString()+"找到"+priority+"类订单");
             this.updateBillPriority(ids, priority);
             this.updateOrderDetailArea(details, area);
             return true;
@@ -427,6 +429,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         agvBindingDetaileMapper.saveBatch(list);
+        logger.info("生成agv绑定明细"+list.toString());
     }
 
     /**
