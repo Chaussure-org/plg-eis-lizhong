@@ -6,6 +6,8 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 
 /**
  * @Description  
@@ -15,6 +17,26 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel ("盘点明细")
 @Table ("inventory_task_detail")
 public class InventoryTaskDetail {
+
+  /**
+   * 任务状态下发
+   */
+  public static final int TASK_STATE_ISSUE = 10;
+
+  /**
+   * 任务状态：已出库
+   */
+  public static final int TASK_STATE_OUT = 20;
+
+  /**
+   * 任务状态：进行中
+   */
+  public static final int TASK_STATE_UNDERWAY = 30;
+
+  /**
+   * 任务状态：进行中
+   */
+  public static final int TASK_STATE_FINISH = 40;
 
   @Column("id")
   @Id
@@ -60,13 +82,10 @@ public class InventoryTaskDetail {
   @ApiModelProperty("出库时间")
   private java.util.Date outboundTime;
 
-  @Column("pd_start_time")
-  @ApiModelProperty("盘点开始时间")
-  private java.util.Date pdStartTime;
 
-  @Column("pd_end_time")
+  @Column("end_time")
   @ApiModelProperty("盘点结束时间")
-  private java.util.Date pdEndTime;
+  private java.util.Date endTime;
 
   @Column("finish_reason")
   @ApiModelProperty("结束原因")
@@ -168,20 +187,12 @@ public class InventoryTaskDetail {
     this.outboundTime = outboundTime;
   }
 
-  public java.util.Date getPdStartTime() {
-    return pdStartTime;
+  public Date getEndTime() {
+    return endTime;
   }
 
-  public void setPdStartTime(java.util.Date pdStartTime) {
-    this.pdStartTime = pdStartTime;
-  }
-
-  public java.util.Date getPdEndTime() {
-    return pdEndTime;
-  }
-
-  public void setPdEndTime(java.util.Date pdEndTime) {
-    this.pdEndTime = pdEndTime;
+  public void setEndTime(Date endTime) {
+    this.endTime = endTime;
   }
 
   public String getFinishReason() {

@@ -1,6 +1,7 @@
 package com.prolog.eis.wms.service.impl;
 
 import com.prolog.eis.base.service.IGoodsService;
+import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wms.*;
 import com.prolog.eis.enums.BranchTypeEnum;
@@ -8,6 +9,7 @@ import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.inventory.InventoryTask;
+import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.model.wms.WmsInboundTask;
@@ -156,6 +158,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
     @Override
     @LogInfo(desci = "wms盘点任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_INVENTORY_TAKS,systemType =
             LogDto.WMS)
+    @Transactional(rollbackFor = Exception.class)
     public void sendInventoryTask(List<WmsInventoryTaskDto> wmsInventoryTasks) throws Exception {
         for (WmsInventoryTaskDto wmsInventoryTask : wmsInventoryTasks) {
             Map<String, Object> param = MapUtils.put("branchType", BranchTypeEnum.getEisBranchType(wmsInventoryTask.getBRANCHTYPE())).put(
@@ -163,8 +166,8 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
                     wmsInventoryTask.getCONTAINERNO()).put("goodsType", wmsInventoryTask.getITEMTYPE()).put("goodsId"
                     , wmsInventoryTask.getITEMID()).getMap();
             // 根据wms下发的相关信息找到需盘点的料箱
-            List detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
-            
+            List<InventoryGoodsDto> detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
+
             if (detailsByMap.size()==0 || detailsByMap == null) {
                 throw new Exception("【"+wmsInventoryTask.getBILLNO()+"】未找到满足盘点规则的容器");
             }
@@ -179,6 +182,21 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
             inventoryTask.setCreateTime(new Date());
             inventoryTask.setIssueTime(inventoryTask.getCreateTime());
             inventoryTask.setTaskId(wmsInventoryTask.getTASKID());
+            List<InventoryTaskDetail> inventoryDeatils = new ArrayList<>();
+            for (InventoryGoodsDto inventoryGoodsDto : detailsByMap) {
+                InventoryTaskDetail inventoryTaskDetail = new InventoryTaskDetail();
+                inventoryTaskDetail.setInventoryTaskId(inventoryTask.getId());
+                inventoryTaskDetail.setContainerNo(inventoryGoodsDto.getContainerNo());
+                inventoryTaskDetail.setCreateTime(new Date());
+                inventoryTaskDetail.setGoodsName(inventoryGoodsDto.getGoodsName());
+                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getGoodsNo());
+                inventoryTaskDetail.setOriginalCount(inventoryGoodsDto.getOriginalCount());
+                inventoryTaskDetail.setModifyCount(0);
+                inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_ISSUE);
+                inventoryDeatils.add(inventoryTaskDetail);
+            }
+            inventoryTaskService.saveInventoryTask(inventoryTask);
+            inventoryTaskDetailService.saveInventoryDetailBatch(inventoryDeatils);
 
 
 

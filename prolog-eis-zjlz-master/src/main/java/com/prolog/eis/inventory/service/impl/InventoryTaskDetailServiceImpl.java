@@ -2,6 +2,7 @@ package com.prolog.eis.inventory.service.impl;
 
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
+import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,14 @@ public class InventoryTaskDetailServiceImpl implements IInventoryTaskDetailServi
     @Override
     public List getDetailsByMap(Map<String, Object> param) {
 
-        return null;
+        return inventoryTaskDetailMapper.getInventoryGoods(param);
+    }
+
+    @Override
+    public void saveInventoryDetailBatch(List<InventoryTaskDetail> inventoryTaskDetails) {
+        if (inventoryTaskDetails.size() == 0){
+            return;
+        }
+        inventoryTaskDetailMapper.saveBatch(inventoryTaskDetails);
     }
 }

@@ -1,5 +1,8 @@
 package com.prolog.eis.inventory.service;
 
+import com.prolog.eis.dto.inventory.InventoryGoodsDto;
+import com.prolog.eis.model.inventory.InventoryTaskDetail;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +14,15 @@ import java.util.Map;
 public interface IInventoryTaskDetailService {
     /**
      * 通过map中得值去找盘点明细
-     * @param param map
+     * @param param
+     * @return
      */
-    List getDetailsByMap(Map<String, Object> param);
+    List<InventoryGoodsDto> getDetailsByMap(Map<String, Object> param);
+
+
+    /**
+     * 保存盘点计划明细
+     * @param inventoryTaskDetails
+     */
+    void saveInventoryDetailBatch(List<InventoryTaskDetail> inventoryTaskDetails);
 }
