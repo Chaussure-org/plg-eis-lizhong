@@ -1,11 +1,13 @@
 package com.prolog.eis.rcs.service.impl;
 
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.rcs.service.IRCSCallbackService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
@@ -28,6 +30,8 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
     @Autowired
     private ContainerPathTaskMapper containerPathTaskMapper;
+    @Autowired
+    private AgvBindingDetaileMapper agvBindingDetaileMapper;
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
 
@@ -112,6 +116,7 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
                     , ContainerPathTaskDetail.class);
         } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
             // TODO: 2020/10/27  agv 最终到达agv区域
+            agvBindingDetaileMapper.updateAgvStatus(containerPathTask.getContainerNo(), OrderBill.ORDER_STATUS_FINISH);
             containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
         }
         //历史表

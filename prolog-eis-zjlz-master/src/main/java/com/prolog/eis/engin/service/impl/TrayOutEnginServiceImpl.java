@@ -119,7 +119,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), AgvBindingDetail.class);
         if (!detailStatus.isEmpty()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.RCS01, null);
-            agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo());
+            agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
             return;
         }
         //1.要去往agv区域的订单明细,排除已经生成agv任务计划的， 然后按时间排序

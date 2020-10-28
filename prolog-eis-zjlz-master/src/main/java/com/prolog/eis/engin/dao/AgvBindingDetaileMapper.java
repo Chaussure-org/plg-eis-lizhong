@@ -36,8 +36,8 @@ public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
     @Select("\tSELECT abd.goodsId AS goodsId,cs.qty AS qty FROM agv_binding_detail abd LEFT JOIN container_store cs ON abd.container_no=cs.container_no\n")
     List<OutDetailDto> findAgvBindingsStore();
 
-    @Update("UPDATE agv_binding_detail abd set abd.detail_status=20 WHERE abd.container_no=#{containerNo}")
-    void updateAgvStatus(@Param("containerNo")String containerNo);
+    @Update("UPDATE agv_binding_detail abd set abd.detail_status=#{status} WHERE abd.container_no=#{containerNo}")
+    void updateAgvStatus(@Param("containerNo")String containerNo,@Param("status")int status);
 
     @Delete("DELETE FROM agv_binding_detail a WHERE a.order_bill_id NOT IN (SELECT DISTINCT IFNULL(t.id,0) FROM (SELECT ob.id FROM station s LEFT JOIN order_bill ob ON s.current_station_pick_id =ob.picking_order_id UNION ALL\n" +
             "            SELECT a.order_bill_id FROM agv_binding_detail a WHERE a.wms_order_priority = 10 ) t)")
