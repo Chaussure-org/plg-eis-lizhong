@@ -1,5 +1,6 @@
 package com.prolog.eis.model.order;
 
+import com.prolog.framework.core.annotation.AutoKey;
 import com.prolog.framework.core.annotation.Column;
 import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
@@ -46,6 +47,7 @@ public class OrderBill {
     public static final int ORDER_STATUS_FINISH=30;
     @Column("id")
     @Id
+    @AutoKey(type = AutoKey.TYPE_IDENTITY)
     @ApiModelProperty("订单ID")
     private Integer id;
 

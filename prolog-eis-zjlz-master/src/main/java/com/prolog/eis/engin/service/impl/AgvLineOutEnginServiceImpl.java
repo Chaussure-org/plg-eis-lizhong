@@ -75,7 +75,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             }
             this.takePickOrder(lineDetails);
         } else {
-            logger.info("agv区域的托盘已到达，开始生成拣选单");
+            logger.info("==============agv区域的托盘已到达，开始生成拣选单==============");
             this.takePickOrder(agvDetails);
         }
 
@@ -95,7 +95,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
         List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
         //如果没用开启的站台
         if (stations.isEmpty()) {
-            logger.info("没有可用站台");
+            logger.info("===============没有可用站台=============");
             return;
         }
         List<AgvBindingDetail> sortDetails = sortDetails(bindingDetails);
@@ -111,7 +111,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                     this.savePickOrder(station, orderMap.getKey());
                     //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
                     this.saveContainerBindingDetail(orderMap.getValue());
-                    logger.info("生成拣选单"+orderMap.getValue()+station.getId()+"站台");
+                    logger.info("==========正在生成拣选单"+orderMap.getValue()+station.getId()+"站台===========");
                     map.remove(orderMap.getKey());
                     break;
                 }
@@ -135,7 +135,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                             pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
                             //锁定此位置的状态
                             agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(),AgvStoragelocation.TASK_LOCK);
-                            logger.info("生成拣选单agv去往"+station.getId()+"站台的路径");
+                            logger.info("================生成拣选单agv去往"+station.getId()+"站台的路径=============");
                         }
                     }
                 }
