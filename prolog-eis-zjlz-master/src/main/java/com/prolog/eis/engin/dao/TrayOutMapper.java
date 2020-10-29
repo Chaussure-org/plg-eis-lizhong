@@ -19,8 +19,8 @@ import java.util.List;
 public interface TrayOutMapper {
     @Select("SELECT\n" +
             "\tsl.x AS roadWay,\n" +
-            "\tSUM( CASE c.task_type WHEN 20 OR 21 OR 22 THEN 1 ELSE 0 END ) AS outCount,\n" +
-            "\tSUM( CASE c.task_type WHEN 10 OR 11 OR 12 THEN 1 ELSE 0 END ) AS inCount \n" +
+            "\tSUM( CASE c.task_status WHEN 20  THEN 1 ELSE 0 END ) AS outCount,\n" +
+            "\tSUM( CASE c.task_status WHEN 10  THEN 1 ELSE 0 END ) AS inCount \n" +
             "FROM\n" +
             "\tcontainer_path_task cpt\n" +
             "\tLEFT JOIN container_store c ON  c.container_no=cpt.container_no\n" +
