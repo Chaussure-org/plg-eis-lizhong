@@ -149,6 +149,8 @@ public class StationBZServiceImpl implements IStationBZService {
         picking.setPickNum(bindingDetail.getSeedNum());
         picking.setOrderDetailId(bindingDetail.getOrderDetailId());
         BCPGoodsInfoDTO bcpGoodsDTO = orderDetailService.findPickingGoods(bindingDetail.getOrderDetailId()).get(0);
+        List<ContainerStore> containerStores = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap());
+        picking.setQty(containerStores.get(0).getQty());
         picking.setGoodsname(bcpGoodsDTO.getGoodsname());
         picking.setGraphNo(bcpGoodsDTO.getGraphNo());
         picking.setGoodsNo(bcpGoodsDTO.getGoodsNo());
