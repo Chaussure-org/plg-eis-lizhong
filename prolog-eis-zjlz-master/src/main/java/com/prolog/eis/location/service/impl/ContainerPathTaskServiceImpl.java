@@ -8,6 +8,7 @@ import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskHistoryMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.ContainerPathTaskHistory;
@@ -253,6 +254,13 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
             return "MCS01";
         }
         return taskCountDtos.get(0).getAreaNo();
+    }
+
+    @Override
+    public void updatePathTaskTypeByContainer(String containerNo, int type) {
+        Criteria ctr=Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
+        containerPathTaskMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
     }
 
     private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){

@@ -42,6 +42,11 @@ public class ContainerStore {
     @ApiModelProperty("任务类型(0无业务任务;10;入库;11补货入库;12移库入库;20出库;21盘点出库;22移库出库)")
     private Integer taskType;
 
+    @Column("task_status")
+    @ApiModelProperty("任务类型(0 无任务 10 入库中 20 出库中)")
+    private Integer taskStatus;
+
+
     @Column("work_count")
     @ApiModelProperty("作业次数")
     private Integer workCount;
@@ -74,6 +79,13 @@ public class ContainerStore {
     @ApiModelProperty("更新时间")
     private java.util.Date updateTime;
 
+    public Integer getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(Integer taskStatus) {
+        this.taskStatus = taskStatus;
+    }
     public Integer getId() {
         return id;
     }

@@ -50,7 +50,7 @@ public interface StationMapper extends BaseMapper<Station> {
      */
     @Select("select lbc.container_no as containerNo,\n" +
             "       lbc.order_bill_id as orderBillId \n" +
-            "       stationId from                                                               " +
+            "       from station                                                                " +
             "    left join line_binding_detail lbc  where lbc.container_no = #{containerNo};")
     List<ContainerTaskDto> getTaskByContainerNo(@Param("containerNo") String containerNo);
 

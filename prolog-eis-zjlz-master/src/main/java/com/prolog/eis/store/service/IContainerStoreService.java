@@ -80,7 +80,7 @@ public interface IContainerStoreService {
      * @param containerNo
      * @param type
      */
-    void updateTaskTypeByContainer(String containerNo,int type);
+    void updateTaskStausByContainer(String containerNo,int type);
 
 
     /**

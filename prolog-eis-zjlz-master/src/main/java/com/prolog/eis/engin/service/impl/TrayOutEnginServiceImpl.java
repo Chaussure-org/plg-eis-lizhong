@@ -434,7 +434,11 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //更新容器的状态
         Criteria ctr =Criteria.forClass(ContainerStore.class);
         ctr.setRestriction(Restrictions.in("containerNo",containers.toArray()));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",ContainerStore.TASK_TYPE_OUTBOUND).getMap(),ctr);
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",ContainerStore.TASK_TYPE_OUTBOUND).put("taskStatus",ContainerStore.TASK_TYPE_OUTBOUND).getMap(),ctr);
+        //更新订单状态
+        List<Integer> ids = list.stream().distinct().map(x -> x.getOrderBillId()).collect(Collectors.toList());
+        String idsStr = StringUtils.join(ids, ',');
+        orderBillMapper.updateOrderStatus(OrderBill.ORDER_STATUS_START_OUT,idsStr);
         logger.info("===========生成agv绑定明细"+list.toString());
     }
 

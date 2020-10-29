@@ -140,12 +140,12 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
             //清除路径任务汇总，解绑载具
             if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
                 updateTaskInfo(containerPathTaskDetail, containerPathTask);
-                //入库完成 1.删除入库任务 2.更新库存表业务状态
-                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
-                iContainerStoreService.updateTaskTypeByContainer(containerPathTaskDetail.getContainerNo(),0);
             } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
+                //入库完成 1.删除入库任务 2.更新库存任务状态
+                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
+              iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
             }
             //历史表
             containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);

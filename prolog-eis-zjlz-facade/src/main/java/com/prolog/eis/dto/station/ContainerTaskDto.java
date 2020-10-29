@@ -21,6 +21,17 @@ public class ContainerTaskDto {
     @ApiModelProperty("拣选单号")
     private Integer pickOrderId;
 
+    public Integer getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
+    }
+
+    @ApiModelProperty("任务类型")
+    private Integer taskType;
+
     public String getContainerNo() {
         return containerNo;
     }

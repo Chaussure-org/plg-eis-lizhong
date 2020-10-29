@@ -105,8 +105,8 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
             "WHERE cpt.task_type=0 and cpt.target_area='SAS01' and c.container_type=2")
     List<LayerGoodsCountDto> findEmptyBox();
 
-	@Update("UPDATE container_store c set c.task_type=#{taskType} WHERE FIND_IN_SET(c.container_no,#{strContainers})")
-    void updateContainerStatus(@Param("strContainers")String strContainers,@Param("taskType")int taskType);
+	@Update("UPDATE container_store c set c.task_type=#{taskType},c.task_status=#{taskStatus} WHERE FIND_IN_SET(c.container_no,#{strContainers})")
+    void updateContainerStatus(@Param("strContainers")String strContainers,@Param("taskType")int taskType,@Param("taskStatus")int taskStatus);
 
 	@Select("SELECT LEFT(cpt.source_location,2) AS layer ,COUNT(*) as outCount from container_store c LEFT JOIN container_path_task cpt on c.container_no=cpt.container_no\n" +
             "WHERE  FIND_IN_SET(c.task_type,'20,21,22,23') AND cpt.source_area='SAS01' GROUP BY LEFT(cpt.source_location,2)")

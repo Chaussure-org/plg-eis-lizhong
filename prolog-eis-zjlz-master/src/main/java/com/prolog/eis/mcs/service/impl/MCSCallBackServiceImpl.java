@@ -150,8 +150,8 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     private void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime) throws Exception {
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
         Integer taskState = containerPathTaskDetail.getTaskState();
-        //当从堆垛机库出库完成时 更改库存离里taskType状态
-        iContainerStoreService.updateTaskTypeByContainer(containerPathTaskDetail.getContainerNo(),0);
+        //当从堆垛机库出库完成时 更改路径里taskType状态
+        containerPathTaskService.updatePathTaskTypeByContainer(containerPathTaskDetail.getContainerNo(),0);
         switch (taskState) {
             //先回告了开始，才能改成完成状态
             case LocationConstants.PATH_TASK_DETAIL_STATE_START:

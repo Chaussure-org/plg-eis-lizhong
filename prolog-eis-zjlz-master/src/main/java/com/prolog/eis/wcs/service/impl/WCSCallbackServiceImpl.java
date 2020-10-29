@@ -215,6 +215,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         containerStore.setContainerNo(wareHousing.getContainerNo());
         containerStore.setContainerType("1");
         containerStore.setTaskType(10);
+        containerStore.setTaskStatus(10);
         containerStore.setWorkCount(0);
         containerStore.setGoodsId(Integer.valueOf(wareHousing.getGoodsId()));
         containerStore.setQty(wareHousing.getQty());
@@ -241,6 +242,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,5);
             wcsService.lineMove(wcsLineMoveDto);
         }
+
     }
 
     /**
@@ -261,7 +263,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
             pathSchedulingService.inboundTask(containerNo,containerNo,point.getPointArea(),point.getPointId(),"SAS01");
-            containerStoreService.updateTaskTypeByContainer(containerNo,ContainerStore.TASK_TYPE_INBOUND);
+            containerStoreService.updateTaskStausByContainer(containerNo,ContainerStore.TASK_TYPE_INBOUND);
         }
     }
 

@@ -107,10 +107,10 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
     }
 
     @Override
-    public void updateTaskTypeByContainer(String containerNo, int type) {
+    public void updateTaskStausByContainer(String containerNo, int type) {
         Criteria ctr=Criteria.forClass(ContainerStore.class);
         ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskStatus",type).getMap(),ctr);
     }
 
     /**

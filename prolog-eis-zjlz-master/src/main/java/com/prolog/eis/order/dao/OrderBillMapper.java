@@ -122,4 +122,7 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "\tcs.container_no = #{containerNo}\n" +
             "\tand ob.picking_order_id = #{pickingOrderId}")
     List<FinishTrayDTO> getFinishSeedInfo(@Param("containerNo") String containerNo,@Param("pickingOrderId") int pickingOrderId);
+
+    @Update("update order_bill o set o.order_task_state=#{status} where find_in_set(o.id,#(ids))")
+    void updateOrderStatus(@Param("status")int status,@Param("ids")String ids);
 }
