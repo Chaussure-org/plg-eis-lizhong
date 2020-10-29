@@ -37,14 +37,16 @@ public interface BoxOutMapper {
     List<LayerGoodsCountDto> findLayerGoodsCount(@Param("goodsId")int goodsId);
 
     @Select("SELECT\n" +
-            "\tsl.layer AS layer,\n" +
-            "\tSUM( CASE cpt.task_type WHEN 20 OR 30 THEN 1 ELSE 0 END ) AS outCount,\n" +
-            "\tSUM( CASE cpt.task_type WHEN 0 OR 10 THEN 1 ELSE 0 END ) AS inCount \n" +
+            "\tsl.x AS roadWay,\n" +
+            "\tSUM( CASE c.task_status WHEN 20 THEN 1 ELSE 0 END ) AS outCount,\n" +
+            "\tSUM( CASE c.task_status WHEN 10 THEN 1 ELSE 0 END ) AS inCount \n" +
             "FROM\n" +
             "\tcontainer_path_task cpt\n" +
-            "\tLEFT JOIN sx_store_location sl ON cpt.source_location = sl.id \n" +
+            "\tLEFT JOIN container_store c ON c.container_no = cpt.container_no\n" +
+            "\tLEFT JOIN sx_store_location sl ON cpt.source_location = sl.store_no \n" +
+            "\tOR cpt.target_location = sl.store_no WHERE cpt.target_area ='SAS01' or cpt.source_area ='SAS01'\n" +
             "GROUP BY\n" +
-            "\tsl.layer")
+            "\tsl.x")
         List<LayerTaskDto> findLayerTaskCount();
 
 
