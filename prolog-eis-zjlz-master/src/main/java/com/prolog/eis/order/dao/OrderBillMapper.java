@@ -70,8 +70,8 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "\torder_bill b\n" +
             "\tJOIN order_detail d ON b.id = d.order_bill_id \n" +
             "WHERE\n" +
-            "\td.id = #{orderBillId}")
-    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
+            "\td.id = #{orderDetailId}")
+    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderDetailId")int orderDetailId);
 
     /**
      * 获取成品库未完成播种的明细及汇总数量

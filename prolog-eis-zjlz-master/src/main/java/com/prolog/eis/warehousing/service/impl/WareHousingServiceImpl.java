@@ -5,6 +5,7 @@ import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
+import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +32,10 @@ public class WareHousingServiceImpl implements IWareHousingService {
         Criteria criteria = Criteria.forClass(WmsInboundTask.class);
         criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
         return mapper.findByCriteria(criteria);
+    }
+
+    @Override
+    public void deleteInboundTask(String containerNo) throws Exception {
+        mapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),WmsInboundTask.class);
     }
 }

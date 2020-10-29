@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.*;
 import java.sql.Timestamp;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,6 +116,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
                 case ConstantEnum.TYPE_IN:
                     this.inStation(bcrDataDTO);
                     break;
+                    //箱库二楼入库BCR请求
                 case ConstantEnum.TYPE_MOVE:
                     this.checkGoOn(bcrDataDTO);
                     break;
@@ -149,7 +151,8 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @param bcrDataDTO
      * @throws Exception
      */
-    private void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
         String containerNo = bcrDataDTO.getContainerNo();
         String address = bcrDataDTO.getAddress();
         PointLocation point = pointLocationService.getPointByPointId(address);
@@ -184,9 +187,9 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
                 // 生成库存
                 createContainerInfo(wareHousings.get(0));
                 String target = null;
-                if (String.valueOf(ConstantEnum.BCR_TYPE_XKRK).equals(point.getPointType())) {
+                if (ConstantEnum.BCR_TYPE_XKRK==point.getPointType()) {
                     target = "SAS01";
-                } else if (String.valueOf(ConstantEnum.BCR_TYPE_LKRK).equals(point.getPointType())) {
+                } else if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
                     //先分配堆垛机
                     target = containerPathTaskService.computeAreaIn();
                 } else {
@@ -225,18 +228,15 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @param bcrDataDTO bcr实体
      */
     private void inStation(BCRDataDTO bcrDataDTO) throws Exception {
-        //找到所有站台判定的拣选单
-        //通过拣选单找到订单
-        //通过订单判断这个箱子是否需要去拣选站
         String containerNo = bcrDataDTO.getContainerNo();
-
+        //箱子所找到的所有的站台
         List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
         if (lineBindingDetails.size()>0){
             String taskId = PrologStringUtils.newGUID();
-            Integer stationId = lineBindingDetails.get(0).getStationId();
+            //1.找到离入站BCR最近的站台
+            Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
             PointLocation point = pointLocationService.getPointByStationId(stationId);
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,
-                    5);
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,5);
             wcsService.lineMove(wcsLineMoveDto);
         }
     }
@@ -247,7 +247,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * @param bcrDataDTO bcr实体
      */
     private void checkGoOn(BCRDataDTO bcrDataDTO) throws Exception {
-        //找到向后
+        //1.此BCR 只需要判断 箱子是不是应该回库
         String containerNo = bcrDataDTO.getContainerNo();
         List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
         if (lineBindingDetails.size()>0){

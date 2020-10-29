@@ -98,7 +98,7 @@ public class WmsInboundTaskDto implements Serializable {
     private String LOTNO;
 
     @ApiModelProperty("拓展字段1")
-    @JsonProperty(value = "PCH")
+    @JsonProperty(value = "EXSATTR1")
     private String EXSATTR1;
 
     @ApiModelProperty("拓展字段2")
@@ -106,7 +106,7 @@ public class WmsInboundTaskDto implements Serializable {
     private String EXSATTR2;
 
     @ApiModelProperty("拓展字段3")
-    @JsonProperty(value = "PCH")
+    @JsonProperty(value = "EXSATTR3")
     private String EXSATTR3;
 
     @ApiModelProperty("拓展字段4")

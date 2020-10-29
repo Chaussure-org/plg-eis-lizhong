@@ -12,6 +12,7 @@ import com.prolog.eis.sas.service.ISASCallbackService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
@@ -38,6 +39,9 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
 
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
+
+    @Autowired
+    private IWareHousingService iWareHousingService;
 
     /**
      * 任务回告
@@ -132,6 +136,8 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
             } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
+                //删除入库任务
+                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
             }
             //历史表
             containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);

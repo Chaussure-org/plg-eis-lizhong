@@ -55,8 +55,8 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
     List<StationTrayDTO> findTrayTaskStation(@Param("storeArea") String storeArea,@Param("list") List<Integer> list);
 
 
-    @Update("update agv_storagelocation a set a.task_lock =1 where a.location_no =#{locationNo}")
-    void updateLocationLock(@Param("locationNo") String locationNo);
+    @Update("update agv_storagelocation a set a.task_lock =#{type} where a.location_no =#{locationNo}")
+    void updateLocationLock(@Param("locationNo") String locationNo,@Param("type")int type);
 
     /**
      * 根据站台区域找寻一个可用位置

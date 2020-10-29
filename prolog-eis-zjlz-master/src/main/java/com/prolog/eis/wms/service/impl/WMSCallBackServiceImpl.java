@@ -15,6 +15,7 @@ import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWMSCallBackService;
@@ -54,6 +55,8 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
 
     @Autowired
     private IInventoryTaskDetailService inventoryTaskDetailService;
+    @Autowired
+    private ContainerStoreMapper containerStoreMapper;
 
     /**
      * 处理wms下发的入库任务
@@ -91,6 +94,9 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
     @LogInfo(desci = "wms出库任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK,systemType = LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
     public void sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
+        //1.如果库内已经存在该箱子，测不允许生成该箱子的任务
+        List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
+
         if (wmsOutboundTaskDtos.size()>0) {
             List<String> billNoList =
                     wmsOutboundTaskDtos.stream().map(x -> x.getBILLNO()).distinct().collect(Collectors.toList());
@@ -104,8 +110,11 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
                 orderBill.setBillDate(order.get(0).getBILLDATE());
                 orderBill.setTaskId(order.get(0).getTASKID());
                 orderBillService.saveOrderBill(orderBill);
-                List<OrderDetail> orderDetails = null;
+                List<OrderDetail> orderDetails = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
+                    if (allStoreContainers.contains(wmsOutboundTaskDto.getCONSIGNOR())){
+                        throw new Exception("该容器已经被占用"+wmsOutboundTaskDto.getCONSIGNOR()+"此次所有订单任务下发失败！");
+                    }
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setOrderBillId(orderBill.getId());
                     orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));

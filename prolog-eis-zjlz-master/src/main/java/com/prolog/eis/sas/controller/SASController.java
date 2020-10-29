@@ -1,6 +1,7 @@
 package com.prolog.eis.sas.controller;
 
 import com.prolog.eis.dto.wcs.*;
+import com.prolog.eis.sas.service.ISASCallbackService;
 import com.prolog.eis.wcs.controller.WCSController;
 import com.prolog.eis.wcs.service.IWCSCallbackService;
 import com.prolog.eis.wcs.service.IWCSService;
@@ -26,15 +27,13 @@ public class SASController {
 
     private final Logger logger = LoggerFactory.getLogger(SASController.class);
     @Autowired
-    private IWCSCallbackService wcsService;
-    @Autowired
-    private IWCSService service;
+    private ISASCallbackService sasService;
 
     @ApiOperation(value="任务回告",notes="此接口包含入库任务回告、出库任务回告、移库任务回告、小车换层回告")
     @PostMapping("/task/callback")
     public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception{
         logger.info("接收任务回告,{}",JsonUtils.toString(taskCallbackDTO));
-        return wcsService.executeTaskCallback(taskCallbackDTO);
+        return sasService.executeTaskCallback(taskCallbackDTO);
     }
 
 }

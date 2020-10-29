@@ -117,8 +117,8 @@ public class OrderBillServiceImpl implements IOrderBillService {
     }
 
     @Override
-    public List<WmsOutboundCallBackDto> findWmsOrderBill(int orderBillId) {
-        return orderBillMapper.findWmsOrderBill(orderBillId);
+    public List<WmsOutboundCallBackDto> findWmsOrderBill(int orderDetailId) {
+        return orderBillMapper.findWmsOrderBill(orderDetailId);
     }
 
     @Override
