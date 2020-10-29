@@ -73,7 +73,7 @@ public class StationServiceImpl implements IStationService {
 
     @Override
     public void changeStationIsLock(int stationId, int flag) throws Exception {
-        List<Station> stations = stationMapper.findByMap(MapUtils.put("stationId", stationId).put("stationType", Station.STATION_TYPE_FINISHEDPROD).getMap(), Station.class);
+        List<Station> stations = stationMapper.findByMap(MapUtils.put("id", stationId).put("stationType", Station.STATION_TYPE_UNFINISHEDPROD).getMap(), Station.class);
         if (stations.size() == 0){
             throw new Exception("站台【"+stationId+"】不存在");
         }

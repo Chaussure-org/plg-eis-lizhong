@@ -2,6 +2,7 @@ package com.prolog.eis.order.dao;
 
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Service;
 
@@ -27,4 +28,25 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
             "WHERE\n" +
             "\tbd.container_no = #{containerNo} order by po.station_id desc")
     List<Integer> getContainerBindingToStation(String containerNo);
+
+    /**
+     * 查找料箱绑定明细
+     * @param pickOrderId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tbd.container_no AS containerNo,\n" +
+            "\tbd.order_bill_id AS orderBillId,\n" +
+            "\tbd.order_detail_id AS orderDetailId,\n" +
+            "\tbd.container_store_id AS containerStoreId,\n" +
+            "\tbd.binding_num AS bindingNum,\n" +
+            "\tbd.seed_num AS seedNum \n" +
+            "FROM\n" +
+            "\torder_bill b\n" +
+            "\tJOIN container_binding_detail bd ON bd.order_bill_id = b.id \n" +
+            "WHERE\n" +
+            "\tb.picking_order_id = #{pickOrderId} \n" +
+            "\tAND bd.container_no = #{containerNo}")
+    List<ContainerBindingDetail> getBindingDetail(@Param("pickOrderId") int pickOrderId,@Param("containerNo") String containerNo);
+
 }

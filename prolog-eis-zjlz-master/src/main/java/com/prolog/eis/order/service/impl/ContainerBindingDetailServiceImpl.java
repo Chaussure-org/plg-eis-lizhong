@@ -38,4 +38,9 @@ public class ContainerBindingDetailServiceImpl implements IContainerBindingDetai
     public void saveInfo(ContainerBindingDetail containerBindingDetail) {
         containerBindingDetailMapper.save(containerBindingDetail);
     }
+
+    @Override
+    public List<ContainerBindingDetail> getBindingDetail(int pickOrderId,String containerNo) {
+        return containerBindingDetailMapper.getBindingDetail(pickOrderId,containerNo);
+    }
 }

@@ -38,4 +38,13 @@ public interface IContainerBindingDetailService {
      * @param containerBindingDetail 详情实体
      */
     void saveInfo(ContainerBindingDetail containerBindingDetail);
+
+
+    /**
+     * 根据拣选单和容器编号获取绑定汇总
+     * @param pickOrderId
+     * @param containerNo
+     * @return
+     */
+    List<ContainerBindingDetail> getBindingDetail(int pickOrderId,String containerNo);
 }

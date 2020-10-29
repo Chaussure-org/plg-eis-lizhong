@@ -89,4 +89,11 @@ public interface IOrderBillService {
      * @return
      */
     List<FinishTrayDTO> getFinishSeedInfo(String containerNo,int pickingOrderId);
+
+    /**
+     * 根据map查询
+     * @param map
+     * @return
+     */
+    List<OrderBill> findByMap(Map map);
 }

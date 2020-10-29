@@ -51,9 +51,9 @@ public class StationBzController {
 
     @ApiOperation(value = "拣选完成放行", notes = "拣选完成放行")
     @RequestMapping("/complete")
-    public RestMessage<String> pickingComplete(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderTrayNo,@RequestParam(defaultValue = "0") int orderBillId) throws Exception {
+    public RestMessage<String> pickingComplete(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam(defaultValue = "0") int orderBillId) throws Exception {
         try {
-            stationBZService.pickingComplete(stationId,containerNo,orderTrayNo,orderBillId);
+            stationBZService.pickingComplete(stationId,containerNo,orderBoxNo,orderBillId);
             return RestMessage.newInstance(true,"200","操作成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
@@ -78,9 +78,9 @@ public class StationBzController {
 
     @ApiModelProperty(value = "更换订单框",notes = "更换订单框")
     @RequestMapping("/change")
-    public RestMessage changeOrderTray(@RequestParam(defaultValue = "0") int stationId,@RequestParam String orderTrayNo){
+    public RestMessage changeOrderTray(@RequestParam(defaultValue = "0") int stationId,@RequestParam String orderBoxNo){
         try {
-            stationBZService.changeOrderTray(orderTrayNo,stationId);
+            stationBZService.changeOrderTray(orderBoxNo,stationId);
             return RestMessage.newInstance(true,"200","换拖成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);

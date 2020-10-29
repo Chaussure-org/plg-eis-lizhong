@@ -182,6 +182,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
             inventoryTask.setCreateTime(new Date());
             inventoryTask.setIssueTime(inventoryTask.getCreateTime());
             inventoryTask.setTaskId(wmsInventoryTask.getTASKID());
+            inventoryTaskService.saveInventoryTask(inventoryTask);
             List<InventoryTaskDetail> inventoryDeatils = new ArrayList<>();
             for (InventoryGoodsDto inventoryGoodsDto : detailsByMap) {
                 InventoryTaskDetail inventoryTaskDetail = new InventoryTaskDetail();
@@ -193,9 +194,10 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
                 inventoryTaskDetail.setOriginalCount(inventoryGoodsDto.getOriginalCount());
                 inventoryTaskDetail.setModifyCount(0);
                 inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_ISSUE);
+                inventoryTaskDetail.setPdType(0);
                 inventoryDeatils.add(inventoryTaskDetail);
             }
-            inventoryTaskService.saveInventoryTask(inventoryTask);
+
             inventoryTaskDetailService.saveInventoryDetailBatch(inventoryDeatils);
 
 
