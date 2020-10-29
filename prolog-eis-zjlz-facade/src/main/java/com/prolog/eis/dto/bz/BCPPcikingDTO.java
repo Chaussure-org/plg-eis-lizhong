@@ -1,6 +1,7 @@
 package com.prolog.eis.dto.bz;
 
-import java.io.Serializable;
+import io.swagger.annotations.ApiModelProperty;
+
 
 /**
  * @author dengj
@@ -10,22 +11,34 @@ import java.io.Serializable;
  * 半成品拣选播种作业DTO
  */
 public class BCPPcikingDTO {
-    //订单id
+    @ApiModelProperty("订单id")
     private int orderBillId;
-    //清单id
+    @ApiModelProperty("清单id")
     private int orderDetailId;
-    //订单编号
+    @ApiModelProperty("订单编号")
     private String orderNo;
-    //图号
+    @ApiModelProperty("图号")
     private String graphNo;
-    //商品名称
+    @ApiModelProperty("商品名称")
     private String goodsname;
-    //商品编号
+    @ApiModelProperty("商品编号")
     private String goodsNo;
-    //商品拣选数量
+    @ApiModelProperty("商品拣选数量")
     private int pickNum;
-    //剩余拣选的商品条数
+    @ApiModelProperty("库存数量")
+    private int qty;
+
+
+    @ApiModelProperty("剩余拣选的商品条数")
     private int surplusOrderDetailCount;
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
 
     public int getOrderDetailId() {
         return orderDetailId;
@@ -96,11 +109,12 @@ public class BCPPcikingDTO {
         return "BCPPcikingDTO{" +
                 "orderBillId=" + orderBillId +
                 ", orderDetailId=" + orderDetailId +
-                ", orderNo=" + orderNo +
+                ", orderNo='" + orderNo + '\'' +
                 ", graphNo='" + graphNo + '\'' +
                 ", goodsname='" + goodsname + '\'' +
                 ", goodsNo='" + goodsNo + '\'' +
                 ", pickNum=" + pickNum +
+                ", qty=" + qty +
                 ", surplusOrderDetailCount=" + surplusOrderDetailCount +
                 '}';
     }

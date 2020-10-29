@@ -132,7 +132,8 @@ public class StationBZServiceImpl implements IStationBZService {
         if (b){
             throw new Exception("容器【"+containerNo+"】没有当前站台的绑定明细");
         }
-        List<ContainerBindingDetail> containerBinDings = containerBindingDetailService.findMap(MapUtils.put("containerNo", containerNo).getMap());
+        //查询当前容器的播种明细
+        List<ContainerBindingDetail> containerBinDings = containerBindingDetailService.getBindingDetail(station.getCurrentStationPickId(),containerNo);
         if (containerBinDings.size() == 0) {
             throw new Exception("容器【" + containerNo + "】无在播明细");
         }
@@ -148,6 +149,8 @@ public class StationBZServiceImpl implements IStationBZService {
         picking.setPickNum(bindingDetail.getSeedNum());
         picking.setOrderDetailId(bindingDetail.getOrderDetailId());
         BCPGoodsInfoDTO bcpGoodsDTO = orderDetailService.findPickingGoods(bindingDetail.getOrderDetailId()).get(0);
+        List<ContainerStore> containerStores = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap());
+        picking.setQty(containerStores.get(0).getQty());
         picking.setGoodsname(bcpGoodsDTO.getGoodsname());
         picking.setGraphNo(bcpGoodsDTO.getGraphNo());
         picking.setGoodsNo(bcpGoodsDTO.getGoodsNo());
@@ -287,6 +290,7 @@ public class StationBZServiceImpl implements IStationBZService {
                 //上层输送线  循环线点位
             } else {
                 //下层agv 回暂存区
+                pathSchedulingService.containerMoveTask(containerNo,"RCS01",null);
             }
         } else {
             if (stations.size() > 0) {
@@ -322,10 +326,10 @@ public class StationBZServiceImpl implements IStationBZService {
         boolean flag = orderDetailService.findOrderTrayGoodsLabel(orderBillId, orderTrayNo);
         if (flag) {
             //Agv贴标区
-//            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
+            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
         } else {
             //agv非贴标
-//            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
+            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
         }
     }
 
@@ -492,6 +496,7 @@ public class StationBZServiceImpl implements IStationBZService {
      * @throws Exception
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderTrayWeighDTO weighCheck(int stationId, int orderDetailId, String passBoxNo) throws Exception {
         if (StringUtils.isBlank(passBoxNo)){
             throw new Exception("周转箱号不能为空");
@@ -632,6 +637,10 @@ public class StationBZServiceImpl implements IStationBZService {
         if (station == null) {
             throw new RuntimeException(stationId + "站台不存在");
         }
+        boolean b = checkContainerExist(containerNo, stationId);
+        if (b){
+            throw new Exception("容器【"+containerNo+"】已离开站台请勿重复操作");
+        }
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -640,7 +649,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
-//            this.orderTrayLeave(orderTrayNo,orderBillId);
+            this.orderTrayLeave(orderTrayNo,orderBillId);
 
 
         }

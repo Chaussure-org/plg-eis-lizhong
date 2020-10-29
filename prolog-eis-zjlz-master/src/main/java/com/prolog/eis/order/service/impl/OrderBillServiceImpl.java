@@ -136,4 +136,9 @@ public class OrderBillServiceImpl implements IOrderBillService {
         return orderBillMapper.getFinishSeedInfo(containerNo,pickingOerderId);
     }
 
+    @Override
+    public List<OrderBill> findByMap(Map map) {
+        return orderBillMapper.findByMap(map,OrderBill.class);
+    }
+
 }

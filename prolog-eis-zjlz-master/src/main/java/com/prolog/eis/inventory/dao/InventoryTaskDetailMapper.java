@@ -1,6 +1,7 @@
 package com.prolog.eis.inventory.dao;
 
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
+import com.prolog.eis.dto.inventory.InventoryOutDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -52,4 +53,25 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "</if>"+
             "</script>")
     List<InventoryGoodsDto> getInventoryGoods(@Param("map") Map<String,Object> map);
+
+
+    /**
+     * 根据区域获取盘点库存
+     * @param area
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\ttd.container_no AS containerNo,\n" +
+            "\ts.layer AS layer,\n" +
+            "\ts.dept_num AS deptNum,\n" +
+            "\tcpt.source_area as areaNo,\n" +
+            "td.create_time as createTime" +
+            "FROM\n" +
+            "\tinventory_task_detail td\n" +
+            "\tLEFT JOIN container_path_task cpt ON cpt.container_no = td.container_no\n" +
+            "\tLEFT JOIN sx_store_location s ON s.store_no = cpt.source_location \n" +
+            "WHERE\n" +
+            "\tcpt.task_state = 0 and td.task_state = 10\n" +
+            "\tAND FIND_IN_SET(cpt.source_area,#{area}) order by td.create_time  desc")
+    List<InventoryOutDto> getInventoryStore(@Param("area") String area);
 }
