@@ -8,4 +8,5 @@ package com.prolog.eis.engin.service;
  * @date:2020/10/29 15:59
  */
 public interface AgvInBoundEnginService {
+
 }
