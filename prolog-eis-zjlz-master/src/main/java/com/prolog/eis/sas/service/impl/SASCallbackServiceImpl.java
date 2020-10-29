@@ -6,14 +6,19 @@ import com.prolog.eis.dto.wcs.TaskCallbackDTO;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IContainerPathTaskDetailService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.sas.service.ISASCallbackService;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +47,8 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
 
     @Autowired
     private IWareHousingService iWareHousingService;
+    @Autowired
+    private IContainerStoreService iContainerStoreService;
 
     /**
      * 任务回告
@@ -133,11 +140,12 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
             //清除路径任务汇总，解绑载具
             if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
                 updateTaskInfo(containerPathTaskDetail, containerPathTask);
+                //入库完成 1.删除入库任务 2.更新库存表业务状态
+                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
+                iContainerStoreService.updateTaskTypeByContainer(containerPathTaskDetail.getContainerNo(),0);
             } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
-                //删除入库任务
-                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
             }
             //历史表
             containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);

@@ -220,6 +220,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         containerStore.setQty(wareHousing.getQty());
         containerStore.setCreateTime(new Date());
         containerStore.setUpdateTime(new Date());
+        containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
         containerStoreService.saveContainerStore(containerStore);
     }
 
@@ -260,6 +261,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
             pathSchedulingService.inboundTask(containerNo,containerNo,point.getPointArea(),point.getPointId(),"SAS01");
+            containerStoreService.updateTaskTypeByContainer(containerNo,ContainerStore.TASK_TYPE_INBOUND);
         }
     }
 

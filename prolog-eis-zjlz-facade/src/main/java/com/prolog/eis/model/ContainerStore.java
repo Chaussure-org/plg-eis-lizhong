@@ -16,17 +16,15 @@ import io.swagger.annotations.ApiModelProperty;
 @Table("container_store")
 public class ContainerStore {
 
+    public static final Integer TASK_TYPE_INBOUND = 10;
 
     /**
      * 出库
      */
     public static final Integer TASK_TYPE_OUTBOUND = 20;
     public static final Integer TASK_TYPE_INVENTORY_OUTBOUND = 21;
-    public static final Integer TASK_TYPE_INVENTORY_MOVE = 22;
-    /**
-     * 空托盘出库
-     */
-    public static final Integer TASK_TYPE_INVENTORY_BACK = 23;
+    public static final Integer TASK_TYPE_MOVE = 22;
+    public static final Integer TASK_TYPE_BACK = 23;
     @Column("id")
     @Id
     @ApiModelProperty("托盘库存ID")

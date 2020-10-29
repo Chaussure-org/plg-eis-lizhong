@@ -270,7 +270,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<String> containers = outList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
         String strs = String.join(",", containers);
         lineBindingDetailMapper.saveBatch(list);
-        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND);
+        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_OUTBOUND);
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {

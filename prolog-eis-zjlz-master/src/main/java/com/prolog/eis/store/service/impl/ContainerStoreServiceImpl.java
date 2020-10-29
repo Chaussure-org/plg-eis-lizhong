@@ -4,6 +4,8 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +104,13 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         containerStore.setTaskType(ContainerStore.TASK_TYPE_OUTBOUND);
         containerStore.setUpdateTime(new Date());
         containerStoreMapper.update(containerStore);
+    }
+
+    @Override
+    public void updateTaskTypeByContainer(String containerNo, int type) {
+        Criteria ctr=Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
     }
 
     /**

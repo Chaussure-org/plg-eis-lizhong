@@ -11,6 +11,7 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
@@ -45,7 +46,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
     @Autowired
-    private ContainerStoreMapper containerStoreMapper;
+    private IContainerStoreService iContainerStoreService;
 
     /**
      * mcs回告
@@ -150,9 +151,7 @@ public class MCSCallBackServiceImpl implements IMCSCallBackService {
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
         Integer taskState = containerPathTaskDetail.getTaskState();
         //当从堆垛机库出库完成时 更改库存离里taskType状态
-        Criteria ctr=Criteria.forClass(ContainerStore.class);
-        ctr.setRestriction(Restrictions.eq("containernO",containerPathTaskDetail.getContainerNo()));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",0).getMap(),ctr);
+        iContainerStoreService.updateTaskTypeByContainer(containerPathTaskDetail.getContainerNo(),0);
         switch (taskState) {
             //先回告了开始，才能改成完成状态
             case LocationConstants.PATH_TASK_DETAIL_STATE_START:

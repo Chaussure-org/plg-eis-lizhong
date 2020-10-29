@@ -7,6 +7,7 @@ import com.prolog.eis.engin.dao.TrayOutMapper;
 import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
@@ -332,7 +333,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         if (details.size() > 0) {
-            logger.info(ids.toString()+"找到"+priority+"类订单");
+            logger.info(ids.toString()+"=========找到"+priority+"类订单============");
             this.updateBillPriority(ids, priority);
             this.updateOrderDetailArea(details, area);
             return true;
@@ -429,7 +430,12 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             }
         }
         agvBindingDetaileMapper.saveBatch(list);
-        logger.info("生成agv绑定明细"+list.toString());
+        List<String> containers = outList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
+        //更新容器的状态
+        Criteria ctr =Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.in("containerNo",containers.toArray()));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",ContainerStore.TASK_TYPE_OUTBOUND).getMap(),ctr);
+        logger.info("===========生成agv绑定明细"+list.toString());
     }
 
     /**
