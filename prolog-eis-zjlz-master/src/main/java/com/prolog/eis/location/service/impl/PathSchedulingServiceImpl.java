@@ -83,14 +83,14 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
         containerPathTaskDetail.setCreateTime(nowTime);
         containerPathTaskDetailMapper.save(containerPathTaskDetail);
 
-        locationService.doContainerPathTaskAndExecutionByContainer(palletNo, containerNo);
+       // locationService.doContainerPathTaskAndExecutionByContainer(palletNo, containerNo);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ContainerPathTaskDTO outboundTaskForUpdate(int goodsId, String stationId) throws Exception {
         ContainerPathTaskDTO containerPathTaskDTO = agvLocationService.agvOutboundTask(goodsId, stationId);
-        if(null == containerPathTaskDTO){
+        if (null == containerPathTaskDTO) {
             //TODO agv无库存，去四向库找，先返回null
             return null;
         }
@@ -106,7 +106,7 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
                             .put("updateTime", PrologDateUtils.parseObject(new Date())).getMap()
                     , criteria);
         }
-        if(l == 0L){
+        if (l == 0L) {
             return null;
         }
         return containerPathTaskDTO;
@@ -139,20 +139,19 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
                 MapUtils.put("taskType", ContainerStoreConstants.TASK_TYPE_NOTHING)
                         .put("updateTime", PrologDateUtils.parseObject(new Date())).getMap()
                 , criteria);
-        if(l == 0L){
+        if (l == 0L) {
             return "托盘库存有误";
         }
         return CommonConstants.SUCCESS;
     }
 
     /**
-     *
-     * @param palletNo  容器号
-     * @param targetArea    目标区域 更新 task_status
+     * @param palletNo   容器号
+     * @param targetArea 目标区域 更新 task_status
      * @throws Exception
      */
     @Override
-    public void containerMoveTask(String palletNo, String targetArea,String targetLocation) throws Exception {
+    public void containerMoveTask(String palletNo, String targetArea, String targetLocation) throws Exception {
         //TODO 参数校验先放着
 
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.findByMap(
@@ -160,13 +159,13 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
                         .put("taskState", LocationConstants.PATH_TASK_STATE_NOTSTARTED).getMap()
                 , ContainerPathTask.class);
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
-           //throw new Exception("");
+            //throw new Exception("");
             return;
         }
         ContainerPathTask containerPathTask = containerPathTaskList.get(0);
         containerPathTaskMapper.updateMapById(containerPathTask.getId()
                 , MapUtils.put("targetArea", targetArea)
-                        .put("taskType",LocationConstants.PATH_TASK_TYPE_OUTBOUND)
+                        .put("taskType", LocationConstants.PATH_TASK_TYPE_OUTBOUND)
                         .put("targetLocation", targetLocation).getMap()
                 , ContainerPathTask.class);
 
@@ -175,7 +174,7 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void containerResetLocation(String palletNo, String sourceArea,String sourceLocation) {
+    public void containerResetLocation(String palletNo, String sourceArea, String sourceLocation) {
 
         Criteria criteria = Criteria.forClass(ContainerPathTask.class);
         criteria.setRestriction(Restrictions.and(Restrictions.eq("palletNo", palletNo)));

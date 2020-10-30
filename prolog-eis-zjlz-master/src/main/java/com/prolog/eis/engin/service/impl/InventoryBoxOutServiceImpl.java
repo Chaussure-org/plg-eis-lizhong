@@ -97,7 +97,7 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
 
     @Override
     public void inventoryAllotStation() {
-        List<InventoryTaskDetail> inventoryTaskDetails = inventoryTaskDetailMapper.findByMap(MapUtils.put("taskState", InventoryTaskDetail.TASK_STATE_OUT).getMap(), InventoryTaskDetail.class);
+
     }
 
 

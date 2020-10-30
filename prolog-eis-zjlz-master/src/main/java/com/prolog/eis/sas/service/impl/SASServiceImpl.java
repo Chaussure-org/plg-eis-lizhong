@@ -3,6 +3,7 @@ package com.prolog.eis.sas.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.sas.SasCarryListDto;
 import com.prolog.eis.dto.sas.SasMoveTaskDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.CarListDTO;
@@ -109,7 +110,9 @@ public class SASServiceImpl implements ISASService {
     public RestMessage<String> sendContainerTask(SasMoveTaskDto sasMoveTaskDto) throws Exception {
         String url = this.getUrl(properties.getSas().getSendContainerTaskUrl());
         logger.info("EIS -> WCS 任务请求:{}", url);
-        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveTaskDto),
+        SasCarryListDto sasCarryListDto = new SasCarryListDto();
+        sasCarryListDto.getCarryList().add(sasMoveTaskDto);
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasCarryListDto),
                 new TypeReference<RestMessage<String>>() {
                 });
         return result;

@@ -31,7 +31,7 @@ public class WmsOutboundTaskDto {
 
     @ApiModelProperty("单据类型")
     @JsonProperty(value = "BILLTYPE")
-    private String BILLTYPE;
+    private Integer BILLTYPE;
 
     @ApiModelProperty("关联采购单订单号")
     @JsonProperty(value = "CUSTPONO")
@@ -125,11 +125,11 @@ public class WmsOutboundTaskDto {
         this.BILLNO = BILLNO;
     }
 
-    public String getBILLTYPE() {
+    public Integer getBILLTYPE() {
         return BILLTYPE;
     }
 
-    public void setBILLTYPE(String BILLTYPE) {
+    public void setBILLTYPE(Integer BILLTYPE) {
         this.BILLTYPE = BILLTYPE;
     }
 

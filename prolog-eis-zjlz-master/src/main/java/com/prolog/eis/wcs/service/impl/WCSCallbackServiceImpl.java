@@ -5,6 +5,7 @@ import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.*;
+import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.enums.PointChangeEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
@@ -190,12 +191,20 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
 
                 String target = null;
                 if (ConstantEnum.BCR_TYPE_XKRK==point.getPointType()) {
+                    if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
+                        throw new Exception("入库输送线有误，请核对");
+                    }
                     target = "SAS01";
-                } else if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
-                    //先分配堆垛机
-                    target = containerPathTaskService.computeAreaIn();
                 } else {
-                    target = "MCS05";
+                    if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
+                        throw new Exception("入库输送线有误，请核对");
+                    }
+                    if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
+                        //先分配堆垛机
+                        target = containerPathTaskService.computeAreaIn();
+                    } else {
+                        target = "MCS05";
+                    }
                 }
                 //先找入库点位
                 //调用入库方法

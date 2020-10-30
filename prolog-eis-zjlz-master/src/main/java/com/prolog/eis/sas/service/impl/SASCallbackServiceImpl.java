@@ -9,6 +9,7 @@ import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.sas.service.ISASCallbackService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
@@ -20,6 +21,7 @@ import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
+import org.reflections.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,15 +142,20 @@ public class SASCallbackServiceImpl implements ISASCallbackService {
             //清除路径任务汇总，解绑载具
             if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
                 updateTaskInfo(containerPathTaskDetail, containerPathTask);
+                //入库完成 1.删除入库任务 2.更新库存任务状态
+                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
+                iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
             } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
-                //入库完成 1.删除入库任务 2.更新库存任务状态
+            }
+            //出库完成回告
+            if (containerPathTaskDetail.getSourceArea().equals(StoreArea.SAS01)){
                 iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
-              iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
+                iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
             }
             //历史表
-            containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
+            //containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
         }
     }
 
