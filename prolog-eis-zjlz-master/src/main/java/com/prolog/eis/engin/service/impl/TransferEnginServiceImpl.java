@@ -6,11 +6,16 @@ import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TransferEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
+import com.prolog.eis.store.dao.ContainerStoreMapper;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
+import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +51,8 @@ public class TransferEnginServiceImpl implements TransferEnginService {
     private TrayOutEnginService trayOutEnginService;
     @Autowired
     private PathSchedulingService pathSchedulingService;
+    @Autowired
+    private ContainerStoreMapper containerStoreMapper;
 
     @Override
     public void init() throws Exception {
@@ -75,8 +82,15 @@ public class TransferEnginServiceImpl implements TransferEnginService {
             if (outContainerDtoList.size() > 0) {
                 for (OutContainerDto outContainerDto : outContainerDtoList) {
                     pathSchedulingService.containerMoveTask(outContainerDto.getContainerNo(), "RCS01", null);
-                    //iOrderDetailService.
+                    //将订单明细转历史
+                    iOrderDetailService.detailToHistoryById(LTKs.get(0).getDetailId());
                 }
+                //更新订单状态
+                //更新容器的状态
+                List<String> containers = outContainerDtoList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
+                Criteria ctr =Criteria.forClass(ContainerStore.class);
+                ctr.setRestriction(Restrictions.in("containerNo",containers.toArray()));
+                containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",ContainerStore.TASK_TYPE_MOVE).put("taskStatus",ContainerStore.TASK_TYPE_OUTBOUND).getMap(),ctr);
             }
         }
 
