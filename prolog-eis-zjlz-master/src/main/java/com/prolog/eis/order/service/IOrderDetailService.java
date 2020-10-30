@@ -80,4 +80,11 @@ public interface IOrderDetailService {
      * @return
      */
     boolean checkOrderDetailFinish(int orderDetailId);
+
+    /**
+     * 根据明细id将订单转历史
+     * @param orderDetailId
+     */
+    void detailToHistoryById(int orderDetailId);
+    
 }

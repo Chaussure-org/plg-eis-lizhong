@@ -1,9 +1,13 @@
 package com.prolog.eis.order.service.impl;
 
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
+import com.prolog.eis.model.order.OrderBill;
+import com.prolog.eis.model.order.OrderBillHistory;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.model.order.OrderDetailHistory;
 import com.prolog.eis.order.dao.OrderDetailMapper;
+import com.prolog.eis.order.service.IOrderBillHistoryService;
+import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailHistoryService;
 import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.framework.utils.MapUtils;
@@ -29,6 +33,10 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private IOrderDetailHistoryService orderDetailHistoryService;
+    @Autowired
+    private IOrderBillService orderBillService;
+    @Autowired
+    private IOrderBillHistoryService orderBillHistoryService;
 
     @Override
     public void saveOrderDetailList(List<OrderDetail> orderDetails) {
@@ -120,5 +128,35 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void detailToHistoryById(int orderDetailId) {
+        OrderDetail orderDetail = orderDetailMapper.findById(orderDetailId, OrderDetail.class);
+        if (orderDetail != null){
+            OrderDetailHistory orderDetailHistory = new OrderDetailHistory();
+            BeanUtils.copyProperties(orderDetail,orderDetailHistory);
+            orderDetailHistory.setUpdateTime(new Date());
+            orderDetailHistoryService.saveOrderHistory(orderDetailHistory);
+
+            orderDetailMapper.deleteById(orderDetailId,OrderDetail.class);
+
+            //判断是否还有明细，无则汇总转历史
+            List<OrderDetail> orderDetails = orderDetailMapper.findByMap(MapUtils.put("orderBillId", orderDetail.getOrderBillId()).getMap(), OrderDetail.class);
+            if (orderDetails.size() == 0){
+                //汇总转历史
+                OrderBill orderBill = orderBillService.findBillById(orderDetail.getOrderBillId());
+                if (orderBill != null){
+                    OrderBillHistory orderBillHistory = new OrderBillHistory();
+                    BeanUtils.copyProperties(orderBill,orderBillHistory);
+                    orderBillHistory.setCompleteTime(new Date());
+                    //保存历史
+                    orderBillHistoryService.saveOrderBill(orderBillHistory);
+                    //删汇总
+                    orderBillService.deleteOrderBillByMap(MapUtils.put("id",orderBill.getId()).getMap());
+                }
+            }
+        }
+
     }
 }

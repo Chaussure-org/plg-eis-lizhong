@@ -20,9 +20,15 @@ public class Station {
      */
     public static final int TASK_TYPE_SEED = 20;
     /**
-     * 站台作业类型：空闲
+     * 站台作业类型：盘点
      */
     public static final int TASK_TYPE_INVENTORY = 10;
+
+    /**
+     * 站台作业类型：空闲
+     */
+    public static final int TASK_TYPE_EMPTY= 0;
+
 
     public static final int STATION_TYPE_UNFINISHEDPROD = 1;
     public static final int STATION_TYPE_FINISHEDPROD = 2;

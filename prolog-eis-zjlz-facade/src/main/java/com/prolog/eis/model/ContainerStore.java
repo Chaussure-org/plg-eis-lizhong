@@ -21,6 +21,9 @@ public class ContainerStore {
      * 出库
      */
     public static final Integer TASK_TYPE_OUTBOUND = 20;
+    /**
+     * 盘点出库
+     */
     public static final Integer TASK_TYPE_INVENTORY_OUTBOUND = 21;
     public static final Integer TASK_TYPE_INVENTORY_MOVE = 22;
     /**

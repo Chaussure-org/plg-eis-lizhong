@@ -80,4 +80,12 @@ public interface IContainerStoreService {
      * @param containerStore
      */
     void saveContainerStore(ContainerStore containerStore);
+
+
+    /**
+     * 修改容器的任务类型
+     * @param containerNo
+     * @param taskType
+     */
+    void updateContainerStore(String containerNo,int taskType) throws Exception;
 }

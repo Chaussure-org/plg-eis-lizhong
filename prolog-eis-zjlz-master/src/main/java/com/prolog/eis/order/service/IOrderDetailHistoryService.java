@@ -15,4 +15,10 @@ public interface IOrderDetailHistoryService {
      * @param orderDetails
      */
     void saveBatch(List<OrderDetailHistory> orderDetails);
+
+    /**
+     * 根据对象保存
+     * @param orderDetailHistory
+     */
+    void saveOrderHistory(OrderDetailHistory orderDetailHistory);
 }

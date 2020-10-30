@@ -59,13 +59,13 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
         //寻找一个最合适的站台输送订单框
         String storeArea = "OD01";
         List<StationTrayDTO> stationTrayDTOS = agvLocationService.findTrayTaskStation(storeArea, stations);
-        stationTrayDTOS.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
-        if (stationTrayDTOS.get(0).getCount() == 0){
+        List<StationTrayDTO> collect = stationTrayDTOS.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
+        if (collect.get(0).getCount() == 0){
             //未找到需要订单拖的站台
             return;
         }else {
             //去往对应站台
-            int targetStationId = stationTrayDTOS.get(0).getStationId();
+            int targetStationId = collect.get(0).getStationId();
             List<String> usableStore = agvLocationService.getUsableStore(storeArea,targetStationId);
             if (usableStore.size() == 0){
                 throw new Exception("站台【"+targetStationId+"】没找到可用区域");

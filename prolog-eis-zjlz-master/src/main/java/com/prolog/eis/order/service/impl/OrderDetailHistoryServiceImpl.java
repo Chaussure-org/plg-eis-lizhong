@@ -25,4 +25,9 @@ public class OrderDetailHistoryServiceImpl implements IOrderDetailHistoryService
         }
 
     }
+
+    @Override
+    public void saveOrderHistory(OrderDetailHistory orderDetailHistory) {
+        orderDetailHistoryMapper.save(orderDetailHistory);
+    }
 }

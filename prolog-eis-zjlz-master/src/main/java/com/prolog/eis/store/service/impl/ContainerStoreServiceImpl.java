@@ -113,6 +113,18 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         containerStoreMapper.save(containerStore);
     }
 
+    @Override
+    public void updateContainerStore(String containerNo, int taskType) throws Exception {
+        List<ContainerStore> containerStores = containerStoreMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(),ContainerStore.class);
+        if (containerStores.size() == 0){
+            throw new Exception("【"+containerNo+"】无库存");
+        }
+        ContainerStore containerStore = containerStores.get(0);
+        containerStore.setTaskType(taskType);
+        containerStore.setUpdateTime(new Date());
+        containerStoreMapper.update(containerStore);
+    }
+
     private GoodsInfo getEmptyGoods() {
 		GoodsInfo goodsInfo = new GoodsInfo();
 		goodsInfo.setOwnerId("");

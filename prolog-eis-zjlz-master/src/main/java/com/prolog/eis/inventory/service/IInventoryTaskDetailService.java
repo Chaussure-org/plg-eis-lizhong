@@ -25,4 +25,14 @@ public interface IInventoryTaskDetailService {
      * @param inventoryTaskDetails
      */
     void saveInventoryDetailBatch(List<InventoryTaskDetail> inventoryTaskDetails);
+
+
+    /**
+     * 修改盘点容器状态
+     * @param containerNo
+     * @param taskState
+     */
+    void updateContainerTaskState(String containerNo,int taskState);
+
+
 }
