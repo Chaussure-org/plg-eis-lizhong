@@ -87,12 +87,28 @@ public class TransferEnginServiceImpl implements TransferEnginService {
                 }
                 //更新订单状态
                 //更新容器的状态
-                List<String> containers = outContainerDtoList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
-                Criteria ctr =Criteria.forClass(ContainerStore.class);
-                ctr.setRestriction(Restrictions.in("containerNo",containers.toArray()));
-                containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",ContainerStore.TASK_TYPE_MOVE).put("taskStatus",ContainerStore.TASK_TYPE_OUTBOUND).getMap(),ctr);
+                updateContainerStatus(outContainerDtoList);
             }
         }
+        if (XSKs.size()>0){
+            List<OutContainerDto> outContainerDtoList = trayOutEnginService.outByGoodsId(XSKs.get(0).getGoodsId(), XSKs.get(0).getPlanQty());
+            if (outContainerDtoList.size() > 0) {
+                for (OutContainerDto outContainerDto : outContainerDtoList) {
+                    pathSchedulingService.containerMoveTask(outContainerDto.getContainerNo(), StoreArea.WCS081, "LXJZ01");
+                    //将订单明细转历史
+                    iOrderDetailService.detailToHistoryById(LTKs.get(0).getDetailId());
+                }
+                //更新订单状态
+                //更新容器的状态
+                updateContainerStatus(outContainerDtoList);
+            }
+        }
+    }
 
+    private void updateContainerStatus(List<OutContainerDto> outContainerDtoList){
+        List<String> containers = outContainerDtoList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
+        Criteria ctr =Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.in("containerNo",containers.toArray()));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",ContainerStore.TASK_TYPE_MOVE).put("taskStatus",ContainerStore.TASK_TYPE_OUTBOUND).getMap(),ctr);
     }
 }

@@ -94,6 +94,11 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
 
     }
 
+    @Override
+    public void inventoryAllotStation() {
+
+    }
+
 
     /**
      * 箱库查询
