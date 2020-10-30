@@ -123,13 +123,14 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
     }
 
     @Override
-    public void updateContainerStore(String containerNo, int taskType) throws Exception {
+    public void updateContainerStore(String containerNo, int taskType,int taskState) throws Exception {
         List<ContainerStore> containerStores = containerStoreMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(),ContainerStore.class);
         if (containerStores.size() == 0){
             throw new Exception("【"+containerNo+"】无库存");
         }
         ContainerStore containerStore = containerStores.get(0);
         containerStore.setTaskType(taskType);
+        containerStore.setTaskStatus(taskState);
         containerStore.setUpdateTime(new Date());
         containerStoreMapper.update(containerStore);
     }

@@ -29,6 +29,8 @@ public interface IInventoryTrayOutService {
      */
     int getEmptyStore();
 
+    void outUpdateStore(String containerNo) throws Exception;
+
 
 
 

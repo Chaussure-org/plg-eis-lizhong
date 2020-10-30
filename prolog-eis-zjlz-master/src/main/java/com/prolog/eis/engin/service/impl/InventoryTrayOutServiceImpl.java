@@ -59,17 +59,19 @@ public class InventoryTrayOutServiceImpl implements IInventoryTrayOutService {
         if (stations.size() == 0){
             return;
         }
-        //查找agv区库存货
-        int emptyStore = getEmptyStore();
-        if (emptyStore <= 0){
-            return;
-        }
+
+        InventoryOutDto outInventory = null;
         //初始化数据
         List<InventoryOutDto> inventoryOutDtos = this.initInventoryStore();
         if (inventoryOutDtos.size() == 0){
             return;
         }
-        InventoryOutDto outInventory = null;
+        //查找agv区货位
+        int emptyStore = getEmptyStore();
+        if (emptyStore <= 0){
+            return;
+        }
+
         //巷道任务数
         List<RickerTaskDto> rickerTaskDtos = computeRickerTask();
         //按巷道任务数排序
@@ -94,8 +96,7 @@ public class InventoryTrayOutServiceImpl implements IInventoryTrayOutService {
         //出库
         pathSchedulingService.containerMoveTask(outInventory.getContainerNo(),"RCS01",null);
         //修改状态
-        containerStoreService.updateContainerStore(outInventory.getContainerNo(), ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND);
-        inventoryTaskDetailService.updateContainerTaskState(outInventory.getContainerNo(), InventoryTaskDetail.TASK_STATE_OUT);
+        outUpdateStore(outInventory.getContainerNo());
 
     }
 
@@ -137,6 +138,12 @@ public class InventoryTrayOutServiceImpl implements IInventoryTrayOutService {
     @Override
     public int getEmptyStore() {
         return trayOutMapper.getEmpty();
+    }
+
+    @Override
+    public void outUpdateStore(String containerNo) throws Exception {
+        containerStoreService.updateContainerStore(containerNo, ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND,ContainerStore.TASK_STATUS_OUT);
+        inventoryTaskDetailService.updateContainerTaskState(containerNo, InventoryTaskDetail.TASK_STATE_OUT);
     }
 
 
