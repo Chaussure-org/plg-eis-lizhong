@@ -8,6 +8,7 @@ import com.prolog.eis.engin.service.IInventoryBoxOutService;
 import com.prolog.eis.engin.service.IInventoryTrayOutService;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.sas.service.ISASService;
@@ -92,6 +93,11 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
         //修改状态
         iInventoryTrayOutService.outUpdateStore(outContainer.getContainerNo());
 
+    }
+
+    @Override
+    public void inventoryAllotStation() {
+        List<InventoryTaskDetail> inventoryTaskDetails = inventoryTaskDetailMapper.findByMap(MapUtils.put("taskState", InventoryTaskDetail.TASK_STATE_OUT).getMap(), InventoryTaskDetail.class);
     }
 
 
