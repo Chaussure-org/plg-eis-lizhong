@@ -28,6 +28,17 @@ public class ContainerStore {
     public static final Integer TASK_TYPE_INVENTORY_OUTBOUND = 21;
     public static final Integer TASK_TYPE_MOVE = 22;
     public static final Integer TASK_TYPE_BACK = 23;
+
+
+    /**
+     * 任务状态：入库
+     */
+    public static final int TASK_STATUS_IN = 10;
+
+    /**
+     * 任务状态：出库
+     */
+    public static final int TASK_STATUS_OUT = 20;
     @Column("id")
     @Id
     @ApiModelProperty("托盘库存ID")

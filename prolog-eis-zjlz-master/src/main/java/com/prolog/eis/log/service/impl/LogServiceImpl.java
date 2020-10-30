@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Author wangkang
@@ -37,6 +39,7 @@ public class LogServiceImpl implements ILogService {
     private SasLogMapper sasLogMapper;
 
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void save(LogDto log) {
         switch (log.getSystemType()){
             case LogDto.WMS:

@@ -6,11 +6,15 @@ import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
+import com.prolog.eis.log.dao.SasLogMapper;
+import com.prolog.eis.model.log.SasLog;
 import com.prolog.eis.rcs.service.IRCSService;
+import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologHttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;

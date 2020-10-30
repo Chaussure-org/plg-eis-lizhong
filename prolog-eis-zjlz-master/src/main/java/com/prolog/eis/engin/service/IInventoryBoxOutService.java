@@ -13,5 +13,11 @@ public interface IInventoryBoxOutService {
     /**
      * 箱库出库调度
      */
-    void inventoryBoxOut() throws IOException;
+    void inventoryBoxOut() throws Exception;
+
+
+    /**
+     * 盘点
+     */
+    void inventoryAllotStation();
 }

@@ -7,6 +7,7 @@ import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.*;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.enums.PointChangeEnum;
+import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
@@ -65,6 +66,8 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
 
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
+    @Autowired
+    private IInventoryTaskDetailService inventoryTaskDetailService;
 
 
     private final RestMessage<String> success = RestMessage.newInstance(true, "200", "操作成功", null);
