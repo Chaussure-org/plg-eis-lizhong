@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Table("container_store")
 public class ContainerStore {
 
+    public static final Integer TASK_TYPE_INBOUND = 10;
 
     /**
      * 出库
@@ -25,11 +26,8 @@ public class ContainerStore {
      * 盘点出库
      */
     public static final Integer TASK_TYPE_INVENTORY_OUTBOUND = 21;
-    public static final Integer TASK_TYPE_INVENTORY_MOVE = 22;
-    /**
-     * 空托盘出库
-     */
-    public static final Integer TASK_TYPE_INVENTORY_BACK = 23;
+    public static final Integer TASK_TYPE_MOVE = 22;
+    public static final Integer TASK_TYPE_BACK = 23;
     @Column("id")
     @Id
     @ApiModelProperty("托盘库存ID")
@@ -46,6 +44,11 @@ public class ContainerStore {
     @Column("task_type")
     @ApiModelProperty("任务类型(0无业务任务;10;入库;11补货入库;12移库入库;20出库;21盘点出库;22移库出库)")
     private Integer taskType;
+
+    @Column("task_status")
+    @ApiModelProperty("任务类型(0 无任务 10 入库中 20 出库中)")
+    private Integer taskStatus;
+
 
     @Column("work_count")
     @ApiModelProperty("作业次数")
@@ -79,6 +82,13 @@ public class ContainerStore {
     @ApiModelProperty("更新时间")
     private java.util.Date updateTime;
 
+    public Integer getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(Integer taskStatus) {
+        this.taskStatus = taskStatus;
+    }
     public Integer getId() {
         return id;
     }

@@ -19,11 +19,13 @@ import java.util.List;
 public interface TrayOutMapper {
     @Select("SELECT\n" +
             "\tsl.x AS roadWay,\n" +
-            "\tSUM( CASE cpt.task_type WHEN 20 or 30 THEN 1 ELSE 0 END ) AS outCount,\n" +
-            "\tSUM( CASE cpt.task_type WHEN 0 OR  10 THEN 1 ELSE 0 END ) AS inCount \n" +
+            "\tSUM( CASE c.task_status WHEN 20 THEN 1 ELSE 0 END ) AS outCount,\n" +
+            "\tSUM( CASE c.task_status WHEN 10 THEN 1 ELSE 0 END ) AS inCount \n" +
             "FROM\n" +
             "\tcontainer_path_task cpt\n" +
-            "\tLEFT JOIN sx_store_location sl ON cpt.source_location = sl.id \n" +
+            "\tLEFT JOIN container_store c ON c.container_no = cpt.container_no\n" +
+            "\tLEFT JOIN sx_store_location sl ON cpt.source_location = sl.store_no \n" +
+            "\tOR cpt.target_location = sl.store_no WHERE cpt.target_area in ('MCS01','MCS02','MCS03','MCS04') or cpt.source_area in ('MCS01','MCS02','MCS03','MCS04')\n" +
             "GROUP BY\n" +
             "\tsl.x")
     List<RoadWayContainerTaskDto> findRoadWayContainerTask();

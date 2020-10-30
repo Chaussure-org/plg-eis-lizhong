@@ -14,6 +14,7 @@ import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.line.LineBindingDetail;
+import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.order.dao.OrderBillMapper;
@@ -21,11 +22,12 @@ import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.CompareStrSimUtil;
+import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
-import com.prolog.framework.utils.StringUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +68,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), LineBindingDetail.class);
         if (!detailStatus.isEmpty()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "WCS081", "LXJZ01");
+
             return;
         }
         //1.要去往循环线区域的订单明细
@@ -270,7 +273,12 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<String> containers = outList.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
         String strs = String.join(",", containers);
         lineBindingDetailMapper.saveBatch(list);
-        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND);
+        //update 库存业务属性 和 库存状态
+        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_OUTBOUND,ContainerStore.TASK_TYPE_OUTBOUND);
+        //更新订单状态
+        List<Integer> ids = list.stream().distinct().map(x -> x.getOrderBillId()).collect(Collectors.toList());
+        String idsStr = StringUtils.join(ids, ',');
+        orderBillMapper.updateOrderStatus(OrderBill.ORDER_STATUS_START_OUT,idsStr);
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {

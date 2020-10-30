@@ -64,9 +64,14 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
      */
     @Override
     @LogInfo(desci = "wms入库任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_INBOUND_TASK,systemType = LogDto.WMS)
-    @Transactional(rollbackFor = Exception.class)
-    public void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) {
+    public void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception{
+        //1.如果库内已经存在该箱子，测不允许生成该箱子的任务
+        List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
+        List<WmsInboundTask> wmsInboundTaskList=new ArrayList<>();
         for (WmsInboundTaskDto wmsInboundTaskDto : wmsInboundTaskDtos) {
+            if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())){
+                throw new Exception("该容器已经被占用"+wmsInboundTaskDto.getCONTAINERNO()+"此次所有订单任务下发失败！");
+            }
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
             wmsInboundTask.setBillNo(wmsInboundTaskDto.getBILLNO());
             wmsInboundTask.setBillType(wmsInboundTask.getBillType());
@@ -80,8 +85,9 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
             wmsInboundTask.setSeqNo(wmsInboundTaskDto.getSEQNO());
             wmsInboundTask.setTaskState(WmsInboundTask.TYPE_INBOUND);
             wmsInboundTask.setCreateTime(new Date());
-            mapper.save(wmsInboundTask);
+            wmsInboundTaskList.add(wmsInboundTask);
         }
+        mapper.saveBatch(wmsInboundTaskList);
     }
 
 
@@ -94,8 +100,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
     @LogInfo(desci = "wms出库任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK,systemType = LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
     public void sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
-        //1.如果库内已经存在该箱子，测不允许生成该箱子的任务
-        List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
+
 
         if (wmsOutboundTaskDtos.size()>0) {
             List<String> billNoList =
@@ -112,9 +117,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
                 orderBillService.saveOrderBill(orderBill);
                 List<OrderDetail> orderDetails = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
-                    if (allStoreContainers.contains(wmsOutboundTaskDto.getCONSIGNOR())){
-                        throw new Exception("该容器已经被占用"+wmsOutboundTaskDto.getCONSIGNOR()+"此次所有订单任务下发失败！");
-                    }
+
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setOrderBillId(orderBill.getId());
                     orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));

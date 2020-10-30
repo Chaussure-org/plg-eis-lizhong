@@ -15,7 +15,7 @@ public interface IWMSCallBackService {
      * WMS下发入库任务
      * @param wmsInboundTaskDtos 入库任务
      */
-    void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos);
+    void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception;
 
     /**
      * WMS下发出库任务

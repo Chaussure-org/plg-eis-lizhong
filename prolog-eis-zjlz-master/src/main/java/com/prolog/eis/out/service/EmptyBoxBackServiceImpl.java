@@ -42,7 +42,6 @@ public class EmptyBoxBackServiceImpl implements EmptyBoxBackService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void outEmptyBox(EmptyBoxBackDto emptyBoxBackDto) throws Exception {
-
         List<OutContainerDto> emptyBoxs = boxOutEnginService.outByGoodsId(-10, emptyBoxBackDto.getQTY());
         if (emptyBoxs.size() < emptyBoxBackDto.getQTY()) {
             throw new Exception("当前空料箱数量" + emptyBoxs.size() + "不满足出库数量" + emptyBoxBackDto.getQTY());
@@ -53,6 +52,6 @@ public class EmptyBoxBackServiceImpl implements EmptyBoxBackService {
         }
         List<String> containers = emptyBoxs.stream().map(OutContainerDto::getContainerNo).collect(Collectors.toList());
         String strs = String.join(",", containers);
-        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_INVENTORY_BACK);
+        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_BACK,20);
     }
 }

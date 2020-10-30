@@ -184,8 +184,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             //查询是否存在入库任务
             List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
             if (wareHousings.size() > 0) {
-                // 生成库存
-                createContainerInfo(wareHousings.get(0));
+
                 String target = null;
                 if (ConstantEnum.BCR_TYPE_XKRK==point.getPointType()) {
                     target = "SAS01";
@@ -198,6 +197,8 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
                 //先找入库点位
                 //调用入库方法
                 pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
+                // 生成库存
+                createContainerInfo(wareHousings.get(0));
             }
         }
     }
@@ -214,11 +215,13 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         containerStore.setContainerNo(wareHousing.getContainerNo());
         containerStore.setContainerType("1");
         containerStore.setTaskType(10);
+        containerStore.setTaskStatus(10);
         containerStore.setWorkCount(0);
         containerStore.setGoodsId(Integer.valueOf(wareHousing.getGoodsId()));
         containerStore.setQty(wareHousing.getQty());
         containerStore.setCreateTime(new Date());
         containerStore.setUpdateTime(new Date());
+        containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
         containerStoreService.saveContainerStore(containerStore);
     }
 
@@ -239,6 +242,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,5);
             wcsService.lineMove(wcsLineMoveDto);
         }
+
     }
 
     /**
@@ -259,6 +263,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
             pathSchedulingService.inboundTask(containerNo,containerNo,point.getPointArea(),point.getPointId(),"SAS01");
+            containerStoreService.updateTaskStausByContainer(containerNo,ContainerStore.TASK_TYPE_INBOUND);
         }
     }
 

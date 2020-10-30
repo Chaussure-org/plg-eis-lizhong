@@ -88,4 +88,11 @@ public interface ContainerPathTaskService {
      * @return
      */
     String computeAreaIn();
+
+    /**
+     * 更新任务状态
+     * @param containerNo
+     * @param type
+     */
+    void updatePathTaskTypeByContainer(String containerNo,int type);
 }

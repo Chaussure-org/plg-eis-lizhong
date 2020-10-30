@@ -163,7 +163,6 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
            //throw new Exception("");
             return;
         }
-
         ContainerPathTask containerPathTask = containerPathTaskList.get(0);
         containerPathTaskMapper.updateMapById(containerPathTask.getId()
                 , MapUtils.put("targetArea", targetArea)
