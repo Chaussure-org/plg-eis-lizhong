@@ -125,7 +125,7 @@ public class RcsCallbackServiceImpl implements IRCSCallbackService {
             containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask, nowTime);
         }
         //历史表
-        containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
+        //containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
     }
 
 }

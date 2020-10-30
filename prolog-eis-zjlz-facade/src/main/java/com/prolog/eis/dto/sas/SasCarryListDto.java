@@ -1,6 +1,7 @@
 package com.prolog.eis.dto.sas;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class SasCarryListDto implements Serializable {
 
-    private List<SasMoveTaskDto> carryList;
+    private List<SasMoveTaskDto> carryList=new ArrayList<>();
 
     public List<SasMoveTaskDto> getCarryList() {
         return carryList;

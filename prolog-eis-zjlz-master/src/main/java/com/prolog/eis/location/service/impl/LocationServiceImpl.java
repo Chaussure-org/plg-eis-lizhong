@@ -57,7 +57,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void doContainerPathTaskByContainer(String palletNo, String containerNo) throws Exception {
-        logger.info("开始生成容器任务");
+       // logger.info("开始生成容器任务");
         //获取区域集合
         List<StoreArea> storeAreaList = storeAreaMapper.findByMap(Maps.newHashMap(), StoreArea.class);
         if (CollectionUtils.isEmpty(storeAreaList)) {
@@ -76,7 +76,7 @@ public class LocationServiceImpl implements LocationService {
                 containerNo, LocationConstants.PATH_TASK_STATE_NOTSTARTED);
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
 //            throw new Exception("当前没有容器任务！");
-            logger.info("生成容器任务结束");
+            logger.info("当前没有容器任务");
             return;
         }
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
