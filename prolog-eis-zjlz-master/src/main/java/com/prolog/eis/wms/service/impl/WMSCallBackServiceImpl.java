@@ -74,7 +74,7 @@ public class WMSCallBackServiceImpl implements IWMSCallBackService {
             }
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
             wmsInboundTask.setBillNo(wmsInboundTaskDto.getBILLNO());
-            wmsInboundTask.setBillType(wmsInboundTask.getBillType());
+            wmsInboundTask.setBillType(wmsInboundTaskDto.getBILLTYPE());
             wmsInboundTask.setBoxSpecs(wmsInboundTaskDto.getJZS());
             wmsInboundTask.setBranchType(wmsInboundTaskDto.getBRANCHTYPE());
             wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());

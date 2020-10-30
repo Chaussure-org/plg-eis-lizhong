@@ -36,9 +36,8 @@ public class WCSController {
     @ApiOperation(value="bcr请求",notes="此接口包含料箱进站请求、订单框进站请求、体积检测请求、入库口请求")
     @PostMapping("/bcr")
     public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception{
-        logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
-        return wcsService.executeBcrCallback(bcrDataDTO);
-
+            logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
+            return wcsService.executeBcrCallback(bcrDataDTO);
     }
 
 //    @ApiOperation(value="箱到位请求",notes="此接口包含料箱到位、订单框到位")

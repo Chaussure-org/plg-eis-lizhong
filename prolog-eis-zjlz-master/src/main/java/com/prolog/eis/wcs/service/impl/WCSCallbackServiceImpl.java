@@ -85,18 +85,16 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
     @LogInfo(desci = "wcs行走任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_TASK_CALLBACK, systemType = LogDto.WCS)
     @Transactional(rollbackFor = Exception.class)
     public RestMessage<String> executeTaskCallback(TaskCallbackDTO taskCallbackDTO) {
-        if (taskCallbackDTO==null){
+        if (taskCallbackDTO == null) {
             return success;
         }
-        try{
+        try {
             this.doXZTask(taskCallbackDTO);
             return success;
-        }catch (Exception e){
-            logger.warn("行走任务回告失败",e);
+        } catch (Exception e) {
+            logger.warn("行走任务回告失败", e);
             return faliure;
         }
-
-
     }
 
 
@@ -120,7 +118,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
                 case ConstantEnum.TYPE_IN:
                     this.inStation(bcrDataDTO);
                     break;
-                    //箱库二楼入库BCR请求
+                //箱库二楼入库BCR请求
                 case ConstantEnum.TYPE_MOVE:
                     this.checkGoOn(bcrDataDTO);
                     break;
@@ -130,7 +128,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             return success;
         } catch (Exception e) {
             logger.warn("回告失败", e);
-            return success;
+            return faliure;
         }
     }
 
@@ -145,8 +143,6 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         String taskId = taskCallbackDTO.getTaskId();
         //通过任务id找对应的任务，如果任务的容器号无法对应上则报错，对应上则删除任务
     }
-
-
 
 
     /**
@@ -180,45 +176,45 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
             logger.info("重量不合格{}>{}", weight, properties.getLimitWeight());
             return;
         }
-        if ("BCR0209".equals(point) || "BCR0210".equals(point)){
+        if ("BCR0209".equals(point) || "BCR0210".equals(point)) {
             //此类型为借道
-            pathSchedulingService.inboundTask(containerNo,containerNo,point.getPointArea(),point.getPointId(),
+            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(),
                     "WCS052");
-        }else {
+        } else {
             //查询是否存在入库任务
             List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
-            if (wareHousings.size() > 0) {
-
-                String target = null;
-                if (ConstantEnum.BCR_TYPE_XKRK==point.getPointType()) {
-                    if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
-                        throw new Exception("入库输送线有误，请核对");
-                    }
-                    target = "SAS01";
-                } else {
-                    if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
-                        throw new Exception("入库输送线有误，请核对");
-                    }
-                    if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
-                        //先分配堆垛机
-                        target = containerPathTaskService.computeAreaIn();
-                    } else {
-                        target = "MCS05";
-                    }
-                }
-                //先找入库点位
-                //调用入库方法
-                pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
-                // 生成库存
-                createContainerInfo(wareHousings.get(0));
+            if (wareHousings.size() == 0) {
+                throw new Exception("此容器"+containerNo+"没有入库任务");
             }
+            String target = null;
+            if (ConstantEnum.BCR_TYPE_XKRK == point.getPointType()) {
+                if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
+                    throw new Exception("入库输送线有误，请核对");
+                }
+                target = "SAS01";
+            } else {
+                if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
+                    throw new Exception("入库输送线有误，请核对");
+                }
+                if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
+                    //先分配堆垛机
+                    target = containerPathTaskService.computeAreaIn();
+                } else {
+                    target = "MCS05";
+                }
+            }
+            //先找入库点位
+            //调用入库方法
+            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
+            // 生成库存
+            createContainerInfo(wareHousings.get(0));
         }
     }
 
 
-
     /**
      * 生成库存
+     *
      * @param wareHousing 入库任务
      */
     private void createContainerInfo(WmsInboundTask wareHousing) {
@@ -246,12 +242,12 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         String containerNo = bcrDataDTO.getContainerNo();
         //箱子所找到的所有的站台
         List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
-        if (lineBindingDetails.size()>0){
+        if (lineBindingDetails.size() > 0) {
             String taskId = PrologStringUtils.newGUID();
             //1.找到离入站BCR最近的站台
             Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
             PointLocation point = pointLocationService.getPointByStationId(stationId);
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,5);
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), point.getPointId(), containerNo, 5);
             wcsService.lineMove(wcsLineMoveDto);
         }
 
@@ -266,16 +262,16 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
         //1.此BCR 只需要判断 箱子是不是应该回库
         String containerNo = bcrDataDTO.getContainerNo();
         List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
-        if (lineBindingDetails.size()>0){
+        if (lineBindingDetails.size() > 0) {
             String taskId = PrologStringUtils.newGUID();
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),"",containerNo,
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), "", containerNo,
                     5);
             wcsService.lineMove(wcsLineMoveDto);
-        }else{
+        } else {
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
-            pathSchedulingService.inboundTask(containerNo,containerNo,point.getPointArea(),point.getPointId(),"SAS01");
-            containerStoreService.updateTaskStausByContainer(containerNo,ContainerStore.TASK_TYPE_INBOUND);
+            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), "SAS01");
+            containerStoreService.updateTaskStausByContainer(containerNo, ContainerStore.TASK_TYPE_INBOUND);
         }
     }
 
@@ -283,7 +279,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
      * 剔除
      */
     private void exitContainer(String address, String containerNo) throws Exception {
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(PrologStringUtils.newGUID(),address,"-1",
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(PrologStringUtils.newGUID(), address, "-1",
                 containerNo, 5);
         wcsService.lineMove(wcsLineMoveDto);
     }

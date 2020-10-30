@@ -38,7 +38,7 @@ public class WmsInboundTaskDto implements Serializable {
 
     @ApiModelProperty("单据类型")
     @JsonProperty(value = "BILLTYPE")
-    private String BILLTYPE;
+    private Integer BILLTYPE;
 
     @ApiModelProperty("入库日期")
     @JsonProperty(value = "BILLDATE")
@@ -155,11 +155,11 @@ public class WmsInboundTaskDto implements Serializable {
         this.REFBILLNO = REFBILLNO;
     }
 
-    public String getBILLTYPE() {
+    public Integer getBILLTYPE() {
         return BILLTYPE;
     }
 
-    public void setBILLTYPE(String BILLTYPE) {
+    public void setBILLTYPE(Integer BILLTYPE) {
         this.BILLTYPE = BILLTYPE;
     }
 
@@ -317,13 +317,13 @@ public class WmsInboundTaskDto implements Serializable {
 
     @Override
     public String toString() {
-        return "WMSInboundTaskDto{" +
+        return "WmsInboundTaskDto{" +
                 "LINEID='" + LINEID + '\'' +
                 ", BRANCHCODE='" + BRANCHCODE + '\'' +
                 ", BILLNO='" + BILLNO + '\'' +
-                ", BRANCHTYPE=" + BRANCHTYPE +
+                ", BRANCHTYPE='" + BRANCHTYPE + '\'' +
                 ", REFBILLNO='" + REFBILLNO + '\'' +
-                ", BILLTYPE='" + BILLTYPE + '\'' +
+                ", BILLTYPE=" + BILLTYPE +
                 ", BILLDATE=" + BILLDATE +
                 ", CONTAINERNO='" + CONTAINERNO + '\'' +
                 ", PARENTCONTAINERNO='" + PARENTCONTAINERNO + '\'' +
