@@ -75,6 +75,7 @@ public class TransferEnginServiceImpl implements TransferEnginService {
             if (outContainerDtoList.size() > 0) {
                 for (OutContainerDto outContainerDto : outContainerDtoList) {
                     pathSchedulingService.containerMoveTask(outContainerDto.getContainerNo(), "RCS01", null);
+                    //iOrderDetailService.
                 }
             }
         }

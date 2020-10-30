@@ -299,6 +299,19 @@ public class PrologDateUtils {
 		return (int) ((dateEnd.getTime() - dateStart.getTime())/1000/60/60/24); 
 	}
 
+    /**
+     * 获取两个日期（不含时分秒）相差的分钟数
+     * @param startDate
+     * @param endDate
+     * @return
+     * @throws ParseException
+     */
+    public static int dateBetweenMin(Date startDate, Date endDate) throws ParseException {
+        Date dateStart = dateParse(dateFormat(startDate, DATE_PATTERN), DATE_PATTERN);
+        Date dateEnd = dateParse(dateFormat(endDate, DATE_PATTERN), DATE_PATTERN);
+        return (int) ((dateEnd.getTime() - dateStart.getTime())/1000/60);
+    }
+
 	/**
 	 * 获取两个日期（不含时分秒）相差的天数，包含今天
 	 * @param startDate

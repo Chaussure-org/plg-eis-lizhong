@@ -3,6 +3,7 @@ package com.prolog.eis.location.dao;
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
+import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -85,4 +86,17 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
     @Select("SELECT count(*) FROM agv_storagelocation a left join container_path_task c on a.location_no=c.target_location \n" +
             "where c.task_state=0 AND c.container_no=#{containerNo} AND a.device_no=#{stationId} AND c.target_area='SN01';")
     int findContainerArrive(@Param("containerNo") String containerNo, @Param("stationId") int stationId);
+
+
+    @Select("SELECT\n" +
+            "\tc.container_no AS containerNo,\n" +
+            "\tc.update_time as updateTime,\n" +
+            "\tc.source_location as sourceLocation\n" +
+            "FROM\n" +
+            "\tcontainer_path_task c \n" +
+            "WHERE\n" +
+            "\tc.target_area = 'RCS01' \n" +
+            "\tAND c.task_state = 0 \n" +
+            "\tAND c.container_no NOT IN ( SELECT a.container_no FROM agv_binding_detail a )")
+    List<ContainerPathTask>findEmptyAgvContainer();
 }
