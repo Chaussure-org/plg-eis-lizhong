@@ -3,6 +3,7 @@ package com.prolog.eis.inventory.service.impl;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
+import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,15 @@ public class InventoryTaskDetailServiceImpl implements IInventoryTaskDetailServi
             return;
         }
         inventoryTaskDetailMapper.saveBatch(inventoryTaskDetails);
+    }
+
+    @Override
+    public void updateContainerTaskState(String containerNo, int taskState) {
+        List<InventoryTaskDetail> taskDetails = inventoryTaskDetailMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(), InventoryTaskDetail.class);
+        if (taskDetails.size() != 0){
+            InventoryTaskDetail inventoryTaskDetail = taskDetails.get(0);
+            inventoryTaskDetail.setTaskState(taskState);
+            inventoryTaskDetailMapper.update(inventoryTaskDetail);
+        }
     }
 }

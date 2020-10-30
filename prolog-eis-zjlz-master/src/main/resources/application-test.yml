@@ -24,9 +24,9 @@ spring:
       enabled: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver #oracle.jdbc.driver.OracleDriver
-    url: jdbc:mysql://39.96.69.213:3306/zjlz?characterEncoding=utf8&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/zjlz?characterEncoding=utf8&useSSL=false
     username: root
-    password: eisalicloud
+    password: root
     initialSize: 0 #初始化大小
     minIdle: 5 #最小空閒
     maxActive: 50 #最大連接數

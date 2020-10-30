@@ -1,7 +1,6 @@
 package com.prolog.eis.engin.service;
 
-import com.prolog.eis.dto.inventory.InventoryOutDto;
-import org.apache.ibatis.annotations.Param;
+import com.prolog.eis.dto.inventory.RickerTaskDto;
 
 import java.util.List;
 
@@ -16,6 +15,23 @@ public interface IInventoryTrayOutService {
     /**
      * 盘点容器出库
      */
-    void inventoryTrayOut();
+    void inventoryTrayOut() throws Exception;
+
+    /**
+     * 计算堆垛机任务数
+     * @return
+     */
+    List<RickerTaskDto> computeRickerTask();
+
+
+    /**
+     *获取空货位数
+     */
+    int getEmptyStore();
+
+
+
+
+
 
 }

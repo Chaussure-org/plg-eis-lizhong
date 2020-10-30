@@ -3,7 +3,9 @@ package com.prolog.eis.store;
 import com.prolog.eis.ZjlzApplication;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
+import com.prolog.eis.dto.inventory.RickerTaskDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
+import com.prolog.eis.engin.dao.InventoryTrayOutMapper;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
@@ -22,6 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author wangkang
@@ -44,6 +48,8 @@ public class LocationServiceTest {
 
     @Autowired
     private IInventoryTaskDetailService inventoryTaskDetailService;
+    @Autowired
+    private InventoryTrayOutMapper trayOutMapper;
 
     @Test
     public void doTask() throws Exception {

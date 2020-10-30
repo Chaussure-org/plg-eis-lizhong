@@ -13,6 +13,7 @@ import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.OrderBox;
 import com.prolog.eis.model.PickingOrder;
+import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
@@ -287,7 +288,9 @@ public class StationBZServiceImpl implements IStationBZService {
         if (stationIds.size() == 0) {
             //直接放行
             if (stations.size() > 0) {
-                //上层输送线  循环线点位
+                //todo：上层输送线  循环线点位
+                List<PointLocation> pointByType = pointLocationService.getPointByType(PointLocation.POINT_TYPE_LXJZ_BCR);
+                pathSchedulingService.containerMoveTask(containerNo,pointByType.get(0).getPointId(),null);
             } else {
                 //下层agv 回暂存区
                 pathSchedulingService.containerMoveTask(containerNo,"RCS01",null);
@@ -296,7 +299,9 @@ public class StationBZServiceImpl implements IStationBZService {
             if (stations.size() > 0) {
                 //计算合适站台
                 int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
-                //上层输送线 发送点位
+                //todo：上层输送线 发送点位
+                PointLocation pointLocation = pointLocationService.getPointByStationId(targetStationId);
+                pathSchedulingService.containerMoveTask(containerNo,pointLocation.getPointId(),null);
             } else {
                 //下层agv 只有一条绑定明细尾拖则直接去贴标区或非贴标区
 //                if (stationIds.size() == 1) {
