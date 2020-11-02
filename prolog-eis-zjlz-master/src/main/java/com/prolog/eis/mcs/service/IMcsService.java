@@ -12,7 +12,7 @@ import java.util.List;
  * @Description
  * @CreateTime 2020-09-22 15:55
  */
-public interface IMCSService {
+public interface IMcsService {
 
     /**
      * 发送Mcs任务

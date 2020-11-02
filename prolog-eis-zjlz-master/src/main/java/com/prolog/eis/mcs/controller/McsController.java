@@ -33,9 +33,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/mcs")
 @Api(tags = "MCS回调接口(堆垛机)")
-public class MCSController {
+public class McsController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MCSController.class);
+    private static final Logger logger = LoggerFactory.getLogger(McsController.class);
 
     @Autowired
     private IMCSCallBackService mcsCallbackService;

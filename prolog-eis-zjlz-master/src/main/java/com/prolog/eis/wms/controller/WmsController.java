@@ -26,9 +26,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/wms")
 @Api(tags = "WMS回调接口文档")
-public class WMSController {
+public class WmsController {
 
-    private static final Logger logger = LoggerFactory.getLogger(WMSController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WmsController.class);
 
     @Autowired
     private IWMSCallBackService wmsCallBackService;

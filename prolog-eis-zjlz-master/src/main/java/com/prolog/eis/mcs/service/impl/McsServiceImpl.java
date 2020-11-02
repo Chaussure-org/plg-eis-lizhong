@@ -5,9 +5,7 @@ import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
-import com.prolog.eis.dto.mcs.McsSendTaskDto;
-import com.prolog.eis.dto.wcs.HoisterInfoDto;
-import com.prolog.eis.mcs.service.IMCSService;
+import com.prolog.eis.mcs.service.IMcsService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import com.prolog.eis.util.PrologHttpUtils;
@@ -28,9 +26,9 @@ import java.util.Map;
  * @CreateTime 2020-09-22 15:56
  */
 @Service
-public class MCSServiceImpl implements IMCSService {
+public class McsServiceImpl implements IMcsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MCSServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(McsServiceImpl.class);
 
     @Autowired
     private RestTemplate restTemplate;

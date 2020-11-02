@@ -1,6 +1,6 @@
 package com.prolog.eis.rcs.service;
 
-public interface IRCSCallbackService {
+public interface IRcsCallbackService {
 
 	/**
 	 * rcs回告逻辑

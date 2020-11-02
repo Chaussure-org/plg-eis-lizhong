@@ -61,7 +61,7 @@ public class OrderBill {
 
     @Column("order_type")
     @ApiModelProperty("订单类型）")
-    private String orderType;
+    private Integer orderType;
 
 
     @Column("branch_type")
@@ -164,11 +164,11 @@ public class OrderBill {
         this.orderNo = orderNo;
     }
 
-    public String getOrderType() {
+    public Integer getOrderType() {
         return orderType;
     }
 
-    public void setOrderType(String orderType) {
+    public void setOrderType(Integer orderType) {
         this.orderType = orderType;
     }
 

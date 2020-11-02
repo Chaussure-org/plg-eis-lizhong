@@ -8,7 +8,7 @@ import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
-import com.prolog.eis.wms.service.IWMSService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
@@ -25,9 +25,9 @@ import java.util.Map;
  * @CreateTime 2020-09-22 13:58
  */
 @Service
-public class WMSServiceImpl implements IWMSService {
+public class WmsServiceImpl implements IWmsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(WMSServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(WmsServiceImpl.class);
 
     @Autowired
     private HttpUtils httpUtils;

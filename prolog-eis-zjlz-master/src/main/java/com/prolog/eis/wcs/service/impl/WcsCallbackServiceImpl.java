@@ -22,8 +22,8 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
-import com.prolog.eis.wcs.service.IWCSCallbackService;
-import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.eis.wcs.service.IWcsCallbackService;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class WCSCallbackServiceImpl implements IWCSCallbackService {
+public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
-    private final Logger logger = LoggerFactory.getLogger(WCSCallbackServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(WcsCallbackServiceImpl.class);
 
     @Autowired
     private EisProperties properties;
@@ -60,7 +60,7 @@ public class WCSCallbackServiceImpl implements IWCSCallbackService {
     private IStationService stationService;
 
     @Autowired
-    private IWCSService wcsService;
+    private IWcsService wcsService;
 
     @Autowired
     private IContainerStoreService containerStoreService;
