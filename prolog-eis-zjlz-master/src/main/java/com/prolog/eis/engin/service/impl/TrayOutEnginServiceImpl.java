@@ -148,7 +148,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
 
     /**
-     * wms 的订单出库
+     * 的订单出库
      *
      * @param detailDtos
      * @return
