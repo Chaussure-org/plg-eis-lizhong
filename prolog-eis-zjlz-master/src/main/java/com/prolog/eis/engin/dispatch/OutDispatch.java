@@ -85,7 +85,7 @@ public class OutDispatch {
     /**
      * 小车跨层调度
      */
-    @Scheduled(initialDelay = 3000, fixedDelay = 4000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 30000)
     public void crossLayer(){
         try{
             crossLayerEnginService.findCrossLayerTask();
