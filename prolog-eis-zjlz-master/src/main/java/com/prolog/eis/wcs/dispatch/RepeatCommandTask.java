@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,23 +77,10 @@ public class RepeatCommandTask implements CommandLineRunner {
         }
         for (WcsCommandRepeat wcsCommandRepeat : allCommandByCreatTime) {
             try {
-                sendWcsCommand(wcsCommandRepeat);
+                wcsCommandRepeatService.sendWcsCommand(wcsCommandRepeat);
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * 删除并发送指令
-     * @param wcsCommandRepeat 指令
-     * @throws Exception
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void sendWcsCommand(WcsCommandRepeat wcsCommandRepeat) throws Exception {
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(wcsCommandRepeat.getTaskId(),wcsCommandRepeat.getAddress()
-                ,wcsCommandRepeat.getTarget(),wcsCommandRepeat.getContainerNo(),wcsCommandRepeat.getType());
-        wcsService.lineMove(wcsLineMoveDto, 1);
-        wcsCommandRepeatService.deleteCommandByTaskId(wcsCommandRepeat.getTaskId());
     }
 }

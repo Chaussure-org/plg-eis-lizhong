@@ -90,12 +90,13 @@ public class WcsCommandRepeat {
     this.createTime = createTime;
   }
 
-  public WcsCommandRepeat(String taskId, String address, String target, String containerNo, Integer type) {
+  public WcsCommandRepeat(String taskId, String address, String target, String containerNo, Integer type, Date createTime) {
     this.taskId = taskId;
     this.address = address;
     this.target = target;
     this.containerNo = containerNo;
     this.type = type;
+    this.createTime = createTime;
   }
 
   public WcsCommandRepeat() {

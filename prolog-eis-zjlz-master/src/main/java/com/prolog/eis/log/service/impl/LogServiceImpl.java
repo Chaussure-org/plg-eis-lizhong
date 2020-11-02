@@ -43,7 +43,7 @@ public class LogServiceImpl implements ILogService {
      * @param log 日志
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED,rollbackFor = Exception.class)
     public void save(LogDto log) {
         switch (log.getSystemType()){
             case LogDto.WMS:

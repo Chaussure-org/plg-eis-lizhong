@@ -1,6 +1,8 @@
 package com.prolog.eis.wcs.service;
 
+import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.model.wcs.WcsCommandRepeat;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
@@ -28,4 +30,11 @@ public interface IWcsCommandRepeatService {
      * @param taskId 任务id
      */
     void deleteCommandByTaskId(String taskId);
+
+    /**
+     * 删除并发送指令
+     * @param wcsCommandRepeat 指令
+     * @throws Exception
+     */
+    void sendWcsCommand(WcsCommandRepeat wcsCommandRepeat) throws Exception;
 }

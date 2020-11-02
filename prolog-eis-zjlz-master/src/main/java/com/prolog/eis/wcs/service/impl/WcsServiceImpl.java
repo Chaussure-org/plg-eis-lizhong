@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Date;
+
 /**
 * @Author  wangkang
 * @Description  wcs服务实现
@@ -64,7 +66,7 @@ public class WcsServiceImpl implements IWcsService {
         if (!result.isSuccess()&&i==0) {
             WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
                     wcsLineMoveDto.getAddress(),wcsLineMoveDto.getTarget(),wcsLineMoveDto.getContainerNo(),
-                    wcsLineMoveDto.getType());
+                    wcsLineMoveDto.getType(), new Date());
             wcsCommandRepeatService.saveWcsCommand(wcsCommandRepeat);
         }
         return result;
