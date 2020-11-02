@@ -26,7 +26,7 @@ import java.util.Date;
  */
 @Component
 @Aspect
-@Order(1)
+@Order(0)
 public class LogAspect {
 
     @Autowired
@@ -84,6 +84,7 @@ public class LogAspect {
                     log.setException(e.getMessage().toString());
                     log.setCreateTime(new Date());
                     logService.save(log);
+                    throw e;
                 }
             }else {
                 return joinPoint.proceed();
@@ -91,6 +92,5 @@ public class LogAspect {
         }else {
             return joinPoint.proceed();
         }
-        return null;
     }
 }

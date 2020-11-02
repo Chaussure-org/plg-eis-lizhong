@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.model.wcs.WcsCommandRepeat;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.wcs.service.IWcsCommandRepeatService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
@@ -14,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 /**
 * @Author  wangkang
@@ -26,6 +30,10 @@ public class WcsServiceImpl implements IWcsService {
     private HttpUtils httpUtils;
     @Autowired
     private EisProperties properties;
+
+    @Autowired
+    private IWcsCommandRepeatService wcsCommandRepeatService;
+
     @Autowired
     private RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(WcsServiceImpl.class);
@@ -48,12 +56,19 @@ public class WcsServiceImpl implements IWcsService {
      */
     @Override
     @LogInfo(desci = "eis发送输送线行走命令", direction = "eis->wcs", type = LogDto.WCS_TYPE_LINE_MOVE, systemType = LogDto.WCS)
-    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto) throws Exception {
+    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto,int i) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 输送线行走:{}", url);
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
                 new TypeReference<RestMessage<String>>() {
                 });
+        // 输送线任务不成功，则存表，定时器扫描后再次发送
+        if (!result.isSuccess()&&i==0) {
+            WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
+                    wcsLineMoveDto.getAddress(),wcsLineMoveDto.getTarget(),wcsLineMoveDto.getContainerNo(),
+                    wcsLineMoveDto.getType(), new Date());
+            wcsCommandRepeatService.saveWcsCommand(wcsCommandRepeat);
+        }
         return result;
     }
 
