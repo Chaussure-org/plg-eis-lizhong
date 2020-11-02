@@ -1,5 +1,6 @@
 package com.prolog.eis.wms.service.impl;
 
+import com.prolog.eis.base.dao.GoodsMapper;
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.log.LogDto;
@@ -24,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -57,20 +55,33 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     private IInventoryTaskDetailService inventoryTaskDetailService;
     @Autowired
     private ContainerStoreMapper containerStoreMapper;
+    @Autowired
+    private GoodsMapper goodsMapper;
 
     /**
      * 处理wms下发的入库任务
+     *
      * @param wmsInboundTaskDtos
      */
     @Override
-    @LogInfo(desci = "wms入库任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_INBOUND_TASK,systemType = LogDto.WMS)
-    public void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception{
+    @LogInfo(desci = "wms入库任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_INBOUND_TASK, systemType = LogDto.WMS)
+    public void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         //1.如果库内已经存在该箱子，测不允许生成该箱子的任务
         List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
-        List<WmsInboundTask> wmsInboundTaskList=new ArrayList<>();
+        //2.校验 商品id 和 商品名称是否与 EIS 一致
+        List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
+        List<WmsInboundTask> wmsInboundTaskList = new ArrayList<>();
         for (WmsInboundTaskDto wmsInboundTaskDto : wmsInboundTaskDtos) {
-            if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())){
-                throw new Exception("该容器已经被占用"+wmsInboundTaskDto.getCONTAINERNO()+"此次所有订单任务下发失败！");
+            if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())) {
+                throw new Exception("该容器已经被占用" + wmsInboundTaskDto.getCONTAINERNO() + "此次所有订单任务下发失败！");
+            }
+            Optional<Goods> first = goods.stream().filter(x -> x.getId().equals(wmsInboundTaskDto.getITEMID())).findFirst();
+            if (!first.isPresent()){
+                throw new Exception("该容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+wmsInboundTaskDto.getITEMID() + "不存在，此次所有订单任务下发失败！");
+            }else {
+                if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())){
+                    throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名成与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
+                }
             }
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
             wmsInboundTask.setBillNo(wmsInboundTaskDto.getBILLNO());
@@ -93,16 +104,17 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
 
     /**
      * 处理wms下发的出库任务
+     *
      * @param wmsOutboundTaskDtos
      * @throws Exception
      */
     @Override
-    @LogInfo(desci = "wms出库任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK,systemType = LogDto.WMS)
+    @LogInfo(desci = "wms出库任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK, systemType = LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
     public void sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
 
 
-        if (wmsOutboundTaskDtos.size()>0) {
+        if (wmsOutboundTaskDtos.size() > 0) {
             List<String> billNoList =
                     wmsOutboundTaskDtos.stream().map(x -> x.getBILLNO()).distinct().collect(Collectors.toList());
             for (String s : billNoList) {
@@ -132,13 +144,13 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     }
 
     @Override
-    @LogInfo(desci = "wms修改订单优先级",direction = "wms->eis",type = LogDto.WMS_TYPE_UPDATE_PRIORITY,systemType = LogDto.WMS)
+    @LogInfo(desci = "wms修改订单优先级", direction = "wms->eis", type = LogDto.WMS_TYPE_UPDATE_PRIORITY, systemType = LogDto.WMS)
     public void upOrderProiority(WmsUpProiorityDto wmsUpProiorityDto) throws Exception {
         orderBillService.upOrderProiorityByBillNo(wmsUpProiorityDto.getBILLNO());
     }
 
     @Override
-    @LogInfo(desci = "wms同步商品资料",direction = "wms->eis",type = LogDto.WMS_TYPE_GOODS_SYNC,systemType = LogDto.WMS)
+    @LogInfo(desci = "wms同步商品资料", direction = "wms->eis", type = LogDto.WMS_TYPE_GOODS_SYNC, systemType = LogDto.WMS)
     public void goodsSync(List<WmsGoodsDto> goodsDtos) {
         List<Goods> newGoods = new ArrayList<>();
         List<Goods> updateGoods = new ArrayList<>();
@@ -154,7 +166,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 goods.setGoodsType(goodsDto.getGATEGORYID());
                 goods.setCreateTime(new Date());
                 newGoods.add(goods);
-            }else {
+            } else {
                 goods.setGoodsName(goodsDto.getITEMNAME());
                 goods.setGoodsNo(goodsDto.getITEMBARCODE());
                 goods.setOwnerDrawnNo(goodsDto.getITEMBARCODE());
@@ -164,11 +176,11 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 updateGoods.add(goods);
             }
         }
-        goodsService.saveAndUpdateGoods(newGoods,updateGoods);
+        goodsService.saveAndUpdateGoods(newGoods, updateGoods);
     }
 
     @Override
-    @LogInfo(desci = "wms盘点任务下发",direction = "wms->eis",type = LogDto.WMS_TYPE_SEND_INVENTORY_TAKS,systemType =
+    @LogInfo(desci = "wms盘点任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_INVENTORY_TAKS, systemType =
             LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
     public void sendInventoryTask(List<WmsInventoryTaskDto> wmsInventoryTasks) throws Exception {
@@ -180,8 +192,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             // 根据wms下发的相关信息找到需盘点的料箱
             List<InventoryGoodsDto> detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
 
-            if (detailsByMap.size()==0 || detailsByMap == null) {
-                throw new Exception("【"+wmsInventoryTask.getBILLNO()+"】未找到满足盘点规则的容器");
+            if (detailsByMap.size() == 0 || detailsByMap == null) {
+                throw new Exception("【" + wmsInventoryTask.getBILLNO() + "】未找到满足盘点规则的容器");
             }
             InventoryTask inventoryTask = new InventoryTask();
             inventoryTask.setBillNo(wmsInventoryTask.getBILLNO());
@@ -211,8 +223,6 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             }
 
             inventoryTaskDetailService.saveInventoryDetailBatch(inventoryDeatils);
-
-
 
 
         }
