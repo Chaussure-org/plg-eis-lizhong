@@ -293,7 +293,7 @@ public class StationBZServiceImpl implements IStationBZService {
                 pathSchedulingService.containerMoveTask(containerNo,pointByType.get(0).getPointId(),null);
             } else {
                 //下层agv 回暂存区
-//                pathSchedulingService.containerMoveTask(containerNo,"RCS01",null);
+                pathSchedulingService.containerMoveTask(containerNo,"RCS01",null);
             }
         } else {
             if (stations.size() > 0) {
@@ -331,10 +331,10 @@ public class StationBZServiceImpl implements IStationBZService {
         boolean flag = orderDetailService.findOrderTrayGoodsLabel(orderBillId, orderTrayNo);
         if (flag) {
             //Agv贴标区
-//            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
+            pathSchedulingService.containerMoveTask(orderTrayNo,"LB01",null);
         } else {
             //agv非贴标
-//            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
+            pathSchedulingService.containerMoveTask(orderTrayNo,"CH01",null);
         }
     }
 

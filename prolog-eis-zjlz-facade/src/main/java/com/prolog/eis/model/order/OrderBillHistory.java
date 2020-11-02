@@ -77,6 +77,19 @@ public class OrderBillHistory {
   @ApiModelProperty("单据日期")
   private java.util.Date billDate;
 
+  @Column("branch_type")
+  @ApiModelProperty("移库类型）")
+  private String branchType;
+
+
+  public String getBranchType() {
+    return branchType;
+  }
+
+  public void setBranchType(String branchType) {
+    this.branchType = branchType;
+  }
+
   public Integer getId() {
     return id;
   }
