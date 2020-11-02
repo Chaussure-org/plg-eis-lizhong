@@ -48,12 +48,16 @@ public class WcsServiceImpl implements IWcsService {
      */
     @Override
     @LogInfo(desci = "eis发送输送线行走命令", direction = "eis->wcs", type = LogDto.WCS_TYPE_LINE_MOVE, systemType = LogDto.WCS)
-    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto) throws Exception {
+    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto,int i) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 输送线行走:{}", url);
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
                 new TypeReference<RestMessage<String>>() {
                 });
+        // 输送线任务不成功，则存表，定时器扫描后再次发送
+        if (!result.isSuccess()) {
+
+        }
         return result;
     }
 

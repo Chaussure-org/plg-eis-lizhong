@@ -252,7 +252,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
             PointLocation point = pointLocationService.getPointByStationId(stationId);
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,5);
-            wcsService.lineMove(wcsLineMoveDto);
+            wcsService.lineMove(wcsLineMoveDto,0);
         }
 
     }
@@ -270,7 +270,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             String taskId = PrologStringUtils.newGUID();
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),"",containerNo,
                     5);
-            wcsService.lineMove(wcsLineMoveDto);
+            wcsService.lineMove(wcsLineMoveDto,0);
         }else{
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
@@ -285,7 +285,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private void exitContainer(String address, String containerNo) throws Exception {
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(PrologStringUtils.newGUID(),address,"-1",
                 containerNo, 5);
-        wcsService.lineMove(wcsLineMoveDto);
+        wcsService.lineMove(wcsLineMoveDto,0);
     }
 
 }
