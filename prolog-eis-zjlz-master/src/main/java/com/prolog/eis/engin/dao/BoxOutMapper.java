@@ -28,7 +28,7 @@ public interface BoxOutMapper {
             "\tcontainer_store cs\n" +
             "\tLEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no\n" +
             "\tLEFT JOIN goods g ON cs.goods_id = g.id\n" +
-            "\tLEFT JOIN sx_store_location sl ON sl.id = cpt.source_location \n" +
+            "\tLEFT JOIN sx_store_location sl ON sl.store_no = cpt.source_location \n" +
             "WHERE\n" +
             "\tcpt.task_state=0 and cpt.target_area='SAS01' \n" +
             "\tAND cs.goods_id = #{goodsId}\n" +

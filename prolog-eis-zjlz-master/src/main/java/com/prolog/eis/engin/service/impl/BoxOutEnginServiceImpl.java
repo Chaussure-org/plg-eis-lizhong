@@ -163,6 +163,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<LayerTaskDto> layerTaskCounts = boxOutMapper.findLayerTaskCount();
         //输送线上绑定了订单 的  剩余库存
         List<LayerGoodsCountDto> lineGoodsCounts = boxOutMapper.findLineGoodsCount(goodsId);
+
         //小车所在的层
         List<CarInfoDTO> conformCars = this.getConformCars();
         if (conformCars.size() == 0) {
@@ -281,7 +282,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {
-        List<CarInfoDTO> carInfos = new ArrayList<>();//sasService.getCarInfo();
+        List<CarInfoDTO> carInfos = sasService.getCarInfo();
         List<CarInfoDTO> cars = carInfos.stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
         return cars;
     }
