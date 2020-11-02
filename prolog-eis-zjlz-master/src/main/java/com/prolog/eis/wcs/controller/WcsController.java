@@ -15,12 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+* @Author  wangkang
+* @Description  wcs服务
+* @CreateTime  2020-11-02 9:18
+*/
 @RestController
 @RequestMapping("/wcs")
 @Api(tags = "WCS回调接口文档(输送线)")
-public class WCSController {
+public class WcsController {
 
-    private final Logger logger = LoggerFactory.getLogger(WCSController.class);
+    private final Logger logger = LoggerFactory.getLogger(WcsController.class);
     @Autowired
     private IWCSCallbackService wcsService;
     @Autowired

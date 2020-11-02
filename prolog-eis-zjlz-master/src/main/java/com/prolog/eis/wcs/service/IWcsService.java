@@ -7,7 +7,7 @@ import com.prolog.framework.common.message.RestMessage;
 
 import java.util.List;
 
-public interface IWCSService {
+public interface IWcsService {
 
 
     /**

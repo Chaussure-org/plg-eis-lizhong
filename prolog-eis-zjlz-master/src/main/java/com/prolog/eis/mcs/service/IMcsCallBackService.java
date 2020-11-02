@@ -7,7 +7,7 @@ import com.prolog.eis.dto.mcs.McsCallBackDto;
  * @Description
  * @CreateTime 2020-09-22 15:55
  */
-public interface IMCSCallBackService {
+public interface IMcsCallBackService {
 
 
     /**

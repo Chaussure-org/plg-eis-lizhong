@@ -10,7 +10,7 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
-import com.prolog.eis.sas.service.ISASCallbackService;
+import com.prolog.eis.sas.service.ISasCallbackService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
@@ -34,9 +34,9 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class SASCallbackServiceImpl implements ISASCallbackService {
+public class SasCallbackServiceImpl implements ISasCallbackService {
 
-    private final Logger logger = LoggerFactory.getLogger(SASCallbackServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SasCallbackServiceImpl.class);
     private final RestMessage<String> success = RestMessage.newInstance(true, "200", "操作成功", null);
     private final RestMessage<String> faliure = RestMessage.newInstance(false, "500", "操作失败", null);
     private final RestMessage<String> out = RestMessage.newInstance(false, "300", "订单箱异常", null);

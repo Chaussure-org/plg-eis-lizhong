@@ -9,7 +9,7 @@ import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.CarListDTO;
 import com.prolog.eis.dto.wcs.HoisterInfoDto;
 import com.prolog.eis.dto.wcs.SasMoveCarDto;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
@@ -30,14 +30,14 @@ import java.util.Map;
  * @author
  */
 @Service
-public class SASServiceImpl implements ISASService {
+public class SasServiceImpl implements ISasService {
     @Autowired
     private HttpUtils httpUtils;
     @Autowired
     private EisProperties properties;
     @Autowired
     private RestTemplate restTemplate;
-    private final Logger logger = LoggerFactory.getLogger(SASServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SasServiceImpl.class);
 
     /**
      * 获取完整路径

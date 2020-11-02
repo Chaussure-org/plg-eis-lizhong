@@ -3,7 +3,7 @@ package com.prolog.eis.wcs.service;
 import com.prolog.eis.dto.wcs.*;
 import com.prolog.framework.common.message.RestMessage;
 
-public interface IWCSCallbackService {
+public interface IWcsCallbackService {
     /**
      * 任务回告
      * @param taskCallbackDTO

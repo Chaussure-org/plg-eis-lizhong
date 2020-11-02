@@ -6,7 +6,7 @@ import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
-import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
@@ -15,15 +15,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+/**
+* @Author  wangkang
+* @Description  wcs服务实现
+* @CreateTime  2020-11-02 9:20
+*/
 @Service
-public class WCSServiceImpl implements IWCSService {
+public class WcsServiceImpl implements IWcsService {
     @Autowired
     private HttpUtils httpUtils;
     @Autowired
     private EisProperties properties;
     @Autowired
     private RestTemplate restTemplate;
-    private final Logger logger = LoggerFactory.getLogger(WCSServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(WcsServiceImpl.class);
 
     /**
      * 获取完整路径

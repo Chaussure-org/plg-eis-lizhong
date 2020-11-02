@@ -10,7 +10,7 @@ import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.order.OrderBill;
-import com.prolog.eis.rcs.service.IRCSCallbackService;
+import com.prolog.eis.rcs.service.IRcsCallbackService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class RcsCallbackServiceImpl implements IRCSCallbackService {
+public class RcsCallbackServiceImpl implements IRcsCallbackService {
 
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
