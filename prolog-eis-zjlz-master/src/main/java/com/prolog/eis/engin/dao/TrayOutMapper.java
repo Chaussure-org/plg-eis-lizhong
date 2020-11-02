@@ -67,4 +67,23 @@ public interface TrayOutMapper {
             "\tagv_binding_detail abd\n" +
             "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no LEFT JOIN goods g on cs.goods_id=g.id where abd.goods_id=#{goodsId} order by cs.qty DESC")
     List<RoadWayGoodsCountDto> findWmsAgvGoods(@Param("goodsId")int goodsId);
+
+    @Select("SELECT\n" +
+            "\tcs.goods_id AS goodsId,\n" +
+            "\tcs.container_no AS containerNo,\n" +
+            "\tcs.qty AS qty \n" +
+            "FROM\n" +
+            "\tcontainer_path_task c\n" +
+            "\tLEFT JOIN container_store cs ON c.container_no = cs.container_no \n" +
+            "WHERE\n" +
+            "\tc.target_area = 'RCS01' \n" +
+            "\tAND c.task_state = 0 \n" +
+            "\tAND cs.goods_id=#{goodsId}\n" +
+            "\tAND c.container_no NOT IN (\n" +
+            "\tSELECT\n" +
+            "\t\ta.container_no \n" +
+            "\tFROM\n" +
+            "\t\tagv_binding_detail a \n" +
+            "\t)")
+    List<RoadWayGoodsCountDto> findAgvNoBindsStore(@Param("goodsId")int goodsId);
 }

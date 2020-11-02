@@ -17,13 +17,13 @@ public interface OContainerStoreMapper extends BaseMapper<ContainerStore> {
      */
     @Select("SELECT\n" +
             "cs.goods_id AS goodsId,\n" +
-            "SUM(cs.qty)-(SELECT ifnull(SUM(o.plan_qty-o.has_pick_qty),0) FROM order_detail o WHERE o.goods_id=cs.goods_id AND o.area_no IS not null)  AS qty\n" +
+            "SUM(cs.qty)-(SELECT ifnull(SUM(o.plan_qty-o.has_pick_qty),0) FROM order_detail o WHERE o.goods_id=cs.goods_id AND o.area_no != '')  AS qty\n" +
             "FROM\n" +
             "container_store cs\n" +
             "LEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no\n" +
             "LEFT JOIN agv_binding_detail abd ON cs.container_no=abd.container_no\n" +
             "WHERE\n" +
-            "FIND_IN_SET( cpt.source_area, #{areaNos} ) \n" +
-            "AND cpt.task_type=0 GROUP BY cs.goods_id")
+            "FIND_IN_SET( cpt.target_area, #{areaNos} ) \n" +
+            "AND cpt.task_state=0 GROUP BY cs.goods_id")
     List<StoreGoodsCount> findStoreGoodsCount(@Param("areaNos")String areaNos);
 }
