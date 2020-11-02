@@ -1,5 +1,6 @@
 package com.prolog.eis.station.service;
 
+import com.prolog.eis.dto.inventory.StationTaskDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
@@ -82,8 +83,14 @@ public interface IStationService {
 
     /**
      * 获取站台id
-     * @param request
+     * @param stationIp
      * @return
      */
-    int getStationId(HttpServletRequest request) throws Exception;
+    int getStationId(String stationIp) throws Exception;
+
+
+    /**
+     * 获取站台盘点任务数
+     */
+    List<StationTaskDto> getStationTask();
 }

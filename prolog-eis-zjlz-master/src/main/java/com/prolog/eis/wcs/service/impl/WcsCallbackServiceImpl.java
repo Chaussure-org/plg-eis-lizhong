@@ -15,6 +15,7 @@ import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PointLocation;
+import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
@@ -136,8 +137,21 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      */
     @Transactional(rollbackFor = Exception.class, timeout = 600)
     public void doXZTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-        String taskId = taskCallbackDTO.getTaskId();
-        //通过任务id找对应的任务，如果任务的容器号无法对应上则报错，对应上则删除任务
+        //料箱到拣选站则将箱号写入到
+        int type = 5;
+        if (type == taskCallbackDTO.getType()){
+            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
+            if (pointLocation == null){
+                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
+            }
+            Station station = stationService.findById(pointLocation.getStationId());
+            if (station == null){
+                throw new Exception("【站台"+pointLocation.getStationId()+"】不存在");
+            }                                  
+            station.setContainerNo(taskCallbackDTO.getContainerNo());
+            station.setUpdateTime(new Date());
+            stationService.updateStation(station);
+        }
     }
 
 

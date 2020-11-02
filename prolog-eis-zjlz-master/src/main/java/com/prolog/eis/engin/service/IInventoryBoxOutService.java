@@ -17,7 +17,9 @@ public interface IInventoryBoxOutService {
 
 
     /**
-     * 盘点
+     * 盘点料箱分配拣选站
+     * @param containerNo 容器号
+     * @param address 起点位置
      */
-    void inventoryAllotStation();
+    void inventoryAllotStation(String containerNo,String address) throws Exception;
 }

@@ -35,4 +35,24 @@ public interface IInventoryTaskDetailService {
     void updateContainerTaskState(String containerNo,int taskState);
 
 
+    /**
+     * 根据map查询
+     * @param map
+     * @return
+     */
+    List<InventoryTaskDetail> findByMap(Map map);
+
+
+    /**
+     * 修改明细
+     * @param inventoryTaskDetail
+     */
+     void updateInventoryDetail(InventoryTaskDetail inventoryTaskDetail);
+
+    /**
+     * 根据id删除
+     * @param id
+     */
+    void deleteById(int id);
+
 }

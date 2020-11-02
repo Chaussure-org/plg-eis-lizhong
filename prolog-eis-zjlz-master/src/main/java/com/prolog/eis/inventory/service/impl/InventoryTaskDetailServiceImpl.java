@@ -3,6 +3,9 @@ package com.prolog.eis.inventory.service.impl;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restriction;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,4 +47,21 @@ public class InventoryTaskDetailServiceImpl implements IInventoryTaskDetailServi
             inventoryTaskDetailMapper.update(inventoryTaskDetail);
         }
     }
+
+    @Override
+    public List<InventoryTaskDetail> findByMap(Map map) {
+        return inventoryTaskDetailMapper.findByMap(map,InventoryTaskDetail.class);
+    }
+
+    @Override
+    public void updateInventoryDetail(InventoryTaskDetail inventoryTaskDetail) {
+        inventoryTaskDetailMapper.update(inventoryTaskDetail);
+    }
+
+    @Override
+    public void deleteById(int id) {
+        inventoryTaskDetailMapper.deleteById(id,InventoryTaskDetail.class);
+    }
+
+
 }

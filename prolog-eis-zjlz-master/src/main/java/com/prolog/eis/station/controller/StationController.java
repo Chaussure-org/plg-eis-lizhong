@@ -2,6 +2,7 @@ package com.prolog.eis.station.controller;
 
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
 import com.prolog.eis.station.service.IStationService;
+import com.prolog.eis.util.IPUtils;
 import com.prolog.framework.common.message.RestMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,7 +42,8 @@ public class StationController {
     @RequestMapping(value = "/getId")
     public RestMessage<Map<String,Integer>> getStationId(HttpServletRequest request) throws Exception{
         try {
-            int stationId = stationService.getStationId(request);
+            String ipAddr = IPUtils.getIpAddr(request);
+            int stationId = stationService.getStationId(ipAddr);
             Map<String, Integer> map = new HashMap<>(1);
             map.put("stationId",stationId);
 

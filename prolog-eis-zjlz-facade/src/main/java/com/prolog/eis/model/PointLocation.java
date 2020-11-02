@@ -23,6 +23,10 @@ public class PointLocation {
      * 环线上方bcr
      */
     public static final int POINT_TYPE_LXJZ_BCR = 18;
+    /**
+     * 环线下方bcr
+     */
+    public static final String POINT_ID_LXHK = "LXHK02";
 
   @Column("point_id")
   @ApiModelProperty("POINTID")

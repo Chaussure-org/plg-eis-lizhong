@@ -2,17 +2,24 @@ package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.dto.inventory.BoxLayerTaskDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
+import com.prolog.eis.dto.inventory.StationTaskDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
+import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.engin.dao.InventoryBoxOutMapper;
 import com.prolog.eis.engin.service.IInventoryBoxOutService;
 import com.prolog.eis.engin.service.IInventoryTrayOutService;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
+import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.station.service.IStationService;
+import com.prolog.eis.util.PrologStringUtils;
+import com.prolog.eis.util.PrologTaskIdUtils;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +47,10 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
     private PathSchedulingService pathSchedulingService;
     @Autowired
     private IInventoryTrayOutService iInventoryTrayOutService;
+    @Autowired
+    private IWcsService wcsService;
+    @Autowired
+    private IPointLocationService pointLocationService;
 
     /**
      * 1、初始箱库盘点任务
@@ -96,8 +107,21 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
     }
 
     @Override
-    public void inventoryAllotStation() {
-
+    public void inventoryAllotStation(String containerNo,String address) throws Exception {
+        List<StationTaskDto> stationTasks = stationService.getStationTask();
+        if (stationTasks.size() == 0){
+            throw new Exception("没有找到可用盘点站台");
+        }else {
+            //找任务数最少离bcr最远的站台最大的拣选站
+            List<StationTaskDto> collect = stationTasks.stream().sorted(Comparator.comparing(StationTaskDto::getTaskCount).
+                    thenComparing(StationTaskDto::getStationId).reversed()).collect(Collectors.toList());
+            StationTaskDto stationTaskDto = collect.get(0);
+            //分配站台
+            String taskId = PrologStringUtils.newGUID();
+            PointLocation pointLocation = pointLocationService.getPointByStationId(stationTaskDto.getStationId());
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,address,pointLocation.getPointId(),containerNo,5);
+            wcsService.lineMove(wcsLineMoveDto);
+        }
     }
 
 
