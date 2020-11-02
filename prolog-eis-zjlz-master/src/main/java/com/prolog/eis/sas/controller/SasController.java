@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sas")
 @Api(tags = "SAS回调接口文档(两向车及提升机)")
-public class SASController {
+public class SasController {
 
-    private final Logger logger = LoggerFactory.getLogger(SASController.class);
+    private final Logger logger = LoggerFactory.getLogger(SasController.class);
     @Autowired
     private ISASCallbackService sasService;
 

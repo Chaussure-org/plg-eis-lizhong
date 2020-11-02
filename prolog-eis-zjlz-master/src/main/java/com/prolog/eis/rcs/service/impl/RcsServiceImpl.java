@@ -8,7 +8,7 @@ import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.log.dao.SasLogMapper;
 import com.prolog.eis.model.log.SasLog;
-import com.prolog.eis.rcs.service.IRCSService;
+import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologHttpUtils;
@@ -20,8 +20,13 @@ import org.springframework.web.client.RestTemplate;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+* @Author  wangkang
+* @Description  rcs服务实现
+* @CreateTime  2020-11-02 9:15
+*/
 @Service
-public class RcsServiceImpl implements IRCSService {
+public class RcsServiceImpl implements IRcsService {
 
 	@Autowired
 	private EisProperties properties;

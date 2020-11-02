@@ -14,14 +14,13 @@ import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.location.dao.SxStoreMapper;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.location.service.SxkLocationService;
-import com.prolog.eis.mcs.service.IMCSService;
+import com.prolog.eis.mcs.service.IMcsService;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
-import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.sas.service.ISASService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.ListHelper;
@@ -51,7 +50,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     @Autowired
     private SxStoreLocationMapper sxStoreLocationMapper;
     @Autowired
-    private IMCSService mcsRequestService;
+    private IMcsService mcsRequestService;
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
     @Autowired

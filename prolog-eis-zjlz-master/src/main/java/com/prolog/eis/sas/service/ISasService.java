@@ -9,7 +9,7 @@ import com.prolog.framework.common.message.RestMessage;
 import java.io.IOException;
 import java.util.List;
 
-public interface ISASService {
+public interface ISasService {
     /**
      * 获取每层小车信息
      * @return

@@ -18,7 +18,7 @@ import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
-import com.prolog.eis.wms.service.IWMSCallBackService;
+import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @CreateTime 2020-09-22 13:59
  */
 @Service
-public class WMSCallBackServiceImpl implements IWMSCallBackService {
+public class WmsCallBackServiceImpl implements IWmsCallBackService {
 
     @Autowired
     private WareHousingMapper mapper;

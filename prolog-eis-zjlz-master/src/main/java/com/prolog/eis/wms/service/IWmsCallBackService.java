@@ -9,7 +9,7 @@ import java.util.List;
  * @Description
  * @CreateTime 2020-09-22 13:59
  */
-public interface IWMSCallBackService {
+public interface IWmsCallBackService {
 
     /**
      * WMS下发入库任务

@@ -12,7 +12,7 @@ import java.util.Date;
  * @Description
  * @CreateTime 2020-09-22 13:57
  */
-public interface IWMSService {
+public interface IWmsService {
 
     /**
      * 上架完成回告wms

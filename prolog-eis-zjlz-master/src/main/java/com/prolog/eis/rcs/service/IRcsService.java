@@ -3,7 +3,12 @@ package com.prolog.eis.rcs.service;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 
-public interface IRCSService {
+/**
+* @Author  wangkang
+* @Description  rcs服务
+* @CreateTime  2020-11-02 9:12
+*/
+public interface IRcsService {
 
 	/**
 	 * 給Rcs发送搬运任务

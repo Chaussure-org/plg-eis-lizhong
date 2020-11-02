@@ -26,7 +26,7 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
             "\tJOIN order_bill ob ON ob.id = bd.order_bill_id\n" +
             "\tJOIN picking_order po ON po.id = ob.picking_order_id \n" +
             "WHERE\n" +
-            "\tbd.container_no = #{containerNo} order by po.station_id desc")
+            "\tbd.container_no = #{containerNo} order by po.station_id asc")
     List<Integer> getContainerBindingToStation(String containerNo);
 
     /**

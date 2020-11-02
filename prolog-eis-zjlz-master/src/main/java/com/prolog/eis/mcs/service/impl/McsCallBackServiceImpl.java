@@ -6,7 +6,7 @@ import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.SxMoveStoreService;
-import com.prolog.eis.mcs.service.IMCSCallBackService;
+import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
@@ -39,7 +39,7 @@ import java.util.List;
  * @CreateTime 2020-09-22 15:56
  */
 @Service
-public class MCSCallBackServiceImpl implements IMCSCallBackService {
+public class McsCallBackServiceImpl implements IMcsCallBackService {
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
     @Autowired
