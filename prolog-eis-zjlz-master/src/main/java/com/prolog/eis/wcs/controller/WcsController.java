@@ -1,8 +1,8 @@
 package com.prolog.eis.wcs.controller;
 
 import com.prolog.eis.dto.wcs.*;
-import com.prolog.eis.wcs.service.IWCSCallbackService;
-import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.eis.wcs.service.IWcsCallbackService;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import io.swagger.annotations.Api;
@@ -27,9 +27,9 @@ public class WcsController {
 
     private final Logger logger = LoggerFactory.getLogger(WcsController.class);
     @Autowired
-    private IWCSCallbackService wcsService;
+    private IWcsCallbackService wcsService;
     @Autowired
-    private IWCSService service;
+    private IWcsService service;
 
     @ApiOperation(value="任务回告",notes="此接口包含输送线行走任务回告")
     @PostMapping("/task/callback")
@@ -41,9 +41,8 @@ public class WcsController {
     @ApiOperation(value="bcr请求",notes="此接口包含料箱进站请求、订单框进站请求、体积检测请求、入库口请求")
     @PostMapping("/bcr")
     public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception{
-        logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
-        return wcsService.executeBcrCallback(bcrDataDTO);
-
+            logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
+            return wcsService.executeBcrCallback(bcrDataDTO);
     }
 
 //    @ApiOperation(value="箱到位请求",notes="此接口包含料箱到位、订单框到位")

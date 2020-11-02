@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.model.wcs.WcsCommandRepeat;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.wcs.service.IWcsCommandRepeatService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
@@ -26,6 +28,10 @@ public class WcsServiceImpl implements IWcsService {
     private HttpUtils httpUtils;
     @Autowired
     private EisProperties properties;
+
+    @Autowired
+    private IWcsCommandRepeatService wcsCommandRepeatService;
+
     @Autowired
     private RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(WcsServiceImpl.class);
@@ -55,8 +61,11 @@ public class WcsServiceImpl implements IWcsService {
                 new TypeReference<RestMessage<String>>() {
                 });
         // 输送线任务不成功，则存表，定时器扫描后再次发送
-        if (!result.isSuccess()) {
-
+        if (!result.isSuccess()&&i==0) {
+            WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
+                    wcsLineMoveDto.getAddress(),wcsLineMoveDto.getTarget(),wcsLineMoveDto.getContainerNo(),
+                    wcsLineMoveDto.getType());
+            wcsCommandRepeatService.saveWcsCommand(wcsCommandRepeat);
         }
         return result;
     }

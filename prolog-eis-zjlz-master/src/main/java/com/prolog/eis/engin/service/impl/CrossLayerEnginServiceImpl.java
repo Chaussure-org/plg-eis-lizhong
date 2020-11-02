@@ -6,7 +6,7 @@ import com.prolog.eis.dto.wcs.SasMoveCarDto;
 import com.prolog.eis.engin.dao.CrossLayerTaskMapper;
 import com.prolog.eis.engin.service.CrossLayerEnginService;
 import com.prolog.eis.model.wcs.CrossLayerTask;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.framework.common.message.RestMessage;
@@ -31,7 +31,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
     @Autowired
     private ContainerStoreMapper containerStoreMapper;
     @Autowired
-    private ISASService isasService;
+    private ISasService ISasService;
     @Autowired
     private CrossLayerTaskMapper crossLayerTaskMapper;
 
@@ -45,7 +45,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         }
         //所有的车
 
-        List<CarInfoDTO> cars = isasService.getCarInfo().stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
+        List<CarInfoDTO> cars = ISasService.getCarInfo().stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
         if (cars.size()==0){
             return;
         }
@@ -83,7 +83,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         sasMoveCarDto.setSource(sourceLayer);
         sasMoveCarDto.setTarget(targetLayer);
         sasMoveCarDto.setTaskId(taskId);
-        RestMessage<String> message = isasService.moveCar(sasMoveCarDto);
+        RestMessage<String> message = ISasService.moveCar(sasMoveCarDto);
         if (message.isSuccess()) {
             this.saveCrossLayerTask(sourceLayer,targetLayer,rgvId);
         }

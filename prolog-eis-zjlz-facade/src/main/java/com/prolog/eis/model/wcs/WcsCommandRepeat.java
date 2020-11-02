@@ -6,6 +6,8 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 
 /**
  * @Description  
@@ -35,6 +37,10 @@ public class WcsCommandRepeat {
   @Column("type")
   @ApiModelProperty("任务类型")
   private Integer type;
+
+  @Column("create_time")
+  @ApiModelProperty("创建时间")
+  private Date createTime;
 
   public String getTaskId() {
     return taskId;
@@ -76,4 +82,22 @@ public class WcsCommandRepeat {
     this.type = type;
   }
 
+  public Date getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
+
+  public WcsCommandRepeat(String taskId, String address, String target, String containerNo, Integer type) {
+    this.taskId = taskId;
+    this.address = address;
+    this.target = target;
+    this.containerNo = containerNo;
+    this.type = type;
+  }
+
+  public WcsCommandRepeat() {
+  }
 }

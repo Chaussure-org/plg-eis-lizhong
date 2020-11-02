@@ -76,12 +76,13 @@ public interface IContainerStoreService {
     void updateContainerTaskType(ContainerStore containerStore);
 
     /**
-     * 根据容器号和类型更新库存状态
+     * 根据容器号和类型更新库存任务状态
      * @param containerNo
      * @param type
      */
     void updateTaskStausByContainer(String containerNo,int type);
 
+    void updateTaskTypeByContainer(String containerNo,int type);
 
     /**
      * 新建库存

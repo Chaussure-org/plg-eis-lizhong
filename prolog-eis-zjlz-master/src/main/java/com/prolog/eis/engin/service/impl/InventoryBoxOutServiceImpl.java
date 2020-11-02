@@ -11,7 +11,7 @@ import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.station.Station;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
     @Autowired
     private IStationService stationService;
     @Autowired
-    private ISASService sasService;
+    private ISasService sasService;
     @Autowired
     private InventoryBoxOutMapper boxOutMapper;
     @Autowired

@@ -16,11 +16,11 @@ import com.prolog.eis.log.dao.SasLogMapper;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.log.SasLog;
-import com.prolog.eis.rcs.service.IRCSService;
+import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
-import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -41,7 +41,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Autowired
     private AgvLocationService agvLocationService;
     @Autowired
-    private IRCSService rcsRequestService;
+    private IRcsService rcsRequestService;
     @Autowired
     private SxMoveStoreService sxMoveStoreService;
     @Autowired
@@ -49,7 +49,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Autowired
     private SxkLocationService sxkLocationService;
     @Autowired
-    private IWCSService wcsService;
+    private IWcsService wcsService;
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
 

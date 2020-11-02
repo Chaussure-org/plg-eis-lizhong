@@ -5,7 +5,7 @@ import com.prolog.eis.dto.mcs.InBoundRequestDto;
 import com.prolog.eis.dto.mcs.McsCallBackDto;
 import com.prolog.eis.dto.mcs.McsRequestTaskDto;
 import com.prolog.eis.dto.mcs.TaskReturnInBoundRequestResponseDto;
-import com.prolog.eis.mcs.service.IMCSCallBackService;
+import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
@@ -38,7 +38,7 @@ public class McsController {
     private static final Logger logger = LoggerFactory.getLogger(McsController.class);
 
     @Autowired
-    private IMCSCallBackService mcsCallbackService;
+    private IMcsCallBackService mcsCallbackService;
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")

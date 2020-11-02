@@ -9,7 +9,7 @@ import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.log.dao.SasLogMapper;
 import com.prolog.eis.model.log.SasLog;
 import com.prolog.eis.rcs.service.IRcsService;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologHttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;

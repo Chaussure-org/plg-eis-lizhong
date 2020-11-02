@@ -113,6 +113,13 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         containerStoreMapper.updateMapByCriteria(MapUtils.put("taskStatus",type).getMap(),ctr);
     }
 
+    @Override
+    public void updateTaskTypeByContainer(String containerNo, int type) {
+        Criteria ctr=Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
+    }
+
     /**
      * 新建库存
      * @param containerStore

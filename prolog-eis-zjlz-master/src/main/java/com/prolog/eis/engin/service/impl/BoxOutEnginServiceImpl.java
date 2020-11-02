@@ -19,7 +19,7 @@ import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.CompareStrSimUtil;
 import com.prolog.eis.util.location.LocationConstants;
@@ -53,7 +53,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     @Autowired
     private BoxOutMapper boxOutMapper;
     @Autowired
-    private ISASService sasService;
+    private ISasService sasService;
     @Autowired
     private LineBindingDetailMapper lineBindingDetailMapper;
     @Autowired

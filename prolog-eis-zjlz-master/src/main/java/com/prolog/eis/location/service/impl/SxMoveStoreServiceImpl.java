@@ -21,7 +21,7 @@ import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;
@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -61,9 +62,11 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     @Autowired
     private IContainerStoreService containerStoreService;
     @Autowired
-    private ISASService sasService;
+    private ISasService sasService;
     @Autowired
     private IWareHousingService iWareHousingService;
+    @Autowired
+    private IContainerStoreService iContainerStoreService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -141,8 +144,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             this.updateContainerPathTaskComplete(containerPathTask, containerPathTaskDetail, time);
             //解锁货位组
             this.unlockCompletekSxStoreLocation(containerPathTaskDetail);
-            //删除入库任务
-            iWareHousingService.deleteInboundTask(containerPathTask.getContainerNo());
+
         } catch (Exception e) {
             // TODO: handle exception
             //return false;
@@ -539,7 +541,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
     private void updateContainerPathTaskComplete(ContainerPathTask containerPathTask,
                                                  ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception {
-
+        //更新库存任务状态
+        iContainerStoreService.updateTaskStausByContainer(containerPathTask.getContainerNo(),0);
         //判断当前的任务节点是否为最后一个节点
         ContainerPathTaskDetail nextContainerPathTaskDetail = containerPathTaskDetailMapper.findFirstByMap(
                 MapUtils.put("palletNo", containerPathTaskDetail.getPalletNo())
@@ -551,6 +554,11 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         if (null == nextContainerPathTaskDetail) {
             //属于最后一个节点
             //后续添加移动日志表
+            //入库完成回告
+            iWareHousingService.deleteInboundTask(containerPathTask.getContainerNo());
+            //更新业务类型
+            iContainerStoreService.updateTaskTypeByContainer(containerPathTask.getContainerNo(),0);
+
 
             containerPathTaskDetailMapper.updateMapById(containerPathTaskDetail.getId(),
                     MapUtils.put("sourceArea", containerPathTaskDetail.getNextArea())

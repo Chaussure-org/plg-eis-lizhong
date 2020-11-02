@@ -7,6 +7,7 @@ import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Order;
 import com.prolog.framework.core.restriction.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @Description
  * @CreateTime 2020-11-02 9:50
  */
+@Service
 public class WcsCommandRepeatServiceImpl implements IWcsCommandRepeatService {
 
     @Autowired
