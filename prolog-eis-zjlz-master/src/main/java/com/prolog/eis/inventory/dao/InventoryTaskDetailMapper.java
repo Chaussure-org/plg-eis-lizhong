@@ -2,6 +2,7 @@ package com.prolog.eis.inventory.dao;
 
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -74,4 +75,27 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\tcpt.task_state = 0 and td.task_state = 10\n" +
             "\tAND FIND_IN_SET(cpt.source_area,#{area}) order by td.create_time  desc")
     List<InventoryOutDto> getInventoryStore(@Param("area") String area);
+
+    /**
+     * 盘点回告wms
+     * @param id
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\th.task_id AS TASKID,\n" +
+            "\th.bill_no AS BILLNO,\n" +
+            "\tH.bill_date AS BILLDATE,\n" +
+            "\th.seq_no AS SEQNO,\n" +
+            "\th.goods_type AS ITEMTYPE,\n" +
+            "\th.goods_id AS ITEMID,\n" +
+            "\tm.container_no AS CONTAINERNO,\n" +
+            "\tg.lot_id as LOTID,\n" +
+            "\tg.id as ITEMID\n" +
+            "FROM\n" +
+            "\tinventory_task h\n" +
+            "\tJOIN inventory_task_detail m ON m.inventory_task_id = h.id \n" +
+            "\tjoin goods g on g.goods_no = m.goods_no" +
+            "WHERE\n" +
+            "\tm.id = #{id}")
+    List<WmsInventoryCallBackDto> findWmsInventory(@Param("id") int id);
 }

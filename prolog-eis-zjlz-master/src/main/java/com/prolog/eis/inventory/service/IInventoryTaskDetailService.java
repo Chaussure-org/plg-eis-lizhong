@@ -1,6 +1,7 @@
 package com.prolog.eis.inventory.service;
 
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 
 import java.util.List;
@@ -54,5 +55,11 @@ public interface IInventoryTaskDetailService {
      * @param id
      */
     void deleteById(int id);
+
+    /**
+     * 盘点回告wms
+     * @param id
+     */
+    List<WmsInventoryCallBackDto> findInventoryToWms(int id);
 
 }

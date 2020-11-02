@@ -120,7 +120,7 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
             String taskId = PrologStringUtils.newGUID();
             PointLocation pointLocation = pointLocationService.getPointByStationId(stationTaskDto.getStationId());
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,address,pointLocation.getPointId(),containerNo,5);
-            wcsService.lineMove(wcsLineMoveDto);
+            wcsService.lineMove(wcsLineMoveDto,0);
         }
     }
 

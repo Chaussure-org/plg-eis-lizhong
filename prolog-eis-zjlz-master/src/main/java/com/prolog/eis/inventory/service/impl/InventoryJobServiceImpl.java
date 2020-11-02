@@ -2,6 +2,7 @@ package com.prolog.eis.inventory.service.impl;
 
 import com.prolog.eis.dto.inventory.RickerTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.engin.service.IInventoryTrayOutService;
 import com.prolog.eis.inventory.service.IInventoryJobService;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
@@ -17,8 +18,8 @@ import com.prolog.eis.model.station.Station;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.PrologStringUtils;
-import com.prolog.eis.util.PrologTaskIdUtils;
 import com.prolog.eis.wcs.service.IWcsService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,8 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     private IWcsService wcsService;
     @Autowired
     private IPointLocationService pointLocationService;
+    @Autowired
+    private IWmsService wmsService;
 
     @Override
     public void doInventoryTask(String containerNo, int qty, String lotId) throws Exception {
@@ -76,10 +79,18 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         if (stations.size() == 0 && containerPathTasks.size() == 0){
             throw new Exception("容器【"+containerNo+"】不在盘点区域");
         }
+        WmsInventoryCallBackDto wmsInventoryCallBackDto = taskDetailService.findInventoryToWms(inventoryTaskDetail.getId()).get(0);
+        wmsInventoryCallBackDto.setSJZ(new Date());
+        wmsInventoryCallBackDto.setAFFQTY(Double.valueOf(qty - containerStore.getQty()));
+
+        
         //修改数量和原始数量不同则修改库存
         if (!containerStore.getQty().equals(qty)){
             containerStore.setQty(qty);
+            //修改库存
+            containerStoreService.updateContainerStore(containerStore);
             //todo:回告wms
+            wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
         }
         containerStore.setUpdateTime(new Date());
         //修改盘点计划
@@ -117,7 +128,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         String taskId = PrologStringUtils.newGUID();
         PointLocation pointLocation = pointLocationService.getPointByStationId(stationId);
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,pointLocation.getPointId(),target,containerNo,5);
-        wcsService.lineMove(wcsLineMoveDto);
+        wcsService.lineMove(wcsLineMoveDto,0);
     }
 
 
