@@ -1,7 +1,7 @@
 package com.prolog.eis.wms.controller;
 
 import com.prolog.eis.dto.wms.*;
-import com.prolog.eis.wms.service.IWMSCallBackService;
+import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import io.swagger.annotations.Api;
@@ -31,7 +31,7 @@ public class WmsController {
     private static final Logger logger = LoggerFactory.getLogger(WmsController.class);
 
     @Autowired
-    private IWMSCallBackService wmsCallBackService;
+    private IWmsCallBackService wmsCallBackService;
 
     @ApiOperation(value = "入库任务下发",notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")

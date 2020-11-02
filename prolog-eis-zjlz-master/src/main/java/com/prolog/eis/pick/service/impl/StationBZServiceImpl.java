@@ -28,7 +28,8 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
-import com.prolog.eis.wms.service.IWMSService;
+import com.prolog.eis.wms.service.IWmsService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class StationBZServiceImpl implements IStationBZService {
     @Autowired
     private IPickingOrderHistoryService pickingOrderHistoryService;
     @Autowired
-    private IWMSService wmsService;
+    private IWmsService wmsService;
     @Autowired
     private ContainerPathTaskService containerPathTaskService;
     @Autowired

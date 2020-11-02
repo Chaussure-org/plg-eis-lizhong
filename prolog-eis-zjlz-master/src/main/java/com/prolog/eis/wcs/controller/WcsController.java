@@ -1,8 +1,8 @@
 package com.prolog.eis.wcs.controller;
 
 import com.prolog.eis.dto.wcs.*;
-import com.prolog.eis.wcs.service.IWCSCallbackService;
-import com.prolog.eis.wcs.service.IWCSService;
+import com.prolog.eis.wcs.service.IWcsCallbackService;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import io.swagger.annotations.Api;
@@ -27,9 +27,9 @@ public class WcsController {
 
     private final Logger logger = LoggerFactory.getLogger(WcsController.class);
     @Autowired
-    private IWCSCallbackService wcsService;
+    private IWcsCallbackService wcsService;
     @Autowired
-    private IWCSService service;
+    private IWcsService service;
 
     @ApiOperation(value="任务回告",notes="此接口包含输送线行走任务回告")
     @PostMapping("/task/callback")

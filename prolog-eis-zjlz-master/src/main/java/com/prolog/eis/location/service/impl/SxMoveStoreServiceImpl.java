@@ -21,7 +21,7 @@ import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
-import com.prolog.eis.sas.service.ISASService;
+import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;
@@ -62,7 +62,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     @Autowired
     private IContainerStoreService containerStoreService;
     @Autowired
-    private ISASService sasService;
+    private ISasService sasService;
     @Autowired
     private IWareHousingService iWareHousingService;
     @Autowired
