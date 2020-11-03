@@ -22,6 +22,7 @@ import com.prolog.eis.util.PrologTaskIdUtils;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @date 2020/10/29 18:02
  */
+@Service
 public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
     @Autowired
     private InventoryTaskDetailMapper inventoryTaskDetailMapper;

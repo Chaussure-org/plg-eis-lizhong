@@ -1,7 +1,7 @@
-package com.prolog.eis.engin.service.impl;
+package com.prolog.eis.location.service.impl;
 
-import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
-import com.prolog.eis.engin.service.IAgvBindingDetailService;
+import com.prolog.eis.location.dao.AgvBindingDetaileMapper;
+import com.prolog.eis.location.service.IAgvBindingDetailService;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

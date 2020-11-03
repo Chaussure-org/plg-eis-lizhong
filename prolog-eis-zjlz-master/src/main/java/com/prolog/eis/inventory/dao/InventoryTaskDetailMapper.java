@@ -2,6 +2,7 @@ package com.prolog.eis.inventory.dao;
 
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
+import com.prolog.eis.dto.inventory.InventoryShowDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
@@ -98,4 +99,23 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "WHERE\n" +
             "\tm.id = #{id}")
     List<WmsInventoryCallBackDto> findWmsInventory(@Param("id") int id);
+
+    /**
+     * 查看盘点容器信息
+     * @param containerNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tg.goods_name AS goodsName,\n" +
+            "\tg.goods_no AS goodsNo,\n" +
+            "\tt.bill_no AS billNo,\n" +
+            "\tcs.qty AS goodsNum,\n" +
+            "\tcs.lot_id as lotId\n" +
+            "FROM\n" +
+            "\tinventory_task_detail td\n" +
+            "\tJOIN container_store cs ON cs.container_no = td.container_no\n" +
+            "\tJOIN inventory_task t ON t.id = td.inventory_task_id\n" +
+            "\tJOIN goods g ON g.id = cs.goods_id\n" +
+            "\twhere cs.container_no = #{containerNo}")
+    List<InventoryShowDto> findInventoryInfo(@Param("containerNo") String containerNo);
 }

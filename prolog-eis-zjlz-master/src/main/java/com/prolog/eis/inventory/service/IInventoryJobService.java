@@ -1,6 +1,9 @@
 package com.prolog.eis.inventory.service;
 
+import com.prolog.eis.dto.inventory.InventoryShowDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
+
+import java.util.List;
 
 /**
  * @author dengj
@@ -9,6 +12,14 @@ import com.prolog.eis.model.inventory.InventoryTaskDetail;
  * 盘点作业service
  */
 public interface IInventoryJobService {
+
+
+    /**
+     * 查看盘点详情 发送前端
+     * @param containerNo
+     * @return
+     */
+    InventoryShowDto findInventoryDetail(String containerNo) throws Exception;
 
     /**
      * 盘点执行

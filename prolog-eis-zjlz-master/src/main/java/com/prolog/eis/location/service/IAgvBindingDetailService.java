@@ -1,4 +1,4 @@
-package com.prolog.eis.engin.service;
+package com.prolog.eis.location.service;
 
 import java.util.Map;
 
