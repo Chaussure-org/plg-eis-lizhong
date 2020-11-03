@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class WcsCallbackServiceImpl implements IWcsCallbackService {
@@ -138,9 +139,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Transactional(rollbackFor = Exception.class, timeout = 600)
     public void doXZTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
         //判断 点位属于站台
-
+        List<PointLocation> pointLocations = pointLocationService.getPointByType(20);
+        List<PointLocation> collect = pointLocations.stream().filter(x -> x.getPointId().equals(taskCallbackDTO.getAddress())).collect(Collectors.toList());
+        if (collect.size() > 0){
         //料箱到拣选站则将箱号写入到
-        if (taskCallbackDTO.getAddress().equals("SN0101")){
             PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
             if (pointLocation == null){
                 throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
