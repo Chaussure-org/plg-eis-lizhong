@@ -1,6 +1,7 @@
 package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.dto.inventory.InventoryOutDto;
+import com.prolog.eis.dto.inventory.RickerInfoDto;
 import com.prolog.eis.dto.inventory.RickerTaskDto;
 import com.prolog.eis.engin.dao.InventoryTrayOutMapper;
 import com.prolog.eis.engin.service.IInventoryTrayOutService;
@@ -146,6 +147,11 @@ public class InventoryTrayOutServiceImpl implements IInventoryTrayOutService {
     public void outUpdateStore(String containerNo) throws Exception {
         containerStoreService.updateContainerStore(containerNo, ContainerStore.TASK_TYPE_INVENTORY_OUTBOUND,ContainerStore.TASK_STATUS_OUT);
         inventoryTaskDetailService.updateContainerTaskState(containerNo, InventoryTaskDetail.TASK_STATE_OUT);
+    }
+
+    @Override
+    public List<RickerInfoDto> getRickerInfos() {
+        return trayOutMapper.getRickerInfo();
     }
 
 

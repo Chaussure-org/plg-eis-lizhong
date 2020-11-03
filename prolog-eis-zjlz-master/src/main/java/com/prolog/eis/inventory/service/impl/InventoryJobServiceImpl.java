@@ -1,6 +1,7 @@
 package com.prolog.eis.inventory.service.impl;
 
 import com.prolog.eis.dto.inventory.InventoryShowDto;
+import com.prolog.eis.dto.inventory.RickerInfoDto;
 import com.prolog.eis.dto.inventory.RickerTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
@@ -136,9 +137,8 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
             containerLeaveByStation(stations.get(0).getId(), PointLocation.POINT_ID_LXHK, containerNo);
         } else {
             //下层agv放行回立库找堆垛机任务最少的巷道
-            List<RickerTaskDto> taskDtos = trayOutService.computeRickerTask();
-            List<RickerTaskDto> collect = taskDtos.stream().sorted(Comparator.comparing(RickerTaskDto::getTaskCount)).collect(Collectors.toList());
-            pathSchedulingService.containerMoveTask(containerNo, collect.get(0).getAlleyWay(), null);
+            RickerInfoDto rickerInfoDto = computeAreaNo();
+            pathSchedulingService.containerMoveTask(containerNo, rickerInfoDto.getAreaNo(), null);
         }
         //todo：转历史
     }
@@ -154,6 +154,27 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         PointLocation pointLocation = pointLocationService.getPointByStationId(stationId);
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, pointLocation.getPointId(), target, containerNo, 5);
         wcsService.lineMove(wcsLineMoveDto, 0);
+    }
+
+    @Override
+    public RickerInfoDto computeAreaNo() throws Exception {
+        List<RickerTaskDto> taskDtos = trayOutService.computeRickerTask();
+        List<RickerInfoDto> rickerInfos = trayOutService.getRickerInfos();
+        for (RickerInfoDto rickerInfo : rickerInfos) {
+            for (RickerTaskDto taskDto : taskDtos) {
+                if (taskDto.getAlleyWay().equals(rickerInfo.getAreaNo())){
+                    rickerInfo.setTaskCount(taskDto.getTaskCount());
+                }
+            }
+        }
+        List<RickerInfoDto> collect = rickerInfos.stream().sorted(Comparator.comparing(RickerInfoDto::getTaskCount).
+                thenComparing(RickerInfoDto::getStoreCount).reversed()).collect(Collectors.toList());
+        if (collect.get(0).getStoreCount() < 1){
+            throw new Exception("回库找寻巷道失败【"+collect.get(0).getAreaNo()+"】");
+        }
+        //任务数最少、巷道容器最少
+
+        return collect.get(0);
     }
 
 

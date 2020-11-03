@@ -1,6 +1,7 @@
 package com.prolog.eis.inventory.service;
 
 import com.prolog.eis.dto.inventory.InventoryShowDto;
+import com.prolog.eis.dto.inventory.RickerInfoDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 
 import java.util.List;
@@ -41,5 +42,12 @@ public interface IInventoryJobService {
      * @param target
      */
     void containerLeaveByStation(int stationId,String target,String containerNo) throws Exception;
+
+
+    /**
+     * agv回库计算合适巷道
+     * @return
+     */
+    RickerInfoDto computeAreaNo() throws Exception;
     
 }

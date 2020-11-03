@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.dao;
 
+import com.prolog.eis.dto.inventory.RickerInfoDto;
 import com.prolog.eis.dto.inventory.RickerTaskDto;
 import org.apache.ibatis.annotations.Select;
 
@@ -57,5 +58,23 @@ public interface InventoryTrayOutMapper {
             "\taa.storage_lock = 0 \n" +
             "\tAND aa.area_no = 'RCS01'")
     int getEmpty();
+
+
+    /**
+     * 堆垛机巷道容器、任务数
+     */
+    @Select("SELECT\n" +
+            "\ts.area_no AS areaNo,\n" +
+            "\tcount( * ) as storeCount\n" +
+            "FROM\n" +
+            "\tsx_store_location s join sx_store_location_group sg on sg.id = s.store_location_group_id\n" +
+            "WHERE\n" +
+            "\ts.is_inBound_location = 1 \n" +
+            "\tAND s.area_no IN ( \"MCS01\", \"MCS02\", \"MCS03\", \"MCS04\" ) \n" +
+            "\tand s.is_exception is null\n" +
+            "\tand sg.is_lock = 0\n" +
+            "GROUP BY\n" +
+            "\ts.area_no")
+    List<RickerInfoDto> getRickerInfo();
 
 }

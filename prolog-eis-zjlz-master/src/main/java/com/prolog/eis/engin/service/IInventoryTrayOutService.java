@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service;
 
+import com.prolog.eis.dto.inventory.RickerInfoDto;
 import com.prolog.eis.dto.inventory.RickerTaskDto;
 
 import java.util.List;
@@ -35,6 +36,13 @@ public interface IInventoryTrayOutService {
      * @throws Exception
      */
     void outUpdateStore(String containerNo) throws Exception;
+
+
+    /**
+     * 巷道任务容器查询
+     * @return
+     */
+    List<RickerInfoDto> getRickerInfos();
 
 
 
