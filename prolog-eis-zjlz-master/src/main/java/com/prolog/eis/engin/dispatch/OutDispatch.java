@@ -31,6 +31,10 @@ public class OutDispatch {
 
     @Autowired
     private CrossLayerEnginService crossLayerEnginService;
+    @Autowired
+    private IInventoryTrayOutService inventoryTrayOutService;
+    @Autowired
+    private IInventoryBoxOutService inventoryBoxOutService;
 
     /**
      * 托盘库 出库

@@ -116,7 +116,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
-        wcsService.lineMove(wcsLineMoveDto);
+        wcsService.lineMove(wcsLineMoveDto,0);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
-        wcsService.lineMove(wcsLineMoveDto);
+        wcsService.lineMove(wcsLineMoveDto,0);
     }
 
     /**
@@ -186,7 +186,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(),containerPathTaskDetailDTO.getContainerNo(),5);
-        wcsService.lineMove(wcsLineMoveDto);
+        wcsService.lineMove(wcsLineMoveDto,0);
     }
 
 

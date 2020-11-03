@@ -18,6 +18,7 @@ public interface IWmsService {
      * 上架完成回告wms
      * @param wmsInboundCallBackDto 回告实体
      * @return
+     * @throws Exception
      */
     RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception;
 
@@ -25,6 +26,7 @@ public interface IWmsService {
      * 拣货完成回告wms
      * @param wmsOutboundCallBackDto 回告实体
      * @return
+     * @throws Exception
      */
     RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception;
 
@@ -32,6 +34,7 @@ public interface IWmsService {
      * 盘点完成回告wms
      * @param wmsInventoryCallBackDto 回告实体
      * @return
+     * @throws Exception
      */
     RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception;
 }

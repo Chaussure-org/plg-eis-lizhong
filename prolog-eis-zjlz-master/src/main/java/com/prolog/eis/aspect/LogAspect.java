@@ -36,8 +36,7 @@ public class LogAspect {
     private ServerConfiguration serverConfiguration;
 
     @Pointcut("@annotation(com.prolog.eis.util.LogInfo)")
-    public void doLog() {
-    }
+    public void doLog(){}
 
     @Around("doLog()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -56,38 +55,42 @@ public class LogAspect {
         msig = (MethodSignature) sig;
         Class[] parameterTypes = msig.getMethod().getParameterTypes();
         Method method = null;
-        try {
-            method = target.getClass().getMethod(methodName, parameterTypes);
-        } catch (Exception e) {
+        try{
+            method = target.getClass().getMethod(methodName,parameterTypes);
+        }catch (Exception e){
             e.printStackTrace();
         }
-        if (null != method) {
-            LogInfo logInfo = method.getAnnotation(LogInfo.class);
-            log.setDescri(logInfo.desci());
-            log.setDirect(logInfo.direction());
-            log.setSystemType(logInfo.systemType());
-            log.setType(logInfo.type());
-            if (args != null && args.length > 0) {
-                Object arg = args[0];
-                log.setParams(JsonUtils.toString(arg));
+        if (null != method){
+            if (method.isAnnotationPresent(LogInfo.class)) {
+                LogInfo logInfo = method.getAnnotation(LogInfo.class);
+                log.setDescri(logInfo.desci());
+                log.setDirect(logInfo.direction());
+                log.setSystemType(logInfo.systemType());
+                log.setType(logInfo.type());
+                if (args !=null&&args.length>0) {
+                    Object arg = args[0];
+                    log.setParams(JsonUtils.toString(arg));
+                }
+                log.setMethodName(methodName);
+                try{
+                    Object proceed = joinPoint.proceed();
+                    log.setSuccess(true);
+                    log.setCreateTime(new Date());
+                    System.out.println(log);
+                    logService.save(log);
+                    return proceed;
+                }catch (Exception e){
+                    log.setSuccess(false);
+                    log.setException(e.getMessage().toString());
+                    log.setCreateTime(new Date());
+                    logService.save(log);
+                }
+            }else {
+                return joinPoint.proceed();
             }
-            log.setMethodName(methodName);
-            try {
-                Object proceed = joinPoint.proceed();
-                log.setSuccess(true);
-                log.setCreateTime(new Date());
-                System.out.println(log);
-                logService.save(log);
-                return proceed;
-            } catch (Exception e) {
-                log.setSuccess(false);
-                log.setException(e.getMessage().toString());
-                log.setCreateTime(new Date());
-                logService.save(log);
-                throw e;
-            }
-        } else {
+        }else {
             return joinPoint.proceed();
         }
+        return null;
     }
 }

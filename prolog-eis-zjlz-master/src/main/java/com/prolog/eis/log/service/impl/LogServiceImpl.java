@@ -38,8 +38,12 @@ public class LogServiceImpl implements ILogService {
     @Autowired
     private SasLogMapper sasLogMapper;
 
+    /**
+     * 保存日志
+     * @param log 日志
+     */
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED,rollbackFor = Exception.class)
     public void save(LogDto log) {
         switch (log.getSystemType()){
             case LogDto.WMS:

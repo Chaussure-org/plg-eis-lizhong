@@ -1,6 +1,7 @@
 package com.prolog.eis.inventory.service;
 
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 
 import java.util.List;
@@ -34,5 +35,31 @@ public interface IInventoryTaskDetailService {
      */
     void updateContainerTaskState(String containerNo,int taskState);
 
+
+    /**
+     * 根据map查询
+     * @param map
+     * @return
+     */
+    List<InventoryTaskDetail> findByMap(Map map);
+
+
+    /**
+     * 修改明细
+     * @param inventoryTaskDetail
+     */
+     void updateInventoryDetail(InventoryTaskDetail inventoryTaskDetail);
+
+    /**
+     * 根据id删除
+     * @param id
+     */
+    void deleteById(int id);
+
+    /**
+     * 盘点回告wms
+     * @param id
+     */
+    List<WmsInventoryCallBackDto> findInventoryToWms(int id);
 
 }

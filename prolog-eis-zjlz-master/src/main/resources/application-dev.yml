@@ -7,7 +7,7 @@ eureka.client.serviceUrl.defaultZone: http://admin:prolog00212@192.168.1.21:6001
 prolog.tx.url: http://192.168.1.21:7000/tx/manager/
 
 spring:
-  application.name: service-ai-eis-zjlz-master-wk
+  application.name: service-ai-eis-zjlz-master-wang
   #redis配置
   redis:
     cluster:

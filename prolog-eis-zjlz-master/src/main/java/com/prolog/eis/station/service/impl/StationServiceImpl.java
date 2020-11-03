@@ -1,5 +1,6 @@
 package com.prolog.eis.station.service.impl;
 
+import com.prolog.eis.dto.inventory.StationTaskDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
@@ -64,7 +65,7 @@ public class StationServiceImpl implements IStationService {
         List<Station> stations =
                 stationMapper.findByMap(MapUtils.put("stationType", Station.STATION_TYPE_FINISHEDPROD).getMap(),
                         Station.class);
-        if (stations.size() != 0){
+        if (stations.size() != 1){
             throw new Exception("成品库站台配置有问题");
         }
         stationMapper.updateStationLock(isLock,stations.get(0).getId());
@@ -86,13 +87,17 @@ public class StationServiceImpl implements IStationService {
     }
 
     @Override
-    public int getStationId(HttpServletRequest request) throws Exception {
-        String ipAddr = IPUtils.getIpAddr(request);
-        List<Station> stations = stationMapper.findByMap(MapUtils.put("stationIp", ipAddr).getMap(), Station.class);
+    public int getStationId(String stationIp) throws Exception {
+        List<Station> stations = stationMapper.findByMap(MapUtils.put("stationIp", stationIp).getMap(), Station.class);
         if (stations.size() > 1 || stations.size() < 1){
             throw new Exception("站台配置有问题请检查站台配置");
         }
         return stations.get(0).getId();
+    }
+
+    @Override
+    public List<StationTaskDto> getStationTask() {
+        return stationMapper.getStationInfo();
     }
 
     @Override
