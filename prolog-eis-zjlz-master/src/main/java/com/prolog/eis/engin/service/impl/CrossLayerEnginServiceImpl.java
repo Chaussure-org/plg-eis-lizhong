@@ -52,13 +52,16 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         //1.找车 首先找没有任务的车 2.找层 有任务没有车的层 3. 这一层没有正在执行跨层任务的
         List<Integer> taskLayers = outContainers.stream().map(LayerGoodsCountDto::getLayer).collect(Collectors.toList());
         List<Integer> carLayers = cars.stream().map(CarInfoDTO::getLayer).collect(Collectors.toList());
-
+        //有任务没车的层
+        List<LayerGoodsCountDto> tasksNoCars = outContainers.stream().filter(x -> !carLayers.contains(x.getLayer())).collect(Collectors.toList());
+        if (tasksNoCars.size()==0){
+            return;
+        }
         List<CarInfoDTO> carNoTasks = cars.stream().filter(x -> !taskLayers.contains(x.getLayer())).collect(Collectors.toList());
         //没有空闲的车
         if (carNoTasks.size()==0){
             return;
         }
-        List<LayerGoodsCountDto> tasksNoCars = outContainers.stream().filter(x -> !carLayers.contains(x.getLayer())).collect(Collectors.toList());
         //正在执行的跨层任务  1.有任务没车的 层 排除 已经生成跨层任务的任务层
         List<CrossLayerTask> crossTasks = crossLayerTaskMapper.findByMap(null, CrossLayerTask.class);
         if (crossTasks.size() > 0) {

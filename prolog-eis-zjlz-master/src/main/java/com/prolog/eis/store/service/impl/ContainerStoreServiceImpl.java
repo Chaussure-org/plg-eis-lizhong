@@ -1,7 +1,9 @@
 package com.prolog.eis.store.service.impl;
 
+import com.prolog.eis.base.dao.GoodsMapper;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
+import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.framework.core.restriction.Criteria;
@@ -27,6 +29,8 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 
     @Autowired
     private ContainerStoreMapper containerStoreMapper;
+    @Autowired
+    private GoodsMapper goodsMapper;
     @Override
     public void updateContainerStore(ContainerStore containerStore) {
         if (containerStore != null){
@@ -58,35 +62,38 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 	@Override
 	public GoodsInfo findContainerStockInfo(String containerNo) {
 		
-//		ContainerStore containerStore = containerStoreMapper.findFirstByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerStore.class);
-//		if(null == containerStore) {
-//			return getEmptyGoods();
-//		}else {
-//			if(containerStore.getContainerType() == -1) {
-//				//空托盘
-//				return getEmptyGoods();
-//			}else {
-//				//任务托
-//				return goodsInfoMapper.findById(containerStore.getGoodsId(), GoodsInfo.class);
-//			}
-//		}
-		return null;
+		ContainerStore containerStore = containerStoreMapper.findFirstByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerStore.class);
+		if(null == containerStore) {
+			return getEmptyGoods();
+		}else {
+			if(containerStore.getContainerType().equals(ContainerStore.EMPTY_TRAY)) {
+				//空托盘
+				return getEmptyGoods();
+			}else {
+				//任务托
+                GoodsInfo goodsInfo = new GoodsInfo();
+                goodsInfo.setId(containerStore.getGoodsId());
+                goodsInfo.setLotId(containerStore.getLotId());
+                goodsInfo.setOwnerId(containerStore.getOwnerId());
+                return goodsInfo;
+            }
+		}
 	}
 	
 	@Override
 	public String buildTaskProperty1(GoodsInfo goodsInfo) {
-        if (goodsInfo == null ||goodsInfo.getOwnerId() == null || goodsInfo.getGoodsCode() == null ){
+        if (goodsInfo == null){
             return null;
         }
-		return goodsInfo.getOwnerId() + "And" + goodsInfo.getGoodsCode();
+		return goodsInfo.getId() + "And" + goodsInfo.getLotId();
 	}
 
 	@Override
 	public String buildTaskProperty2(GoodsInfo goodsInfo) {
-        if (goodsInfo == null ||goodsInfo.getLotId() == null || goodsInfo.getGoodsOrderNo() == null){
+        if (goodsInfo == null){
             return null;
         }
-		return goodsInfo.getLotId() + "And" + goodsInfo.getGoodsOrderNo();
+		return goodsInfo.getOwnerId();
 	}
 
 	@Override

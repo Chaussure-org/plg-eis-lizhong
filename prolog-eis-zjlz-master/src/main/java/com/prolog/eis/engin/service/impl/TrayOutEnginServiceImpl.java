@@ -93,7 +93,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         }));
 
         // 箱库的库存 再加上循环线的库存（待加）
-        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("SAS01,L01");
+        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("SAS01,MCS081");
         Map<Integer, Integer> boxStoreMap = boxGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
@@ -106,7 +106,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             return;
         } else {
             //计算 箱库 可以满足的 订单的所需数量 的订单
-            boolean bool = this.computeAreaByOrder(orderDetailMap, boxStoreMap, OrderBill.SECOND_PRIORITY, StoreArea.L01);
+            boolean bool = this.computeAreaByOrder(orderDetailMap, boxStoreMap, OrderBill.SECOND_PRIORITY, StoreArea.WCS081);
             if (bool == false) {
                 //这一部分订单是由两个库区的库存组成的
                 this.computeAllStoreByOrder(orderDetailMap, containerStoreMap, boxStoreMap);
@@ -116,8 +116,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Override
     public void trayOutByOrder() throws Exception {
-        //判断agv_binding_detail 里有状态为10 的，判断agv空闲位置，生成路径
-        List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), AgvBindingDetail.class);
+        //判断agv_binding_detail 里有状态为10 的，并且本身位置不是在agv区域的 ,加判断agv区域的空位 发送路径任务
+        List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findAgvContainerTopath();
         if (!detailStatus.isEmpty()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.RCS01, null);
             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
@@ -222,7 +222,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<RoadWayGoodsCountDto> roadWayGoodsCounts = trayOutMapper.findRoadWayGoodsCount(goodsId);
         //agv区域的库存 绑定明细的剩余数量
         List<RoadWayGoodsCountDto> agvGoodsCounts = trayOutMapper.findAgvGoodsCount(goodsId);
-
+        //agv 区域没有绑定明细的 托盘的库存
+        List<RoadWayGoodsCountDto> agvNoBindsStores = trayOutMapper.findAgvNoBindsStore(goodsId);
+        agvGoodsCounts.addAll(agvNoBindsStores);
+        agvGoodsCounts.stream().sorted(Comparator.comparing(RoadWayGoodsCountDto::getQty,Comparator.reverseOrder()));
         List<OutContainerDto> outContainerDtoList = new ArrayList<>();
         //给任务数赋值
         for (RoadWayContainerTaskDto taskDto : RoadWayContainerTasks) {
@@ -361,12 +364,14 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             for (OutDetailDto orderDetail : orderDetailMap.get(orderBillId)) {
                 if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerTrayMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
                     trayDetailIds.add(orderDetail.getDetailId());
-                    containerTrayMap.put(orderBillId, containerTrayMap.get(orderBillId) - orderDetail.getPlanQty());
+                    int goodsId=orderDetail.getGoodsId();
+                    containerTrayMap.put(goodsId, containerTrayMap.get(goodsId) - orderDetail.getPlanQty());
                     continue;
                 }
                 if (containerBoxMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
                     boxDetailIds.add(orderDetail.getDetailId());
-                    containerBoxMap.put(orderBillId, containerBoxMap.get(orderBillId) - orderDetail.getPlanQty());
+                    int goodsId=orderDetail.getGoodsId();
+                    containerBoxMap.put(goodsId, containerTrayMap.get(goodsId) - orderDetail.getPlanQty());
                 } else {
                     //当一个明细， 则需要从两边的库存一起出库，其中一个库区是一定会出完的
                     if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.containsKey(orderDetail.getGoodsId()) &&
@@ -380,7 +385,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 }
             }
             if (isAdd) {
-                //库存不满足的订单不加入
+                //如果一个订单下有明细库存不满足 则不加入
                 ids.add(orderBillId);
             }
         }
@@ -388,7 +393,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
             updateOrderDetailArea(trayDetailIds, StoreArea.RCS01);
         }
         if (boxDetailIds.size() > 0) {
-            updateOrderDetailArea(boxDetailIds, StoreArea.L01);
+            updateOrderDetailArea(boxDetailIds, StoreArea.WCS081);
         }
         if (!ids.isEmpty()) {
             updateBillPriority(ids, OrderBill.THIRD_PRIORITY);

@@ -6,6 +6,8 @@ import com.prolog.eis.dto.wcs.TaskCallbackDTO;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IContainerPathTaskDetailService;
+import com.prolog.eis.location.service.SxMoveStoreService;
+import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
@@ -51,6 +53,9 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
     private IWareHousingService iWareHousingService;
     @Autowired
     private IContainerStoreService iContainerStoreService;
+
+    @Autowired
+    private SxMoveStoreService sxMoveStoreService;
 
     /**
      * 任务回告
@@ -142,6 +147,8 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
             //清除路径任务汇总，解绑载具
             if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
                 updateTaskInfo(containerPathTaskDetail, containerPathTask);
+                sxMoveStoreService.updateContainerPathTaskComplete(containerPathTask,containerPathTaskDetail,nowTime);
+                sxMoveStoreService.unlockCompletekSxStoreLocation(containerPathTaskDetail);
             } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);

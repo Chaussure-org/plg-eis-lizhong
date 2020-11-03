@@ -34,7 +34,7 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
         Date currentTime=new Date();
         for (ContainerPathTask containerPathTask:emptyAgvContainers){
             int mins = PrologDateUtils.dateBetweenMin(currentTime, containerPathTask.getUpdateTime());
-            if (mins>10){
+            if (mins>2){
                 //回库
             }
         }

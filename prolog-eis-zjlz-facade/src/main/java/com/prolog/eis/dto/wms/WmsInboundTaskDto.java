@@ -62,7 +62,7 @@ public class WmsInboundTaskDto implements Serializable {
 
     @ApiModelProperty("商品ID")
     @JsonProperty(value = "ITEMID")
-    private String ITEMID;
+    private Integer ITEMID;
 
     @ApiModelProperty("商品名称")
     @JsonProperty(value = "ITEMNAME")
@@ -203,11 +203,11 @@ public class WmsInboundTaskDto implements Serializable {
         this.SEQNO = SEQNO;
     }
 
-    public String getITEMID() {
+    public Integer getITEMID() {
         return ITEMID;
     }
 
-    public void setITEMID(String ITEMID) {
+    public void setITEMID(Integer ITEMID) {
         this.ITEMID = ITEMID;
     }
 

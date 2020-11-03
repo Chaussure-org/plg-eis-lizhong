@@ -37,7 +37,7 @@ public class SasServiceImpl implements SasService {
             taskCallbackDTO.setAddress(null);
             RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(taskCallbackDTO),
                     new TypeReference<RestMessage<String>>() {});
-            System.out.println("sascallback成功");
+            System.out.println("=======回告EIS Sas  callback成功");
         } catch (Exception e) {
             System.out.println("sascallback失败");
         }

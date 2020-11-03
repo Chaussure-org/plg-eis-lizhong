@@ -27,14 +27,7 @@ public class OutDispatch {
     private AgvLineOutEnginService agvLineOutEnginService;
 
     @Autowired
-    private FinishedProdOutEnginService finishedProdOutEnginService;
-
-    @Autowired
     private CrossLayerEnginService crossLayerEnginService;
-    @Autowired
-    private IInventoryTrayOutService inventoryTrayOutService;
-    @Autowired
-    private IInventoryBoxOutService inventoryBoxOutService;
 
     /**
      * 托盘库 出库
@@ -89,8 +82,17 @@ public class OutDispatch {
     /**
      * 小车跨层调度
      */
-    @Scheduled(initialDelay = 3000, fixedDelay = 4000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 30000)
     public void crossLayer(){
+        try{
+            crossLayerEnginService.findCrossLayerTask();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    @Scheduled(initialDelay = 3000, fixedDelay = 4000)
+    public void rcsInBound(){
         try{
             crossLayerEnginService.findCrossLayerTask();
         }catch (Exception e){

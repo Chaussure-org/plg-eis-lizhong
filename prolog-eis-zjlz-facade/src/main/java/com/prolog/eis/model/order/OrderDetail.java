@@ -10,184 +10,195 @@ import java.util.Date;
 
 
 /**
- * @Description  
- * @Author  Hunter
- * @Date 2020-09-25 
+ * @Description
+ * @Author Hunter
+ * @Date 2020-09-25
  */
-@ApiModel ("订单明细表")
-@Table ("order_detail")
+@ApiModel("订单明细表")
+@Table("order_detail")
 public class OrderDetail {
 
-  @Column("id")
-  @Id
-  @ApiModelProperty("订单明细id")
-  private Integer id;
+    @Column("id")
+    @Id
+    @ApiModelProperty("订单明细id")
+    private Integer id;
 
-  @Column("order_bill_id")
-  @ApiModelProperty("订单id")
-  private Integer orderBillId;
+    @Column("order_bill_id")
+    @ApiModelProperty("订单id")
+    private Integer orderBillId;
 
-  @Column("wms_detail_id")
-  @ApiModelProperty("wms明细id")
-  private String wmsDetailId;
+    @Column("wms_detail_id")
+    @ApiModelProperty("wms明细id")
+    private String wmsDetailId;
 
-  @Column("owner_id")
-  @ApiModelProperty("业主")
-  private String ownerId;
+    @Column("owner_id")
+    @ApiModelProperty("业主")
+    private String ownerId;
 
-  @Column("lot_id")
-  @ApiModelProperty("批次号")
-  private String lotId;
+    @Column("lot_id")
+    @ApiModelProperty("批次号")
+    private String lotId;
 
-  @Column("goods_id")
-  @ApiModelProperty("商品id")
-  private int goodsId;
+    @Column("goods_id")
+    @ApiModelProperty("商品id")
+    private int goodsId;
 
-  @Column("goods_order_no")
-  @ApiModelProperty("商品订单号")
-  private String goodsOrderNo;
+    @Column("goods_order_no")
+    @ApiModelProperty("商品订单号")
+    private String goodsOrderNo;
 
-  @Column("plan_qty")
-  @ApiModelProperty("计划数量")
-  private Integer planQty;
+    @Column("plan_qty")
+    @ApiModelProperty("计划数量")
+    private Integer planQty;
 
-  @Column("has_pick_qty")
-  @ApiModelProperty("已拣选数量")
-  private Integer hasPickQty;
+    @Column("trayPlanQty")
+    @ApiModelProperty("托盘库出口库数量")
+    private Integer tray_plan_qty;
 
-  @Column("complete_qty")
-  @ApiModelProperty("已完成数量")
-  private Integer completeQty;
+    @Column("has_pick_qty")
+    @ApiModelProperty("已拣选数量")
+    private Integer hasPickQty;
 
-
-  @Column("area_no")
-  @ApiModelProperty("已完成数量")
-  private String areaNo;
-
-  @Column("create_time")
-  @ApiModelProperty("创建时间")
-  private java.util.Date createTime;
-
-  @Column("update_time")
-  @ApiModelProperty("修改时间")
-  private java.util.Date updateTime;
+    @Column("complete_qty")
+    @ApiModelProperty("已完成数量")
+    private Integer completeQty;
 
 
-  @Column("out_qty")
-  @ApiModelProperty("出库数量")
-  private Integer outQty;
+    @Column("area_no")
+    @ApiModelProperty("已完成数量")
+    private String areaNo;
+
+    @Column("create_time")
+    @ApiModelProperty("创建时间")
+    private java.util.Date createTime;
+
+    @Column("update_time")
+    @ApiModelProperty("修改时间")
+    private java.util.Date updateTime;
 
 
-  public Integer getId() {
-    return id;
-  }
+    @Column("out_qty")
+    @ApiModelProperty("出库数量")
+    private Integer outQty;
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
+    public Integer getTray_plan_qty() {
+        return tray_plan_qty;
+    }
 
-  public Integer getOrderBillId() {
-    return orderBillId;
-  }
+    public void setTray_plan_qty(Integer tray_plan_qty) {
+        this.tray_plan_qty = tray_plan_qty;
+    }
 
-  public void setOrderBillId(Integer orderBillId) {
-    this.orderBillId = orderBillId;
-  }
+    public Integer getId() {
+        return id;
+    }
 
-  public String getWmsDetailId() {
-    return wmsDetailId;
-  }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-  public void setWmsDetailId(String wmsDetailId) {
-    this.wmsDetailId = wmsDetailId;
-  }
+    public Integer getOrderBillId() {
+        return orderBillId;
+    }
 
-  public String getOwnerId() {
-    return ownerId;
-  }
+    public void setOrderBillId(Integer orderBillId) {
+        this.orderBillId = orderBillId;
+    }
 
-  public void setOwnerId(String ownerId) {
-    this.ownerId = ownerId;
-  }
+    public String getWmsDetailId() {
+        return wmsDetailId;
+    }
 
-  public String getLotId() {
-    return lotId;
-  }
+    public void setWmsDetailId(String wmsDetailId) {
+        this.wmsDetailId = wmsDetailId;
+    }
 
-  public void setLotId(String lotId) {
-    this.lotId = lotId;
-  }
+    public String getOwnerId() {
+        return ownerId;
+    }
 
-  public int getGoodsId() {
-    return goodsId;
-  }
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
 
-  public void setGoodsId(int goodsId) {
-    this.goodsId = goodsId;
-  }
+    public String getLotId() {
+        return lotId;
+    }
 
-  public String getGoodsOrderNo() {
-    return goodsOrderNo;
-  }
+    public void setLotId(String lotId) {
+        this.lotId = lotId;
+    }
 
-  public void setGoodsOrderNo(String goodsOrderNo) {
-    this.goodsOrderNo = goodsOrderNo;
-  }
+    public int getGoodsId() {
+        return goodsId;
+    }
 
-  public Integer getPlanQty() {
-    return planQty;
-  }
+    public void setGoodsId(int goodsId) {
+        this.goodsId = goodsId;
+    }
 
-  public void setPlanQty(Integer planQty) {
-    this.planQty = planQty;
-  }
+    public String getGoodsOrderNo() {
+        return goodsOrderNo;
+    }
 
-  public Integer getHasPickQty() {
-    return hasPickQty;
-  }
+    public void setGoodsOrderNo(String goodsOrderNo) {
+        this.goodsOrderNo = goodsOrderNo;
+    }
 
-  public void setHasPickQty(Integer hasPickQty) {
-    this.hasPickQty = hasPickQty;
-  }
+    public Integer getPlanQty() {
+        return planQty;
+    }
 
-  public Integer getCompleteQty() {
-    return completeQty;
-  }
+    public void setPlanQty(Integer planQty) {
+        this.planQty = planQty;
+    }
 
-  public void setCompleteQty(Integer completeQty) {
-    this.completeQty = completeQty;
-  }
+    public Integer getHasPickQty() {
+        return hasPickQty;
+    }
 
-  public java.util.Date getCreateTime() {
-    return createTime;
-  }
+    public void setHasPickQty(Integer hasPickQty) {
+        this.hasPickQty = hasPickQty;
+    }
 
-  public void setCreateTime(java.util.Date createTime) {
-    this.createTime = createTime;
-  }
+    public Integer getCompleteQty() {
+        return completeQty;
+    }
 
-  public java.util.Date getUpdateTime() {
-    return updateTime;
-  }
+    public void setCompleteQty(Integer completeQty) {
+        this.completeQty = completeQty;
+    }
 
-  public void setUpdateTime(java.util.Date updateTime) {
-    this.updateTime = updateTime;
-  }
+    public java.util.Date getCreateTime() {
+        return createTime;
+    }
 
-  public String getAreaNo() {
-    return areaNo;
-  }
+    public void setCreateTime(java.util.Date createTime) {
+        this.createTime = createTime;
+    }
 
-  public void setAreaNo(String areaNo) {
-    this.areaNo = areaNo;
-  }
-  
+    public java.util.Date getUpdateTime() {
+        return updateTime;
+    }
 
-  public Integer getOutQty() {
-    return outQty;
-  }
+    public void setUpdateTime(java.util.Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
-  public void setOutQty(Integer outQty) {
-    this.outQty = outQty;
-  }
+    public String getAreaNo() {
+        return areaNo;
+    }
+
+    public void setAreaNo(String areaNo) {
+        this.areaNo = areaNo;
+    }
+
+
+    public Integer getOutQty() {
+        return outQty;
+    }
+
+    public void setOutQty(Integer outQty) {
+        this.outQty = outQty;
+    }
 }

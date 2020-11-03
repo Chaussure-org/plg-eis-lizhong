@@ -137,9 +137,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      */
     @Transactional(rollbackFor = Exception.class, timeout = 600)
     public void doXZTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
+        //判断 点位属于站台
+
         //料箱到拣选站则将箱号写入到
-        int type = 5;
-        if (type == taskCallbackDTO.getType()){
+        if (taskCallbackDTO.getAddress().equals("SN0101")){
             PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
             if (pointLocation == null){
                 throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
@@ -231,7 +232,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         // 生成container_store
         ContainerStore containerStore = new ContainerStore();
         containerStore.setContainerNo(wareHousing.getContainerNo());
-        containerStore.setContainerType("1");
+        containerStore.setContainerType(1);
         containerStore.setTaskType(10);
         containerStore.setTaskStatus(10);
         containerStore.setWorkCount(0);

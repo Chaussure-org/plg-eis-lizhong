@@ -30,7 +30,7 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\torder_detail od on ob.id=od.order_bill_id\n" +
             "WHERE\n" +
             "\t od.plan_qty != od.has_pick_qty and od.id NOT IN ( SELECT abd.order_mx_id FROM agv_binding_detail abd ) \n" +
-            "\tAND od.area_no=#{areaNo} \n" +
+            "\tAND od.area_no=#{areaNo} and ob.order_priority in (1,3) \n" +
             "ORDER BY\n" +
             "\tod.create_time DESC")
     List<OutDetailDto> findAgvDetail(@Param("areaNo") String areaNo);

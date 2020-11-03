@@ -38,7 +38,7 @@ public class WcsServiceImpl implements WcsService {
                     });
             System.out.println("wcscallback成功");
         } catch (Exception e) {
-            System.out.println("wcscallback失败");
+            e.printStackTrace();
         }
     }
 

@@ -62,7 +62,7 @@ public class TestCache {
         }
     }
 
-    @Scheduled(initialDelay = 3000,fixedDelay = 3000)
+    @Scheduled(initialDelay = 3000,fixedDelay = 5000)
     @Async
     public void testSas(){
         if (CacheListUtils.getSaslist().size()>0) {
