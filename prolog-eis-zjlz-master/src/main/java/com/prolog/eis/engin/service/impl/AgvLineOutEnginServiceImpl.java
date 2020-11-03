@@ -62,9 +62,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     @Override
     public void computerPickOrder() throws Exception {
         List<AgvBindingDetail> agvDetailsTemp = agvBindingDetaileMapper.findAgvBindingDetails();
-        if (agvDetailsTemp.isEmpty()) {
-            return;
-        }
+
         List<AgvBindingDetail> agvDetails = agvDetailsTemp.stream().filter(x -> x.getOrderPriority().equals(OrderBill.FIRST_PRIORITY)).collect(Collectors.toList());
 
         if (agvDetails.isEmpty()) {
@@ -73,10 +71,10 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             if (lineDetails.isEmpty()) {
                 return;
             }
-            this.takePickOrder(lineDetails);
+            this.takePickOrder(lineDetails,2);
         } else {
             logger.info("==============agv区域的托盘已到达，开始生成拣选单==============");
-            this.takePickOrder(agvDetails);
+            this.takePickOrder(agvDetails,1);
         }
 
     }
@@ -87,7 +85,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
      * 这样每次站台 只需要判断站台 有没有订单
      */
     @Transactional(rollbackFor = Exception.class)
-    public void takePickOrder(List<AgvBindingDetail> bindingDetails) throws Exception {
+    public void takePickOrder(List<AgvBindingDetail> bindingDetails,int type) throws Exception {
         //所有的站台集合
         List<Station> stationsTemp = stationMapper.findByMap(null, Station.class);
         //不锁定的 半成品站台
@@ -116,7 +114,10 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                     break;
                 }
             } else {
-                //如果站台有拣选单
+                if (type==2){
+                    return;
+                }
+                //如果站台有拣选单，生成agv去往站台的路径
                 for (StationPickingOrderDto pickingOrder : pickOrders) {
                     if (station.getCurrentStationPickId().equals(pickingOrder.getPickingOrderId())) {
                         //1.站台agv位置为空
@@ -135,7 +136,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                             pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
                             //锁定此位置的状态
                             agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(),AgvStoragelocation.TASK_LOCK);
-                            logger.info("================生成拣选单agv去往"+station.getId()+"站台的路径=============");
+                            logger.info("================生成拣选单去往"+station.getId()+"站台的路径=============");
                         }
                     }
                 }

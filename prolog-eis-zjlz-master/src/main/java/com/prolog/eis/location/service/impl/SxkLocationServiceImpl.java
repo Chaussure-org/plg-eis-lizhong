@@ -540,7 +540,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		} else if (sxStoreLocationGroup.getEntrance() == 2) {
 			// 只有出口2，则入index为1的
 			List<SxStoreLocation> sxStoreLocations = sxStoreLocationMapper.findByMap(
-					MapUtils.put("locationIndex", 4).put("storeLocationGroupId", sxStoreLocationGroup.getId()).getMap(),
+					MapUtils.put("locationIndex", 1).put("storeLocationGroupId", sxStoreLocationGroup.getId()).getMap(),
 					SxStoreLocation.class);
 			result = sxStoreLocations.get(0);
 		} else if (sxStoreLocationGroup.getEntrance() == 3) {
@@ -558,8 +558,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	}
 
 	// 查询相同属性的货位组
-	private List<InStoreLocationGroupDto> findSamePropertyLocationGroup(
-            List<InStoreLocationGroupDto> findSameTypeLocationGroup, String taskProperty1, String taskProperty2) {
+	private List<InStoreLocationGroupDto> findSamePropertyLocationGroup(List<InStoreLocationGroupDto> findSameTypeLocationGroup, String taskProperty1, String taskProperty2) {
 		List<InStoreLocationGroupDto> inStoreLocationGroupDtosUsed = new ArrayList<InStoreLocationGroupDto>();
 		for (InStoreLocationGroupDto inStoreLocationGroupDto : findSameTypeLocationGroup) {
 

@@ -29,6 +29,8 @@ import com.prolog.framework.utils.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class BoxOutEnginServiceImpl implements BoxOutEnginService {
-
+    private final Logger logger = LoggerFactory.getLogger(TrayOutEnginServiceImpl.class);
     @Autowired
     private OrderDetailMapper orderDetailMapper;
 
@@ -65,9 +67,11 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     @Transactional(rollbackFor = Exception.class)
     public void BoxOutByOrder() throws Exception {
 
-        List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findByMap(MapUtils.put("detailStatus", OrderBill.ORDER_STATUS_START_OUT).getMap(), LineBindingDetail.class);
+        List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findLineContainerTopath();
         if (!detailStatus.isEmpty()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "WCS081", "LXJZ01");
+            lineBindingDetailMapper.updateLineStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
+            logger.info(detailStatus.get(0).getContainerNo()+"生成去往输送线的路径======================");
             return;
         }
         //1.要去往循环线区域的订单明细

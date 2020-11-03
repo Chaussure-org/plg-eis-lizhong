@@ -29,7 +29,7 @@ public class SasController {
     @ApiOperation(value="任务回告",notes="此接口包含入库任务回告、出库任务回告、移库任务回告、小车换层回告")
     @PostMapping("/task/callback")
     public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception{
-        logger.info("接收任务回告,{}",JsonUtils.toString(taskCallbackDTO));
+        logger.info("=========接收任务回告,{}===============",JsonUtils.toString(taskCallbackDTO));
         return sasService.executeTaskCallback(taskCallbackDTO);
     }
 

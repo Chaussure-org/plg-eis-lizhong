@@ -539,7 +539,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
     }
 
-    private void updateContainerPathTaskComplete(ContainerPathTask containerPathTask,
+    @Override
+    public void updateContainerPathTaskComplete(ContainerPathTask containerPathTask,
                                                  ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception {
         //更新库存任务状态
         iContainerStoreService.updateTaskStausByContainer(containerPathTask.getContainerNo(),0);
@@ -660,7 +661,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         }
     }
 
-    private void unlockCompletekSxStoreLocation(ContainerPathTaskDetail containerPathTaskDetail) throws Exception {
+    @Override
+    public void unlockCompletekSxStoreLocation(ContainerPathTaskDetail containerPathTaskDetail) throws Exception {
 
         //检查移动任务类型
         StoreArea sourceStoreArea = storeAreaMapper.findById(containerPathTaskDetail.getSourceArea(), StoreArea.class);

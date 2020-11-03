@@ -29,4 +29,9 @@ public interface SxMoveStoreService {
 	 * @param time
 	 */
 	void mcsCallBackComplete(ContainerPathTaskDetail containerPathTaskDetail, Timestamp time);
+
+    void updateContainerPathTaskComplete(ContainerPathTask containerPathTask,
+                                         ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception;
+
+    void unlockCompletekSxStoreLocation(ContainerPathTaskDetail containerPathTaskDetail) throws Exception;
 }

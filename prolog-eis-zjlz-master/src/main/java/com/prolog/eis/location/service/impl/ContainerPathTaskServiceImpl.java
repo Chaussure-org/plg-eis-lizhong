@@ -93,6 +93,15 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         }
     }
 
+    /**
+     *
+     * @param containerPathTask
+     * @param containerPathTaskDetailDTO
+     * @param palletContainerPathTaskDetailDTO
+     * @param hzTaskState  10 容器任务状态待发送
+     * @param mxTaskState
+     * @throws Exception
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateContainerPathTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO

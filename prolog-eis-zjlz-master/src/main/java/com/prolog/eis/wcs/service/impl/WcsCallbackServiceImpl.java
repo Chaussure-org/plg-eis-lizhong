@@ -217,7 +217,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         // 生成container_store
         ContainerStore containerStore = new ContainerStore();
         containerStore.setContainerNo(wareHousing.getContainerNo());
-        containerStore.setContainerType("1");
+        containerStore.setContainerType(1);
         containerStore.setTaskType(10);
         containerStore.setTaskStatus(10);
         containerStore.setWorkCount(0);

@@ -51,6 +51,6 @@ public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
             "\tLEFT JOIN container_path_task c ON a.container_no = c.container_no \n" +
             "WHERE\n" +
             "\ta.detail_status = 10 and c.target_area !='RCS01' AND c.task_state=0")
-    List<AgvBindingDetail> findAgvBindingToPath();
+    List<AgvBindingDetail> findAgvContainerTopath();
 
 }
