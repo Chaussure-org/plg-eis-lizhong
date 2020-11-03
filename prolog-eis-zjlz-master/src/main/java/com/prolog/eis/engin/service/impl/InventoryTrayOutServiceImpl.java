@@ -14,6 +14,7 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @date 2020/10/28 12:12
  */
+@Service
 public class InventoryTrayOutServiceImpl implements IInventoryTrayOutService {
     @Autowired
     private InventoryTaskDetailMapper inventoryTaskDetailMapper;

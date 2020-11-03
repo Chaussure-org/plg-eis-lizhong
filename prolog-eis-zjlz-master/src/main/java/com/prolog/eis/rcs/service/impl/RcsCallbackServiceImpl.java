@@ -1,7 +1,7 @@
 package com.prolog.eis.rcs.service.impl;
 
 import com.prolog.eis.dto.log.LogDto;
-import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
+import com.prolog.eis.location.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;

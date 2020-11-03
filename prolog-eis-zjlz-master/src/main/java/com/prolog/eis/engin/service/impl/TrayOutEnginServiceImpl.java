@@ -1,7 +1,7 @@
 package com.prolog.eis.engin.service.impl;
 
 import com.prolog.eis.dto.lzenginee.*;
-import com.prolog.eis.engin.dao.AgvBindingDetaileMapper;
+import com.prolog.eis.location.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.dao.TrayOutMapper;
 import com.prolog.eis.engin.service.BoxOutEnginService;

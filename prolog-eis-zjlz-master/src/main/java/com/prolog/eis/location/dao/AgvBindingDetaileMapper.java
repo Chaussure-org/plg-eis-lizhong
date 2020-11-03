@@ -1,4 +1,4 @@
-package com.prolog.eis.engin.dao;
+package com.prolog.eis.location.dao;
 
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
 import com.prolog.eis.model.agv.AgvBindingDetail;
