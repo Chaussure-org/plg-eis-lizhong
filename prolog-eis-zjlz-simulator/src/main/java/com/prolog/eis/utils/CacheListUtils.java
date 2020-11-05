@@ -7,6 +7,7 @@ import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * @Author wangkang
@@ -15,13 +16,13 @@ import java.util.List;
  */
 public class CacheListUtils {
 
-    private static List<McsMoveTaskDto> mcslist= new ArrayList();
+    private static List<McsMoveTaskDto> mcslist= new Vector<>();
 
-    private static List<SasMoveTaskDto> saslist= new ArrayList();
+    private static List<SasMoveTaskDto> saslist= new Vector();
 
-    private static List<WcsLineMoveDto> wcslist= new ArrayList();
+    private static List<WcsLineMoveDto> wcslist= new Vector();
 
-    private static List<RcsTaskDto> rcslist= new ArrayList();
+    private static List<RcsTaskDto> rcslist= new Vector();
 
     public static List<McsMoveTaskDto> getMcslist() {
         return mcslist;

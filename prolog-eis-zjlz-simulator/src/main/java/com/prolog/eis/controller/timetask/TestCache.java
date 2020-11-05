@@ -37,8 +37,7 @@ public class TestCache {
     private RcsService rcsService;
 
     @Scheduled(initialDelay = 3000, fixedDelay = 3000)
-    @Async
-    public void testMcs() {
+    public synchronized void testMcs() {
         if (CacheListUtils.getMcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getMcslist().get(0));
@@ -63,8 +62,7 @@ public class TestCache {
     }
 
     @Scheduled(initialDelay = 3000, fixedDelay = 5000)
-    @Async
-    public void testSas() {
+    public synchronized void testSas() {
         if (CacheListUtils.getSaslist().size() > 0) {
             pWait();
             if (CacheListUtils.getSaslist().size() > 0) {
@@ -77,8 +75,7 @@ public class TestCache {
     }
 
     @Scheduled(initialDelay = 3000, fixedDelay = 3000)
-    @Async
-    public void testWcs() {
+    public synchronized void testWcs() {
         if (CacheListUtils.getWcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getWcslist().get(0));
@@ -94,8 +91,7 @@ public class TestCache {
     }
 
     @Scheduled(initialDelay = 3000, fixedDelay = 3000)
-    @Async
-    public void testRcs() {
+    public synchronized void testRcs() {
         if (CacheListUtils.getRcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getRcslist().get(0));

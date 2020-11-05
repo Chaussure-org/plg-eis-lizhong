@@ -23,11 +23,13 @@ import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * sunpp
@@ -69,10 +71,10 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             if (lineDetails.isEmpty()) {
                 return;
             }
-            this.takePickOrder(lineDetails,2);
+            this.takePickOrder(lineDetails, 2);
         } else {
             logger.info("==============agv区域的托盘已到达，开始生成拣选单==============");
-            this.takePickOrder(agvDetails,1);
+            this.takePickOrder(agvDetails, 1);
         }
 
     }
@@ -83,7 +85,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
      * 这样每次站台 只需要判断站台 有没有订单
      */
     @Transactional(rollbackFor = Exception.class)
-    public void takePickOrder(List<AgvBindingDetail> bindingDetails,int type) throws Exception {
+    public void takePickOrder(List<AgvBindingDetail> bindingDetails, int type) throws Exception {
         //所有的站台集合
         List<Station> stationsTemp = stationMapper.findByMap(null, Station.class);
         //不锁定的 半成品站台
@@ -105,35 +107,34 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                 //生成拣选单
                 for (Map.Entry<Integer, List<AgvBindingDetail>> orderMap : map.entrySet()) {
                     this.savePickOrder(station, orderMap.getKey());
-                    //1.生成订单绑定明细 2.生成路径 3.删除agv_binding_detail
-                    this.saveContainerBindingDetail(orderMap.getValue());
-                    logger.info("==========正在生成拣选单"+orderMap.getValue()+station.getId()+"站台===========");
+                    logger.info("==========正在生成拣选单" + orderMap.getValue() + station.getId() + "站台===========");
                     map.remove(orderMap.getKey());
                     break;
                 }
             } else {
-                if (type==1){
+                if (type == 1) {
                     //如果站台有拣选单，并且是下层agv类型的
-                    for (StationPickingOrderDto pickingOrder : pickOrders) {
-                        if (station.getCurrentStationPickId().equals(pickingOrder.getPickingOrderId())) {
-                            //1.站台agv位置为空
-                            List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
-                                    MapUtils.put("deviceNo", station.getId()).
-                                            put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
-                            if (list.isEmpty()) {
-                                //站台无空位
-                                return;
-                            }
-                            //2.agv区域 无任务的托盘 属于该站台的
-                            Optional<AgvBindingDetail> first = sortDetails.stream().filter(x -> x.getOrderBillId().equals(pickingOrder.getOrderBillId())).findFirst();
-                            if (first.isPresent()) {
-                                //尾托的概念不考虑，生成路径
-                                //发送任务 1.此站台没有任务正在执行
-                                pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
-                                //锁定此位置的状态
-                                agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(),AgvStoragelocation.TASK_LOCK);
-                                logger.info("================生成拣选单去往"+station.getId()+"站台的路径=============");
-                            }
+                    Optional<StationPickingOrderDto> firstPickOrder = pickOrders.stream().filter(x -> x.getStationId() == station.getId()).findFirst();
+                    if (firstPickOrder.isPresent()) {
+                        StationPickingOrderDto pickingOrder = firstPickOrder.get();
+                        //1.站台agv位置为空
+                        List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
+                                MapUtils.put("deviceNo", station.getId()).
+                                        put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
+                        if (list.isEmpty()) {
+                            //站台无空位
+                            return;
+                        }
+                        //2.agv区域 无任务的托盘 属于该站台的
+                        List<AgvBindingDetail> agvBindList = sortDetails.stream().filter(x -> x.getOrderBillId().equals(pickingOrder.getOrderBillId())).collect(Collectors.toList());
+                        if (agvBindList.size() > 0) {
+                            this.saveContainerBindingDetail(agvBindList);
+                            //尾托的概念不考虑，生成路径
+                            //发送任务 1.此站台没有任务正在执行
+                            pathSchedulingService.containerMoveTask(agvBindList.get(0).getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
+                            //锁定此位置的状态
+                            agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(), AgvStoragelocation.TASK_LOCK);
+                            logger.info("================生成拣选单去往" + station.getId() + "站台的路径=============");
                         }
                     }
                 }

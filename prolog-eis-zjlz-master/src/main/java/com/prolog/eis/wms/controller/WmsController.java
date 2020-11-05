@@ -38,12 +38,12 @@ public class WmsController {
     public RestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         logger.info("wms入库任务下发,{}", JsonUtils.toString(wmsInboundTaskDtos));
 
-//        try {
+        try {
             wmsCallBackService.sendInboundTask(wmsInboundTaskDtos);
             return RestMessage.newInstance(true,"上架任务下发成功");
-//        } catch (Exception e) {
-//            return RestMessage.newInstance(false,"上架任务下发失败"+e.getMessage());
-//        }
+        } catch (Exception e) {
+            return RestMessage.newInstance(false,"500","上架任务下发失败"+e.getMessage(),null);
+        }
     }
 
     @ApiOperation(value = "出库任务下发",notes = "出库任务下发")
