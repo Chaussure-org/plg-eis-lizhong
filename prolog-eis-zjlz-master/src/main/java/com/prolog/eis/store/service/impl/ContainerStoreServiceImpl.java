@@ -138,15 +138,18 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 
     @Override
     public void updateContainerStore(String containerNo, int taskType,int taskState) throws Exception {
-        List<ContainerStore> containerStores = containerStoreMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(),ContainerStore.class);
-        if (containerStores.size() == 0){
-            throw new Exception("【"+containerNo+"】无库存");
-        }
-        ContainerStore containerStore = containerStores.get(0);
-        containerStore.setTaskType(taskType);
-        containerStore.setTaskStatus(taskState);
-        containerStore.setUpdateTime(new Date());
-        containerStoreMapper.update(containerStore);
+        Criteria criteria = Criteria.forClass(ContainerStore.class);
+        criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",taskType).
+                put("taskState",taskState).put("updateTime",new Date()).getMap(),criteria);
+    }
+
+    @Override
+    public void updateEmptyContainer(String containerNo) {
+        Criteria criteria = Criteria.forClass(ContainerStore.class);
+        criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("containerNo",-1).put("qty",1).
+                put("updateTime",new Date()).getMap(),criteria);
     }
 
     private GoodsInfo getEmptyGoods() {

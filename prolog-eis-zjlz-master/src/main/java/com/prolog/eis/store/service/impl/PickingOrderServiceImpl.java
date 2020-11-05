@@ -23,4 +23,9 @@ public class PickingOrderServiceImpl implements IPickingOrderService {
     public List<PickingOrder> findByMap(Map map) {
         return pickingOrderMapper.findByMap(map,PickingOrder.class);
     }
+
+    @Override
+    public void deleteById(int id) {
+        pickingOrderMapper.deleteById(id,PickingOrder.class);
+    }
 }

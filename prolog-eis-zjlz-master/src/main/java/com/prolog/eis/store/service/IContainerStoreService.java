@@ -97,4 +97,7 @@ public interface IContainerStoreService {
      * @param taskType
      */
     void updateContainerStore(String containerNo,int taskType,int taskState) throws Exception;
+
+
+    void updateEmptyContainer(String containerNo);
 }

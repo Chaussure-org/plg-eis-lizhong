@@ -143,13 +143,13 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         List<PointLocation> collect = pointLocations.stream().filter(x -> x.getPointId().equals(taskCallbackDTO.getAddress())).collect(Collectors.toList());
         if (collect.size() > 0){
         //料箱到拣选站则将箱号写入到
-            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
-            if (pointLocation == null){
-                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
-            }
-            Station station = stationService.findById(pointLocation.getStationId());
+//            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
+//            if (pointLocation == null){
+//                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
+//            }
+            Station station = stationService.findById(collect.get(0).getStationId());
             if (station == null){
-                throw new Exception("【站台"+pointLocation.getStationId()+"】不存在");
+                throw new Exception("【站台"+collect.get(0)+"】不存在");
             }                                  
             station.setContainerNo(taskCallbackDTO.getContainerNo());
             station.setUpdateTime(new Date());

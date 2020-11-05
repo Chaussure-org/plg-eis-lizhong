@@ -86,7 +86,7 @@ public interface IStationService {
      * @param stationIp
      * @return
      */
-    int getStationId(String stationIp) throws Exception;
+    Station getStationId(String stationIp) throws Exception;
 
 
     /**

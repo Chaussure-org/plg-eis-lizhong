@@ -1,6 +1,7 @@
 package com.prolog.eis.station.controller;
 
 import com.prolog.eis.dto.bz.BCPPcikingDTO;
+import com.prolog.eis.model.station.Station;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.util.IPUtils;
 import com.prolog.framework.common.message.RestMessage;
@@ -43,9 +44,10 @@ public class StationController {
     public RestMessage<Map<String,Integer>> getStationId(HttpServletRequest request) throws Exception{
         try {
             String ipAddr = IPUtils.getIpAddr(request);
-            int stationId = stationService.getStationId(ipAddr);
+            Station station = stationService.getStationId(ipAddr);
             Map<String, Integer> map = new HashMap<>(1);
-            map.put("stationId",stationId);
+            map.put("stationId",station.getId());
+            map.put("isLock",station.getIsLock());
 
             return RestMessage.newInstance(true,"200","获取成功",map);
         } catch (Exception e) {
