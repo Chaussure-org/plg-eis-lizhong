@@ -18,4 +18,10 @@ public interface IPickingOrderService {
      * @return
      */
     List<PickingOrder> findByMap(Map map);
+
+    /**
+     * 根据id删除
+     * @param id
+     */
+    void deleteById(int id);
 }

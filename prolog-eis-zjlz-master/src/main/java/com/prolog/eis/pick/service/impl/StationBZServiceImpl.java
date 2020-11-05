@@ -287,8 +287,18 @@ public class StationBZServiceImpl implements IStationBZService {
                 //todo：上层输送线  循环线点位
                 List<PointLocation> pointByType = pointLocationService.getPointByType(PointLocation.POINT_TYPE_LXJZ_BCR);
                 pathSchedulingService.containerMoveTask(containerNo, pointByType.get(0).getPointId(), null);
+                ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
+                if (containerStore.getQty() == 0){
+                    //空箱回库改容器商品id和类型(空箱类型)
+                    containerStoreService.updateEmptyContainer(containerNo);
+                }
             } else {
-                //下层agv 回暂存区 RCS02 加判断
+                //下层agv 回暂存区 空托盘去agv区域RCS02 加判断
+                ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
+                if (containerStore.getQty() == 0){
+                    //空托去空拖下架区
+                    pathSchedulingService.containerMoveTask(containerNo, "RCS02", null);
+                }
                 pathSchedulingService.containerMoveTask(containerNo, "RCS01", null);
             }
             containerStoreService.updateTaskTypeByContainer(containerNo,0);
@@ -391,6 +401,7 @@ public class StationBZServiceImpl implements IStationBZService {
         PickingOrderHistory pickingOrderHistory = new PickingOrderHistory();
         BeanUtils.copyProperties(pickingOrder, pickingOrderHistory);
         pickingOrderHistoryService.savePickingOrder(pickingOrderHistory);
+        pickingOrderService.deleteById(pickingOrder.getId());
 
         //清除站台信息
         stationService.clearStationPickingOrder(station.getId());

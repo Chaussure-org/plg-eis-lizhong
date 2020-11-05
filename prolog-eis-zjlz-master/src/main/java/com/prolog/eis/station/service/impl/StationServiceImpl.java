@@ -87,12 +87,12 @@ public class StationServiceImpl implements IStationService {
     }
 
     @Override
-    public int getStationId(String stationIp) throws Exception {
+    public Station getStationId(String stationIp) throws Exception {
         List<Station> stations = stationMapper.findByMap(MapUtils.put("stationIp", stationIp).getMap(), Station.class);
         if (stations.size() > 1 || stations.size() < 1){
             throw new Exception("站台配置有问题请检查站台配置");
         }
-        return stations.get(0).getId();
+        return stations.get(0);
     }
 
     @Override
