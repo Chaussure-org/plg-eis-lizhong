@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service.impl;
 
+import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
@@ -62,13 +63,17 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     private PathSchedulingService pathSchedulingService;
     @Autowired
     private ContainerStoreMapper containerStoreMapper;
+    @Autowired
+    private EisProperties eisProperties;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void BoxOutByOrder() throws Exception {
 
+        //判断循环线的数量
         List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findLineContainerTopath();
-        if (!detailStatus.isEmpty()) {
+        int lineBoxCount = lineBindingDetailMapper.findLineBoxCount();
+        if (!detailStatus.isEmpty()&&lineBoxCount<eisProperties.getLineBoxCount()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "WCS081", "LXJZ01");
             lineBindingDetailMapper.updateLineStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
             logger.info(detailStatus.get(0).getContainerNo()+"生成去往输送线的路径======================");

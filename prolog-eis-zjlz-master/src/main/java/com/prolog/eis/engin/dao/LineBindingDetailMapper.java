@@ -49,4 +49,7 @@ public interface LineBindingDetailMapper extends BaseMapper<LineBindingDetail> {
 
     @Update("UPDATE line_binding_detail abd set abd.detail_status=#{status} WHERE abd.container_no=#{containerNo}")
     void updateLineStatus(@Param("containerNo")String containerNo, @Param("status")int status);
+
+    @Select("SELECT COUNT(*) from container_path_task c WHERE c.target_area='WCS081' and c.task_state=0")
+    int findLineBoxCount();
 }

@@ -8,6 +8,13 @@ import java.math.BigDecimal;
 @ConfigurationProperties(prefix = com.prolog.eis.configuration.EisProperties.PREFIX)
 public class EisProperties {
     public static final String PREFIX = "prolog.eis";
+
+
+
+    /**
+     *   输送线最大料箱数
+     */
+    private int lineBoxCount = 65;
     /**
      *   拣选单最大订单数量
      */
@@ -145,7 +152,13 @@ public class EisProperties {
     public void setCommandSheduleThreadCount(int commandSheduleThreadCount) {
         this.commandSheduleThreadCount = commandSheduleThreadCount;
     }
+    public int getLineBoxCount() {
+        return lineBoxCount;
+    }
 
+    public void setLineBoxCount(int lineBoxCount) {
+        this.lineBoxCount = lineBoxCount;
+    }
     public int getMaxTaskCountPerCar() {
         return maxTaskCountPerCar;
     }

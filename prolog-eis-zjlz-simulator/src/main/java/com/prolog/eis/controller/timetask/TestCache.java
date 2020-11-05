@@ -36,65 +36,67 @@ public class TestCache {
     @Autowired
     private RcsService rcsService;
 
-    @Scheduled(initialDelay = 3000,fixedDelay = 3000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     @Async
-    public void testMcs(){
-        if (CacheListUtils.getMcslist().size()>0) {
+    public void testMcs() {
+        if (CacheListUtils.getMcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getMcslist().get(0));
             McsMoveTaskDto mcsMoveTaskDto = CacheListUtils.getMcslist().get(0);
             mcsService.doCallBack(mcsMoveTaskDto);
-            if (PointUtils.isContain(mcsMoveTaskDto.getTarget())==3){
+            if (PointUtils.isContain(mcsMoveTaskDto.getTarget()) == 3) {
                 WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto();
                 wcsLineMoveDto.setAddress(PointChangeEnum.getPoint(mcsMoveTaskDto.getTarget()));
                 wcsLineMoveDto.setTaskId(null);
                 wcsLineMoveDto.setContainerNo(mcsMoveTaskDto.getContainerNo());
                 wcsLineMoveDto.setType(1);
-                if (PointUtils.isContain(wcsLineMoveDto.getTarget())==1){
-                    wcsService.doBcrRequest(wcsLineMoveDto,1);
-                }else if (PointUtils.isContain(wcsLineMoveDto.getTarget())==2) {
-                    wcsService.doBcrRequest(wcsLineMoveDto,2);
-                }else {
-                    wcsService.doBcrRequest(wcsLineMoveDto,2);
+                if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 1) {
+                    wcsService.doBcrRequest(wcsLineMoveDto, 1);
+                } else if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 2) {
+                    wcsService.doBcrRequest(wcsLineMoveDto, 2);
+                } else {
+                    wcsService.doBcrRequest(wcsLineMoveDto, 2);
                 }
             }
             CacheListUtils.getMcslist().remove(CacheListUtils.getMcslist().get(0));
         }
     }
 
-    @Scheduled(initialDelay = 3000,fixedDelay = 5000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 5000)
     @Async
-    public void testSas(){
-        if (CacheListUtils.getSaslist().size()>0) {
+    public void testSas() {
+        if (CacheListUtils.getSaslist().size() > 0) {
             pWait();
-            System.out.println(CacheListUtils.getSaslist().get(0));
-            SasMoveTaskDto sasMoveTaskDto = CacheListUtils.getSaslist().get(0);
-            sasService.doCallBack(sasMoveTaskDto);
-            CacheListUtils.getSaslist().remove(CacheListUtils.getSaslist().get(0));
+            if (CacheListUtils.getSaslist().size() > 0) {
+                System.out.println(CacheListUtils.getSaslist().get(0));
+                SasMoveTaskDto sasMoveTaskDto = CacheListUtils.getSaslist().get(0);
+                sasService.doCallBack(sasMoveTaskDto);
+                CacheListUtils.getSaslist().remove(CacheListUtils.getSaslist().get(0));
+            }
         }
     }
 
-    @Scheduled(initialDelay = 3000,fixedDelay = 3000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     @Async
-    public void testWcs(){
-        if (CacheListUtils.getWcslist().size()>0) {
+    public void testWcs() {
+        if (CacheListUtils.getWcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getWcslist().get(0));
             WcsLineMoveDto wcsLineMoveDto = CacheListUtils.getWcslist().get(0);
             wcsService.doCallBack(wcsLineMoveDto);
-            if (PointUtils.isContain(wcsLineMoveDto.getTarget())==1){
-                wcsService.doBcrRequest(wcsLineMoveDto,1);
-            }else if (PointUtils.isContain(wcsLineMoveDto.getTarget())==2) {
-                wcsService.doBcrRequest(wcsLineMoveDto,2);
+            if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 1) {
+                wcsService.doBcrRequest(wcsLineMoveDto, 1);
+            } else if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 2) {
+                wcsService.doBcrRequest(wcsLineMoveDto, 2);
             }
             CacheListUtils.getWcslist().remove(CacheListUtils.getWcslist().get(0));
         }
     }
 
-    @Scheduled(initialDelay = 3000,fixedDelay = 3000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     @Async
     public void testRcs() {
-        if (CacheListUtils.getRcslist().size()>0) {
+        if (CacheListUtils.getRcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getRcslist().get(0));
             RcsTaskDto rcsTaskDto = CacheListUtils.getRcslist().get(0);
@@ -103,7 +105,7 @@ public class TestCache {
         }
     }
 
-    private void pWait(){
+    private void pWait() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
