@@ -66,7 +66,7 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 		if(null == containerStore) {
 			return getEmptyGoods();
 		}else {
-			if(containerStore.getContainerType().equals(ContainerStore.EMPTY_TRAY)) {
+			if(containerStore.getGoodsId()==ContainerStore.EMPTY_TRAY) {
 				//空托盘
 				return getEmptyGoods();
 			}else {

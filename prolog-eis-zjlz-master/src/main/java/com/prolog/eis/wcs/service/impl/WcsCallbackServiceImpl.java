@@ -17,6 +17,7 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
@@ -68,7 +69,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Autowired
     private IInventoryTaskDetailService inventoryTaskDetailService;
 
-
+    @Autowired
+    private StationMapper stationMapper;
     private final RestMessage<String> success = RestMessage.newInstance(true, "200", "操作成功", null);
     private final RestMessage<String> faliure = RestMessage.newInstance(false, "500", "操作失败", null);
     private final RestMessage<String> out = RestMessage.newInstance(false, "300", "订单箱异常", null);
@@ -141,16 +143,16 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         //判断 点位属于站台
         List<PointLocation> pointLocations = pointLocationService.getPointByType(20);
         List<PointLocation> collect = pointLocations.stream().filter(x -> x.getPointId().equals(taskCallbackDTO.getAddress())).collect(Collectors.toList());
-        if (collect.size() > 0){
-        //料箱到拣选站则将箱号写入到
+        if (collect.size() > 0) {
+            //料箱到拣选站则将箱号写入到
 //            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
 //            if (pointLocation == null){
 //                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
 //            }
             Station station = stationService.findById(collect.get(0).getStationId());
-            if (station == null){
-                throw new Exception("【站台"+collect.get(0)+"】不存在");
-            }                                  
+            if (station == null) {
+                throw new Exception("【站台" + collect.get(0) + "】不存在");
+            }
             station.setContainerNo(taskCallbackDTO.getContainerNo());
             station.setUpdateTime(new Date());
             stationService.updateStation(station);
@@ -197,7 +199,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             //查询是否存在入库任务
             List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
             if (wareHousings.size() == 0) {
-                throw new Exception("此容器"+containerNo+"没有入库任务");
+                throw new Exception("此容器" + containerNo + "没有入库任务");
             }
             String target = null;
             if (ConstantEnum.BCR_TYPE_XKRK == point.getPointType()) {
@@ -234,7 +236,6 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         // 生成container_store
         ContainerStore containerStore = new ContainerStore();
         containerStore.setContainerNo(wareHousing.getContainerNo());
-        containerStore.setContainerType(1);
         containerStore.setTaskType(10);
         containerStore.setTaskStatus(10);
         containerStore.setWorkCount(0);
@@ -253,16 +254,29 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      */
     private void inStation(BCRDataDTO bcrDataDTO) throws Exception {
         String containerNo = bcrDataDTO.getContainerNo();
-        //箱子所找到的所有的站台
-        List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
-        if (lineBindingDetails.size() > 0) {
-            String taskId = PrologStringUtils.newGUID();
-            //1.找到离入站BCR最近的站台
-            Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
-            PointLocation point = pointLocationService.getPointByStationId(stationId);
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,bcrDataDTO.getAddress(),point.getPointId(),containerNo,5);
-            wcsService.lineMove(wcsLineMoveDto,0);
+        List<ContainerTaskDto> containerType = stationMapper.findContainerType(containerNo);
+        switch (containerType.get(0).getTaskType()) {
+            //播种
+            case 20:
+                //箱子所找到的所有的站台
+                List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
+                if (lineBindingDetails.size() > 0) {
+                    String taskId = PrologStringUtils.newGUID();
+                    //1.找到离入站BCR最近的站台
+                    Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
+                    PointLocation point = pointLocationService.getPointByStationId(stationId);
+                    WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), point.getPointId(), containerNo, 5);
+                    wcsService.lineMove(wcsLineMoveDto, 0);
+                }
+                break;
+            //盘点
+            case 21:
+                break;
+            //移库
+            case 22:
+                break;
         }
+
 
     }
 
@@ -279,8 +293,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             String taskId = PrologStringUtils.newGUID();
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), "", containerNo,
                     5);
-            wcsService.lineMove(wcsLineMoveDto,0);
-        }else{
+            wcsService.lineMove(wcsLineMoveDto, 0);
+        } else {
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), "SAS01");
@@ -294,7 +308,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private void exitContainer(String address, String containerNo) throws Exception {
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(PrologStringUtils.newGUID(), address, "-1",
                 containerNo, 5);
-        wcsService.lineMove(wcsLineMoveDto,0);
+        wcsService.lineMove(wcsLineMoveDto, 0);
     }
 
 }

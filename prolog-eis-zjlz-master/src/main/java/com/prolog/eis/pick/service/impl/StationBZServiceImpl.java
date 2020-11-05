@@ -4,6 +4,7 @@ import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
+import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.location.service.IAgvBindingDetailService;
 import com.prolog.eis.location.service.AgvLocationService;
@@ -28,6 +29,8 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
+import com.prolog.eis.util.PrologStringUtils;
+import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
@@ -88,7 +91,8 @@ public class StationBZServiceImpl implements IStationBZService {
     private IOrderBoxService orderBoxService;
     @Autowired
     private EisProperties eisProperties;
-
+    @Autowired
+    private IWcsService wcsService;
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -199,22 +203,7 @@ public class StationBZServiceImpl implements IStationBZService {
         this.doPicking(stationId, containerNo, completeNum, orderBillIds.get(0), orderBoxNo);
         //删除agv绑定明细
         agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderBillId", orderBillId).put("containerNo", containerNo).getMap());
-        /**  放行逻辑放到称重检测后
-         //校验订单是否完成
-         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
-         if (flag) {
-         //切换拣选单
-         this.changePickingOrder(station);
-         //明细转历史
-         orderBillService.orderBillToHistory(orderBillId);
-         //订单拖放行 贴标区或非贴标区
-         this.orderTrayLeave(orderBoxNo,orderBillId);
 
-
-         }
-         //物料容器放行
-         this.containerNoLeave(containerNo,stationId);
-         */
     }
 
     @Override
@@ -285,8 +274,12 @@ public class StationBZServiceImpl implements IStationBZService {
             //直接放行
             if (stations.size() > 0) {
                 //todo：上层输送线  循环线点位
-                List<PointLocation> pointByType = pointLocationService.getPointByType(PointLocation.POINT_TYPE_LXJZ_BCR);
-                pathSchedulingService.containerMoveTask(containerNo, pointByType.get(0).getPointId(), null);
+
+                String taskId = PrologStringUtils.newGUID();
+                PointLocation point = pointLocationService.getPointByStationId(stationId);
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),PointLocation.POINT_ID_LXHK,containerNo,5);
+                wcsService.lineMove(wcsLineMoveDto,0);
+
                 ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
                 if (containerStore.getQty() == 0){
                     //空箱回库改容器商品id和类型(空箱类型)
@@ -307,8 +300,12 @@ public class StationBZServiceImpl implements IStationBZService {
                 //计算合适站台
                 int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
                 //todo：上层输送线 发送点位
-                PointLocation pointLocation = pointLocationService.getPointByStationId(targetStationId);
-                pathSchedulingService.containerMoveTask(containerNo, pointLocation.getPointId(), null);
+                String taskId = PrologStringUtils.newGUID();
+                PointLocation point = pointLocationService.getPointByStationId(stationId);
+                PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),targetPoint.getPointId(),containerNo,5);
+                wcsService.lineMove(wcsLineMoveDto,0);
+
             } else {
                 //下层agv 只有一条绑定明细尾拖则直接去贴标区或非贴标区
 //                if (stationIds.size() == 1) {
@@ -469,8 +466,6 @@ public class StationBZServiceImpl implements IStationBZService {
         //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存
         seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum(), orderDetail.getGoodsId());
-
-
     }
 
     @Override
@@ -544,7 +539,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
         //计算误差率 （托盘重量 + 之前商品重量 +周转箱重量 + 计算播种商品重量 ）- 称重托盘重量 小于误差率(称重)
         BigDecimal compute1 = trayWeigh.add(beforeGoodsWeigh).add(containerWeigh).add(computeGoodsWeigh).subtract(sumWeigh).abs();
-        BigDecimal errorRate1 = compute1.divide(computeGoodsWeigh);
+        BigDecimal errorRate1 = compute1.divide(computeGoodsWeigh,2,BigDecimal.ROUND_HALF_UP);
 
         OrderTrayWeighDTO orderTrayWeighDTO = new OrderTrayWeighDTO();
         orderTrayWeighDTO.setPassBoxWeigh(containerWeigh);

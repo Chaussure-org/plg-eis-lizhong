@@ -97,7 +97,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
         List<AgvBindingDetail> sortDetails = sortDetails(bindingDetails);
 
         List<Integer> orderIds = pickOrders.stream().map(StationPickingOrderDto::getOrderBillId).collect(Collectors.toList());
-        //不包含 站台 的orderId 的details
+        //排除站台已经索取过了的 订单
         Map<Integer, List<AgvBindingDetail>> map = sortDetails.stream().filter(x -> !orderIds.contains(x.getOrderBillId())).collect(Collectors.groupingBy(AgvBindingDetail::getOrderBillId));
         for (Station station : stations) {
             //如果站台没有拣选单
@@ -112,34 +112,32 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                     break;
                 }
             } else {
-                if (type==2){
-                   continue;
-                }
-                //如果站台有拣选单，生成agv去往站台的路径
-                for (StationPickingOrderDto pickingOrder : pickOrders) {
-                    if (station.getCurrentStationPickId().equals(pickingOrder.getPickingOrderId())) {
-                        //1.站台agv位置为空
-                        List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
-                                MapUtils.put("deviceNo", station.getId()).
-                                        put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
-                        if (list.isEmpty()) {
-                            //站台无空位
-                            return;
-                        }
-                        //2.agv区域 无任务的托盘 属于该站台的
-                        Optional<AgvBindingDetail> first = sortDetails.stream().filter(x -> x.getOrderBillId().equals(pickingOrder.getOrderBillId())).findFirst();
-                        if (first.isPresent()) {
-                            //尾托的概念不考虑，生成路径
-                            //发送任务 1.此站台没有任务正在执行
-                            pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
-                            //锁定此位置的状态
-                            agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(),AgvStoragelocation.TASK_LOCK);
-                            logger.info("================生成拣选单去往"+station.getId()+"站台的路径=============");
+                if (type==1){
+                    //如果站台有拣选单，并且是下层agv类型的
+                    for (StationPickingOrderDto pickingOrder : pickOrders) {
+                        if (station.getCurrentStationPickId().equals(pickingOrder.getPickingOrderId())) {
+                            //1.站台agv位置为空
+                            List<AgvStoragelocation> list = agvStoragelocationMapper.findByMap(
+                                    MapUtils.put("deviceNo", station.getId()).
+                                            put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
+                            if (list.isEmpty()) {
+                                //站台无空位
+                                return;
+                            }
+                            //2.agv区域 无任务的托盘 属于该站台的
+                            Optional<AgvBindingDetail> first = sortDetails.stream().filter(x -> x.getOrderBillId().equals(pickingOrder.getOrderBillId())).findFirst();
+                            if (first.isPresent()) {
+                                //尾托的概念不考虑，生成路径
+                                //发送任务 1.此站台没有任务正在执行
+                                pathSchedulingService.containerMoveTask(first.get().getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
+                                //锁定此位置的状态
+                                agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(),AgvStoragelocation.TASK_LOCK);
+                                logger.info("================生成拣选单去往"+station.getId()+"站台的路径=============");
+                            }
                         }
                     }
                 }
             }
-
         }
     }
 

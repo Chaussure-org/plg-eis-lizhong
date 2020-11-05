@@ -40,8 +40,8 @@ public class ContainerStore {
      */
     public static final int TASK_STATUS_OUT = 20;
 
-    public static final int TASK_TRAY = 1;
-    public static final int EMPTY_TRAY = 2;
+    public static final int EMPTY_BOX= -1;
+    public static final int EMPTY_TRAY = -2;
     @Column("id")
     @Id
     @ApiModelProperty("托盘库存ID")
@@ -51,9 +51,6 @@ public class ContainerStore {
     @ApiModelProperty("托盘号")
     private String containerNo;
 
-    @Column("container_type")
-    @ApiModelProperty("托盘类型(1任务托, 2 空托盘)")
-    private Integer containerType;
 
     @Column("task_type")
     @ApiModelProperty("任务类型(0无业务任务;10;入库;11补货入库;12移库入库;20出库;21盘点出库;22移库出库)")
@@ -117,14 +114,6 @@ public class ContainerStore {
 
     public void setContainerNo(String containerNo) {
         this.containerNo = containerNo;
-    }
-
-    public Integer getContainerType() {
-        return containerType;
-    }
-
-    public void setContainerType(Integer containerType) {
-        this.containerType = containerType;
     }
 
     public Integer getTaskType() {

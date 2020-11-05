@@ -40,7 +40,7 @@ public interface StationMapper extends BaseMapper<Station> {
      *
      * @param stationId
      */
-    @Update("update station set current_station_pick_id = null where id = #{stationId}")
+    @Update("update station set current_station_pick_id = null,container_no = null where id = #{stationId}")
     void updateStationPickingOrderId(@Param("stationId") int stationId);
 
     /**
@@ -89,4 +89,7 @@ public interface StationMapper extends BaseMapper<Station> {
             "GROUP BY\n" +
             "\ts.id ")
     List<StationTaskDto> getStationInfo();
+
+    @Select("SELECT c.task_type AS taskType FROM container_store c WHERE c.container_no=#{containerNo}")
+    List<ContainerTaskDto> findContainerType(@Param("containerNo")String containerNo);
 }
