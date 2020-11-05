@@ -101,14 +101,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     @Transactional(rollbackFor = Exception.class)
     public List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception {
         List<OutContainerDto> outContainerList = new ArrayList<OutContainerDto>();
-        int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
         // 商品分组
         Map<Integer, List<OutDetailDto>> goodsIdMap = detailDtos.stream().collect(Collectors.groupingBy(x -> x.getGoodsId()));
-
         for (Map.Entry<Integer, List<OutDetailDto>> map : goodsIdMap.entrySet()) {
-
             int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
-
             //商品id，总数，算出所需要出的总箱子
             List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum);
             if (outContainersByGoods.size() == 0) {

@@ -51,9 +51,9 @@ public class OrderDetail {
     @ApiModelProperty("计划数量")
     private Integer planQty;
 
-    @Column("trayPlanQty")
+    @Column("tray_plan_Qty")
     @ApiModelProperty("托盘库出口库数量")
-    private Integer tray_plan_qty;
+    private Integer trayPlanQty;
 
     @Column("has_pick_qty")
     @ApiModelProperty("已拣选数量")
@@ -81,12 +81,12 @@ public class OrderDetail {
     @ApiModelProperty("出库数量")
     private Integer outQty;
 
-    public Integer getTray_plan_qty() {
-        return tray_plan_qty;
+    public Integer getTrayPlanQty() {
+        return trayPlanQty;
     }
 
-    public void setTray_plan_qty(Integer tray_plan_qty) {
-        this.tray_plan_qty = tray_plan_qty;
+    public void setTrayPlanQty(Integer trayPlanQty) {
+        this.trayPlanQty = trayPlanQty;
     }
 
     public Integer getId() {

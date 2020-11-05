@@ -112,8 +112,6 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     @LogInfo(desci = "wms出库任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK, systemType = LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
     public void sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
-
-
         if (wmsOutboundTaskDtos.size() > 0) {
             List<String> billNoList =
                     wmsOutboundTaskDtos.stream().map(x -> x.getBILLNO()).distinct().collect(Collectors.toList());
@@ -138,7 +136,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                     orderDetail.setCompleteQty(0);
                     orderDetail.setOutQty(0);
                     orderDetail.setHasPickQty(0);
-
+                    orderDetail.setTrayPlanQty(0);
                     orderDetail.setCreateTime(new Date());
                     orderDetails.add(orderDetail);
                 }
