@@ -31,8 +31,7 @@ public interface LineBindingDetailMapper extends BaseMapper<LineBindingDetail> {
             "\tline_binding_detail lbd\n" +
             "\tLEFT JOIN container_path_task cpt ON lbd.container_no = cpt.container_no \n" +
             "WHERE\n" +
-            "\tcpt.target_area = 'WCS081' \n" +
-            "\tAND cpt.task_state =0")
+            "\tcpt.target_area = 'WCS081' ")
     List<AgvBindingDetail> findLineDetails();
     @Delete("DELETE FROM agv_binding_detail a WHERE a.order_bill_id NOT IN (SELECT DISTINCT IFNULL(t.id,0) FROM (SELECT ob.id FROM station s LEFT JOIN order_bill ob ON s.current_station_pick_id =ob.picking_order_id UNION ALL\n" +
             "            SELECT a.order_bill_id FROM line_binding_detail a WHERE a.wms_order_priority = 10 ) t)")

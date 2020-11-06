@@ -13,5 +13,5 @@ public interface McsService {
      * 回告
      * @param mcsMoveTaskDto
      */
-    void doCallBack(McsMoveTaskDto mcsMoveTaskDto);
+    void doCallBack(McsMoveTaskDto mcsMoveTaskDto) throws Exception;
 }

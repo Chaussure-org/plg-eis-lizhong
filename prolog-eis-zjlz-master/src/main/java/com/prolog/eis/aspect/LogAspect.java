@@ -84,7 +84,10 @@ public class LogAspect {
                 log.setException(e.getMessage().toString());
                 log.setCreateTime(new Date());
                 logService.save(log);
+                //调试
+                e.printStackTrace();
                 throw e;
+
             }
         } else {
             return joinPoint.proceed();

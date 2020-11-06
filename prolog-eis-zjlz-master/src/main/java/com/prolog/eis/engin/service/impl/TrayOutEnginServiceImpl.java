@@ -375,7 +375,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 if (containerBoxMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.get(orderDetail.getGoodsId()) >= orderDetail.getPlanQty()) {
                     boxDetailIds.add(orderDetail.getDetailId());
                     int goodsId=orderDetail.getGoodsId();
-                    containerBoxMap.put(goodsId, containerTrayMap.get(goodsId) - orderDetail.getPlanQty());
+                    containerBoxMap.put(goodsId, containerBoxMap.get(goodsId) - orderDetail.getPlanQty());
                 } else {
                     //当一个明细， 则需要从两边的库存一起出库，其中一个库区是一定会出完的
                     if (containerTrayMap.containsKey(orderDetail.getGoodsId()) && containerBoxMap.containsKey(orderDetail.getGoodsId()) &&

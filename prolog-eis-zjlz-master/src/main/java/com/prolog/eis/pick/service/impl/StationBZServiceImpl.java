@@ -460,8 +460,8 @@ public class StationBZServiceImpl implements IStationBZService {
         containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderDetailId()).getMap());
         boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
         if (b) {
-            //当前订单明细完成，回告wms
-            this.seedToWms(containerBinDings);
+            // TODO: 2020/11/6  当前订单明细完成，回告wms
+            //this.seedToWms(containerBinDings);
         }
         //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存

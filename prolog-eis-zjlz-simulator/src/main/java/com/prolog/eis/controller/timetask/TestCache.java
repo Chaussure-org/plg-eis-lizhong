@@ -37,7 +37,7 @@ public class TestCache {
     private RcsService rcsService;
 
     @Scheduled(initialDelay = 3000, fixedDelay = 3000)
-    public synchronized void testMcs() {
+    public synchronized void testMcs() throws Exception {
         if (CacheListUtils.getMcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getMcslist().get(0));
