@@ -274,6 +274,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 break;
             //移库
             case 22:
+
                 break;
         }
 

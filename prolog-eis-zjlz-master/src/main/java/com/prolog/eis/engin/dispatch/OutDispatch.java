@@ -29,6 +29,8 @@ public class OutDispatch {
     @Autowired
     private CrossLayerEnginService crossLayerEnginService;
 
+    @Autowired
+    private AgvInBoundEnginService agvInBoundEnginService;
     /**
      * 托盘库 出库
      */
@@ -91,10 +93,14 @@ public class OutDispatch {
         }
 
     }
+
+    /**
+     * agv区域 定时回库
+     */
     @Scheduled(initialDelay = 3000, fixedDelay = 4000)
     public void rcsInBound(){
         try{
-            crossLayerEnginService.findCrossLayerTask();
+            agvInBoundEnginService.AgvInBound();
         }catch (Exception e){
             e.printStackTrace();
         }

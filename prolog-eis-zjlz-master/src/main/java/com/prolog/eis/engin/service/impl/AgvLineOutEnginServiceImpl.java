@@ -74,7 +74,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
             if (station.getCurrentStationPickId() == null) {
                 //为站台索取一个拣选单
-                this.tackPickOrder(station.getId(),details,pickOrders);
+                this.tackPickOrder(station.getId(), details, pickOrders);
             } else {
                 Optional<StationPickingOrderDto> first = pickOrders.stream().filter(x -> x.getStationId() == station.getId()).findFirst();
                 if (first.isPresent()) {
@@ -87,12 +87,12 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                         return;
                     }
                     //2.该站台 到达的 托盘
-                    List<AgvBindingDetail> agvBindList =details.stream().filter(x->x.getOrderBillId().equals(first.get().getOrderBillId())).collect(Collectors.toList());
+                    List<AgvBindingDetail> agvBindList = details.stream().filter(x -> x.getOrderBillId().equals(first.get().getOrderBillId())).collect(Collectors.toList());
                     if (agvBindList.size() > 0) {
                         //生成该站台的料箱绑定明细
                         this.saveContainerBindingDetail(agvBindList);
                         //发送任务 1.此站台没有任务正在执行
-                        agvBindList.forEach(x->{
+                        agvBindList.forEach(x -> {
                             try {
                                 pathSchedulingService.containerMoveTask(x.getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
                                 //锁定此位置的状态
@@ -109,28 +109,30 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     }
 
 
-    private void tackPickOrder(int stationId,List<AgvBindingDetail> agvDetailsTemp,List<StationPickingOrderDto> pickOrders) throws Exception {
+    private void tackPickOrder(int stationId, List<AgvBindingDetail> agvDetailsTemp, List<StationPickingOrderDto> pickOrders) throws Exception {
         List<AgvBindingDetail> agvArriveDetails = agvDetailsTemp.stream().filter(x -> x.getOrderPriority().equals(OrderBill.FIRST_PRIORITY)).collect(Collectors.toList());
         if (agvArriveDetails.size() > 0) {
             //先索取 agv区域到达的一类的 新订单
-            this.createPickOrder(stationId, pickOrders, agvArriveDetails);
+            this.createPickOrder(stationId, pickOrders, agvArriveDetails, false);
         } else {
             //找循环线体的 新订单,要去往到达循环线的箱子
             List<AgvBindingDetail> lineDetails = lineBindingDetailMapper.findLineDetails();
             if (lineDetails.size() > 0) {
-                this.createPickOrder(stationId, pickOrders, lineDetails);
+                this.createPickOrder(stationId, pickOrders, lineDetails, true);
             }
         }
     }
 
-    private void createPickOrder(int stationId, List<StationPickingOrderDto> pickOrders, List<AgvBindingDetail> details) throws Exception {
+    private void createPickOrder(int stationId, List<StationPickingOrderDto> pickOrders, List<AgvBindingDetail> details, boolean b) throws Exception {
         List<AgvBindingDetail> sortDetails = sortDetails(details);
         List<Integer> orderIds = pickOrders.stream().map(StationPickingOrderDto::getOrderBillId).collect(Collectors.toList());
         //排除站台已经索取过了的 订单
         Map<Integer, List<AgvBindingDetail>> map = sortDetails.stream().filter(x -> !orderIds.contains(x.getOrderBillId())).collect(Collectors.groupingBy(AgvBindingDetail::getOrderBillId));
         for (Map.Entry<Integer, List<AgvBindingDetail>> orderMap : map.entrySet()) {
             this.savePickOrder(stationId, orderMap.getKey());
-            this.saveContainerBindingDetail(orderMap.getValue());
+            if (b) {
+                this.saveContainerBindingDetail(orderMap.getValue());
+            }
             logger.info("==========正在生成拣选单" + orderMap.getValue() + stationId + "站台===========");
             break;
         }
