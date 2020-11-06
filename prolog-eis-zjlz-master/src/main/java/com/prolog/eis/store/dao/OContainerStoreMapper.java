@@ -12,18 +12,47 @@ import java.util.List;
  * @author SunPP
  */
 public interface OContainerStoreMapper extends BaseMapper<ContainerStore> {
-    /**
-     * @return 所有的库存减去占用的库存
-     */
-    @Select("SELECT\n" +
-            "cs.goods_id AS goodsId,\n" +
-            "SUM(cs.qty)-(SELECT ifnull(SUM(o.plan_qty-o.has_pick_qty),0) FROM order_detail o WHERE o.goods_id=cs.goods_id AND o.area_no != '')  AS qty\n" +
+
+    @Select("SELECT \n" +
+            "c.qty AS qty,\n" +
+            "c.goods_id as goodsId\n" +
             "FROM\n" +
-            "container_store cs\n" +
-            "LEFT JOIN container_path_task cpt ON cs.container_no = cpt.container_no\n" +
-            "LEFT JOIN agv_binding_detail abd ON cs.container_no=abd.container_no\n" +
+            "container_store c LEFT JOIN container_path_task cpt\n" +
+            "ON c.container_no = cpt.container_no WHERE FIND_IN_SET( cpt.target_area, #{areaNos})  and task_state=0")
+    List<StoreGoodsCount> findStore(@Param("areaNos") String areaNos);
+
+    @Select("SELECT DISTINCT\n" +
+            "\tabd.goods_id AS goodsId,\n" +
+            "\tcs.qty - ( SELECT SUM( a.binding_num ) FROM line_binding_detail a WHERE a.container_no = abd.container_no ) AS qty\n" +
+            "FROM\n" +
+            "\tline_binding_detail abd\n" +
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no\n" +
+            "\tLEFT JOIN goods g ON cs.goods_id = g.id")
+    List<StoreGoodsCount> findLineStore();
+
+    @Select("SELECT DISTINCT\n" +
+            "\tabd.goods_id AS goodsId,\n" +
+            "\tcs.qty - ( SELECT SUM( a.binding_num ) FROM line_binding_detail a WHERE a.container_no = abd.container_no ) AS qty\n" +
+            "FROM\n" +
+            "\tagv_binding_detail abd\n" +
+            "\tLEFT JOIN container_store cs ON abd.container_no = cs.container_no\n" +
+            "\tLEFT JOIN goods g ON cs.goods_id = g.id")
+    List<StoreGoodsCount> findAgvBindStore();
+
+    @Select("SELECT\n" +
+            "\tcs.goods_id AS goodsId,\n" +
+            "\tcs.qty AS qty \n" +
+            "FROM\n" +
+            "\tcontainer_path_task c\n" +
+            "\tLEFT JOIN container_store cs ON c.container_no = cs.container_no \n" +
             "WHERE\n" +
-            "FIND_IN_SET( cpt.target_area, #{areaNos} ) \n" +
-            "AND cpt.task_state=0 GROUP BY cs.goods_id")
-    List<StoreGoodsCount> findStoreGoodsCount(@Param("areaNos")String areaNos);
+            "\tc.target_area = 'RCS01' \n" +
+            "\tAND c.task_state = 0 \n" +
+            "\tAND c.container_no NOT IN (\n" +
+            "\tSELECT\n" +
+            "\t\ta.container_no \n" +
+            "\tFROM\n" +
+            "\tagv_binding_detail a \n" +
+            "\t)")
+    List<StoreGoodsCount> findAgvStore();
 }

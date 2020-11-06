@@ -86,15 +86,19 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         Map<Integer, List<OutDetailDto>> orderDetailMap = outDetails.stream().sorted(Comparator.comparing(OutDetailDto::getWmsOrderPriority).reversed()).collect(
                 Collectors.groupingBy(OutDetailDto::getOrderBillId));
 
-        //堆垛机 agv 区域 所有的库存减掉 已经占用的库存
-        List<StoreGoodsCount> storeGoodsCount = containerStoreMapper.findStoreGoodsCount("MCS01,MCS02,MCS03,MCS04,RCS01");
-        Map<Integer, Integer> containerStoreMap = storeGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
+        //回库的库存不统计
+        List<StoreGoodsCount> trayStore = containerStoreMapper.findStore("MCS01,MCS02,MCS03,MCS04");
+        List<StoreGoodsCount> agvBindStore = containerStoreMapper.findAgvBindStore();
+        List<StoreGoodsCount> agvStore = containerStoreMapper.findAgvStore();
+        trayStore.addAll(agvBindStore);trayStore.addAll(agvStore);
+        Map<Integer, Integer> containerStoreMap = trayStore.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
 
-        // 箱库的库存 再加上循环线的库存（待加）
-        List<StoreGoodsCount> boxGoodsCount = containerStoreMapper.findStoreGoodsCount("SAS01,MCS081");
-        Map<Integer, Integer> boxStoreMap = boxGoodsCount.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
+        List<StoreGoodsCount> boxStore = containerStoreMapper.findStore("SAS01");
+        List<StoreGoodsCount> lineStore = containerStoreMapper.findLineStore();
+        boxStore.addAll(lineStore);
+        Map<Integer, Integer> boxStoreMap = boxStore.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));
 
@@ -458,4 +462,6 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         agvBindingDetaileMapper.deleteWmsAgvBindingDetail();
         lineBindingDetailMapper.deleteWmsAgvBindingDetails();
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service.impl;
 
+import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
@@ -62,13 +63,17 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     private PathSchedulingService pathSchedulingService;
     @Autowired
     private ContainerStoreMapper containerStoreMapper;
+    @Autowired
+    private EisProperties eisProperties;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void BoxOutByOrder() throws Exception {
 
+        //判断循环线的数量
         List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findLineContainerTopath();
-        if (!detailStatus.isEmpty()) {
+        int lineBoxCount = lineBindingDetailMapper.findLineBoxCount();
+        if (!detailStatus.isEmpty()&&lineBoxCount<eisProperties.getLineBoxCount()) {
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "WCS081", "LXJZ01");
             lineBindingDetailMapper.updateLineStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
             logger.info(detailStatus.get(0).getContainerNo()+"生成去往输送线的路径======================");
@@ -101,14 +106,10 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     @Transactional(rollbackFor = Exception.class)
     public List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception {
         List<OutContainerDto> outContainerList = new ArrayList<OutContainerDto>();
-        int wmsPriority = detailDtos.get(0).getWmsOrderPriority();
         // 商品分组
         Map<Integer, List<OutDetailDto>> goodsIdMap = detailDtos.stream().collect(Collectors.groupingBy(x -> x.getGoodsId()));
-
         for (Map.Entry<Integer, List<OutDetailDto>> map : goodsIdMap.entrySet()) {
-
             int sum = map.getValue().stream().mapToInt(x -> x.getPlanQty()).sum();
-
             //商品id，总数，算出所需要出的总箱子
             List<OutContainerDto> outContainersByGoods = this.outByGoodsId(map.getKey(), sum);
             if (outContainersByGoods.size() == 0) {

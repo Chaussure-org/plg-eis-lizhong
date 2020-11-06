@@ -39,7 +39,7 @@ public class SasServiceImpl implements SasService {
                     new TypeReference<RestMessage<String>>() {});
             System.out.println("=======回告EIS Sas  callback成功");
         } catch (Exception e) {
-            System.out.println("sascallback失败");
+            e.printStackTrace();
         }
     }
 }

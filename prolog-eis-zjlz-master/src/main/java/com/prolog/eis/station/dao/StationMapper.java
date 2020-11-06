@@ -49,10 +49,17 @@ public interface StationMapper extends BaseMapper<Station> {
      * @param containerNo
      * @return
      */
-    @Select("select lbc.container_no as containerNo,\n" +
-            "       lbc.order_bill_id as orderBillId \n" +
-            "       from station                                                                " +
-            "    left join line_binding_detail lbc  where lbc.container_no = #{containerNo};")
+    @Select("SELECT\n" +
+            "\tl.container_no AS containerNo,\n" +
+            "\tl.order_bill_id AS orderBillId,\n" +
+            "\ts.id AS stationId,\n" +
+            "\to.picking_order_id AS pickOrderId \n" +
+            "FROM\n" +
+            "\tstation s\n" +
+            "\tLEFT JOIN order_bill o ON s.current_station_pick_id = o.picking_order_id\n" +
+            "\tLEFT JOIN line_binding_detail l ON l.order_bill_id = o.id \n" +
+            "WHERE\n" +
+            "\tl.container_no = #{containerNo}")
     List<ContainerTaskDto> getTaskByContainerNo(@Param("containerNo") String containerNo);
 
     /**

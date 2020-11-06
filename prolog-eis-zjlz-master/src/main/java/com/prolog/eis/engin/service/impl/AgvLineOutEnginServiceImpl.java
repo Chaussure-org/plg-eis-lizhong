@@ -113,7 +113,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                 }
             } else {
                 if (type==2){
-                    return;
+                   continue;
                 }
                 //如果站台有拣选单，生成agv去往站台的路径
                 for (StationPickingOrderDto pickingOrder : pickOrders) {
