@@ -47,7 +47,7 @@ public class StationController {
             Station station = stationService.getStationId(ipAddr);
             Map<String, Integer> map = new HashMap<>(1);
             map.put("stationId",station.getId());
-            map.put("isLock",station.getIsLock());
+            map.put("flag",station.getIsLock());
 
             return RestMessage.newInstance(true,"200","获取成功",map);
         } catch (Exception e) {

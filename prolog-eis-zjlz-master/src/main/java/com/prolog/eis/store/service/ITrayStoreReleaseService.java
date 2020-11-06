@@ -11,6 +11,7 @@ public interface ITrayStoreReleaseService {
     /**
      * 货位释放
      * @param containerNo
+     * @param feederNo
      */
-    void storeRelease(String containerNo);
+    void storeRelease(String containerNo,String feederNo) throws Exception;
 }
