@@ -1,7 +1,9 @@
 package com.prolog.eis.store.service.impl;
 
 import com.prolog.eis.store.service.ITrayStoreReleaseService;
+import com.prolog.framework.utils.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author dengj
@@ -18,7 +20,12 @@ public class TrayStoreReleaseServiceImpl implements ITrayStoreReleaseService {
      * @param containerNo
      */
     @Override
-    public void storeRelease(String containerNo) {
+    @Transactional(rollbackFor = Exception.class)
+    public void storeRelease(String containerNo,String feederNo) throws Exception {
+        if (StringUtils.isBlank(containerNo) || StringUtils.isBlank(feederNo)){
+            throw new Exception("参数不能为空");
 
+        }
+        
     }
 }

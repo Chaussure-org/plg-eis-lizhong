@@ -148,7 +148,7 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
     public void updateEmptyContainer(String containerNo) {
         Criteria criteria = Criteria.forClass(ContainerStore.class);
         criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("containerNo",-1).put("qty",1).
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("goodsId",-1).put("qty",1).
                 put("updateTime",new Date()).getMap(),criteria);
     }
 

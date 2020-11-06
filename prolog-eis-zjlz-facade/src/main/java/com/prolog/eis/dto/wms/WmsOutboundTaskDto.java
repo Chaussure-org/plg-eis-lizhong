@@ -21,7 +21,7 @@ public class WmsOutboundTaskDto {
     @JsonProperty(value = "CONSIGNOR")
     private String CONSIGNOR;
 
-    @ApiModelProperty("仓库id")
+    @ApiModelProperty("仓库编码")
     @JsonProperty(value = "BRANCHCODE")
     private String BRANCHCODE;
 
@@ -45,7 +45,7 @@ public class WmsOutboundTaskDto {
     @JsonProperty(value = "SEQNO")
     private String SEQNO;
 
-    @ApiModelProperty("商品编码")
+    @ApiModelProperty("商品id")
     @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
