@@ -24,11 +24,13 @@ import java.io.IOException;
 @RequestMapping("/eis")
 public class RcsController {
 
-
+    @Autowired
+    private RcsService rcsService;
     @ApiOperation(value = "Rcs移动", notes = "Rcs移动")
     @PostMapping("/agvMove")
     public RestMessage<String> agvMove(@RequestBody RcsTaskDto rcsTaskDto) throws IOException {
-        CacheListUtils.getRcslist().add(rcsTaskDto);
+        //CacheListUtils.getRcslist().add(rcsTaskDto);
+        rcsService.doCallBack(rcsTaskDto);
         return RestMessage.newInstance(true,"操作成功");
 
     }

@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service.impl;
 
+import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.RoadWayContainerTaskDto;
 import com.prolog.eis.dto.lzenginee.RoadWayGoodsCountDto;
@@ -34,6 +35,8 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
     private TrayOutMapper trayOutMapper;
     @Autowired
     private PathSchedulingService pathSchedulingService;
+    @Autowired
+    private EisProperties eisProperties;
 
     @Override
     public void AgvInBound() throws Exception {
@@ -42,7 +45,7 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
         Date currentTime = new Date();
         for (ContainerPathTask containerPathTask : emptyAgvContainers) {
             int mins = PrologDateUtils.dateBetweenMin(currentTime, containerPathTask.getUpdateTime());
-            if (mins > 2) {
+            if (mins > eisProperties.getAgvInboundTime()) {
                 //回库
                 List<RoadWayContainerTaskDto> roadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();
                 roadWayContainerTasks.stream().sorted(Comparator.comparing(RoadWayContainerTaskDto::getInCount).thenComparing(RoadWayContainerTaskDto::getOutCount));
