@@ -4,11 +4,13 @@ import com.prolog.eis.dto.sas.SasCarryListDto;
 import com.prolog.eis.dto.sas.SasMoveTaskDto;
 import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.HoisterInfoDto;
+import com.prolog.eis.service.SasService;
 import com.prolog.eis.utils.CacheListUtils;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,11 +29,14 @@ import java.util.Map;
 @RequestMapping("/eis")
 public class SasController {
 
+    @Autowired
+    private SasService sasService;
+
     @RequestMapping("/getCarInfo")
-    @ApiOperation(value = "获取小车信息",notes = "获取小车信息")
-    public RestMessage<Map<String,Object>> getCarInfo(){
+    @ApiOperation(value = "获取小车信息", notes = "获取小车信息")
+    public RestMessage<Map<String, Object>> getCarInfo() {
         List<CarInfoDTO> list = new ArrayList<>();
-        for (int i = 1 ; i<28; i++){
+        for (int i = 1; i < 28; i++) {
             CarInfoDTO carInfoDTO = new CarInfoDTO();
             carInfoDTO.setLayer(i);
             carInfoDTO.setRgvId(String.valueOf(i));
@@ -39,27 +44,29 @@ public class SasController {
             list.add(carInfoDTO);
         }
         Map<String, Object> params = MapUtils.put("carryList", list).getMap();
-        return RestMessage.newInstance(true,"操作成功",params);
+        return RestMessage.newInstance(true, "操作成功", params);
     }
 
-    @ApiOperation(value = "获取提升机信息",notes = "获取提升机信息")
+    @ApiOperation(value = "获取提升机信息", notes = "获取提升机信息")
     @RequestMapping("/getHoisterInfoDto")
-    public RestMessage<List<HoisterInfoDto>> getHoisterInfoDto(){
+    public RestMessage<List<HoisterInfoDto>> getHoisterInfoDto() {
         List<HoisterInfoDto> list = new ArrayList<>();
-            HoisterInfoDto mcsCarInfoDto = new HoisterInfoDto();
-            mcsCarInfoDto.setHoist("1");
-            mcsCarInfoDto.setStatus(1);
-            mcsCarInfoDto.setCode(0);
-            list.add(mcsCarInfoDto);
-        return RestMessage.newInstance(true,"操作成功",list);
+        HoisterInfoDto mcsCarInfoDto = new HoisterInfoDto();
+        mcsCarInfoDto.setHoist("1");
+        mcsCarInfoDto.setStatus(1);
+        mcsCarInfoDto.setCode(0);
+        list.add(mcsCarInfoDto);
+        return RestMessage.newInstance(true, "操作成功", list);
     }
 
-    @ApiOperation(value = "出入库任务",notes = "出入库任务")
+    @ApiOperation(value = "出入库任务", notes = "出入库任务")
     @RequestMapping("/sendContainerTask")
-    public RestMessage<String> sendContainerTask(@RequestBody SasCarryListDto sasCarryListDto){
+    public RestMessage<String> sendContainerTask(@RequestBody SasCarryListDto sasCarryListDto) {
         //保存数据
         SasMoveTaskDto sasMoveTaskDto = sasCarryListDto.getCarryList().get(0);
-        CacheListUtils.getSaslist().add(sasMoveTaskDto);
-        return RestMessage.newInstance(true,"操作成功");
+        new Thread(() -> {
+            sasService.doCallBack(sasMoveTaskDto);
+        }).start();
+        return RestMessage.newInstance(true, "操作成功");
     }
 }

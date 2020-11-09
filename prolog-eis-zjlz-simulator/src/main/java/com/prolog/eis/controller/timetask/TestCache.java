@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @Description
  * @CreateTime 2020-10-22 11:04
  */
-@Component
+//@Component
 public class TestCache {
 
     @Autowired
@@ -74,7 +74,7 @@ public class TestCache {
         }
     }
 
-    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
+   // @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     public synchronized void testWcs() {
         if (CacheListUtils.getWcslist().size() > 0) {
             pWait();
