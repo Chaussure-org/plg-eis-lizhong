@@ -4,6 +4,7 @@ import com.prolog.eis.dto.inventory.StationTaskDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
+import com.prolog.eis.vo.station.StationInfoVo;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -92,4 +93,42 @@ public interface StationMapper extends BaseMapper<Station> {
 
     @Select("SELECT c.task_type AS taskType FROM container_store c WHERE c.container_no=#{containerNo}")
     List<ContainerTaskDto> findContainerType(@Param("containerNo")String containerNo);
+
+
+    /**
+     * 查所有站台信息
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tid AS id,\n" +
+            "\tcurrent_station_pick_id AS currentStationPickId,\n" +
+            "\tis_lock AS isLock,\n" +
+            "\tpicking_user_name AS pickingUserName,\n" +
+            "\tstation_task_type AS stationTaskType,\n" +
+            "\tupdate_time AS updateTime,\n" +
+            "\tcontainer_no AS containerNo,\n" +
+            "\tstation_type AS stationType,\n" +
+            "\tstation_ip AS stationIp \n" +
+            "FROM\n" +
+            "\tstation")
+    List<StationInfoVo> queryAll();
+
+    /**
+     * 根据站台id查
+     * @param stationId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tid AS id,\n" +
+            "\tcurrent_station_pick_id AS currentStationPickId,\n" +
+            "\tis_lock AS isLock,\n" +
+            "\tpicking_user_name AS pickingUserName,\n" +
+            "\tstation_task_type AS stationTaskType,\n" +
+            "\tupdate_time AS updateTime,\n" +
+            "\tcontainer_no AS containerNo,\n" +
+            "\tstation_type AS stationType,\n" +
+            "\tstation_ip AS stationIp \n" +
+            "FROM\n" +
+            "\tstation where id = #{stationId}")
+    StationInfoVo queryById(int stationId);
 }

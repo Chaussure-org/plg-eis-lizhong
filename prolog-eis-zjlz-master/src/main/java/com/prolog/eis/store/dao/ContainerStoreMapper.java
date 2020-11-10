@@ -4,6 +4,8 @@ import com.prolog.eis.dto.lzenginee.LayerContainerTaskDto;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.store.AgvContainerStoreDto;
+import com.prolog.eis.dto.store.ContainerInfoDto;
+import com.prolog.eis.dto.store.ContainerQueryDto;
 import com.prolog.eis.dto.store.ContainerStoreInfoDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.util.mapper.EisBaseMapper;
@@ -104,4 +106,43 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
 
     @Select("select container_no as containerNo from container_store")
     List<String> findAllStoreContainers();
+
+
+    /**
+     * 根据条件查询容器资料
+     * @param containerDto
+     * @return
+     */
+    @Select("<script>" +
+            "SELECT\n" +
+            "\tcs.container_no AS containerNo,\n" +
+            "\tg.goods_name AS goodsName,\n" +
+            "\tg.owner_drawn_no AS ownerDrawnNo,\n" +
+            "\tcs.lot_id AS lotId,\n" +
+            "\tcs.create_time as createTime,\n" +
+            "\tcs.qty AS qty \n" +
+            "FROM\n" +
+            "\tcontainer_store cs\n" +
+            "\tJOIN goods g ON g.id = cs.goods_id\n" +
+            "\twhere 1 = 1\n" +
+//            "<if test = 'containerDto.containerNo != null and containerDto.containerNo != \"\"'>\n" +
+//            "\t\tand cs.container_no like '%${containerDto.containerNo}%'\n" +
+//            "</if>\n" +
+//            "<if test = 'containerDto.goodsName != null and containerDto.goodsName != \"\"'>\n" +
+//            "\t\tand cs.container_no like '%${containerDto.goodsName}%'\n" +
+//            "</if>\n" +
+//            "<if test = 'containerDto.ownerDrawnNo != null and containerDto.ownerDrawnNo != \"\"'>\n" +
+//            "\t\tand cs.container_no like '%${containerDto.ownerDrawnNo}%'\n" +
+//            "</if>\n" +
+//            "<if test = 'containerDto.lotId != null and containerDto.lotId != \"\"'>\n" +
+//            "\t\tand cs.container_no like '%${containerDto.lotId}%'\n" +
+//            "</if>\n" +
+//            "<if test = 'containerDto.startTime != null '>\n" +
+//            "\t\tand cs.container_no >= #{containerDto.startTime}\n" +
+//            "</if>\n" +
+            "<if test = 'containerDto.endTime != null '>\n" +
+            "\t\tand cs.container_no <= #{containerDto.endTime}\n" +
+            "</if>" +
+            "</script>")
+    List<ContainerInfoDto> queryContainer(@Param("containerDto") ContainerQueryDto containerDto);
 }

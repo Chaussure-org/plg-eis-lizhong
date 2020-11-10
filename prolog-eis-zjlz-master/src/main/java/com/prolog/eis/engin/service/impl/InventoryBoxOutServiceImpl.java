@@ -76,7 +76,8 @@ public class InventoryBoxOutServiceImpl implements IInventoryBoxOutService {
             return;
         }
         //获取可用小车信息小车信息
-        List<Integer> carLayers = sasService.getCarInfo().stream().filter(x -> x.getStatus() == 1 || x.getStatus() == 2)
+        List<CarInfoDTO> carInfo = sasService.getCarInfo();
+        List<Integer> carLayers = carInfo.stream().filter(x -> x.getStatus() == 1 || x.getStatus() == 2)
                 .map(CarInfoDTO::getLayer).collect(Collectors.toList());
         if (carLayers.size() == 0) {
             return;

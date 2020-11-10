@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
@@ -12,39 +13,51 @@ import java.util.Date;
 public class WmsInventoryTaskDto {
 
     @ApiModelProperty("任务id")
+    @JsonProperty(value = "TASKID")
     private String TASKID;
 
     @ApiModelProperty("单据编号")
+    @JsonProperty(value = "BILLNO")
     private String BILLNO;
 
     @ApiModelProperty("单据日期")
+    @JsonProperty(value = "BILLDATE")
     private Date BILLDATE;
 
     @ApiModelProperty("仓库编号")
+    @JsonProperty(value = "BRANCHCODE")
     private String BRANCHCODE;
 
     @ApiModelProperty("库区")
+    @JsonProperty(value = "BRANCHTYPE")
     private String BRANCHTYPE;
 
     @ApiModelProperty("容器号")
+    @JsonProperty(value = "CONTAINERNO")
     private String CONTAINERNO;
 
     @ApiModelProperty("行号")
+    @JsonProperty(value = "SEQNO")
     private String SEQNO;
 
     @ApiModelProperty("商品类别")
+    @JsonProperty(value = "ITEMTYPE")
     private String ITEMTYPE;
 
     @ApiModelProperty("盘点原因")
+    @JsonProperty(value = "REASONCODE")
     private String REASONCODE;
 
     @ApiModelProperty("商品id")
+    @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
     @ApiModelProperty("计划盘点时间")
+    @JsonProperty(value = "PLANDATE")
     private Date PLANDATE;
 
     @ApiModelProperty("时间戳")
+    @JsonProperty(value = "SJC")
     private Date SJC;
 
     public String getTASKID() {

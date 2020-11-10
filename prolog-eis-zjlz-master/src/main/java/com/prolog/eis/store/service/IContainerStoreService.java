@@ -1,7 +1,10 @@
 package com.prolog.eis.store.service;
 
+import com.prolog.eis.dto.store.ContainerInfoDto;
+import com.prolog.eis.dto.store.ContainerQueryDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
+import com.prolog.framework.core.pojo.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -100,4 +103,12 @@ public interface IContainerStoreService {
 
 
     void updateEmptyContainer(String containerNo);
+
+
+    /**
+     * 分页条件查询
+     * @param containerQueryDto
+     * @return
+     */
+    Page<ContainerInfoDto> queryContainersPage(ContainerQueryDto containerQueryDto);
 }

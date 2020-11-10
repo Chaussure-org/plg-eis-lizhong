@@ -7,6 +7,7 @@ import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.BCRDataDTO;
 import com.prolog.eis.dto.wcs.TaskCallbackDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.engin.service.IInventoryBoxOutService;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
@@ -68,6 +69,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private ContainerPathTaskService containerPathTaskService;
     @Autowired
     private IInventoryTaskDetailService inventoryTaskDetailService;
+    @Autowired
+    private IInventoryBoxOutService inventoryBoxOutService;
 
     @Autowired
     private StationMapper stationMapper;
@@ -271,6 +274,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 break;
             //盘点
             case 21:
+                inventoryBoxOutService.inventoryAllotStation(containerNo,bcrDataDTO.getAddress());
                 break;
             //移库
             case 22:

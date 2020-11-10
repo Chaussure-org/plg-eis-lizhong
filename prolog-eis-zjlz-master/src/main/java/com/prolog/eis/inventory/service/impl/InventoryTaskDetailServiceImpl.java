@@ -12,6 +12,7 @@ import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ public class InventoryTaskDetailServiceImpl implements IInventoryTaskDetailServi
         if (taskDetails.size() != 0){
             InventoryTaskDetail inventoryTaskDetail = taskDetails.get(0);
             inventoryTaskDetail.setTaskState(taskState);
+            inventoryTaskDetail.setOutboundTime(new Date());
             inventoryTaskDetailMapper.update(inventoryTaskDetail);
         }
     }

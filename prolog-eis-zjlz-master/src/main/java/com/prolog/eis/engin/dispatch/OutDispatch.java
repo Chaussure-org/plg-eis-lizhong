@@ -28,6 +28,9 @@ public class OutDispatch {
 
     @Autowired
     private CrossLayerEnginService crossLayerEnginService;
+    @Autowired
+    private IInventoryBoxOutService inventoryBoxOutService;
+    @Autowired
 
     /**
      * 托盘库 出库
@@ -99,5 +102,18 @@ public class OutDispatch {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     *箱库盘点出库调度
+     */
+    @Scheduled(initialDelay = 3000, fixedDelay = 6000)
+    public void inventoryBoxOut(){
+        try {
+            System.out.println("盘点调度");
+            inventoryBoxOutService.inventoryBoxOut();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

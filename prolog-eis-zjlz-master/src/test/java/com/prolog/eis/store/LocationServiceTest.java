@@ -94,6 +94,7 @@ public class LocationServiceTest {
     @Test
     public void testInventory(){
         String area = "SAS01,MCS01";
+        System.out.println("aaaa");
         List<InventoryOutDto> inventoryStore = mapper.getInventoryStore(area);
         return;
     }

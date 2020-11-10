@@ -2,8 +2,10 @@ package com.prolog.eis.station.service;
 
 import com.prolog.eis.dto.inventory.StationTaskDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
+import com.prolog.eis.dto.station.StationInfoDto;
 import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.station.Station;
+import com.prolog.eis.vo.station.StationInfoVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -93,4 +95,23 @@ public interface IStationService {
      * 获取站台盘点任务数
      */
     List<StationTaskDto> getStationTask();
+
+    /**
+     * 修改站台作业类型
+     * @param stationInfoDto
+     * @throws Exception
+     */
+    void updateStationTaskType(StationInfoDto stationInfoDto) throws Exception;
+
+    /**
+     * 查所有站台信息
+     * @return
+     */
+    List<StationInfoVo> queryAll();
+
+    /**
+     * 根据站台id查站台信息
+     * @param stationId
+     */
+    StationInfoVo queryById(int stationId);
 }

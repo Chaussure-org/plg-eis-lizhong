@@ -1,13 +1,18 @@
 package com.prolog.eis.store.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.prolog.eis.base.dao.GoodsMapper;
+import com.prolog.eis.dto.store.ContainerInfoDto;
+import com.prolog.eis.dto.store.ContainerQueryDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
+import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +155,14 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
         containerStoreMapper.updateMapByCriteria(MapUtils.put("goodsId",-1).put("qty",1).
                 put("updateTime",new Date()).getMap(),criteria);
+    }
+
+    @Override
+    public Page<ContainerInfoDto> queryContainersPage(ContainerQueryDto containerQueryDto) {
+        PageHelper.startPage(containerQueryDto.getPageNum(),containerQueryDto.getPageSize());
+        List<ContainerInfoDto> containerInfoDtos = containerStoreMapper.queryContainer(containerQueryDto);
+        Page<ContainerInfoDto> page = PageUtils.getPage(containerInfoDtos);
+        return page;
     }
 
     private GoodsInfo getEmptyGoods() {

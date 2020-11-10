@@ -66,15 +66,18 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\ttd.container_no AS containerNo,\n" +
             "\ts.layer AS layer,\n" +
             "\ts.dept_num AS deptNum,\n" +
-            "\tcpt.source_area as areaNo,\n" +
-            "td.create_time as createTime" +
+            "\tcpt.source_area AS areaNo,\n" +
+            "\ttd.create_time AS createTime \n" +
             "FROM\n" +
             "\tinventory_task_detail td\n" +
             "\tLEFT JOIN container_path_task cpt ON cpt.container_no = td.container_no\n" +
             "\tLEFT JOIN sx_store_location s ON s.store_no = cpt.source_location \n" +
             "WHERE\n" +
-            "\tcpt.task_state = 0 and td.task_state = 10\n" +
-            "\tAND FIND_IN_SET(cpt.source_area,#{area}) order by td.create_time  desc")
+            "\tcpt.task_state = 0 \n" +
+            "\tAND td.task_state = 10 \n" +
+            "\tAND FIND_IN_SET( cpt.source_area, #{area} ) \n" +
+            "ORDER BY\n" +
+            "\ttd.create_time DESC")
     List<InventoryOutDto> getInventoryStore(@Param("area") String area);
 
     /**
