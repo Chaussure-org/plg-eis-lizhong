@@ -12,6 +12,10 @@ public class EisProperties {
 
 
     /**
+     *   agv区域回库时间/分钟
+     */
+    private int agvInboundTime = 2;
+    /**
      *   输送线最大料箱数
      */
     private int lineBoxCount = 65;
@@ -189,6 +193,13 @@ public class EisProperties {
 
     public void setMaxSpCount(int maxSpCount) {
         this.maxSpCount = maxSpCount;
+    }
+    public int getAgvInboundTime() {
+        return agvInboundTime;
+    }
+
+    public void setAgvInboundTime(int agvInboundTime) {
+        this.agvInboundTime = agvInboundTime;
     }
 
 

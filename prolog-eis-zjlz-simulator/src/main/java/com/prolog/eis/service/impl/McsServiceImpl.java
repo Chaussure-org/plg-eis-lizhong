@@ -22,7 +22,8 @@ public class McsServiceImpl implements McsService {
     private HttpUtils httpUtils;
 
     @Override
-    public synchronized void doCallBack(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
+    public  void doCallBack(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
+
         String startUrl = "http://service-ai-eis-zjlz-master-wk/mcs/callback";
         try {
             McsCallBackDto mcsCallBackDto = new McsCallBackDto();
@@ -34,13 +35,12 @@ public class McsServiceImpl implements McsService {
             mcsCallBackDto.setAddress(mcsMoveTaskDto.getTarget());
             RestMessage<String> result = httpUtils.post(startUrl, MapUtils.convertBean(mcsCallBackDto),
                     new TypeReference<RestMessage<String>>() {});
-            System.out.println("mcscallback成功");
         } catch (Exception e) {
             e.printStackTrace();
            throw e;
         }
         try {
-            Thread.sleep(5000);
+            Thread.sleep(3000);
         }catch (Exception e){
             e.printStackTrace();
         }

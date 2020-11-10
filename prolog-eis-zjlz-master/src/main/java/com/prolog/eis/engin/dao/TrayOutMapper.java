@@ -18,16 +18,17 @@ import java.util.List;
  */
 public interface TrayOutMapper {
     @Select("SELECT\n" +
-            "\tsl.x AS roadWay,\n" +
-            "\tSUM( CASE c.task_status WHEN 20 THEN 1 ELSE 0 END ) AS outCount,\n" +
-            "\tSUM( CASE c.task_status WHEN 10 THEN 1 ELSE 0 END ) AS inCount \n" +
+            "sl.x AS roadWay,\n" +
+            "SUM( CASE c.task_status WHEN 20 THEN 1 ELSE 0 END ) AS outCount,\n" +
+            "SUM( CASE c.task_status WHEN 10 THEN 1 ELSE 0 END ) AS inCount \n" +
             "FROM\n" +
-            "\tcontainer_path_task cpt\n" +
-            "\tLEFT JOIN container_store c ON c.container_no = cpt.container_no\n" +
-            "\tLEFT JOIN sx_store_location sl ON cpt.source_location = sl.store_no \n" +
-            "\tOR cpt.target_location = sl.store_no WHERE cpt.target_area in ('MCS01','MCS02','MCS03','MCS04') or cpt.source_area in ('MCS01','MCS02','MCS03','MCS04')\n" +
+            "sx_store_location sl\n" +
+            "LEFT JOIN container_path_task cpt ON cpt.source_location = sl.store_no OR cpt.target_location = sl.store_no \n" +
+            "LEFT JOIN container_store c ON c.container_no = cpt.container_no\n" +
+            "WHERE\n" +
+            "sl.area_no IN ( 'MCS01', 'MCS02', 'MCS03', 'MCS04' ) \n" +
             "GROUP BY\n" +
-            "\tsl.x")
+            "sl.x")
     List<RoadWayContainerTaskDto> findRoadWayContainerTask();
 
     @Select("SELECT \n" +

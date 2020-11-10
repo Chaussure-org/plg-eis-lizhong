@@ -32,10 +32,17 @@ public class McsController {
 
     @ApiOperation(value = "托盘移动",notes = "托盘移动")
     @RequestMapping("/mcsContainerMove")
-    public RestMessage<String> mcsContainerMove(@RequestBody McsCarryListDto mcsCarryListDto){
+    public RestMessage<String> mcsContainerMove(@RequestBody McsCarryListDto mcsCarryListDto) throws Exception {
         //报存数据
         McsMoveTaskDto mcsMoveTaskDto = mcsCarryListDto.getCarryList().get(0);
-        CacheListUtils.getMcslist().add(mcsMoveTaskDto);
+        new Thread(()->{
+            try {
+                mcsService.doCallBack(mcsMoveTaskDto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
         return RestMessage.newInstance(true,"操作成功");
     }
 

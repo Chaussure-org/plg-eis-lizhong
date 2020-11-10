@@ -5,6 +5,7 @@ import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.util.mapper.EisBaseMapper;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -99,4 +100,6 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
             "\tAND c.task_state = 0 \n" +
             "\tAND c.container_no NOT IN ( SELECT a.container_no FROM agv_binding_detail a )")
     List<ContainerPathTask>findEmptyAgvContainer();
+
+
 }

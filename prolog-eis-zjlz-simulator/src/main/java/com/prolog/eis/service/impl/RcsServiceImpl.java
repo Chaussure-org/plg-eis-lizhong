@@ -24,7 +24,7 @@ public class RcsServiceImpl implements RcsService {
     private HttpUtils httpUtils;
 
     @Override
-    public synchronized void doCallBack(RcsTaskDto rcsTaskDto) {
+    public  void doCallBack(RcsTaskDto rcsTaskDto) {
         String startUrl = "http://service-ai-eis-zjlz-master-wk/rcs/agvCallback";
         try {
             RestMessage<String> result = httpUtils.post(startUrl, MapUtils.put("reqCode", rcsTaskDto.getReqCode()).put("taskCode",
@@ -36,7 +36,7 @@ public class RcsServiceImpl implements RcsService {
             System.out.println("rcscallback失败");
         }
         try {
-            Thread.sleep(5000);
+            Thread.sleep(3000);
         } catch (Exception e) {
             e.printStackTrace();
         }

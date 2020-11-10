@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @Description
  * @CreateTime 2020-10-22 11:04
  */
-@Component
+//@Component
 public class TestCache {
 
     @Autowired
@@ -36,7 +36,7 @@ public class TestCache {
     @Autowired
     private RcsService rcsService;
 
-    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
+ /*   @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     public synchronized void testMcs() throws Exception {
         if (CacheListUtils.getMcslist().size() > 0) {
             pWait();
@@ -59,7 +59,7 @@ public class TestCache {
             }
             CacheListUtils.getMcslist().remove(CacheListUtils.getMcslist().get(0));
         }
-    }
+    }*/
 
     @Scheduled(initialDelay = 3000, fixedDelay = 5000)
     public synchronized void testSas() {
@@ -74,7 +74,7 @@ public class TestCache {
         }
     }
 
-    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
+   // @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     public synchronized void testWcs() {
         if (CacheListUtils.getWcslist().size() > 0) {
             pWait();
@@ -90,7 +90,7 @@ public class TestCache {
         }
     }
 
-    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
+    /*@Scheduled(initialDelay = 3000, fixedDelay = 3000)
     public synchronized void testRcs() {
         if (CacheListUtils.getRcslist().size() > 0) {
             pWait();
@@ -99,7 +99,7 @@ public class TestCache {
             rcsService.doCallBack(rcsTaskDto);
             CacheListUtils.getRcslist().remove(CacheListUtils.getRcslist().get(0));
         }
-    }
+    }*/
 
     private void pWait() {
         try {
