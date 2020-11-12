@@ -30,7 +30,6 @@ public class OutDispatch {
     private CrossLayerEnginService crossLayerEnginService;
     @Autowired
     private IInventoryBoxOutService inventoryBoxOutService;
-    @Autowired
 
     @Autowired
     private AgvInBoundEnginService agvInBoundEnginService;
