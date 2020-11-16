@@ -2,6 +2,7 @@ package com.prolog.eis.inventory.service;
 
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryShowDto;
+import com.prolog.eis.dto.page.InventoryDetailInfoDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 
@@ -67,4 +68,10 @@ public interface IInventoryTaskDetailService {
 
     List<InventoryShowDto> findInventoryInfo(String containerNo);
 
+    /**
+     * 盘点计划id查详情
+     * @param inventoryId
+     * @return
+     */
+    List<InventoryDetailInfoDto> getInventoryDetail(int inventoryId);
 }

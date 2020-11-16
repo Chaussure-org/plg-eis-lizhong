@@ -216,7 +216,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 inventoryTaskDetail.setContainerNo(inventoryGoodsDto.getContainerNo());
                 inventoryTaskDetail.setCreateTime(new Date());
                 inventoryTaskDetail.setGoodsName(inventoryGoodsDto.getGoodsName());
-                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getGoodsNo());
+                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getOwnerDrawnNo());
                 inventoryTaskDetail.setOriginalCount(inventoryGoodsDto.getOriginalCount());
                 inventoryTaskDetail.setModifyCount(0);
                 inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_ISSUE);

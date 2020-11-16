@@ -22,6 +22,16 @@ public class InventoryGoodsDto {
     @ApiModelProperty("原始数量")
     private Integer originalCount;
 
+    @ApiModelProperty("商品图号")
+    private String ownerDrawnNo;
+
+    public String getOwnerDrawnNo() {
+        return ownerDrawnNo;
+    }
+
+    public void setOwnerDrawnNo(String ownerDrawnNo) {
+        this.ownerDrawnNo = ownerDrawnNo;
+    }
 
     public String getContainerNo() {
         return containerNo;
@@ -62,6 +72,7 @@ public class InventoryGoodsDto {
                 ", goodsNo='" + goodsNo + '\'' +
                 ", goodsName='" + goodsName + '\'' +
                 ", originalCount=" + originalCount +
+                ", ownerDrawnNo='" + ownerDrawnNo + '\'' +
                 '}';
     }
 }

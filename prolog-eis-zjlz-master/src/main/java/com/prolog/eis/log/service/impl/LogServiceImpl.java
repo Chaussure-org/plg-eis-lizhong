@@ -1,9 +1,14 @@
 package com.prolog.eis.log.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.page.LogInfoDto;
+import com.prolog.eis.dto.page.LogQueryDto;
 import com.prolog.eis.log.dao.*;
 import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.model.log.*;
+import com.prolog.framework.core.pojo.Page;
+import com.prolog.framework.dao.util.PageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @Author wangkang
@@ -74,5 +81,10 @@ public class LogServiceImpl implements ILogService {
             default:
                 logger.error("没有找到正确的日志类型");
         }
+    }
+
+    @Override
+    public List<LogInfoDto> getLogPage(LogQueryDto logQueryDto,String tableName,String systemType) throws Exception {
+         return wmsLogMapper.getLogPage(logQueryDto,tableName,systemType);
     }
 }

@@ -1,5 +1,7 @@
 package com.prolog.eis.location.dao;
 
+import com.prolog.eis.dto.page.StoreInfoDto;
+import com.prolog.eis.dto.page.StoreInfoQueryDto;
 import com.prolog.eis.dto.store.SxStoreLocationDto;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.util.mapper.EisBaseMapper;
@@ -124,4 +126,61 @@ public interface SxStoreLocationMapper extends EisBaseMapper<SxStoreLocation> {
 
 	@Select("select count(*) from sx_store_location t where t.area_no = #{areaNo}")
 	int getAreaLocationCount(@Param("areaNo")String areaNo);
+
+
+
+
+
+
+
+
+
+
+	
+	/**
+	 *  货位信息查询
+	 * @param storeQueryDto
+	 * @return
+	 */
+	@Select("<script>" +
+			"SELECT\n" +
+			"\tsg.group_no AS groupNo,\n" +
+			"\tss.store_no AS storeNo,\n" +
+			"\tss.layer AS layer,\n" +
+			"\tss.x AS x,\n" +
+			"\tss.y AS y,\n" +
+			"\tss.area_no AS areaNo,\n" +
+			"\tss.depth AS depth,\n" +
+			"\tsg.ascent_lock_state AS groupLockState,\n" +
+			"\tss.ascent_lock_state AS groupLockState,\n" +
+			"\tsg.is_lock AS isLock,\n" +
+			"cpt.container_no\t\n" +
+			"FROM\n" +
+			"\tsx_store_location ss\n" +
+			"\tJOIN sx_store_location_group sg ON sg.id = ss.store_location_group_id\n" +
+			"\tLEFT JOIN container_path_task cpt on cpt.source_location = ss.store_no\n" +
+			"\twhere FIND_IN_SET(ss.area_no,#{areaNo})\n" +
+			"\t<if test = 'storeQueryDto.storeNo != null and storeQueryDto.storeNo != \"\"'>\n" +
+			"\t and ss.store_no like CONCAT('%',#{storeQueryDto.storeNo},'%')\n" +
+			"\t</if>\n" +
+			"\t\t<if test = 'storeQueryDto.layer != null and storeQueryDto.layer != \"\"'>\n" +
+			"\tand ss.layer = #{storeQueryDto.layer}\n" +
+			"\t</if>\n" +
+			"\t\t<if test = 'storeQueryDto.x != null and storeQueryDto.x != \"\"'>\n" +
+			"\tand ss.x = #{storeQueryDto.x}\n" +
+			"\t</if>\n" +
+			"\t\t<if test = 'storeQueryDto.y != null and storeQueryDto.y != \"\"'>\n" +
+			"\tand ss.y =  #{storeQueryDto.y}\n" +
+			"\t</if>\n" +
+			"\t\t<if test = 'storeQueryDto.areaNo != null and storeQueryDto.areaNo != \"\"'>\n" +
+			"\tand ss.area_no like CONCAT('%',#{storeQueryDto.areaNo},'%')\n" +
+			"\t</if>\n" +
+			"\t\t\t<if test = 'storeQueryDto.isLock != null and storeQueryDto.isLock != \"\"'>\n" +
+			"\tand sg.is_lock =  #{storeQueryDto.isLock}\n" +
+			"\t</if>\n" +
+			"\t\t\t\t<if test = 'storeQueryDto.containerNo != null and storeQueryDto.containerNo != \"\"'>\n" +
+			"\tand cpt.container_no like concat('%',#{storeQueryDto.containerNo},'%')\n" +
+			"\t</if>" +
+			"</script>")
+	List<StoreInfoDto> getStoreInfo(@Param("storeQueryDto") StoreInfoQueryDto storeQueryDto, @Param("areaNo")String areaNo);
 }

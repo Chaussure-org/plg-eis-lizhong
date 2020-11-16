@@ -4,6 +4,7 @@ import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.bz.OrderDetailLabelDTO;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
+import com.prolog.eis.dto.page.OrderDetailInfoDto;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -137,4 +138,25 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "od.plan_qty AS planQty,ob.branch_type as branchType \n" +
             "FROM order_bill ob LEFT JOIN order_detail od on ob.id=od.order_bill_id where \n")
     List<OutDetailDto> findTransfer();
+
+    /**
+     * 根据汇总id查明细
+     * @param orderId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tg.goods_name AS goodsName,\n" +
+            "\tg.owner_drawn_no AS ownerDrawnNo,\n" +
+            "\td.plan_qty AS planQty,\n" +
+            "\td.has_pick_qty AS hasPickQty,\n" +
+            "\td.complete_qty AS completeQty,\n" +
+            "\td.goods_order_no AS goodsOrderNo,\n" +
+            "\td.create_time AS createTime \n" +
+            "FROM\n" +
+            "\torder_detail d\n" +
+            "\tJOIN goods g ON g.id = d.goods_id \n" +
+            "WHERE\n" +
+            "\td.order_bill_id = #{orderId}")
+    List<OrderDetailInfoDto> getOrderDetailById(@Param("orderId") int orderId);
+
 }

@@ -1,8 +1,11 @@
 package com.prolog.eis.order.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.page.OrderInfoDto;
+import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
@@ -10,6 +13,8 @@ import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.service.IOrderBillHistoryService;
 import com.prolog.eis.order.service.IOrderBillService;
+import com.prolog.framework.core.pojo.Page;
+import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -139,6 +144,14 @@ public class OrderBillServiceImpl implements IOrderBillService {
     @Override
     public List<OrderBill> findByMap(Map map) {
         return orderBillMapper.findByMap(map,OrderBill.class);
+    }
+
+    @Override
+    public Page<OrderInfoDto> getOrderPage(OrderQueryDto orderQueryDto) {
+        PageHelper.startPage(orderQueryDto.getPageNum(),orderQueryDto.getPageSize());
+        List<OrderInfoDto> orderPage = orderBillMapper.getOrderPage(orderQueryDto);
+        Page<OrderInfoDto> page = PageUtils.getPage(orderPage);
+        return page;
     }
 
 }

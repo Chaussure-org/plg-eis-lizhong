@@ -3,9 +3,12 @@ package com.prolog.eis.order.service;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.page.OrderInfoDto;
+import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
+import com.prolog.framework.core.pojo.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -96,4 +99,11 @@ public interface IOrderBillService {
      * @return
      */
     List<OrderBill> findByMap(Map map);
+
+    /**
+     * 订单详情分页
+     * @param orderQueryDto
+     * @return
+     */
+    Page<OrderInfoDto> getOrderPage(OrderQueryDto orderQueryDto);
 }

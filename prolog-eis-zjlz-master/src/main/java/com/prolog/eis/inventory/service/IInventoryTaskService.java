@@ -1,6 +1,9 @@
 package com.prolog.eis.inventory.service;
 
+import com.prolog.eis.dto.page.InventoryInfoDto;
+import com.prolog.eis.dto.page.InventoryQueryDto;
 import com.prolog.eis.model.inventory.InventoryTask;
+import com.prolog.framework.core.pojo.Page;
 
 /**
  * @Author wangkang
@@ -14,4 +17,12 @@ public interface IInventoryTaskService {
      * @param inventoryTask
      */
     void saveInventoryTask(InventoryTask inventoryTask);
+
+    /**
+     * 分页查盘点计划
+     * @param inboundQueryDto
+     * @return
+     */
+    Page<InventoryInfoDto> getInventoryPage(InventoryQueryDto inboundQueryDto);
+
 }

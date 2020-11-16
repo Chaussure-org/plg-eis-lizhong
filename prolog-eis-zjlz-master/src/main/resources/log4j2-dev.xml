@@ -21,7 +21,7 @@
         <logger name="io.lettuce.core.protocol.RedisStateMachine" level="INFO"></logger>
         <logger name="io.lettuce.core.protocol.CommandHandler" level="INFO"></logger>
         <logger name="io.lettuce.core.protocol.DefaultEndpoint" level="INFO"></logger>
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="Console"/>
         </root>
     </loggers>

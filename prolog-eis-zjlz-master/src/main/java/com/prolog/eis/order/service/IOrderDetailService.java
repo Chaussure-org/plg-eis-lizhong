@@ -1,6 +1,7 @@
 package com.prolog.eis.order.service;
 
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
+import com.prolog.eis.dto.page.OrderDetailInfoDto;
 import com.prolog.eis.model.order.OrderDetail;
 import org.apache.ibatis.annotations.Param;
 
@@ -86,5 +87,10 @@ public interface IOrderDetailService {
      * @param orderDetailId
      */
     void detailToHistoryById(int orderDetailId);
-    
+    /**
+     * 根据汇总id查订单明细
+     * @param orderId
+     * @return
+     */
+    List<OrderDetailInfoDto> getOrderDetail(int orderId);
 }

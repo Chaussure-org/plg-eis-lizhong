@@ -1,6 +1,9 @@
 package com.prolog.eis.base.service;
 
+import com.prolog.eis.dto.page.GoodsInfoDto;
+import com.prolog.eis.dto.page.GoodsQueryPageDto;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.framework.core.pojo.Page;
 
 import java.util.List;
 
@@ -32,4 +35,11 @@ public interface IGoodsService {
      * @param updateGoods
      */
     void saveAndUpdateGoods(List<Goods> newGoods, List<Goods> updateGoods);
+
+    /**
+     * 分页查询商品
+     * @param queryPageDto
+     * @return
+     */
+    Page<GoodsInfoDto> getGoodsPage(GoodsQueryPageDto queryPageDto);
 }

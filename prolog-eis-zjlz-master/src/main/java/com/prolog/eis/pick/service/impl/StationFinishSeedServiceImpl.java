@@ -12,6 +12,7 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
  * @version 1.0
  * @date 2020/10/18 20:33
  */
+@Service
 public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
 
     @Autowired

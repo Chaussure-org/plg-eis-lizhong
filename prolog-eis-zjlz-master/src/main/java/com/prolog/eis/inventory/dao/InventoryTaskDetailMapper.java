@@ -3,6 +3,7 @@ package com.prolog.eis.inventory.dao;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
 import com.prolog.eis.dto.inventory.InventoryShowDto;
+import com.prolog.eis.dto.page.InventoryDetailInfoDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
@@ -30,7 +31,8 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\tg.goods_no AS goodsNo,\n" +
             "\tg.goods_name AS goodsName,\n" +
             "\tcs.qty AS originalCount,\n" +
-            "\tg.id as goodsId\n" +
+            "\tg.id as goodsId," +
+            "g.owner_drawn_no as \n" +
             "FROM\n" +
             "\tcontainer_store cs\n" +
             "\tJOIN container_path_task cpt ON cpt.container_no = cs.container_no\n" +
@@ -121,4 +123,31 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\tJOIN goods g ON g.id = cs.goods_id\n" +
             "\twhere cs.container_no = #{containerNo}")
     List<InventoryShowDto> findInventoryInfo(@Param("containerNo") String containerNo);
+
+    /**
+     * id查详情
+     * @param inventoryId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\td.container_no AS containerNo,\n" +
+            "\td.goods_no AS goodsNo,\n" +
+            "\td.goods_name AS goodsName,\n" +
+            "\td.original_count AS originalCount,\n" +
+            "\td.modify_count AS modifyCount,\n" +
+            "CASE\n" +
+            "\t\td.task_state \n" +
+            "\t\tWHEN 10 THEN\n" +
+            "\t\t'下发' \n" +
+            "\t\tWHEN 20 THEN\n" +
+            "\t\t'出库' \n" +
+            "\tEND AS taskState,\n" +
+            "\td.station_id AS stationId,\n" +
+            "\td.create_time AS createTime,\n" +
+            "\td.outbound_time AS outboundTime \n" +
+            "FROM\n" +
+            "\tinventory_task_detail d \n" +
+            "WHERE\n" +
+            "\td.inventory_task_id = #{inventoryId}")
+    List<InventoryDetailInfoDto> getInventoryDetail(@Param("inventoryId") int inventoryId);
 }
