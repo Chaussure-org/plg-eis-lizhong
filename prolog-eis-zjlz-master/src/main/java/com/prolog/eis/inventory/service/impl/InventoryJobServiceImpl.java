@@ -6,6 +6,7 @@ import com.prolog.eis.dto.inventory.RickerTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.engin.service.IInventoryTrayOutService;
+import com.prolog.eis.inventory.service.IInventoryHistoryService;
 import com.prolog.eis.inventory.service.IInventoryJobService;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
@@ -57,6 +58,8 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     private IPointLocationService pointLocationService;
     @Autowired
     private IWmsService wmsService;
+    @Autowired
+    private IInventoryHistoryService inventoryHistoryService;
 
     @Override
     public InventoryShowDto findInventoryDetail(String containerNo) throws Exception {
@@ -140,7 +143,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
             RickerInfoDto rickerInfoDto = computeAreaNo();
             pathSchedulingService.containerMoveTask(containerNo, rickerInfoDto.getAreaNo(), null);
         }
-        //todo：转历史
+        inventoryHistoryService.inventoryToHistory(containerNo);
     }
 
     @Override

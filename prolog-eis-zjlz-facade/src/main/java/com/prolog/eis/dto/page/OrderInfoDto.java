@@ -22,6 +22,12 @@ public class OrderInfoDto {
     @ApiModelProperty("订单类型 1、生产出库2、销售出库3、库内")
     private int orderType;
 
+    @ApiModelProperty("订单明细数")
+    private int orderCount;
+
+    @ApiModelProperty("已完成数量")
+    private int finishCount;
+    
     @ApiModelProperty("wms任务有限级别")
     private int wmsOrderPriority;
 
@@ -38,11 +44,7 @@ public class OrderInfoDto {
     @ApiModelProperty("移库出库区")
     private String branchType;
 
-    @ApiModelProperty("订单明细数")
-    private int orderCount;
 
-    @ApiModelProperty("已完成数量")
-    private int finishCount;
     @ApiModelProperty("拣选站台")
     private int stationId;
     @ApiModelProperty("拣选单id")

@@ -9,6 +9,7 @@ import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.core.pojo.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -44,7 +45,7 @@ public class PageController {
     }
     @RequestMapping("/station/findById")
     @ApiOperation(value = "根据站台id查看站台信息",notes = "根据站台id查看站台信息")
-    public RestMessage<StationInfoVo> updateStation(@RequestParam(defaultValue = "0")int stationId) throws Exception {
+    public RestMessage<StationInfoVo> updateStation(@RequestParam int stationId) throws Exception {
         try {
             StationInfoVo station = pageService.findStationById(stationId);
             return RestMessage.newInstance(true,"200","查询成功",station);
@@ -178,7 +179,7 @@ public class PageController {
 
 
     @RequestMapping("/inventory/detail")
-    @ApiOperation(value = "盘点计划分页查询",notes = "盘点计划分页查询")
+    @ApiOperation(value = "盘点明细查询",notes = "盘点明细查询")
     public RestMessage<List<InventoryDetailInfoDto>> inventoryDetailInfo(@RequestParam(defaultValue = "0") @Validated int id){
         try {
             List<InventoryDetailInfoDto> page = pageService.getInventoryDetail(id);
@@ -259,7 +260,7 @@ public class PageController {
 
     @RequestMapping("/agv/store/update")
     @ApiOperation(value = "agv区域货位锁定修改",notes = "agv区域货位锁定修改")
-    public RestMessage<String> updateAgvStoreLock(@RequestParam(defaultValue = "0")int agvStoreId,
+    public RestMessage<String> updateAgvStoreLock(@RequestParam(defaultValue = "0") int agvStoreId,
                                                                  @RequestParam(defaultValue = "-1")int storagelock){
         try {
             pageService.updateAgvStoreLock(agvStoreId,storagelock);

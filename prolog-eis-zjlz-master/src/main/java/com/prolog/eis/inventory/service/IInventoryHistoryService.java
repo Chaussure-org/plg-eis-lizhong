@@ -20,4 +20,11 @@ public interface IInventoryHistoryService {
      */
     Page<InventoryHistoryDto> getInventoryHistoryPage(InventoryHistoryQueryDto inventoryQueryDto);
 
+
+    /**
+     * 盘点转历史
+     * @param containerNo
+     */
+    void inventoryToHistory(String containerNo);
+
 }

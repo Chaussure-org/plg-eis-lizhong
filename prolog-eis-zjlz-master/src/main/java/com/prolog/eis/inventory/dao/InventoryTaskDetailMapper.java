@@ -54,7 +54,8 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "</if>" +
             "<if test = 'map.branchType == \"B\"'>" +
             " and cpt.target_area IN ( 'MCS01','MCS02','MCS03','MCS04','MCS05')" +
-            "</if>"+
+            "</if>" +
+            "and cs.container_no not in (select t.container_no from inventory_task_detail t)"+
             "</script>")
     List<InventoryGoodsDto> getInventoryGoods(@Param("map") Map<String,Object> map);
 
