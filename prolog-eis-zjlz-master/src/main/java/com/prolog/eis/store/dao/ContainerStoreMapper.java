@@ -1,18 +1,15 @@
 package com.prolog.eis.store.dao;
 
-import com.prolog.eis.dto.lzenginee.LayerContainerTaskDto;
 import com.prolog.eis.dto.lzenginee.LayerGoodsCountDto;
-import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.store.AgvContainerStoreDto;
 import com.prolog.eis.dto.store.ContainerInfoDto;
-import com.prolog.eis.dto.store.ContainerQueryDto;
+import com.prolog.eis.dto.page.ContainerQueryDto;
 import com.prolog.eis.dto.store.ContainerStoreInfoDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.util.mapper.EisBaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -125,24 +122,25 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
             "\tcontainer_store cs\n" +
             "\tJOIN goods g ON g.id = cs.goods_id\n" +
             "\twhere 1 = 1\n" +
-//            "<if test = 'containerDto.containerNo != null and containerDto.containerNo != \"\"'>\n" +
-//            "\t\tand cs.container_no like '%${containerDto.containerNo}%'\n" +
-//            "</if>\n" +
-//            "<if test = 'containerDto.goodsName != null and containerDto.goodsName != \"\"'>\n" +
-//            "\t\tand cs.container_no like '%${containerDto.goodsName}%'\n" +
-//            "</if>\n" +
-//            "<if test = 'containerDto.ownerDrawnNo != null and containerDto.ownerDrawnNo != \"\"'>\n" +
-//            "\t\tand cs.container_no like '%${containerDto.ownerDrawnNo}%'\n" +
-//            "</if>\n" +
-//            "<if test = 'containerDto.lotId != null and containerDto.lotId != \"\"'>\n" +
-//            "\t\tand cs.container_no like '%${containerDto.lotId}%'\n" +
-//            "</if>\n" +
-//            "<if test = 'containerDto.startTime != null '>\n" +
-//            "\t\tand cs.container_no >= #{containerDto.startTime}\n" +
-//            "</if>\n" +
+            "<if test = 'containerDto.containerNo != null and containerDto.containerNo != \"\"'>\n" +
+            "\t\tand cs.container_no like '%${containerDto.containerNo}%'\n" +
+            "</if>\n" +
+            "<if test = 'containerDto.goodsName != null and containerDto.goodsName != \"\"'>\n" +
+            "\t\tand g.goodsName like '%${containerDto.goodsName}%'\n" +
+            "</if>\n" +
+            "<if test = 'containerDto.ownerDrawnNo != null and containerDto.ownerDrawnNo != \"\"'>\n" +
+            "\t\tand g.owner_drawn_no like '%${containerDto.ownerDrawnNo}%'\n" +
+            "</if>\n" +
+            "<if test = 'containerDto.lotId != null and containerDto.lotId != \"\"'>\n" +
+            "\t\tand cs.lot_id like '%${containerDto.lotId}%'\n" +
+            "</if>\n" +
+            "<if test = 'containerDto.startTime != null '>\n" +
+            "\t\tand cs.create_time >= #{containerDto.startTime}\n" +
+            "</if>\n" +
             "<if test = 'containerDto.endTime != null '>\n" +
-            "\t\tand cs.container_no <= #{containerDto.endTime}\n" +
+            "\t\tand cs.create_time &lt;= #{containerDto.endTime}\n" +
             "</if>" +
+            "order by cs.container_no asc " +
             "</script>")
     List<ContainerInfoDto> queryContainer(@Param("containerDto") ContainerQueryDto containerDto);
 }

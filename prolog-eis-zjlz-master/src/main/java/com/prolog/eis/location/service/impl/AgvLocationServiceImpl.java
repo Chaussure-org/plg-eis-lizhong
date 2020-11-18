@@ -3,6 +3,9 @@ package com.prolog.eis.location.service.impl;
 import com.google.common.collect.Lists;
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
+import com.prolog.eis.dto.page.AgvStoreInfoDto;
+import com.prolog.eis.dto.page.AgvStoreQueryDto;
+import com.prolog.eis.dto.page.StoreInfoDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
@@ -13,6 +16,8 @@ import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.framework.core.pojo.Page;
+import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +155,28 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 	@Override
 	public int findContainerArrive(String containerNo, int stationId) {
 		return agvStoragelocationMapper.findContainerArrive(containerNo,stationId);
+	}
+
+	@Override
+	public Page<AgvStoreInfoDto> getAgvStorePage(AgvStoreQueryDto agvQueryDto) {
+		PageUtils.startPage(agvQueryDto.getPageNum(),agvQueryDto.getPageSize());
+
+		List<AgvStoreInfoDto> list = agvStoragelocationMapper.getAgvStoreInfo(agvQueryDto);
+		Page<AgvStoreInfoDto> page = PageUtils.getPage(list);
+		return page;
+	}
+
+	@Override
+	public void updateStoreLock(int agvStoreId, int storagelock) throws Exception {
+		if (storagelock != AgvStoragelocation.TASK_LOCK || storagelock == AgvStoragelocation.TASK_EMPTY){
+			throw new Exception("锁参数异常，请检查参数");
+		}
+		AgvStoragelocation agvStoragelocation = agvStoragelocationMapper.findById(agvStoreId, AgvStoragelocation.class);
+		if (agvStoragelocation == null){
+			throw new Exception("【"+agvStoreId+"】货位不存在，无法修改");
+		}
+		agvStoragelocation.setStorageLock(storagelock);
+		agvStoragelocationMapper.update(agvStoragelocation);
 	}
 
 

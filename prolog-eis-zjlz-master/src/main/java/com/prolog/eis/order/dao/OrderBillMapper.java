@@ -3,6 +3,8 @@ package com.prolog.eis.order.dao;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.page.OrderInfoDto;
+import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetailCountsDto;
@@ -125,4 +127,47 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
 
     @Update("update order_bill o set o.order_task_state=#{status} where find_in_set(o.id,#{ids})")
     void updateOrderStatus(@Param("status")int status,@Param("ids")String ids);
+
+    /**
+     * 订单详情展示
+     * @param orderQueryDto
+     * @return
+     */
+    @Select("<script>" +
+            "SELECT\n" +
+            "\ts.id AS orderId,\n" +
+            "\ts.order_no AS orderNo,\n" +
+            "\ts.order_type AS orderType,\n" +
+            "\ts.wms_order_priority AS wmsOrderPriority,\n" +
+            "\ts.order_task_state AS orderTaskState,\n" +
+            "\ts.bill_date AS billDate,\n" +
+            "\ts.branch_type AS branchType,\n" +
+            "\ts.out_time AS outTime,\n" +
+            "\tp.station_id as stationId,\n" +
+            "\ts.picking_order_id as pickingOrderId," +
+            "\t( SELECT count( * ) FROM order_detail d WHERE d.order_bill_id = s.id ) AS orderCount,\n" +
+            "\t( SELECT count( * ) FROM order_detail d WHERE d.order_bill_id = s.id AND d.plan_qty = d.has_pick_qty ) AS finishCount \n" +
+            "FROM\n" +
+            "\torder_bill s " +
+            "LEFT JOIN picking_order p ON p.id = s.picking_order_id\n" +
+            "where 1 =1\n" +
+            "\n" +
+            "<if test = 'orderQueryDto.orderNo != null and orderQueryDto.orderNo != \"\"'>\n" +
+            "\tand s.order_no like concat('%',#{orderQueryDto.orderNo},'%')\n" +
+            "</if>\n" +
+            "<if test = 'orderQueryDto.orderType != null '>\n" +
+            "\tand s.order_type = #{orderQueryDto.orderType}\n" +
+            "</if>\n" +
+            "<if test = 'orderQueryDto.orderTaskState != null '>\n" +
+            "\tand s.order_task_state = #{orderQueryDto.orderTaskState}\n" +
+            "</if>\n" +
+            "<if test = 'orderQueryDto.startTime != null '>\n" +
+            "    and s.create_time >= #{orderQueryDto.startTime}\n" +
+            "</if>\n" +
+            "<if test = 'orderQueryDto.endTime != null '>\n" +
+            "  and s.create_time &lt;= #{orderQueryDto.endTime}\n" +
+            "</if>\n" +
+            "order by s.picking_order_id desc, s.out_time asc " +
+            "</script>")
+    List<OrderInfoDto> getOrderPage(@Param("orderQueryDto") OrderQueryDto orderQueryDto);
 }

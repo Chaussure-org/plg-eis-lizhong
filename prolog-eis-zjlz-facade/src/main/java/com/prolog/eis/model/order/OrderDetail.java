@@ -65,7 +65,7 @@ public class OrderDetail {
 
 
     @Column("area_no")
-    @ApiModelProperty("已完成数量")
+    @ApiModelProperty("区域")
     private String areaNo;
 
     @Column("create_time")

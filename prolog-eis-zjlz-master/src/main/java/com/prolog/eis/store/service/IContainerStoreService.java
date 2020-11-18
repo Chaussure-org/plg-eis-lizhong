@@ -1,7 +1,7 @@
 package com.prolog.eis.store.service;
 
 import com.prolog.eis.dto.store.ContainerInfoDto;
-import com.prolog.eis.dto.store.ContainerQueryDto;
+import com.prolog.eis.dto.page.ContainerQueryDto;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.framework.core.pojo.Page;

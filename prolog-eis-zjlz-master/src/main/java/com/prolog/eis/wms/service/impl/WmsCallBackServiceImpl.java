@@ -13,14 +13,18 @@ import com.prolog.eis.model.inventory.InventoryTask;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
+import com.prolog.eis.model.order.OrderFinish;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
+import com.prolog.eis.order.service.IOrderFinishService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.utils.MapUtils;
+import com.prolog.framework.utils.StringUtils;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +61,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     private ContainerStoreMapper containerStoreMapper;
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private IOrderFinishService orderFinishService;
 
     /**
      * 处理wms下发的入库任务
@@ -126,21 +132,37 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 orderBill.setTaskId(order.get(0).getTASKID());
                 orderBillService.saveOrderBill(orderBill);
                 List<OrderDetail> orderDetails = new ArrayList<>();
+                List<OrderFinish> orderFinishes = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
+                    if (StringUtils.isBlank(wmsOutboundTaskDto.getEXSATTR1())){
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setOrderBillId(orderBill.getId());
+                        orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
+                        orderDetail.setGoodsOrderNo(wmsOutboundTaskDto.getSEQNO());
+                        orderDetail.setPlanQty(wmsOutboundTaskDto.getQTY().intValue());
+                        orderDetail.setCompleteQty(0);
+                        orderDetail.setOutQty(0);
+                        orderDetail.setHasPickQty(0);
+                        orderDetail.setTrayPlanQty(0);
+                        orderDetail.setCreateTime(new Date());
+                        orderDetails.add(orderDetail);
+                    }else {
+                        OrderFinish orderFinish = new OrderFinish();
+                        orderFinish.setOrderBillId(orderBill.getId());
+                        orderFinish.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
+                        orderFinish.setGoodsName(wmsOutboundTaskDto.getEXSATTR9());
+                        orderFinish.setPlanQty(Integer.valueOf(wmsOutboundTaskDto.getEXSATTR6()));
+                        orderFinish.setProductType(wmsOutboundTaskDto.getEXSATTR2());
+                        orderFinish.setClientMark(wmsOutboundTaskDto.getEXSATTR3());
+                        orderFinish.setClientName(wmsOutboundTaskDto.getEXSATTR5());
+                        orderFinish.setOrderDelivery(wmsOutboundTaskDto.getEXSATTR7());
+                        orderFinish.setClientContract(wmsOutboundTaskDto.getEXSATTR8());
+                        orderFinishes.add(orderFinish);
+                    }
 
-                    OrderDetail orderDetail = new OrderDetail();
-                    orderDetail.setOrderBillId(orderBill.getId());
-                    orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
-                    orderDetail.setGoodsOrderNo(wmsOutboundTaskDto.getSEQNO());
-                    orderDetail.setPlanQty(wmsOutboundTaskDto.getQTY().intValue());
-                    orderDetail.setCompleteQty(0);
-                    orderDetail.setOutQty(0);
-                    orderDetail.setHasPickQty(0);
-                    orderDetail.setTrayPlanQty(0);
-                    orderDetail.setCreateTime(new Date());
-                    orderDetails.add(orderDetail);
                 }
                 orderDetailService.saveOrderDetailList(orderDetails);
+                orderFinishService.saveFinishList(orderFinishes);
             }
         }
     }
@@ -208,6 +230,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             inventoryTask.setCreateTime(new Date());
             inventoryTask.setIssueTime(inventoryTask.getCreateTime());
             inventoryTask.setTaskId(wmsInventoryTask.getTASKID());
+            inventoryTask.setBranchType(wmsInventoryTask.getBRANCHTYPE());
             inventoryTaskService.saveInventoryTask(inventoryTask);
             List<InventoryTaskDetail> inventoryDeatils = new ArrayList<>();
             for (InventoryGoodsDto inventoryGoodsDto : detailsByMap) {
@@ -216,7 +239,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 inventoryTaskDetail.setContainerNo(inventoryGoodsDto.getContainerNo());
                 inventoryTaskDetail.setCreateTime(new Date());
                 inventoryTaskDetail.setGoodsName(inventoryGoodsDto.getGoodsName());
-                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getGoodsNo());
+                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getOwnerDrawnNo());
                 inventoryTaskDetail.setOriginalCount(inventoryGoodsDto.getOriginalCount());
                 inventoryTaskDetail.setModifyCount(0);
                 inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_ISSUE);

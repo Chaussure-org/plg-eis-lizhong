@@ -19,5 +19,10 @@ public interface IWcsCallbackService {
     RestMessage<String> executeBcrCallback(BCRDataDTO bcrDataDTO) throws Exception;
 
 
-
+    /**
+     * 拆盘机入口回告
+     * @param openDiskDto
+     * @return
+     */
+    RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto);
 }

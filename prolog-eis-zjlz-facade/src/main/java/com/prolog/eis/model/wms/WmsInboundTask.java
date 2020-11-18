@@ -35,7 +35,7 @@ public class WmsInboundTask {
   private String branchType;
 
   @Column("bill_type")
-  @ApiModelProperty("任务类型")
+  @ApiModelProperty("任务类型(任务类型1 入库上架，2 移库上架，3 空托盘上架)")
   private Integer billType;
 
   @Column("line_id")

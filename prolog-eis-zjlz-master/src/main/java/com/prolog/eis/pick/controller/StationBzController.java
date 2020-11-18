@@ -25,10 +25,11 @@ public class StationBzController {
     private IStationBZService stationBZService;
     @ApiOperation(value = "拣选页面推送", notes = "拣选页面推送")
     @RequestMapping(value = "/init")
-    public RestMessage<BCPPcikingDTO> beginPicking(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo) throws Exception {
+    public RestMessage<BCPPcikingDTO> beginPicking(@RequestParam int stationId,@RequestParam String containerNo,
+                                                   @RequestParam String locationNo,@RequestParam String orderBoxNo) throws Exception {
         BCPPcikingDTO bcpPcikingDTO = null;
         try {
-            bcpPcikingDTO = stationBZService.startBZPicking(stationId, containerNo, orderBoxNo);
+            bcpPcikingDTO = stationBZService.startBZPicking(stationId, containerNo, orderBoxNo,locationNo);
             return RestMessage.newInstance(true,"200","查询成功",bcpPcikingDTO);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","查询失败:"+e.getMessage(),null);
@@ -38,7 +39,7 @@ public class StationBzController {
 
     @ApiOperation(value = "拣选确认", notes = "拣选确认")
     @RequestMapping("/confirm")
-    public RestMessage<String> pickConfirm(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam(defaultValue = "-1") int completeNum) throws Exception {
+    public RestMessage<String> pickConfirm(@RequestParam int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam(defaultValue = "-1") int completeNum) throws Exception {
         try {
             stationBZService.pickingConfirm(stationId, containerNo, orderBoxNo,completeNum);
             return RestMessage.newInstance(true,"200","操作成功",null);
@@ -78,7 +79,7 @@ public class StationBzController {
 
     @ApiModelProperty(value = "更换订单框",notes = "更换订单框")
     @RequestMapping("/change")
-    public RestMessage changeOrderTray(@RequestParam(defaultValue = "0") int stationId,@RequestParam String orderBoxNo){
+    public RestMessage changeOrderTray(@RequestParam int stationId,@RequestParam String orderBoxNo){
         try {
             stationBZService.changeOrderTray(orderBoxNo,stationId);
             return RestMessage.newInstance(true,"200","换拖成功",null);

@@ -76,7 +76,7 @@ public class Goods {
   private Double weightFaultTolerance;
 
   @Column("last_container_rate")
-  @ApiModelProperty("重量容错率")
+  @ApiModelProperty("尾拖比率")
   private Double lastContainerRate;
 
   public Double getLastContainerRate() {

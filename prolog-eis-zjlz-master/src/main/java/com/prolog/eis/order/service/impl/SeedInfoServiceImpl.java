@@ -1,8 +1,13 @@
 package com.prolog.eis.order.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.prolog.eis.dto.page.PickingPrintDto;
+import com.prolog.eis.dto.page.PickingPrintQueryDto;
 import com.prolog.eis.model.order.SeedInfo;
 import com.prolog.eis.order.dao.SeedInfoMapper;
 import com.prolog.eis.order.service.ISeedInfoService;
+import com.prolog.framework.core.pojo.Page;
+import com.prolog.framework.dao.util.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +46,14 @@ public class SeedInfoServiceImpl implements ISeedInfoService {
     @Override
     public List<SeedInfo> findSeedInfoByMap(Map map) {
         return seedInfoMapper.findByMap(map,SeedInfo.class);
+    }
+
+    @Override
+    public Page<PickingPrintDto> getPrintPage(PickingPrintQueryDto printQueryDto) {
+        PageHelper.startPage(printQueryDto.getPageNum(),printQueryDto.getPageSize());
+        List<PickingPrintDto> seedInfo = seedInfoMapper.getSeedInfo(printQueryDto);
+        Page<PickingPrintDto> page = PageUtils.getPage(seedInfo);
+
+        return page;
     }
 }

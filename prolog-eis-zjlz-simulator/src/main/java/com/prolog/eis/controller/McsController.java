@@ -52,7 +52,7 @@ public class McsController {
         List<McsCarInfoDto> list = new ArrayList<>();
         for (int i = 1;i<6; i++){
             McsCarInfoDto mcsCarInfoDto = new McsCarInfoDto();
-            mcsCarInfoDto.setHoist(String.valueOf(i));
+            mcsCarInfoDto.setRgvId(String.valueOf(i));
             mcsCarInfoDto.setStatus(1);
             mcsCarInfoDto.setCode(0);
             list.add(mcsCarInfoDto);

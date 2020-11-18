@@ -1,6 +1,8 @@
 package com.prolog.eis.location.dao;
 
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
+import com.prolog.eis.dto.page.AgvStoreInfoDto;
+import com.prolog.eis.dto.page.AgvStoreQueryDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
@@ -102,4 +104,56 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
     List<ContainerPathTask>findEmptyAgvContainer();
 
 
+    /**
+     * 多条件查agv货位信息
+     * @param agvQueryDto
+     * @return
+     */
+    @Select("<script>" +
+            "SELECT\n" +
+            "a.id as agvStoreId," +
+            "\ta.area_no AS areaNo,\n" +
+            "\ta.location_no AS locationNo,\n" +
+            "\ta.ceng AS layer,\n" +
+            "\ta.x AS x,\n" +
+            "\ta.y AS y,\n" +
+            "\tcpt.container_no AS containerNo,\n" +
+            "\ta.task_lock AS taskLock,\n" +
+            "\ta.storage_lock AS storagelock,\n" +
+            "\ta.device_no AS deviceNo,\n" +
+            "\ta.location_type as locationType\n" +
+            "\tFROM\n" +
+            "\t\tagv_storagelocation a\n" +
+            "\t\tLEFT JOIN container_path_task cpt ON cpt.source_location = a.location_no\n" +
+            "\t<where>\n" +
+            "\t<if test = 'agvQueryDto.areaNo != null and agvQueryDto.areaNo != \"\"'>\n" +
+            "\t and a.area_no like CONCAT('%',#{agvQueryDto.areaNo},'%')\n" +
+            "\t</if>\n" +
+            "\t\t<if test = 'agvQueryDto.locationNo != null and agvQueryDto.locationNo != \"\"'>\n" +
+            "\t and a.location_no like CONCAT('%',#{agvQueryDto.locationNo},'%')\n" +
+            "\t</if>\n" +
+            "\t\t\t<if test = 'agvQueryDto.containerNo != null and agvQueryDto.containerNo != \"\"'>\n" +
+            "\t and cpt.container_no like CONCAT('%',#{agvQueryDto.containerNo},'%')\n" +
+            "\t</if>\n" +
+            "\t\t\t\t<if test = 'agvQueryDto.x != null and agvQueryDto.x != \"\"'>\n" +
+            "\t and a.x = #{agvQueryDto.x}\n" +
+            "\t</if>\n" +
+            "\t\t\t\t\t<if test = 'agvQueryDto.y != null and agvQueryDto.y != \"\"'>\n" +
+            "\t and a.x = #{agvQueryDto.y}\n" +
+            "\t</if>\n" +
+            "\t\t\t\t\t\t<if test = 'agvQueryDto.locationType != null and agvQueryDto.locationType != \"\"'>\n" +
+            "\t and a.location_type = #{agvQueryDto.locationType}\n" +
+            "\t</if>\n" +
+            "\t\t\t\t\t\t\t<if test = 'agvQueryDto.taskLock != null and agvQueryDto.taskLock != \"\"'>\n" +
+            "\t and a.task_lock = #{agvQueryDto.taskLock}\n" +
+            "\t</if>\n" +
+            "\t\t\t\t\t\t\t\t<if test = 'agvQueryDto.storagelock != null and agvQueryDto.storagelock != \"\"'>\n" +
+            "\t and a.storage_lock = #{agvQueryDto.storagelock}\n" +
+            "\t</if>\n" +
+            "\t\n" +
+            "</where>\t\n" +
+            "\tORDER BY\n" +
+            "\t\tcpt.container_no DESC" +
+            "</script>")
+    List<AgvStoreInfoDto> getAgvStoreInfo(@Param("agvQueryDto") AgvStoreQueryDto agvQueryDto);
 }

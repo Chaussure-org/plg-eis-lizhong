@@ -3,6 +3,8 @@ package com.prolog.eis.wms.service;
 import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
+import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
+import com.prolog.eis.util.EisRestMessage;
 import com.prolog.framework.common.message.RestMessage;
 
 import java.util.Date;
@@ -20,7 +22,7 @@ public interface IWmsService {
      * @return
      * @throws Exception
      */
-    RestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception;
+    EisRestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception;
 
     /**
      * 拣货完成回告wms
@@ -28,7 +30,7 @@ public interface IWmsService {
      * @return
      * @throws Exception
      */
-    RestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception;
+    EisRestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception;
 
     /**
      * 盘点完成回告wms
@@ -36,5 +38,13 @@ public interface IWmsService {
      * @return
      * @throws Exception
      */
-    RestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception;
+    EisRestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception;
+
+
+    /**
+     * 拣货开始回告wms
+     * @param startOrderCallBackDto
+     * @return
+     */
+    EisRestMessage<String>  startOrderCallBack(WmsStartOrderCallBackDto startOrderCallBackDto) throws Exception;
 }

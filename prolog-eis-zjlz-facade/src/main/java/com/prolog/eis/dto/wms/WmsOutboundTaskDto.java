@@ -78,20 +78,32 @@ public class WmsOutboundTaskDto {
     @JsonProperty(value = "LOTNO")
     private String LOTNO;
 
-    @ApiModelProperty("拓展字段1")
+    @ApiModelProperty("拓展字段1  是否成品")
     private String EXSATTR1;
 
-    @ApiModelProperty("拓展字段2")
+    @ApiModelProperty("拓展字段2  成品用-产品类别")
     private String EXSATTR2;
 
-    @ApiModelProperty("拓展字段3")
+    @ApiModelProperty("拓展字段3 成品用-客户号")
     private String EXSATTR3;
 
-    @ApiModelProperty("拓展字段4")
+    @ApiModelProperty("拓展字段4 贴标区")
     private String EXSATTR4;
 
-    @ApiModelProperty("拓展字段5")
+    @ApiModelProperty("拓展字段5 成品用-客户名称")
     private String EXSATTR5;
+
+    @ApiModelProperty("拓展字段6 成品用-派工数量")
+    private String EXSATTR6;
+
+    @ApiModelProperty("拓展字段7 成品用-订单交期")
+    private Date EXSATTR7;
+
+    @ApiModelProperty("拓展字段8 成品用-客户合同号")
+    private String EXSATTR8;
+
+    @ApiModelProperty("拓展字段9 成品用-产品名称")
+    private String EXSATTR9;
 
     public String getTASKID() {
         return TASKID;
@@ -261,14 +273,46 @@ public class WmsOutboundTaskDto {
         this.EXSATTR5 = EXSATTR5;
     }
 
+    public String getEXSATTR6() {
+        return EXSATTR6;
+    }
+
+    public void setEXSATTR6(String EXSATTR6) {
+        this.EXSATTR6 = EXSATTR6;
+    }
+
+    public Date getEXSATTR7() {
+        return EXSATTR7;
+    }
+
+    public void setEXSATTR7(Date EXSATTR7) {
+        this.EXSATTR7 = EXSATTR7;
+    }
+
+    public String getEXSATTR8() {
+        return EXSATTR8;
+    }
+
+    public void setEXSATTR8(String EXSATTR8) {
+        this.EXSATTR8 = EXSATTR8;
+    }
+
+    public String getEXSATTR9() {
+        return EXSATTR9;
+    }
+
+    public void setEXSATTR9(String EXSATTR9) {
+        this.EXSATTR9 = EXSATTR9;
+    }
+
     @Override
     public String toString() {
-        return "WMSOutboundTaskDto{" +
+        return "WmsOutboundTaskDto{" +
                 "TASKID='" + TASKID + '\'' +
                 ", CONSIGNOR='" + CONSIGNOR + '\'' +
                 ", BRANCHCODE='" + BRANCHCODE + '\'' +
                 ", BILLNO='" + BILLNO + '\'' +
-                ", BILLTYPE='" + BILLTYPE + '\'' +
+                ", BILLTYPE=" + BILLTYPE +
                 ", CUSTPONO='" + CUSTPONO + '\'' +
                 ", BILLDATE=" + BILLDATE +
                 ", SEQNO='" + SEQNO + '\'' +
@@ -285,6 +329,10 @@ public class WmsOutboundTaskDto {
                 ", EXSATTR3='" + EXSATTR3 + '\'' +
                 ", EXSATTR4='" + EXSATTR4 + '\'' +
                 ", EXSATTR5='" + EXSATTR5 + '\'' +
+                ", EXSATTR6='" + EXSATTR6 + '\'' +
+                ", EXSATTR7=" + EXSATTR7 +
+                ", EXSATTR8='" + EXSATTR8 + '\'' +
+                ", EXSATTR9='" + EXSATTR9 + '\'' +
                 '}';
     }
 }

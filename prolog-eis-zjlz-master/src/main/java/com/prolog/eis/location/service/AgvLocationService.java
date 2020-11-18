@@ -2,8 +2,12 @@ package com.prolog.eis.location.service;
 
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
+import com.prolog.eis.dto.page.AgvStoreInfoDto;
+import com.prolog.eis.dto.page.AgvStoreQueryDto;
+import com.prolog.eis.dto.page.StoreInfoDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.model.location.AgvStoragelocation;
+import com.prolog.framework.core.pojo.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -63,4 +67,18 @@ public interface AgvLocationService {
 	 * @return
 	 */
 	int findContainerArrive(String containerNo,int stationId);
+
+	/**
+	 *
+	 * @param agvQueryDto
+	 * @return
+	 */
+    Page<AgvStoreInfoDto> getAgvStorePage(AgvStoreQueryDto agvQueryDto);
+
+	/**
+	 * 根据货位id修改锁
+	 * @param agvStoreId
+	 * @param storagelock
+	 */
+	void updateStoreLock(int agvStoreId, int storagelock) throws Exception;
 }

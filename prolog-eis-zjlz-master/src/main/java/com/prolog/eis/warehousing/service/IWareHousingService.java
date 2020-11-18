@@ -1,6 +1,9 @@
 package com.prolog.eis.warehousing.service;
 
+import com.prolog.eis.dto.page.InboundQueryDto;
+import com.prolog.eis.dto.page.WmsInboundInfoDto;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.framework.core.pojo.Page;
 
 import java.util.List;
 
@@ -20,4 +23,11 @@ public interface IWareHousingService {
     List<WmsInboundTask> getWareHousingByContainer(String containerNo);
 
     void deleteInboundTask(String containerNo) throws Exception;
+
+    /**
+     * 分页查入库任务
+     * @param inboundQueryDto
+     * @return
+     */
+    Page<WmsInboundInfoDto> getInboundPage(InboundQueryDto inboundQueryDto);
 }

@@ -1,6 +1,7 @@
 package com.prolog.eis.order.service.impl;
 
 import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
+import com.prolog.eis.dto.page.OrderDetailInfoDto;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
 import com.prolog.eis.model.order.OrderDetail;
@@ -158,5 +159,10 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
             }
         }
 
+    }
+
+    @Override
+    public List<OrderDetailInfoDto> getOrderDetail(int orderId) {
+        return orderDetailMapper.getOrderDetailById(orderId);
     }
 }

@@ -73,7 +73,7 @@ public class OrderBill {
     private Integer orderPriority;
 
     @Column("wms_order_priority")
-    @ApiModelProperty("订单优先级")
+    @ApiModelProperty("wms任务优先级")
     private Integer wmsOrderPriority;
 
 

@@ -23,7 +23,7 @@ public interface IMcsService {
     McsResultDto mcsContainerMove(McsMoveTaskDto mcsMoveTaskDto) throws Exception;
 
     /**
-     * 获取三个提升机的信息
+     * 获取堆垛机的信息
      * @return
      */
     List<McsCarInfoDto> getMcsCarInfo() throws Exception;

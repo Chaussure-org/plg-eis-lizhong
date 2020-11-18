@@ -34,6 +34,7 @@ import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -106,12 +107,15 @@ public class StationBZServiceImpl implements IStationBZService {
      * @param orderBoxNo  订单框编号
      */
     @Override
-    public BCPPcikingDTO startBZPicking(int stationId, String containerNo, String orderBoxNo) throws Exception {
+    public BCPPcikingDTO startBZPicking(int stationId, String containerNo, String orderBoxNo,String locationNo) throws Exception {
         if (StringUtils.isBlank(containerNo)) {
             throw new RuntimeException("容器编号不能为空");
         }
         if (StringUtils.isBlank(orderBoxNo)) {
             throw new RuntimeException("订单拖编号不能为空");
+        }
+        if (StringUtils.isBlank(locationNo)){
+            throw new Exception("接驳点位不能为空");
         }
 
         Station station = stationService.findById(stationId);
@@ -142,9 +146,9 @@ public class StationBZServiceImpl implements IStationBZService {
 
         ContainerBindingDetail bindingDetail = containerBinDings.get(0);
         //判断当前订单托是否是第一次播种，是则请求wms获取订单拖重量并保存
-        //todo:请求wms获取重量
-        BigDecimal trayWeigh = new BigDecimal(0);
-        saveTrayWeigh(bindingDetail.getOrderBillId(), orderBoxNo, trayWeigh);
+
+
+        saveTrayWeigh(bindingDetail.getOrderBillId(), orderBoxNo,locationNo);
 
         BCPPcikingDTO picking = new BCPPcikingDTO();
         picking.setOrderBillId(bindingDetail.getOrderBillId());
@@ -608,11 +612,15 @@ public class StationBZServiceImpl implements IStationBZService {
     }
 
     @Override
-    public void saveTrayWeigh(int orderBillId, String orderTrayNo, BigDecimal trayWeigh) throws Exception {
+    public void saveTrayWeigh(int orderBillId, String orderTrayNo,String locationNo) throws Exception {
         List<SeedInfo> seedInfos = seedInfoService.findSeedInfoByMap(MapUtils.put("orderBillId", orderBillId).put("orderTrayNo", orderTrayNo).getMap());
         if (seedInfos.size() > 0) {
             return;
         } else {
+            //todo:请求wms获取重量
+            BigDecimal trayWeigh = new BigDecimal(0);
+            //修改订单框接驳点位订单拖编号
+            this.changeOrderTrayNo(orderTrayNo,locationNo);
             List<OrderBox> orderBoxNos = orderBoxService.findByMap(MapUtils.put("orderBoxNo", orderTrayNo).getMap());
             if (orderBoxNos.size() == 1) {
                 OrderBox orderBox = orderBoxNos.get(0);
@@ -661,5 +669,17 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //物料容器放行
         this.containerNoLeave(containerNo, stationId);
+    }
+
+    private void changeOrderTrayNo(String orderTrayNo,String locationNo) throws Exception {
+        List<ContainerPathTask> containerPathTaskList = containerPathTaskService.findByMap(MapUtils.put("targetLocation", locationNo).
+                put("taskState",ContainerPathTask.TASK_STATE_NOT).getMap());
+        if (containerPathTaskList.size() == 0){
+            throw new Exception("接驳点【"+locationNo+"】容器未到位");
+
+        }
+        containerPathTaskList.get(0).setContainerNo(orderTrayNo);
+        containerPathTaskService.updateTask(containerPathTaskList.get(0));
+
     }
 }

@@ -1,6 +1,9 @@
 package com.prolog.eis.order.service;
 
+import com.prolog.eis.dto.page.PickingPrintDto;
+import com.prolog.eis.dto.page.PickingPrintQueryDto;
 import com.prolog.eis.model.order.SeedInfo;
+import com.prolog.framework.core.pojo.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +42,14 @@ public interface ISeedInfoService {
     List<SeedInfo> findSeedInfoByMap(Map map);
 
 
-    
+    /**
+     * 分页查播种信息
+     *
+     */
+    Page<PickingPrintDto> getPrintPage(PickingPrintQueryDto printQueryDto);
+
+
+
 
 
 }
