@@ -118,7 +118,8 @@ public class LocationServiceImpl implements LocationService {
             } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
                 //RCS TO RCS
                 pathExecutionService.doRcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+            }
+            else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
                 //SAS TO WCS
                 pathExecutionService.doSasToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {

@@ -1,5 +1,6 @@
 package com.prolog.eis.inventory.dao;
 
+import com.prolog.eis.aspect.EisSqlFactory;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
 import com.prolog.eis.dto.inventory.InventoryShowDto;
@@ -8,6 +9,7 @@ import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
 
     /**
      * 查询可盘点容器
+     *
      * @param map
      * @return
      */
@@ -52,13 +55,14 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "</if>" +
             "<if test = 'map.branchType == \"B\"'>" +
             " and cpt.target_area IN ( 'MCS01','MCS02','MCS03','MCS04','MCS05')" +
-            "</if>"+
+            "</if>" +
             "</script>")
-    List<InventoryGoodsDto> getInventoryGoods(@Param("map") Map<String,Object> map);
+    List<InventoryGoodsDto> getInventoryGoods(@Param("map") Map<String, Object> map);
 
 
     /**
      * 根据区域获取盘点库存
+     *
      * @param area
      * @return
      */
@@ -82,6 +86,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
 
     /**
      * 盘点回告wms
+     *
      * @param id
      * @return
      */
@@ -105,6 +110,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
 
     /**
      * 查看盘点容器信息
+     *
      * @param containerNo
      * @return
      */
