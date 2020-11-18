@@ -20,7 +20,7 @@ public interface IStationBZService {
      * @param containerNo 容器编号
      * @param orderBoxNo 订单框编号
      */
-    BCPPcikingDTO startBZPicking(int stationId, String containerNo, String orderBoxNo) throws Exception;
+    BCPPcikingDTO startBZPicking(int stationId, String containerNo, String orderBoxNo,String locationNo) throws Exception;
 
     /**
      * 拣选确认
@@ -137,7 +137,7 @@ public interface IStationBZService {
      * @param orderBillId
      * @param orderTrayNo
      */
-    void saveTrayWeigh(int orderBillId, String orderTrayNo, BigDecimal trayWeigh) throws Exception;
+    void saveTrayWeigh(int orderBillId, String orderTrayNo,String locationNo) throws Exception;
 
 
     /**

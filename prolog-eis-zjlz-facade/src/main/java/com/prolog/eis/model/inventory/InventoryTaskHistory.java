@@ -69,6 +69,18 @@ public class InventoryTaskHistory {
   @ApiModelProperty("wms任务id")
   private String taskId;
 
+  @Column("branch_type")
+  @ApiModelProperty("库区")
+  private String branchType;
+
+
+  public String getBranchType() {
+    return branchType;
+  }
+
+  public void setBranchType(String branchType) {
+    this.branchType = branchType;
+  }
   public Integer getId() {
     return id;
   }

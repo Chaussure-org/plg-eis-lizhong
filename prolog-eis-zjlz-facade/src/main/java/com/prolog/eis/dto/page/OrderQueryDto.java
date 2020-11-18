@@ -16,11 +16,11 @@ public class OrderQueryDto {
     @ApiModelProperty("订单编号")
     private String orderNo;
 
-    @ApiModelProperty("订单类型 1、生产出库2、销售出库3、库内")
-    private int orderType;
+    @ApiModelProperty("订单类型 1、生产出库2、销售出库3、移库")
+    private Integer orderType;
 
     @ApiModelProperty("订单任务进度（0创建 10 开始出库 2出库中 30出库完成）")
-    private int orderTaskState;
+    private Integer orderTaskState;
 
     @ApiModelProperty("出库时间   结束时间")
     private Date endTime;

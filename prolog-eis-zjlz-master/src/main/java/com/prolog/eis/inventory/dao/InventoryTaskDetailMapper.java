@@ -89,21 +89,19 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
      * @return
      */
     @Select("SELECT\n" +
-            "\th.task_id AS TASKID,\n" +
-            "\th.bill_no AS BILLNO,\n" +
-            "\tH.bill_date AS BILLDATE,\n" +
-            "\th.seq_no AS SEQNO,\n" +
-            "\th.goods_type AS ITEMTYPE,\n" +
-            "\th.goods_id AS ITEMID,\n" +
-            "\tm.container_no AS CONTAINERNO,\n" +
-            "\tg.lot_id as LOTID,\n" +
-            "\tg.id as ITEMID\n" +
-            "FROM\n" +
-            "\tinventory_task h\n" +
-            "\tJOIN inventory_task_detail m ON m.inventory_task_id = h.id \n" +
-            "\tjoin goods g on g.goods_no = m.goods_no" +
-            "WHERE\n" +
-            "\tm.id = #{id}")
+            "            h.task_id AS TASKID,\n" +
+            "            h.bill_no AS BILLNO,\n" +
+            "            H.bill_date AS BILLDATE,\n" +
+            "            h.seq_no AS SEQNO,\n" +
+            "            h.goods_type AS ITEMTYPE,\n" +
+            "            h.goods_id AS ITEMID,\n" +
+            "            h.goods_id as ITEMID,\n" +
+            "\t\t\t\t\t\t(SELECT sum(d.original_count - d.modify_count) from inventory_task_detail d where d.inventory_task_id = h.id) as AFFQTY," +
+            "h.branch_type as BRANCHAREA\n" +
+            "            FROM\n" +
+            "            inventory_task h\n" +
+            "            WHERE\n" +
+            "            h.id = #{id}")
     List<WmsInventoryCallBackDto> findWmsInventory(@Param("id") int id);
 
     /**

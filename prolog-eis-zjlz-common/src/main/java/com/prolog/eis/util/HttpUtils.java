@@ -25,12 +25,12 @@ public class HttpUtils {
 		this.restTemplate = restTemplate;
 	}
 
-	public <T> RestMessage<T> post(String url, Map<String,Object> params, TypeReference<RestMessage<T>> typeReference) throws IOException {
+	public <T> EisRestMessage<T> postWms(String url, Map<String,Object> params, TypeReference<EisRestMessage<T>> typeReference) throws IOException {
 		HttpEntity<Map<String, Object>> entity = this.parseParams(params);
 		System.out.println(entity.toString());
 		String data = this.restTemplate.postForObject(url,entity,String.class);
 		logger.info("EIS <- WCS Resutl: {}",data);
-		RestMessage<T> result = RestMessage.parseJsonString(data,typeReference);
+		EisRestMessage<T> result = EisRestMessage.parseJsonString(data,typeReference);
 		return result;
 	}
 
@@ -46,5 +46,14 @@ public class HttpUtils {
 		}
 		HttpEntity<Map<String, Object>> entity =new HttpEntity<Map<String, Object>>(requestEntity, headers);
 		return entity;
+	}
+
+	public <T> RestMessage<T> post(String url, Map<String,Object> params, TypeReference<RestMessage<T>> typeReference) throws IOException {
+		HttpEntity<Map<String, Object>> entity = this.parseParams(params);
+		System.out.println(entity.toString());
+		String data = this.restTemplate.postForObject(url,entity,String.class);
+		logger.info("EIS <- WCS Resutl: {}",data);
+		RestMessage<T> result = RestMessage.parseJsonString(data,typeReference);
+		return result;
 	}
 }

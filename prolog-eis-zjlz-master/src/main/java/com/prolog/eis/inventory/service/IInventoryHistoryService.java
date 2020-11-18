@@ -25,6 +25,6 @@ public interface IInventoryHistoryService {
      * 盘点转历史
      * @param containerNo
      */
-    void inventoryToHistory(String containerNo);
+    void inventoryToHistory(String containerNo) throws Exception;
 
 }

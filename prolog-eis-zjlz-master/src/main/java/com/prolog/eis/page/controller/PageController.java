@@ -45,7 +45,7 @@ public class PageController {
     }
     @RequestMapping("/station/findById")
     @ApiOperation(value = "根据站台id查看站台信息",notes = "根据站台id查看站台信息")
-    public RestMessage<StationInfoVo> updateStation(@RequestParam int stationId) throws Exception {
+    public RestMessage<StationInfoVo> updateStation(@ApiParam(name = "stationId",value = "站台id",required = true)int stationId) throws Exception {
         try {
             StationInfoVo station = pageService.findStationById(stationId);
             return RestMessage.newInstance(true,"200","查询成功",station);

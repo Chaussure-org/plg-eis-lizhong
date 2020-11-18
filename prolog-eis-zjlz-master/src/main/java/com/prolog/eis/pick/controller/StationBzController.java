@@ -25,10 +25,11 @@ public class StationBzController {
     private IStationBZService stationBZService;
     @ApiOperation(value = "拣选页面推送", notes = "拣选页面推送")
     @RequestMapping(value = "/init")
-    public RestMessage<BCPPcikingDTO> beginPicking(@RequestParam int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo) throws Exception {
+    public RestMessage<BCPPcikingDTO> beginPicking(@RequestParam int stationId,@RequestParam String containerNo,
+                                                   @RequestParam String locationNo,@RequestParam String orderBoxNo) throws Exception {
         BCPPcikingDTO bcpPcikingDTO = null;
         try {
-            bcpPcikingDTO = stationBZService.startBZPicking(stationId, containerNo, orderBoxNo);
+            bcpPcikingDTO = stationBZService.startBZPicking(stationId, containerNo, orderBoxNo,locationNo);
             return RestMessage.newInstance(true,"200","查询成功",bcpPcikingDTO);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","查询失败:"+e.getMessage(),null);

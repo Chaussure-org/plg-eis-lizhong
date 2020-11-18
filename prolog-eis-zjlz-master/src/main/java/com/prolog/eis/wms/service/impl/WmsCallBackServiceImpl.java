@@ -230,6 +230,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             inventoryTask.setCreateTime(new Date());
             inventoryTask.setIssueTime(inventoryTask.getCreateTime());
             inventoryTask.setTaskId(wmsInventoryTask.getTASKID());
+            inventoryTask.setBranchType(wmsInventoryTask.getBRANCHTYPE());
             inventoryTaskService.saveInventoryTask(inventoryTask);
             List<InventoryTaskDetail> inventoryDeatils = new ArrayList<>();
             for (InventoryGoodsDto inventoryGoodsDto : detailsByMap) {

@@ -19,7 +19,7 @@ public class OrderInfoDto {
     @ApiModelProperty("订单编号")
     private String orderNo;
 
-    @ApiModelProperty("订单类型 1、生产出库2、销售出库3、库内")
+    @ApiModelProperty("订单类型 1、生产出库2、销售出库3、移库")
     private int orderType;
 
     @ApiModelProperty("订单明细数")
@@ -35,6 +35,7 @@ public class OrderInfoDto {
     private int orderTaskState;
 
     @ApiModelProperty("单据日期")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date billDate;
 
     @ApiModelProperty("出库截止时间")

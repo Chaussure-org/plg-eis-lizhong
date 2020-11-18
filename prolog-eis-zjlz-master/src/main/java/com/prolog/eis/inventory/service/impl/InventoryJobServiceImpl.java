@@ -56,8 +56,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     private IWcsService wcsService;
     @Autowired
     private IPointLocationService pointLocationService;
-    @Autowired
-    private IWmsService wmsService;
+
     @Autowired
     private IInventoryHistoryService inventoryHistoryService;
 
@@ -106,10 +105,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         if (stations.size() == 0 && containerPathTasks.size() == 0) {
             throw new Exception("容器【" + containerNo + "】不在盘点区域");
         }
-        WmsInventoryCallBackDto wmsInventoryCallBackDto = taskDetailService.findInventoryToWms(inventoryTaskDetail.getId()).get(0);
-        wmsInventoryCallBackDto.setSJZ(new Date());
-        wmsInventoryCallBackDto.setAFFQTY(Double.valueOf(qty - containerStore.getQty()));
-        wmsInventoryCallBackDto.setBRANCHCODE("C001");
+
 
 
         containerStore.setUpdateTime(new Date());
@@ -119,11 +115,9 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         inventoryTaskDetail.setEndTime(new Date());
         if (stations.size() > 1) {
             inventoryTaskDetail.setStationId(stations.get(0).getId());
-            wmsInventoryCallBackDto.setBRANCHAREA("XSK");
         } else {
             //agv区盘点站台id默认为0
             inventoryTaskDetail.setStationId(0);
-            wmsInventoryCallBackDto.setBRANCHAREA("LTK");
         }
         taskDetailService.updateInventoryDetail(inventoryTaskDetail);
         //盘点数量和实际数量不符则修改库存并回告wms
@@ -131,8 +125,6 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
             containerStore.setQty(qty);
             //修改库存
             containerStoreService.updateContainerStore(containerStore);
-            //todo:回告wms
-            wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
         }
         //容器放行
         if (stations.size() > 0) {
@@ -143,6 +135,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
             RickerInfoDto rickerInfoDto = computeAreaNo();
             pathSchedulingService.containerMoveTask(containerNo, rickerInfoDto.getAreaNo(), null);
         }
+        //转历史
         inventoryHistoryService.inventoryToHistory(containerNo);
     }
 

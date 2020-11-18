@@ -8,8 +8,10 @@ import com.prolog.eis.dto.store.ContainerInfoDto;
 import com.prolog.eis.inventory.service.IInventoryHistoryService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
 import com.prolog.eis.location.service.AgvLocationService;
+import com.prolog.eis.log.dao.WcsLogMapper;
 import com.prolog.eis.log.dao.WmsLogMapper;
 import com.prolog.eis.log.service.ILogService;
+import com.prolog.eis.model.log.WcsLog;
 import com.prolog.eis.model.log.WmsLog;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
@@ -18,6 +20,7 @@ import com.prolog.eis.store.service.IStoreLocationService;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
+import com.prolog.framework.utils.MapUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +60,8 @@ public class PageTest {
     private IStoreLocationService storeLocationService;
     @Autowired
     private AgvLocationService agvLocationService;
+    @Autowired
+    private WcsLogMapper wcsLogMapper;
     @Test
     public void pageContainer(){
         System.out.println("aaaa");
@@ -163,5 +168,10 @@ public class PageTest {
         agvStoreQueryDto.setLocationType(3);
         Page<AgvStoreInfoDto> agvStorePage = agvLocationService.getAgvStorePage(agvStoreQueryDto);
         System.out.println("aaaa");
+    }
+
+    @Test
+    public void test11(){
+        wcsLogMapper.deleteByMap(MapUtils.put("type",5).getMap(), WcsLog.class);
     }
 }

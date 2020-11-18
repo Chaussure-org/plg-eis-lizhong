@@ -2,6 +2,7 @@ package com.prolog.eis.inventory.service.impl;
 
 import com.prolog.eis.dto.page.InventoryHistoryDto;
 import com.prolog.eis.dto.page.InventoryHistoryQueryDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailHistoryMapper;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.dao.InventoryTaskHistoryMapper;
@@ -11,6 +12,7 @@ import com.prolog.eis.model.inventory.InventoryTask;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.inventory.InventoryTaskDetailHistory;
 import com.prolog.eis.model.inventory.InventoryTaskHistory;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
@@ -18,8 +20,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author dengj
@@ -36,6 +40,8 @@ public class InventoryHistoryServiceImpl implements IInventoryHistoryService {
     private InventoryTaskDetailMapper taskDetailMapper;
     @Autowired
     private InventoryTaskHistoryMapper taskHistoryMapper;
+    @Autowired
+    private IWmsService wmsService;
     @Override
     public Page<InventoryHistoryDto> getInventoryHistoryPage(InventoryHistoryQueryDto inventoryQueryDto) {
         PageUtils.startPage(inventoryQueryDto.getPageNum(),inventoryQueryDto.getPageSize());
@@ -45,16 +51,23 @@ public class InventoryHistoryServiceImpl implements IInventoryHistoryService {
     }
 
     @Override
-    public void inventoryToHistory(String containerNo) {
+    public void inventoryToHistory(String containerNo) throws Exception {
         List<InventoryTaskDetail> taskDetails = taskDetailMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(), InventoryTaskDetail.class);
         if (taskDetails.size() > 0){
-            InventoryTaskDetailHistory taskDetailHistory = new InventoryTaskDetailHistory();
-            BeanUtils.copyProperties(taskDetails.get(0),taskDetailHistory);
-            taskDetailHistoryMapper.save(taskDetailHistory);
-            taskDetailMapper.deleteById(taskDetails.get(0).getId(),InventoryTaskDetail.class);
-            List<InventoryTaskDetail> inventoryTasks = taskDetailMapper.findByMap(MapUtils.put("inventoryTaskId", taskDetails.get(0).getInventoryTaskId()).getMap(), InventoryTaskDetail.class);
-            //计划转历史
-            if (inventoryTasks.size() == 0){
+            List<InventoryTaskDetail> inventoryTaskId = taskDetailMapper.findByMap(MapUtils.put("inventoryTaskId", taskDetails.get(0).getInventoryTaskId()).getMap(), InventoryTaskDetail.class);
+            int size = inventoryTaskId.stream().filter(x -> x.getTaskState() != InventoryTask.STATE_SEND_TO_WMS).collect(Collectors.toList()).size();
+            if (size == 0){
+                //盘点计划所对应明细全部完成转历史
+                List<InventoryTaskDetailHistory> detailHistories = new ArrayList<>();
+                for (InventoryTaskDetail inventoryTaskDetail : inventoryTaskId) {
+                    InventoryTaskDetailHistory taskDetailHistory = new InventoryTaskDetailHistory();
+                    BeanUtils.copyProperties(inventoryTaskDetail,taskDetailHistory);
+                    detailHistories.add(taskDetailHistory);
+                }
+                taskDetailHistoryMapper.saveBatch(detailHistories);
+                taskDetailMapper.deleteByMap(MapUtils.put("inventoryTaskId",taskDetails.get(0).getInventoryTaskId()).getMap(),InventoryTaskDetail.class);
+
+                //汇总转历史
                 InventoryTask inventoryTask = inventoryTaskMapper.findById(taskDetails.get(0).getInventoryTaskId(), InventoryTask.class);
                 if (inventoryTask != null){
                     InventoryTaskHistory inventoryTaskHistory = new InventoryTaskHistory();
@@ -64,6 +77,13 @@ public class InventoryHistoryServiceImpl implements IInventoryHistoryService {
                     taskHistoryMapper.save(inventoryTaskHistory);
                     inventoryTaskMapper.deleteById(inventoryTask.getId(),InventoryTask.class);
                 }
+
+                // TODO: 2020/11/18  盘点回告wms
+                WmsInventoryCallBackDto wmsInventoryCallBackDto = taskDetailMapper.findWmsInventory(inventoryTask.getId()).get(0);
+                wmsInventoryCallBackDto.setSJZ(new Date());
+                wmsInventoryCallBackDto.setBRANCHCODE("C001");
+                wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
+
             }
         }
     }

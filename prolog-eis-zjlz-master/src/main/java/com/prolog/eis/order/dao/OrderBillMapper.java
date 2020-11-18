@@ -155,10 +155,10 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "<if test = 'orderQueryDto.orderNo != null and orderQueryDto.orderNo != \"\"'>\n" +
             "\tand s.order_no like concat('%',#{orderQueryDto.orderNo},'%')\n" +
             "</if>\n" +
-            "<if test = 'orderQueryDto.orderType != null and orderQueryDto.orderType != \"\"'>\n" +
+            "<if test = 'orderQueryDto.orderType != null '>\n" +
             "\tand s.order_type = #{orderQueryDto.orderType}\n" +
             "</if>\n" +
-            "<if test = 'orderQueryDto.orderTaskState != null and orderQueryDto.orderTaskState != \"\"'>\n" +
+            "<if test = 'orderQueryDto.orderTaskState != null '>\n" +
             "\tand s.order_task_state = #{orderQueryDto.orderTaskState}\n" +
             "</if>\n" +
             "<if test = 'orderQueryDto.startTime != null '>\n" +

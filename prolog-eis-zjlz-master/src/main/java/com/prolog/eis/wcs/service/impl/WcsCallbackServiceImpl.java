@@ -5,6 +5,7 @@ import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.BCRDataDTO;
+import com.prolog.eis.dto.wcs.OpenDiskDto;
 import com.prolog.eis.dto.wcs.TaskCallbackDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.engin.service.IInventoryBoxOutService;
@@ -27,6 +28,7 @@ import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wcs.service.IWcsCallbackService;
 import com.prolog.framework.common.message.RestMessage;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +135,29 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             logger.warn("回告失败", e);
             return faliure;
         }
+    }
+
+    @Override
+    @LogInfo(desci = "wcs拆盘机入口回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_IN, systemType = LogDto.WCS)
+    public RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) {
+        if (openDiskDto == null){
+            return faliure;
+        }
+        try {
+            this.openDiskIn(openDiskDto);
+            return success;
+        } catch (Exception e) {
+            logger.warn("wcs拆盘机入口回告失败", e);
+            return faliure;
+        }
+    }
+
+    /**
+     * 拆盘机入口回告
+     * @param openDiskDto
+     */
+    public void openDiskIn(OpenDiskDto openDiskDto) {
+        
     }
 
 

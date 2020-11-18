@@ -77,6 +77,11 @@ public class LogDto {
 
 
     /**
+     * eis拣货开始回告wms
+     */
+    public static final int WMS_TYPE_START_ORDER = 9;
+
+    /**
      * wcs输送线任务回告eis
      */
     public static final int WCS_TYPE_TASK_CALLBACK = 1;
@@ -90,6 +95,17 @@ public class LogDto {
      * eis下发输送线行走至wcs
      */
     public static final int WCS_TYPE_LINE_MOVE = 3;
+
+    /**
+     * wcs拆盘机入口回告
+     */
+    public static final int WCS_TYPE_OPEN_DISK_IN = 4;
+
+
+    /**
+     * wcs拆盘机出口回告
+     */
+    public static final int WCS_TYPE_OPEN_DISK_OUT = 5;
 
     /**
      * sas入库任务回告eis
