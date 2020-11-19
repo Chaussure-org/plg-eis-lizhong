@@ -27,6 +27,9 @@ public class WmsGoodsDto {
     @ApiModelProperty("商品条码")
     private String ITEMBARCODE;
 
+    @ApiModelProperty("称重")
+    private Double weight;
+
     @ApiModelProperty("拓展字段1")
     private String EXSATTR1;
 
@@ -38,6 +41,14 @@ public class WmsGoodsDto {
 
     @ApiModelProperty("拓展字段4")
     private String EXSATTR4;
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
 
     public String getITEMID() {
         return ITEMID;

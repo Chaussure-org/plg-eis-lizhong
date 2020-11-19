@@ -93,8 +93,11 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
         }
         List<FinishTrayDTO> finishSeedInfo = orderBillService.getFinishSeedInfo(containerNo, stations.get(0).getCurrentStationPickId());
 
+        //订单第一次拣选回告wms
+        stationBZService.startSeedToWms(finishSeedInfo.get(0).getOrderBillId(),finishSeedInfo.get(0).getOrderNo());
         //播种页面展示
         return finishSeedInfo.get(0);
+
     }
 
 

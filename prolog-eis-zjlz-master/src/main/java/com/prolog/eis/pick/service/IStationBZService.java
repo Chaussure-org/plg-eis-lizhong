@@ -148,4 +148,12 @@ public interface IStationBZService {
      * @param orderBillId
      */
     void pickingComplete(int stationId,String containerNo,String orderTrayNo,int orderBillId) throws Exception;
+
+
+    /**
+     * 第一次拣选回告wms
+     * @param orderBillId
+     * @param orderNo
+     */
+    void startSeedToWms(int orderBillId,String orderNo) throws Exception;
 }

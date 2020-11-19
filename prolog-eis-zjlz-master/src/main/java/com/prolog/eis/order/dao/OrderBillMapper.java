@@ -114,7 +114,8 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "\tg.goods_no as goodsNo,\n" +
             "\tg.goods_name as goodsName,\n" +
             "\tob.order_no as orderNo,\n" +
-            "\tcb.seed_num as seedCount\n" +
+            "\tcb.seed_num as seedCount," +
+            "ob.id as orderBillId\n" +
             "\t\n" +
             "FROM\n" +
             "\tcontainer_binding_detail cb join  order_bill ob on ob.id = cb.order_bill_id\n" +

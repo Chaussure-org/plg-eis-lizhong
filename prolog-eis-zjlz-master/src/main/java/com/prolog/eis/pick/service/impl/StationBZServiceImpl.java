@@ -6,6 +6,7 @@ import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
+import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
 import com.prolog.eis.location.service.IAgvBindingDetailService;
 import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
@@ -164,6 +165,8 @@ public class StationBZServiceImpl implements IStationBZService {
         //未拣选订单明细条目
         int count = orderDetailService.notPickingCount(bindingDetail.getOrderBillId());
         picking.setSurplusOrderDetailCount(count);
+        //订单第一次拣选则回告wms拣选开始
+        startSeedToWms(bindingDetail.getOrderBillId(),bcpGoodsDTO.getOrderNo());
         return picking;
 
     }
@@ -636,6 +639,7 @@ public class StationBZServiceImpl implements IStationBZService {
             } else {
                 throw new Exception("订单拖【" + orderTrayNo + "】查询到【" + orderBoxNos.size() + "】条数据");
             }
+            //
         }
 
     }
@@ -671,6 +675,27 @@ public class StationBZServiceImpl implements IStationBZService {
         this.containerNoLeave(containerNo, stationId);
     }
 
+    @Override
+    public void startSeedToWms(int orderBillId,String orderNo) throws Exception {
+        List<SeedInfo> seedInfos = seedInfoService.findSeedInfoByMap(MapUtils.put("orderBillId", orderBillId).getMap());
+        if (seedInfos.size() > 0){
+            return;
+        }else {
+            //回告wms
+
+            WmsStartOrderCallBackDto wmsStartOrderCallBackDto = new WmsStartOrderCallBackDto();
+            wmsStartOrderCallBackDto.setBILLNO(orderNo);
+            wmsStartOrderCallBackDto.setSTATUS("1");
+            wmsService.startOrderCallBack(wmsStartOrderCallBackDto);
+        }
+    }
+
+    /**
+     * 修改接驳点订单拖号
+     * @param orderTrayNo
+     * @param locationNo
+     * @throws Exception
+     */
     private void changeOrderTrayNo(String orderTrayNo,String locationNo) throws Exception {
         List<ContainerPathTask> containerPathTaskList = containerPathTaskService.findByMap(MapUtils.put("targetLocation", locationNo).
                 put("taskState",ContainerPathTask.TASK_STATE_NOT).getMap());

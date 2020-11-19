@@ -30,4 +30,7 @@ public interface IWareHousingService {
      * @return
      */
     Page<WmsInboundInfoDto> getInboundPage(InboundQueryDto inboundQueryDto);
+
+
+    void inboundReportWms(String containerNo) throws Exception;
 }
