@@ -44,10 +44,18 @@ public class WcsController {
             return wcsService.executeBcrCallback(bcrDataDTO);
     }
     @ApiOperation(value="拆盘机入口信息回告",notes="拆码盘设备空闲时，WCS上传空闲信号")
-    @PostMapping("/WcsApi/ UnstackerStatus")
+    @PostMapping("/WcsApi/UnstackerStatus")
     public RestMessage<String> openDiskEntrance(@RequestBody OpenDiskDto openDiskDto) throws Exception{
         logger.info("拆盘机入口信息回告,{}",JsonUtils.toString(openDiskDto));
         return wcsService.openDiskEntranceCallback(openDiskDto);
+    }
+
+
+    @ApiOperation(value="拆盘机出口信息回告",notes="拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
+    @PostMapping("/WcsApi/PalletArrive")
+    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception{
+        logger.info("拆盘机出口信息回告,{}",JsonUtils.toString(openDiskDto));
+        return wcsService.openDiskOuTCallback(openDiskDto);
     }
 
 

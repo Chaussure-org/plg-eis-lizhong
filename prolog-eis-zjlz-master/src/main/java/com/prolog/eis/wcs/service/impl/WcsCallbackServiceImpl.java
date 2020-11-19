@@ -4,10 +4,7 @@ package com.prolog.eis.wcs.service.impl;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
-import com.prolog.eis.dto.wcs.BCRDataDTO;
-import com.prolog.eis.dto.wcs.OpenDiskDto;
-import com.prolog.eis.dto.wcs.TaskCallbackDTO;
-import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.dto.wcs.*;
 import com.prolog.eis.engin.service.IInventoryBoxOutService;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.enums.ConstantEnum;
@@ -18,6 +15,7 @@ import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.station.Station;
+import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
@@ -25,9 +23,11 @@ import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
+import com.prolog.eis.wcs.service.IOpenDiskService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wcs.service.IWcsCallbackService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.utils.MapUtils;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +73,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private IInventoryTaskDetailService inventoryTaskDetailService;
     @Autowired
     private IInventoryBoxOutService inventoryBoxOutService;
+    @Autowired
+    private IOpenDiskService openDiskService;
 
     @Autowired
     private StationMapper stationMapper;
@@ -138,10 +140,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     }
 
     @Override
-    @LogInfo(desci = "wcs拆盘机入口回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_IN, systemType = LogDto.WCS)
+    @LogInfo(desci = "wcs拆盘机入口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_IN, systemType = LogDto.WCS)
     public RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) {
         if (openDiskDto == null){
-            return faliure;
+            return success;
         }
         try {
             this.openDiskIn(openDiskDto);
@@ -152,12 +154,53 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
     }
 
+    @Override
+    @LogInfo(desci = "wcs拆盘机出口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_OUT, systemType = LogDto.WCS)
+    public RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto) {
+        if (openDiskDto == null){
+            return success;
+        }
+        try {
+            this.openDiskOut(openDiskDto);
+            return success;
+        } catch (Exception e) {
+            logger.warn("wcs拆盘机出口任务回告失败", e);
+            return faliure;
+        }
+    }
+
+    /**
+     * 拆盘机出口agv接驳口回告
+     * @param openDiskDto
+     */
+    private void openDiskOut(OpenDiskFinishDto openDiskDto) throws Exception {
+        List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("deviceNo", openDiskDto.getDeviceId()).
+                put("openDiskId", OpenDisk.OPEN_DISK_OUT).getMap());
+        OpenDisk openDisk = openDisks.get(0);
+        if (openDisks.size() == 0){
+            throw new Exception("【"+openDiskDto.getDeviceId()+"】拆盘机点位没有被管理");
+        }
+        if (openDiskDto.getIsArrive().equals("1")){
+            openDisk.setTaskStatus(1);
+            openDiskService.updateOpenDisk(openDisk);
+        }
+    }
+
     /**
      * 拆盘机入口回告
      * @param openDiskDto
      */
-    public void openDiskIn(OpenDiskDto openDiskDto) {
-        
+    public void openDiskIn(OpenDiskDto openDiskDto) throws Exception {
+        List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("deviceNo", openDiskDto.getDeviceId()).
+                put("openDiskId", OpenDisk.OPEN_DISK_IN).getMap());
+        OpenDisk openDisk = openDisks.get(0);
+        if (openDisks.size() == 0){
+            throw new Exception("【"+openDiskDto.getDeviceId()+"】拆盘机点位没有被管理");
+        }
+        if (openDiskDto.getStatus().equals("0")){
+            openDisk.setTaskStatus(0);
+            openDiskService.updateOpenDisk(openDisk);
+        }
     }
 
 
