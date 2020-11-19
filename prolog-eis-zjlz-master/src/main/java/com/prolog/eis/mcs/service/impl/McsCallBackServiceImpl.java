@@ -155,7 +155,7 @@ public class McsCallBackServiceImpl implements IMcsCallBackService {
     private void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime) throws Exception {
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
         Integer taskState = containerPathTaskDetail.getTaskState();
-
+        // 上架完成回告wms
         iWareHousingService.deleteInboundTask(containerPathTaskDetail.getContainerNo());
         iContainerStoreService.updateTaskStausByContainer(containerPathTaskDetail.getContainerNo(),0);
 

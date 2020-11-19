@@ -25,4 +25,11 @@ public interface IWcsCallbackService {
      * @return
      */
     RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto);
+
+    /**
+     * 拆盘机出口回告
+     * @param openDiskDto
+     * @return
+     */
+    RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto);
 }

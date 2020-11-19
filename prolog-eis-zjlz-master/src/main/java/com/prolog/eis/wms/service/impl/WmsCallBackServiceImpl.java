@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -189,8 +190,10 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 goods.setGoodsOneType(goodsDto.getITEMTYPE());
                 goods.setGoodsType(goodsDto.getGATEGORYID());
                 goods.setCreateTime(new Date());
+                goods.setWeight(new BigDecimal(goodsDto.getWeight()));
                 newGoods.add(goods);
             } else {
+                goods.setWeight(new BigDecimal(goodsDto.getWeight()));
                 goods.setGoodsName(goodsDto.getITEMNAME());
                 goods.setGoodsNo(goodsDto.getITEMBARCODE());
                 goods.setOwnerDrawnNo(goodsDto.getITEMBARCODE());

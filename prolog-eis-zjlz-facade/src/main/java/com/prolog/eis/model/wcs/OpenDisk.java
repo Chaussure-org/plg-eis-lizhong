@@ -5,6 +5,7 @@ import com.prolog.framework.core.annotation.Id;
 import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 
 /**
@@ -25,8 +26,20 @@ public class OpenDisk {
    */
   public static final String OPEN_DISK_OUT = "BK02";
 
+  /**
+   * 点位状态空闲
+   */
+  public static final int  TASK_STATUS_NOT = 0;
+
+  /**
+   * 点位状态载货 到达
+   */
+  public static final int  TASK_STATUS_ARRIVE = 1;
+
+  
   @Column("open_disk_id")
   @ApiModelProperty("拆盘机点位id")
+  @Id
   private String openDiskId;
 
   @Column("open_disk_name")

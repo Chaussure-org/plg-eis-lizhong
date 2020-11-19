@@ -23,6 +23,18 @@ public class FinishTrayDTO {
     @ApiModelProperty("播种数量")
     private int seedCount;
 
+    @ApiModelProperty("订单id")
+    private int orderBillId;
+
+
+    public int getOrderBillId() {
+        return orderBillId;
+    }
+
+    public void setOrderBillId(int orderBillId) {
+        this.orderBillId = orderBillId;
+    }
+
     public String getOrderNo() {
         return orderNo;
     }
