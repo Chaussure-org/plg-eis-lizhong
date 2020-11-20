@@ -61,4 +61,12 @@ public interface PathSchedulingService {
     void containerResetLocation(String palletNo, String sourceArea,String sourceLocation);
 
 
+    /**
+     * 容器下架，删除路径
+     * @param containerNo 容器号
+     * @param sourceLocation 起点货位
+     */
+    void containerPathDelete(String containerNo,String sourceLocation) throws Exception;
+
+
 }

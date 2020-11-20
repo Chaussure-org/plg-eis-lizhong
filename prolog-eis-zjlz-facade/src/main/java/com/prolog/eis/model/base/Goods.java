@@ -53,7 +53,7 @@ public class Goods {
 
   @Column("package_number")
   @ApiModelProperty("包装数量")
-  private Integer packageNumber;
+  private Double packageNumber;
 
   @Column("past_label_flg")
   @ApiModelProperty("贴标标识")
@@ -151,11 +151,11 @@ public class Goods {
     this.weight = weight;
   }
 
-  public Integer getPackageNumber() {
+  public Double getPackageNumber() {
     return packageNumber;
   }
 
-  public void setPackageNumber(Integer packageNumber) {
+  public void setPackageNumber(Double packageNumber) {
     this.packageNumber = packageNumber;
   }
 

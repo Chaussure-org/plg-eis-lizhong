@@ -181,4 +181,15 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
 
         containerPathTaskMapper.updateMapByCriteria(MapUtils.put("sourceArea", sourceArea).put("sourceLocation", sourceLocation).getMap(), criteria);
     }
+
+    @Override
+    public void containerPathDelete(String containerNo, String sourceLocation) throws Exception {
+        List<ContainerPathTask> containerPathTasks = containerPathTaskMapper.findByMap(MapUtils.put("containerNo", containerNo).put("sourceLocation", sourceLocation).getMap(), ContainerPathTask.class);
+        if (containerPathTasks.size() > 0){
+            if (containerPathTasks.get(0).getTaskState() != 0){
+                throw new Exception("容器未到位删除失败");
+
+            }        }
+//        containerPathTaskMapper.deleteByCriteria()
+    }
 }

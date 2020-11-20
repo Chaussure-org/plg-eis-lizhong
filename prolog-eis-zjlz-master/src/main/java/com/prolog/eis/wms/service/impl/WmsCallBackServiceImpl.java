@@ -190,18 +190,22 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 goods.setGoodsOneType(goodsDto.getITEMTYPE());
                 goods.setGoodsType(goodsDto.getGATEGORYID());
                 goods.setCreateTime(new Date());
-                goods.setWeight(new BigDecimal(goodsDto.getWeight()));
+                goods.setWeight(new BigDecimal(goodsDto.getWEIGHT()));
+                goods.setPackageNumber(goodsDto.getJZS());
                 newGoods.add(goods);
             } else {
-                goods.setWeight(new BigDecimal(goodsDto.getWeight()));
-                goods.setGoodsName(goodsDto.getITEMNAME());
-                goods.setGoodsNo(goodsDto.getITEMBARCODE());
-                goods.setOwnerDrawnNo(goodsDto.getITEMBARCODE());
-                goods.setGoodsOneType(goodsDto.getITEMTYPE());
-                goods.setGoodsType(goodsDto.getGATEGORYID());
-                goods.setUpdateTime(new Date());
-                updateGoods.add(goods);
+                goodsByGoodId.setWeight(new BigDecimal(goodsDto.getWEIGHT()));
+                goodsByGoodId.setGoodsName(goodsDto.getITEMNAME());
+                goodsByGoodId.setGoodsNo(goodsDto.getITEMBARCODE());
+                goodsByGoodId.setOwnerDrawnNo(goodsDto.getITEMBARCODE());
+                goodsByGoodId.setGoodsOneType(goodsDto.getITEMTYPE());
+                goodsByGoodId.setGoodsType(goodsDto.getGATEGORYID());
+                goodsByGoodId.setUpdateTime(new Date());
+                goodsByGoodId.setPackageNumber(goodsDto.getJZS());
+                updateGoods.add(goodsByGoodId);
+
             }
+
         }
         goodsService.saveAndUpdateGoods(newGoods, updateGoods);
     }

@@ -127,4 +127,21 @@ public class StoreArea implements Serializable {
      */
     public static final String LXJZ01="LXJZ01";
 
+
+    /**
+     * 暂存区
+     */
+    public static final String CH01="CH01";
+
+    /**
+     * 贴标区
+     */
+    public static final String LB01="LB01";
+
+
+    /**
+     * 空托区
+     */
+    public static final String RCS02="RCS02";
+
 }
