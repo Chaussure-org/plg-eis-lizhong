@@ -6,6 +6,7 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 
@@ -57,6 +58,7 @@ public class Goods {
 
   @Column("past_label_flg")
   @ApiModelProperty("贴标标识")
+  @NotEmpty(message = "贴标标识不能为空")
   private Integer pastLabelFlg;
 
   @Column("create_time")

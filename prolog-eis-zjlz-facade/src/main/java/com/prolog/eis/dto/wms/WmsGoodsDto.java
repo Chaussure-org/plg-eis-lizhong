@@ -14,7 +14,7 @@ import javax.validation.constraints.NotEmpty;
 public class WmsGoodsDto {
 
     @ApiModelProperty("商品id")
-    @JsonProperty(value = "LINEID")
+    @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
     @ApiModelProperty("商品名称")
@@ -56,6 +56,8 @@ public class WmsGoodsDto {
     @ApiModelProperty("拓展字段4")
     @JsonProperty(value = "EXSATTR4")
     private String EXSATTR4;
+
+
 
     public Double getWEIGHT() {
         return WEIGHT;
