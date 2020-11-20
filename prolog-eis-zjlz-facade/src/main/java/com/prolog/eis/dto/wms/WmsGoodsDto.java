@@ -54,7 +54,7 @@ public class WmsGoodsDto {
     private String EXSATTR3;
 
     @ApiModelProperty("拓展字段4")
-    @JsonProperty(value = "EXSATTR3")
+    @JsonProperty(value = "EXSATTR4")
     private String EXSATTR4;
 
     public Double getWEIGHT() {
