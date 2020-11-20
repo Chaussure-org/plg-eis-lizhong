@@ -17,6 +17,7 @@ import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.page.service.IPageService;
 import com.prolog.eis.store.service.IStoreLocationService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
@@ -173,5 +174,12 @@ public class PageTest {
     @Test
     public void test11(){
         wcsLogMapper.deleteByMap(MapUtils.put("type",5).getMap(), WcsLog.class);
+    }
+
+
+    @Test
+    public void testStr(){
+        String remouldId = EisStringUtils.getRemouldId(12345678);
+        System.out.println(remouldId);
     }
 }

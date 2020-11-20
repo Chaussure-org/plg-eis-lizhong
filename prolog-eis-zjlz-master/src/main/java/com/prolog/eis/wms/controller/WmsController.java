@@ -1,6 +1,7 @@
 package com.prolog.eis.wms.controller;
 
 import com.prolog.eis.dto.wms.*;
+import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
@@ -60,37 +61,37 @@ public class WmsController {
 
     @ApiOperation(value = "提升订单优先级",notes = "提升订单优先级")
     @PostMapping("order/upOrderPriority")
-    public RestMessage<String> upOrderProiority(@Validated @RequestBody WmsUpProiorityDto wmsUpProiorityDto) throws Exception{
+    public EisRestMessage<String> upOrderProiority(@Validated @RequestBody WmsUpProiorityDto wmsUpProiorityDto) throws Exception{
         logger.info("wms提升订单优先级,{}", JsonUtils.toString(wmsUpProiorityDto));
         try {
             wmsCallBackService.upOrderProiority(wmsUpProiorityDto);
-            return RestMessage.newInstance(false,"订单优先级提升成功");
+            return EisRestMessage.newInstance(true,"订单优先级提升成功");
         }catch (Exception e){
-            return RestMessage.newInstance(false,"订单优先级提升失败"+e.getMessage());
+            return EisRestMessage.newInstance(false,"订单优先级提升失败"+e.getMessage());
         }
     }
 
     @ApiOperation(value = "商品资料同步",notes = "商品资料同步")
     @PostMapping("/goods/sync")
-    public RestMessage<String> goodsSync(@Validated @RequestBody List<WmsGoodsDto> goodsDtos) throws Exception{
+    public EisRestMessage<String> goodsSync(@Validated @RequestBody List<WmsGoodsDto> goodsDtos) throws Exception{
         logger.info("wms商品资料同步,{}", JsonUtils.toString(goodsDtos));
         try {
             wmsCallBackService.goodsSync(goodsDtos);
-            return RestMessage.newInstance(false,"商品资料同步成功");
+            return EisRestMessage.newInstance(true,"商品资料同步成功");
         }catch (Exception e){
-            return RestMessage.newInstance(false,"商品资料同步失败"+e.getMessage());
+            return EisRestMessage.newInstance(false,"商品资料同步失败"+e.getMessage());
         }
     }
 
     @ApiOperation(value = "盘点计划下发",notes = "盘点计划下发")
     @PostMapping("/task/sendInventoryTask")
-    public RestMessage<String> sendInventoryTask(@Validated @RequestBody List<WmsInventoryTaskDto> wmsInventoryTasks) throws Exception{
+    public EisRestMessage<String> sendInventoryTask(@Validated @RequestBody List<WmsInventoryTaskDto> wmsInventoryTasks) throws Exception{
         logger.info("wms盘点计划下发,{}", JsonUtils.toString(wmsInventoryTasks));
         try {
             wmsCallBackService.sendInventoryTask(wmsInventoryTasks);
-            return RestMessage.newInstance(false,"盘点计划下发成功");
+            return EisRestMessage.newInstance(true,"盘点计划下发成功");
         }catch (Exception e){
-            return RestMessage.newInstance(false,"盘点计划下发失败"+e.getMessage());
+            return EisRestMessage.newInstance(false,"盘点计划下发失败"+e.getMessage());
         }
     }
 

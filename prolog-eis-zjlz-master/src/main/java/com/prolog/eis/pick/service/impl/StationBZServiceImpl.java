@@ -426,6 +426,7 @@ public class StationBZServiceImpl implements IStationBZService {
         WmsOutboundCallBackDto wmsOrderBill = orderBillService.findWmsOrderBill(containerBindingDetail.getOrderDetailId()).get(0);
         wmsOrderBill.setSJC(new Date());
         wmsOrderBill.setCONTAINERNO(containerBindingDetail.getContainerNo());
+
         //回告wms
         wmsService.outboundTaskCallBack(wmsOrderBill);
 

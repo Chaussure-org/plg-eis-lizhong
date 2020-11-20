@@ -192,6 +192,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 goods.setCreateTime(new Date());
                 goods.setWeight(new BigDecimal(goodsDto.getWEIGHT()));
                 goods.setPackageNumber(goodsDto.getJZS());
+                goods.setPastLabelFlg(Integer.parseInt(goodsDto.getEXSATTR3()));
                 newGoods.add(goods);
             } else {
                 goodsByGoodId.setWeight(new BigDecimal(goodsDto.getWEIGHT()));
@@ -202,6 +203,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 goodsByGoodId.setGoodsType(goodsDto.getGATEGORYID());
                 goodsByGoodId.setUpdateTime(new Date());
                 goodsByGoodId.setPackageNumber(goodsDto.getJZS());
+                goodsByGoodId.setPastLabelFlg(Integer.parseInt(goodsDto.getEXSATTR3()));
                 updateGoods.add(goodsByGoodId);
 
             }
