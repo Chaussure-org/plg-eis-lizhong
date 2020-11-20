@@ -49,11 +49,9 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
                 //回库
                 List<RoadWayContainerTaskDto> roadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();
                 roadWayContainerTasks.stream().sorted(Comparator.comparing(RoadWayContainerTaskDto::getInCount).thenComparing(RoadWayContainerTaskDto::getOutCount));
-                pathSchedulingService.inboundTask(containerPathTask.getContainerNo(),
-                                                containerPathTask.getContainerNo(),
-                                                StoreArea.RCS01,
-                                                containerPathTask.getSourceLocation(),
-                                "MCS0" + roadWayContainerTasks.get(0).getRoadWay());
+                pathSchedulingService.containerMoveTask(containerPathTask.getContainerNo(),
+                        StoreArea.RCS01,
+                        "MCS0" + roadWayContainerTasks.get(0).getRoadWay());
             }
         }
     }

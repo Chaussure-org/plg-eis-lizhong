@@ -95,6 +95,7 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
     @LogInfo(desci = "sas出库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_SEND_OUTBOUND_TASK_CALLBACK,systemType = LogDto.SAS)
     private void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
         callBack(taskCallbackDTO);
+        iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
     }
 
     /**
@@ -128,6 +129,10 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
     @LogInfo(desci = "sas入库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_SEND_INBOUND_TASK_CALLBACK,systemType =
             LogDto.SAS)
     private void doInboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
+        //入库完成
+        iContainerStoreService.updateTaskTypeByContainer(taskCallbackDTO.getContainerNo(),0);
+        iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
+        iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
         callBack(taskCallbackDTO);
     }
 
@@ -153,12 +158,6 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
             }
-            //入库完成
-            if (containerPathTaskDetail.getSourceArea().equals(StoreArea.SAS01)){
-                iContainerStoreService.updateTaskTypeByContainer(taskCallbackDTO.getContainerNo(),0);
-                iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
-            }
-            iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
             //历史表
             //containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
         }

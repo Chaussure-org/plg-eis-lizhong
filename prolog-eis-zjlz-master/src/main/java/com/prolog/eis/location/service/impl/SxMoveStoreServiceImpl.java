@@ -555,12 +555,6 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         if (null == nextContainerPathTaskDetail) {
             //属于最后一个节点
             //后续添加移动日志表
-            //入库完成回告
-            iWareHousingService.deleteInboundTask(containerPathTask.getContainerNo());
-            //更新业务类型
-            iContainerStoreService.updateTaskTypeByContainer(containerPathTask.getContainerNo(),0);
-
-
             containerPathTaskDetailMapper.updateMapById(containerPathTaskDetail.getId(),
                     MapUtils.put("sourceArea", containerPathTaskDetail.getNextArea())
                             .put("sourceLocation", containerPathTaskDetail.getNextLocation())
