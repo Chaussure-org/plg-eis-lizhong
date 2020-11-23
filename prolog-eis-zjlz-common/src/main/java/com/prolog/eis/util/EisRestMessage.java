@@ -39,16 +39,16 @@ public class EisRestMessage<T> implements Message {
     }
 
 
-    public static <T> EisRestMessage<T> newInstance(boolean success,String message){
-        return new EisRestMessage<T>(success,message,null);
+    public static <T> EisRestMessage<T> newInstance(boolean SUCCESS,String MESSAGE){
+        return new EisRestMessage<T>(SUCCESS,MESSAGE,null);
     }
 
-    public static <T> EisRestMessage<T> newInstance(boolean success,String message,T data){
-        return new EisRestMessage<T>(success,message,data);
+    public static <T> EisRestMessage<T> newInstance(boolean SUCCESS,String MESSAGE,T DATA){
+        return new EisRestMessage<T>(SUCCESS,MESSAGE,DATA);
     }
 
-    public static <T> EisRestMessage<T> newInstance(boolean success,String code,String message,T data){
-        return new EisRestMessage<T>(success,code,message,data);
+    public static <T> EisRestMessage<T> newInstance(boolean SUCCESS,String CODE,String MESSAGE,T DATA){
+        return new EisRestMessage<T>(SUCCESS,CODE,MESSAGE,DATA);
     }
 
     public EisRestMessage(boolean SUCCESS,String MESSAGE,T DATA){

@@ -3,6 +3,7 @@ package com.prolog.eis.pick.service.impl;
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
+import com.prolog.eis.dto.bz.PickWmsDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
@@ -30,6 +31,7 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wms.service.IWmsService;
@@ -423,9 +425,18 @@ public class StationBZServiceImpl implements IStationBZService {
         if (containerBindingDetail == null) {
             return;
         }
-        WmsOutboundCallBackDto wmsOrderBill = orderBillService.findWmsOrderBill(containerBindingDetail.getOrderDetailId()).get(0);
+        List<PickWmsDto> pickWmsDtos = orderBillService.findWmsOrderBill(containerBindingDetail.getOrderDetailId());
+        PickWmsDto pickWmsDto = pickWmsDtos.get(0);
+        WmsOutboundCallBackDto wmsOrderBill = new WmsOutboundCallBackDto();
         wmsOrderBill.setSJC(new Date());
         wmsOrderBill.setCONTAINERNO(containerBindingDetail.getContainerNo());
+        wmsOrderBill.setITEMID(EisStringUtils.getRemouldId(pickWmsDto.getGoodsId()));
+        wmsOrderBill.setBILLNO(pickWmsDto.getOrderNo());
+        wmsOrderBill.setBILLDATE(pickWmsDto.getBillDate());
+        wmsOrderBill.setLOTID(pickWmsDto.getLotId());
+        wmsOrderBill.setBILLTYPE(String.valueOf(pickWmsDto.getOrderType()));
+        wmsOrderBill.setTASKID(pickWmsDto.getTaskId());
+        wmsOrderBill.setQTY(Double.valueOf(pickWmsDto.getCompleteQty()));
 
         //回告wms
         wmsService.outboundTaskCallBack(wmsOrderBill);

@@ -3,6 +3,7 @@ package com.prolog.eis.order.dao;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.bz.PickWmsDto;
 import com.prolog.eis.dto.page.OrderInfoDto;
 import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
@@ -56,24 +57,23 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
 
     /**
      * 回告wms实体查询
-     * @param orderBillId
+     * @param orderDetailId
      * @return
      */
     @Select("SELECT\n" +
-            "\tb.task_id AS TASKID,\n" +
-            "\tb.order_no AS BILLNO,\n" +
-            "\tb.bill_date AS BILLDATE,\n" +
-            "\tb.order_type AS BILLTYPE,\n" +
-            "\td.goods_id AS ITEMID,\n" +
-            "\td.lot_id AS LOTID,\n" +
-            "\td.complete_qty AS QTY,\n" +
-            "\tb.order_no as BRANCHAREA\n" +
+            "\tb.task_id AS taskId,\n" +
+            "\tb.order_no AS orderNo,\n" +
+            "\tb.bill_date AS billDate,\n" +
+            "\tb.order_type AS orderType,\n" +
+            "\td.goods_id AS goodsId,\n" +
+            "\td.lot_id AS lotId,\n" +
+            "\td.complete_qty AS completeQty\n" +
             "FROM\n" +
             "\torder_bill b\n" +
             "\tJOIN order_detail d ON b.id = d.order_bill_id \n" +
             "WHERE\n" +
             "\td.id = #{orderDetailId}")
-    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderDetailId")int orderDetailId);
+    List<PickWmsDto> findWmsOrderBill(@Param("orderDetailId")int orderDetailId);
 
     /**
      * 获取成品库未完成播种的明细及汇总数量

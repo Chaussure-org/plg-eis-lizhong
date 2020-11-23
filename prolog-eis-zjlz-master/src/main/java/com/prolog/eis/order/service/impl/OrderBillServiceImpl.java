@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.bz.PickWmsDto;
 import com.prolog.eis.dto.page.OrderInfoDto;
 import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
@@ -122,7 +123,7 @@ public class OrderBillServiceImpl implements IOrderBillService {
     }
 
     @Override
-    public List<WmsOutboundCallBackDto> findWmsOrderBill(int orderDetailId) {
+    public List<PickWmsDto> findWmsOrderBill(int orderDetailId) {
         return orderBillMapper.findWmsOrderBill(orderDetailId);
     }
 

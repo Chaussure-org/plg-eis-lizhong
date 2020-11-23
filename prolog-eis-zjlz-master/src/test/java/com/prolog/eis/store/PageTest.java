@@ -13,12 +13,15 @@ import com.prolog.eis.log.dao.WmsLogMapper;
 import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.model.log.WcsLog;
 import com.prolog.eis.model.log.WmsLog;
+import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.page.service.IPageService;
+import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.store.service.IStoreLocationService;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
@@ -63,6 +66,10 @@ public class PageTest {
     private AgvLocationService agvLocationService;
     @Autowired
     private WcsLogMapper wcsLogMapper;
+    @Autowired
+    private IWmsService wmsService;
+    @Autowired
+    private IStationBZService stationBZService;
     @Test
     public void pageContainer(){
         System.out.println("aaaa");
@@ -181,5 +188,13 @@ public class PageTest {
     public void testStr(){
         String remouldId = EisStringUtils.getRemouldId(12345678);
         System.out.println(remouldId);
+    }
+
+
+    @Test
+    public void testToWms() throws Exception {
+        ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
+        containerBindingDetail.setOrderDetailId(1060);
+        stationBZService.seedToWms(containerBindingDetail);
     }
 }

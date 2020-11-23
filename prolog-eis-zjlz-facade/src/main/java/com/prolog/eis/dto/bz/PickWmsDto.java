@@ -1,6 +1,7 @@
 package com.prolog.eis.dto.bz;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -10,6 +11,7 @@ import java.util.Date;
  * @date 2020/11/20 11:56
  * 回告wms数据处理
  */
+@Data
 public class PickWmsDto {
 
     @ApiModelProperty("任务id")
@@ -26,5 +28,14 @@ public class PickWmsDto {
 
     @ApiModelProperty("商品id")
     private Integer goodsId;
+
+
+    @ApiModelProperty("批次号")
+    private String lotId;
+
+    @ApiModelProperty("拣选完成数量")
+    private Integer completeQty;
+
+    
 
 }
