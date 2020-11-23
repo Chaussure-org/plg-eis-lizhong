@@ -1,5 +1,8 @@
 package com.prolog.eis.util;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -16,15 +19,19 @@ import java.util.List;
  * @version 1.0
  * @date 2020/11/17 14:52
  */
+@JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility= JsonAutoDetect.Visibility.NONE)
 public class EisRestMessage<T> implements Message {
 
     @ApiModelProperty(value = "是否成功")
-    private boolean SUCCESS;
+    private Boolean SUCCESS;
     @ApiModelProperty(value = "消息对象")
+    @JsonProperty(value = "MESSAGE")
     private String MESSAGE;
     @ApiModelProperty(value = "消息代码")
+    @JsonProperty(value = "CODE")
     private String CODE;
     @ApiModelProperty(value = "返回对象")
+    @JsonProperty(value = "DATA")
     private T DATA;
 
     public EisRestMessage(){
@@ -58,10 +65,11 @@ public class EisRestMessage<T> implements Message {
         this.CODE=CODE;
     }
 
-    public boolean isSuccess() {
+    @JsonIgnore
+    public Boolean isSuccess() {
         return SUCCESS;
     }
-    public void setSuccess(boolean SUCCESS) {
+    public void setSuccess(Boolean SUCCESS) {
         this.SUCCESS = SUCCESS;
     }
     public String getMessage() {

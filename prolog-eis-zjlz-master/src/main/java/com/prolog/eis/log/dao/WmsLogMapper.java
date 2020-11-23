@@ -34,8 +34,11 @@ public interface WmsLogMapper extends BaseMapper<WmsLog> {
             "\tw.host_port AS hostPort,\n" +
             "CASE\n" +
             "\t\tw.system_type \n" +
-            "\t\tWHEN 1 THEN\n" +
-            "\t\t#{systemType} \n" +
+            "\t\tWHEN 1 THEN 'WMS' " +
+            "WHEN 2 THEN 'WCS' " +
+            "WHEN 3 THEN 'SAS' " +
+            "WHEN 4 THEN 'MCS' " +
+            "WHEN 5 THEN 'RCS'" +
             "\tEND as systemType \n" +
             "\tFROM\n" +
             "\t\t${tableName} w\n" +

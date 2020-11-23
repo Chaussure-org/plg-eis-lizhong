@@ -168,7 +168,7 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 
 	@Override
 	public void updateStoreLock(int agvStoreId, int storagelock) throws Exception {
-		if (storagelock != AgvStoragelocation.TASK_LOCK || storagelock == AgvStoragelocation.TASK_EMPTY){
+		if (storagelock != AgvStoragelocation.TASK_LOCK && storagelock != AgvStoragelocation.TASK_EMPTY){
 			throw new Exception("锁参数异常，请检查参数");
 		}
 		AgvStoragelocation agvStoragelocation = agvStoragelocationMapper.findById(agvStoreId, AgvStoragelocation.class);

@@ -213,9 +213,9 @@ public class PageController {
 
     @RequestMapping("/box/store/update")
     @ApiOperation(value = "箱库异常货位组解锁",notes = "箱库异常货位组解锁")
-    public RestMessage<String> updateBoxGroup(@RequestParam(defaultValue = "001")String groupNo){
+    public RestMessage<String> updateBoxGroup(@RequestParam(defaultValue = "001")String groupNo,@RequestParam(defaultValue = "-1")int isLock){
         try {
-             pageService.updateBoxGroupLock(groupNo);
+             pageService.updateBoxGroupLock(groupNo,isLock);
             return RestMessage.newInstance(true,"200","修改成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","修改失败:"+e.getMessage(),null);
@@ -236,9 +236,9 @@ public class PageController {
 
     @RequestMapping("/tray/store/update")
     @ApiOperation(value = "箱库异常货位组解锁",notes = "箱库异常货位组解锁")
-    public RestMessage<String> updateTrayGroup(@RequestParam(defaultValue = "001")String groupNo){
+    public RestMessage<String> updateTrayGroup(@RequestParam(defaultValue = "001")String groupNo,@RequestParam(defaultValue = "-1")int isLock){
         try {
-            pageService.updateTrayGroupLock(groupNo);
+            pageService.updateTrayGroupLock(groupNo,isLock);
             return RestMessage.newInstance(true,"200","修改成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","修改失败:"+e.getMessage(),null);

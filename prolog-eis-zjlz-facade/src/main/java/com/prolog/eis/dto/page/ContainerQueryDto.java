@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class ContainerQueryDto {
     @ApiModelProperty("商品id")
-    private int goodsId;
+    private Integer goodsId;
     @ApiModelProperty("容器号")
     private String containerNo;
 

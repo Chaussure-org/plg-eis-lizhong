@@ -126,7 +126,7 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
             "\t\tand cs.container_no like '%${containerDto.containerNo}%'\n" +
             "</if>\n" +
             "<if test = 'containerDto.goodsName != null and containerDto.goodsName != \"\"'>\n" +
-            "\t\tand g.goodsName like '%${containerDto.goodsName}%'\n" +
+            "\t\tand g.goods_name like '%${containerDto.goodsName}%'\n" +
             "</if>\n" +
             "<if test = 'containerDto.ownerDrawnNo != null and containerDto.ownerDrawnNo != \"\"'>\n" +
             "\t\tand g.owner_drawn_no like '%${containerDto.ownerDrawnNo}%'\n" +

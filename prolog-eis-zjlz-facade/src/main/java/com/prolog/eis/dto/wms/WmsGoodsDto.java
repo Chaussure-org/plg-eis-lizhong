@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -50,6 +51,7 @@ public class WmsGoodsDto {
     private String EXSATTR2;
 
     @ApiModelProperty("拓展字段3")
+    @NotEmpty(message = "商品贴标不能为空")
     @JsonProperty(value = "EXSATTR3")
     private String EXSATTR3;
 
