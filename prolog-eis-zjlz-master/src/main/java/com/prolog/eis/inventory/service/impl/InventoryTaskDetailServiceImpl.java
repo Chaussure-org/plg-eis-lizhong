@@ -1,6 +1,7 @@
 package com.prolog.eis.inventory.service.impl;
 
 import com.prolog.eis.dto.inventory.InventoryShowDto;
+import com.prolog.eis.dto.inventory.InventoryWmsDto;
 import com.prolog.eis.dto.page.InventoryDetailInfoDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
@@ -69,7 +70,7 @@ public class InventoryTaskDetailServiceImpl implements IInventoryTaskDetailServi
     }
 
     @Override
-    public List<WmsInventoryCallBackDto> findInventoryToWms(int id) {
+    public List<InventoryWmsDto> findInventoryToWms(int id) {
         return inventoryTaskDetailMapper.findWmsInventory(id);
     }
 

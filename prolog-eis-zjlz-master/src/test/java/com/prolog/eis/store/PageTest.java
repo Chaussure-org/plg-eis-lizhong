@@ -3,8 +3,12 @@ package com.prolog.eis.store;
 import com.github.pagehelper.PageHelper;
 import com.prolog.eis.ZjlzApplication;
 import com.prolog.eis.base.service.IGoodsService;
+import com.prolog.eis.dto.inventory.InventoryWmsDto;
 import com.prolog.eis.dto.page.*;
+import com.prolog.eis.dto.station.StationInfoDto;
 import com.prolog.eis.dto.store.ContainerInfoDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
+import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.service.IInventoryHistoryService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
 import com.prolog.eis.location.service.AgvLocationService;
@@ -70,6 +74,8 @@ public class PageTest {
     private IWmsService wmsService;
     @Autowired
     private IStationBZService stationBZService;
+    @Autowired
+    private InventoryTaskDetailMapper taskDetailMapper;
     @Test
     public void pageContainer(){
         System.out.println("aaaa");
@@ -197,4 +203,23 @@ public class PageTest {
         containerBindingDetail.setOrderDetailId(1060);
         stationBZService.seedToWms(containerBindingDetail);
     }
+
+
+    @Test
+    public void testInventoryToWms(){
+        List<InventoryWmsDto> wmsInventory = taskDetailMapper.findWmsInventory(3);
+        System.out.println("aaa");
+    }
+
+    @Test
+    public void testStationUpdate() throws Exception {
+        StationInfoDto stationInfoDto = new StationInfoDto();
+        stationInfoDto.setIsLock(0);
+        stationInfoDto.setStationIp("192.166.11.240");
+        stationInfoDto.setStationId(1);
+        stationInfoDto.setStationTaskType(10);
+
+        pageService.updateStationInfo(stationInfoDto);
+    }
+
 }

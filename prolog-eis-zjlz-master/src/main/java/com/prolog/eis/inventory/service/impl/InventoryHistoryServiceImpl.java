@@ -1,7 +1,9 @@
 package com.prolog.eis.inventory.service.impl;
 
+import com.prolog.eis.dto.inventory.InventoryWmsDto;
 import com.prolog.eis.dto.page.InventoryHistoryDto;
 import com.prolog.eis.dto.page.InventoryHistoryQueryDto;
+import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailHistoryMapper;
 import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
@@ -12,6 +14,7 @@ import com.prolog.eis.model.inventory.InventoryTask;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.inventory.InventoryTaskDetailHistory;
 import com.prolog.eis.model.inventory.InventoryTaskHistory;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
@@ -79,9 +82,17 @@ public class InventoryHistoryServiceImpl implements IInventoryHistoryService {
                 }
 
                 // TODO: 2020/11/18  盘点回告wms
-                WmsInventoryCallBackDto wmsInventoryCallBackDto = taskDetailMapper.findWmsInventory(inventoryTask.getId()).get(0);
+                InventoryWmsDto inventoryWmsDto = taskDetailMapper.findWmsInventory(inventoryTask.getId()).get(0);
+                WmsInventoryCallBackDto wmsInventoryCallBackDto = new WmsInventoryCallBackDto();
+                wmsInventoryCallBackDto.setAFFQTY(inventoryWmsDto.getAffQty());
+                wmsInventoryCallBackDto.setBILLDATE(inventoryWmsDto.getBillDate());
+                wmsInventoryCallBackDto.setBILLNO(inventoryWmsDto.getBillNo());
+                wmsInventoryCallBackDto.setITEMID(EisStringUtils.getRemouldId(inventoryWmsDto.getGoodsId()));
+                wmsInventoryCallBackDto.setITEMTYPE(inventoryWmsDto.getGoodsType());
+                wmsInventoryCallBackDto.setSEQNO(inventoryWmsDto.getSeqNo());
                 wmsInventoryCallBackDto.setSJZ(new Date());
                 wmsInventoryCallBackDto.setBRANCHCODE("C001");
+                wmsInventoryCallBackDto.setBRANCHAREA(inventoryWmsDto.getBranchType());
                 wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
 
             }

@@ -36,26 +36,26 @@ public class WmsController {
 
     @ApiOperation(value = "入库任务下发",notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")
-    public RestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
+    public EisRestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         logger.info("wms入库任务下发,{}", JsonUtils.toString(wmsInboundTaskDtos));
 
         try {
             wmsCallBackService.sendInboundTask(wmsInboundTaskDtos);
-            return RestMessage.newInstance(true,"上架任务下发成功");
+            return EisRestMessage.newInstance(true,"上架任务下发成功");
         } catch (Exception e) {
-            return RestMessage.newInstance(false,"500","上架任务下发失败"+e.getMessage(),null);
+            return EisRestMessage.newInstance(false,"500","上架任务下发失败"+e.getMessage(),null);
         }
     }
 
     @ApiOperation(value = "出库任务下发",notes = "出库任务下发")
     @PostMapping("/task/sendOutboundTask")
-    public RestMessage<String> sendOutBountTask(@Validated @RequestBody List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
+    public EisRestMessage<String> sendOutBountTask(@Validated @RequestBody List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
         logger.info("wms出库任务下发,{}", JsonUtils.toString(wmsOutboundTaskDtos));
         try {
             wmsCallBackService.sendOutBoundTask(wmsOutboundTaskDtos);
-            return RestMessage.newInstance(true,"出库任务下发成功");
+            return EisRestMessage.newInstance(true,"出库任务下发成功");
         } catch (Exception e) {
-            return RestMessage.newInstance(false,"出库任务下发失败"+e.getMessage());
+            return EisRestMessage.newInstance(false,"出库任务下发失败"+e.getMessage());
         }
     }
 

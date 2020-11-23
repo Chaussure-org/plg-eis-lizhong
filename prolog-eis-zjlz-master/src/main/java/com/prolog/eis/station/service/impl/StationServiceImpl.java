@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -130,6 +131,7 @@ public class StationServiceImpl implements IStationService {
                 station.setIsLock(stationInfoDto.getIsLock());
                 station.setStationIp(stationInfoDto.getStationIp());
                 station.setStationTaskType(stationInfoDto.getStationTaskType());
+                station.setUpdateTime(new Date());
                 stationMapper.update(station);
             } else {
                 throw new Exception("站台需要先修改为锁定状态");
@@ -139,6 +141,7 @@ public class StationServiceImpl implements IStationService {
                 station.setIsLock(stationInfoDto.getIsLock());
                 station.setStationIp(stationInfoDto.getStationIp());
                 station.setStationTaskType(stationInfoDto.getStationTaskType());
+                station.setUpdateTime(new Date());
                 stationMapper.update(station);
             } else {
                 //可修改作业类型
@@ -165,6 +168,7 @@ public class StationServiceImpl implements IStationService {
                 station.setIsLock(stationInfoDto.getIsLock());
                 station.setStationIp(stationInfoDto.getStationIp());
                 station.setStationTaskType(stationInfoDto.getStationTaskType());
+                station.setUpdateTime(new Date());
                 stationMapper.update(station);
             }
 

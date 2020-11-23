@@ -4,6 +4,7 @@ import com.prolog.eis.aspect.EisSqlFactory;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.inventory.InventoryOutDto;
 import com.prolog.eis.dto.inventory.InventoryShowDto;
+import com.prolog.eis.dto.inventory.InventoryWmsDto;
 import com.prolog.eis.dto.page.InventoryDetailInfoDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
@@ -93,20 +94,19 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
      * @return
      */
     @Select("SELECT\n" +
-            "            h.task_id AS TASKID,\n" +
-            "            h.bill_no AS BILLNO,\n" +
-            "            H.bill_date AS BILLDATE,\n" +
-            "            h.seq_no AS SEQNO,\n" +
-            "            h.goods_type AS ITEMTYPE,\n" +
-            "            h.goods_id AS ITEMID,\n" +
-            "            h.goods_id as ITEMID,\n" +
-            "\t\t\t\t\t\t(SELECT sum(d.original_count - d.modify_count) from inventory_task_detail d where d.inventory_task_id = h.id) as AFFQTY," +
-            "h.branch_type as BRANCHAREA\n" +
-            "            FROM\n" +
-            "            inventory_task h\n" +
-            "            WHERE\n" +
-            "            h.id = #{id}")
-    List<WmsInventoryCallBackDto> findWmsInventory(@Param("id") int id);
+            "\th.task_id AS taskId,\n" +
+            "\th.bill_no AS billNo,\n" +
+            "\th.bill_date AS billDate,\n" +
+            "\th.seq_no AS seqNo,\n" +
+            "\th.goods_type AS goodsType,\n" +
+            "\th.goods_id AS goodsId,\n" +
+            "\t( SELECT sum( d.original_count - d.modify_count ) FROM inventory_task_detail d WHERE d.inventory_task_id = h.id ) AS affQty,\n" +
+            "\t+ h.branch_type AS branchType \n" +
+            "FROM\n" +
+            "\tinventory_task h \n" +
+            "WHERE\n" +
+            "\th.id = #{id}")
+    List<InventoryWmsDto> findWmsInventory(@Param("id") int id);
 
     /**
      * 查看盘点容器信息
