@@ -9,6 +9,11 @@ public class WMSProperties {
     private String host;
     private int port;
 
+    /**
+     * 入库上架回告
+     */
+    private String wmsInboundUrl="/inTransferTask/eisTaskConfirm/v1.0";
+
     public String getHost() {
         return host;
     }
@@ -23,5 +28,13 @@ public class WMSProperties {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getWmsInboundUrl() {
+        return wmsInboundUrl;
+    }
+
+    public void setWmsInboundUrl(String wmsInboundUrl) {
+        this.wmsInboundUrl = wmsInboundUrl;
     }
 }

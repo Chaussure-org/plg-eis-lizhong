@@ -35,7 +35,15 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
 
     @Override
     public FinishNotSeedDTO getNotSeedCount() throws Exception {
-        return orderBillService.getNoSeedCount();
+        FinishNotSeedDTO seedCount = orderBillService.getNoSeedCount();
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("stationType", Station.STATION_TYPE_FINISHEDPROD).getMap());
+        if (stations.size() != 1){
+            throw new Exception("成品库站台配置异常");
+        }
+        Station station = stations.get(0);
+        seedCount.setIsLock(station.getIsLock());
+        return seedCount;
+
     }
 
     @Override

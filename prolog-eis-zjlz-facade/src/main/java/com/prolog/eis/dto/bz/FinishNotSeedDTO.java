@@ -10,25 +10,36 @@ import io.swagger.annotations.ApiModelProperty;
 public class FinishNotSeedDTO {
 
     @ApiModelProperty("未出库订单总数")
-    private int notOutOrderCount;
+    private Integer notOutOrderCount;
 
     @ApiModelProperty("未出库数量")
-    private int notOutOrderDetailCount;
+    private Integer notOutOrderDetailCount;
+
+    @ApiModelProperty("索取订单 0开始索取，1结束索取")
+    private Integer isLock;
 
 
-    public int getNotOutOrderCount() {
+    public Integer getIsLock() {
+        return isLock;
+    }
+
+    public void setIsLock(Integer isLock) {
+        this.isLock = isLock;
+    }
+
+    public Integer getNotOutOrderCount() {
         return notOutOrderCount;
     }
 
-    public void setNotOutOrderCount(int notOutOrderCount) {
+    public void setNotOutOrderCount(Integer notOutOrderCount) {
         this.notOutOrderCount = notOutOrderCount;
     }
 
-    public int getNotOutOrderDetailCount() {
+    public Integer getNotOutOrderDetailCount() {
         return notOutOrderDetailCount;
     }
 
-    public void setNotOutOrderDetailCount(int notOutOrderDetailCount) {
+    public void setNotOutOrderDetailCount(Integer notOutOrderDetailCount) {
         this.notOutOrderDetailCount = notOutOrderDetailCount;
     }
 }

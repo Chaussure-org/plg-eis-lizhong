@@ -111,7 +111,7 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
      * @return
      */
     @Select("SELECT\n" +
-            "\tg.goods_no as goodsNo,\n" +
+            "\tg.owner_drawn_no as ownerDrawnNo,\n" +
             "\tg.goods_name as goodsName,\n" +
             "\tob.order_no as orderNo,\n" +
             "\tcb.seed_num as seedCount," +

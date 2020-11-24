@@ -74,7 +74,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     }
 
     @Override
-    public void doInventoryTask(String containerNo, int qty, String lotId) throws Exception {
+    public void doInventoryTask(String containerNo, int goodsNum, String lotId) throws Exception {
         if (StringUtils.isBlank(containerNo)) {
             throw new Exception("容器号不能为空");
         }
@@ -110,7 +110,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
 
         containerStore.setUpdateTime(new Date());
         //修改盘点计划
-        inventoryTaskDetail.setModifyCount(qty);
+        inventoryTaskDetail.setModifyCount(goodsNum);
         inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_FINISH);
         inventoryTaskDetail.setEndTime(new Date());
         if (stations.size() > 1) {
@@ -121,8 +121,8 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         }
         taskDetailService.updateInventoryDetail(inventoryTaskDetail);
         //盘点数量和实际数量不符则修改库存并回告wms
-        if (!containerStore.getQty().equals(qty)) {
-            containerStore.setQty(qty);
+        if (!containerStore.getQty().equals(goodsNum)) {
+            containerStore.setQty(goodsNum);
             //修改库存
             containerStoreService.updateContainerStore(containerStore);
         }

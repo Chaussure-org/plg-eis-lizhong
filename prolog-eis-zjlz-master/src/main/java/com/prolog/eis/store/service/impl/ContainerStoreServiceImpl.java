@@ -164,6 +164,11 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
         return page;
     }
 
+    @Override
+    public void deleteContainerByMap(String containerNo) {
+        containerStoreMapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),ContainerStore.class);
+    }
+
     private GoodsInfo getEmptyGoods() {
 		GoodsInfo goodsInfo = new GoodsInfo();
 		goodsInfo.setOwnerId("");

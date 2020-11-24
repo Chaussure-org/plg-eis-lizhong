@@ -95,4 +95,11 @@ public interface ContainerPathTaskService {
      * @param type
      */
     void updatePathTaskTypeByContainer(String containerNo,int type);
+
+
+    /**
+     * 根据容器删除路径
+     * @param containerNo
+     */
+    void deletePathByContainer(String containerNo);
 }

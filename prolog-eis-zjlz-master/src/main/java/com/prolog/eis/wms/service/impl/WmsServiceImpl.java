@@ -54,7 +54,7 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "EIS入库任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INBOUND_CALLBACK,systemType = LogDto.WMS)
     public EisRestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+        String url = this.getUrl(properties.getWms().getWmsInboundUrl());
         logger.info("EIS -> WMS 入库任务回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInboundCallBackDto),new TypeReference<EisRestMessage<String>>() {});
             return result;

@@ -291,7 +291,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
                 ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
                 if (containerStore.getQty() == 0){
-                    //空箱回库改容器商品id和类型(空箱类型)
+                    //空箱回库改容器默认商品id -1，库存为1
                     containerStoreService.updateEmptyContainer(containerNo);
                 }
             } else {
@@ -457,6 +457,9 @@ public class StationBZServiceImpl implements IStationBZService {
                 .put("orderBillId", orderBillId).getMap()).get(0);
         if (containerBinDings == null) {
             throw new Exception("容器【" + containerNo + "】无在播明细");
+        }
+        if (completeNum > containerBinDings.getSeedNum() ){
+            throw new Exception("短拣数量不能大于播种数量");
         }
         OrderDetail orderDetail = orderDetailService.findOrderDetailById(containerBinDings.getOrderDetailId());
         if (orderDetail == null) {

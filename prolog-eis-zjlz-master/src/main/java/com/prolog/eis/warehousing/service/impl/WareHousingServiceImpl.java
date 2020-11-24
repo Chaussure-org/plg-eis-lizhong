@@ -68,8 +68,8 @@ public class WareHousingServiceImpl implements IWareHousingService {
         WmsInboundTask wmsInboundTask = inboundTasks.get(0);
         WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setBILLNO(wmsInboundTask.getBillNo());
-        wmsInboundCallBackDto.setBILLTYPE(String.valueOf(wmsInboundTask.getBillType()));
-        wmsInboundCallBackDto.setCONTAINERID(wmsInboundTask.getContainerNo());
+        wmsInboundCallBackDto.setBILLTYPE(wmsInboundTask.getBillType());
+        wmsInboundCallBackDto.setCONTAINERNO(wmsInboundTask.getContainerNo());
         wmsInboundCallBackDto.setITEMID(EisStringUtils.getRemouldId(wmsInboundTask.getGoodsId()));
         wmsInboundCallBackDto.setITEMNAME(wmsInboundTask.getGoodsName());
         wmsInboundCallBackDto.setSEQNO(wmsInboundTask.getSeqNo());

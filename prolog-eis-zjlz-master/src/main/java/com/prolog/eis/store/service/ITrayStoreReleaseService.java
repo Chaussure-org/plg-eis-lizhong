@@ -14,4 +14,13 @@ public interface ITrayStoreReleaseService {
      * @param feederNo
      */
     void storeRelease(String containerNo,String feederNo) throws Exception;
+
+
+    /**
+     * 空托上架入库
+     * @param trayNo
+     * @param transhipNo
+     * @throws Exception
+     */
+    void emptyTrayPull(String trayNo,String transhipNo) throws Exception;
 }

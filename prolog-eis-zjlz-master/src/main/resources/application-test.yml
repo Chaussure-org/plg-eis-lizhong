@@ -57,3 +57,5 @@ prolog:
     mcs:
       host: service-ai-eis-zjlz-simulator-wk
       port: 0
+    wms:
+      host: lizhong-wms-bc-entry

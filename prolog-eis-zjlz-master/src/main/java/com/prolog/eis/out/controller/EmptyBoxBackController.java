@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -17,15 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
  * @author:SunPP
  */
 @RestController
-@RequestMapping("emptyBox")
+@RequestMapping("wms/page")
 public class EmptyBoxBackController {
 
     @Autowired
     private EmptyBoxBackService emptyBoxBackService;
 
     @RequestMapping("back")
-    public RestMessage back(@RequestBody @Validated EmptyBoxBackDto emptyBoxBackDto) throws Exception {
-        emptyBoxBackService.outEmptyBox(emptyBoxBackDto);
-        return RestMessage.newInstance(true,"",null);
+    public RestMessage back(@RequestParam()int qty) throws Exception {
+        try {
+            emptyBoxBackService.outEmptyBox(qty);
+            return RestMessage.newInstance(true,"",null);
+        } catch (Exception e) {
+           return RestMessage.newInstance(false,"操作失败:"+e.getMessage(),null);
+        }
+
     }
 }

@@ -111,4 +111,6 @@ public interface IContainerStoreService {
      * @return
      */
     Page<ContainerInfoDto> queryContainersPage(ContainerQueryDto containerQueryDto);
+
+    void deleteContainerByMap(String containerNo);
 }

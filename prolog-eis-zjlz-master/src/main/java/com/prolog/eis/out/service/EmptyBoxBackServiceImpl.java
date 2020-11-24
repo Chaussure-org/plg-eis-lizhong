@@ -41,12 +41,15 @@ public class EmptyBoxBackServiceImpl implements EmptyBoxBackService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void outEmptyBox(EmptyBoxBackDto emptyBoxBackDto) throws Exception {
-        List<OutContainerDto> emptyBoxs = boxOutEnginService.outByGoodsId(-10, emptyBoxBackDto.getQTY());
-        if (emptyBoxs.size() < emptyBoxBackDto.getQTY()) {
-            throw new Exception("当前空料箱数量" + emptyBoxs.size() + "不满足出库数量" + emptyBoxBackDto.getQTY());
+    public void outEmptyBox(int qty) throws Exception {
+        if (qty <= 0){
+            throw new Exception("空箱退库数异常不能为【"+qty+"】");
         }
-        for (int i = 0; i < emptyBoxBackDto.getQTY(); i++) {
+        List<OutContainerDto> emptyBoxs = boxOutEnginService.outByGoodsId(-10, qty);
+        if (emptyBoxs.size() < qty) {
+            throw new Exception("当前空料箱数量" + emptyBoxs.size() + "不满足出库数量" + qty);
+        }
+        for (int i = 0; i < qty; i++) {
             pathSchedulingService.containerMoveTask(emptyBoxs.get(i).getContainerNo(),
                     StoreArea.WCS061, null);
         }

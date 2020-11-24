@@ -116,7 +116,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
      */
     @Select("SELECT\n" +
             "\tg.goods_name AS goodsName,\n" +
-            "\tg.goods_no AS goodsNo,\n" +
+            "\tg.owner_drawn_no AS ownerDrawnNo,\n" +
             "\tt.bill_no AS billNo,\n" +
             "\tcs.qty AS goodsNum,\n" +
             "\tcs.lot_id as lotId\n" +

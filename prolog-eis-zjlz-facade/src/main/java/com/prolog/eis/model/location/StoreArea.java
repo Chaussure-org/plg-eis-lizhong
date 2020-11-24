@@ -140,8 +140,14 @@ public class StoreArea implements Serializable {
 
 
     /**
-     * 空托区
+     * 空托区暂存区
      */
     public static final String RCS02="RCS02";
+
+    /**
+     * 空托上架区
+     */
+    public static final String RCS03 = "RCS03";
+
 
 }
