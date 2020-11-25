@@ -36,4 +36,7 @@ public class InventoryWmsDto {
 
     @ApiModelProperty("差异数")
     private Double affQty;
+
+    @ApiModelProperty("批次id")
+    private String lotId;
 }

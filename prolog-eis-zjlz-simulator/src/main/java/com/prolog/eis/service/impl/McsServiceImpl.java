@@ -3,6 +3,8 @@ package com.prolog.eis.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.dto.mcs.McsCallBackDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
+import com.prolog.eis.dto.station.StationInfoDto;
+import com.prolog.eis.service.FeignService;
 import com.prolog.eis.service.McsService;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.framework.common.message.RestMessage;
@@ -20,6 +22,8 @@ public class McsServiceImpl implements McsService {
 
     @Autowired
     private HttpUtils httpUtils;
+    @Autowired
+    private FeignService feignService;
 
     @Override
     public  void doCallBack(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
@@ -60,4 +64,18 @@ public class McsServiceImpl implements McsService {
             System.out.println("mcscallback失败");
         }
     }
+
+    public void testFeign(){
+        StationInfoDto stationInfoDto = new StationInfoDto();
+        stationInfoDto.setStationTaskType(20);
+        stationInfoDto.setStationId(11);
+        stationInfoDto.setIsLock(0);
+        stationInfoDto.setStationIp("111.1111");
+
+        RestMessage<String> restMessage = feignService.updateStation(stationInfoDto);
+        System.out.println("aaaa");
+    }
+
+
+
 }

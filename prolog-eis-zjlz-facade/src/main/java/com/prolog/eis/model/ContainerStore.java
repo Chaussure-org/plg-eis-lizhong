@@ -74,8 +74,12 @@ public class ContainerStore {
     private Integer goodsId;
 
     @Column("lot_id")
-    @ApiModelProperty("批次")
+    @ApiModelProperty("批次id")
     private String lotId;
+
+    @Column("lot")
+    @ApiModelProperty("批次")
+    private String lot;
 
     @Column("goods_order_no")
     @ApiModelProperty("商品订单号")
@@ -188,4 +192,11 @@ public class ContainerStore {
         this.updateTime = updateTime;
     }
 
+    public String getLot() {
+        return lot;
+    }
+
+    public void setLot(String lot) {
+        this.lot = lot;
+    }
 }

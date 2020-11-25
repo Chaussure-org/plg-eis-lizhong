@@ -25,5 +25,5 @@ public class InventoryShowDto {
     private String billNo;
 
     @ApiModelProperty("批号")
-    private String lotId;
+    private String lot;
 }

@@ -26,9 +26,8 @@ public interface IInventoryJobService {
      * 盘点执行
      * @param containerNo 容器号
      * @param qty  数量
-     * @param lotId   批号
      */
-    void doInventoryTask(String containerNo,int qty,String lotId) throws Exception;
+    void doInventoryTask(String containerNo,int qty) throws Exception;
 
     /**
      * 盘点明细转历史

@@ -6,6 +6,7 @@ import com.prolog.framework.microservice.annotation.EnablePrologService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 @MapperScan(basePackages={"com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService
+@EnableFeignClients
 public class  ZjlzApplication {
 	public static void main( String[] args )
     {

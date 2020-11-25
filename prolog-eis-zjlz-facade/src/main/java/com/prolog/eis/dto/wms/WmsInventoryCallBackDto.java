@@ -39,7 +39,7 @@ public class WmsInventoryCallBackDto {
     private String CONTAINERNO;
 
     @ApiModelProperty("批号id")
-    private String LOTID;
+    private String PCH;
 
     @ApiModelProperty("计划盘点日期")
     private Date PLANDATE;
@@ -122,12 +122,12 @@ public class WmsInventoryCallBackDto {
         this.CONTAINERNO = CONTAINERNO;
     }
 
-    public String getLOTID() {
-        return LOTID;
+    public String getPCH() {
+        return PCH;
     }
 
-    public void setLOTID(String LOTID) {
-        this.LOTID = LOTID;
+    public void setPCH(String PCH) {
+        this.PCH = PCH;
     }
 
     public Date getPLANDATE() {
@@ -166,7 +166,7 @@ public class WmsInventoryCallBackDto {
                 ", ITEMID='" + ITEMID + '\'' +
                 ", ITEMTYPE='" + ITEMTYPE + '\'' +
                 ", CONTAINERNO='" + CONTAINERNO + '\'' +
-                ", LOTID='" + LOTID + '\'' +
+                ", PCH='" + PCH + '\'' +
                 ", PLANDATE=" + PLANDATE +
                 ", SJZ=" + SJZ +
                 ", AFFQTY=" + AFFQTY +

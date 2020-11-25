@@ -2,6 +2,7 @@ package com.prolog.eis.configuration;
 
 import com.prolog.eis.util.HttpUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;

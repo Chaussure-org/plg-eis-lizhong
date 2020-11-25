@@ -1,5 +1,7 @@
 package com.prolog.eis.store.service.impl;
 
+import com.prolog.eis.dto.lzenginee.RoadWayContainerTaskDto;
+import com.prolog.eis.engin.dao.TrayOutMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
@@ -14,7 +16,10 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author dengj
@@ -29,6 +34,8 @@ public class TrayStoreReleaseServiceImpl implements ITrayStoreReleaseService {
     private PathSchedulingService pathSchedulingService;
     @Autowired
     private IContainerStoreService containerStoreService;
+    @Autowired
+    private TrayOutMapper trayOutMapper;
 
     /**
      * 接驳口下架
@@ -82,6 +89,11 @@ public class TrayStoreReleaseServiceImpl implements ITrayStoreReleaseService {
         if (StringUtils.isBlank(trayNo) || StringUtils.isBlank(transhipNo)) {
             throw new Exception("参数不能为空");
         }
+        saveContainerStore(trayNo);
+        List<RoadWayContainerTaskDto> roadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();
+        List<RoadWayContainerTaskDto> collect = roadWayContainerTasks.stream().sorted(Comparator.comparing(RoadWayContainerTaskDto::getInCount).thenComparing(RoadWayContainerTaskDto::getOutCount)).collect(Collectors.toList());
+        //入库发路径
+        pathSchedulingService.inboundTask(trayNo,trayNo,StoreArea.RCS03,transhipNo,"MCS0" + collect.get(0).getRoadWay());
 
     }
 
@@ -93,5 +105,11 @@ public class TrayStoreReleaseServiceImpl implements ITrayStoreReleaseService {
         ContainerStore containerStore = new ContainerStore();
         containerStore.setQty(1);
         containerStore.setTaskStatus(10);
+        containerStore.setContainerNo(trayNo);
+        containerStore.setTaskType(10);
+        containerStore.setWorkCount(1);
+        containerStore.setGoodsId(-2);
+        containerStore.setCreateTime(new Date());
+
     }
 }

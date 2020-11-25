@@ -77,6 +77,11 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
         //2.校验 商品id 和 商品名称是否与 EIS 一致
         List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
+        //校验同批入库任务是否存在相同容器
+        HashSet<WmsInboundTaskDto> wmsInboundTaskDtos1 = new HashSet<>(wmsInboundTaskDtos);
+        if (wmsInboundTaskDtos.size() != 0 && wmsInboundTaskDtos.size() != wmsInboundTaskDtos1.size()  ){
+            throw new Exception("入库任务存在相同容器号，此次所有订单任务下发失败");
+        }
         List<WmsInboundTask> wmsInboundTaskList = new ArrayList<>();
         for (WmsInboundTaskDto wmsInboundTaskDto : wmsInboundTaskDtos) {
             if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())) {
@@ -87,7 +92,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 throw new Exception("该容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+wmsInboundTaskDto.getITEMID() + "不存在，此次所有订单任务下发失败！");
             }else {
                 if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())){
-                    throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名成与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
+                    throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
                 }
             }
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
@@ -103,6 +108,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setSeqNo(wmsInboundTaskDto.getSEQNO());
             wmsInboundTask.setTaskState(WmsInboundTask.TYPE_INBOUND);
             wmsInboundTask.setCreateTime(new Date());
+            wmsInboundTask.setLotId(wmsInboundTaskDto.getPCH());
+            wmsInboundTask.setLot(wmsInboundTaskDto.getLOT());
             wmsInboundTaskList.add(wmsInboundTask);
         }
         mapper.saveBatch(wmsInboundTaskList);
@@ -221,7 +228,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             Map<String, Object> param = MapUtils.put("branchType", BranchTypeEnum.getEisBranchType(wmsInventoryTask.getBRANCHTYPE())).put(
                     "containerNo",
                     wmsInventoryTask.getCONTAINERNO()).put("goodsType", wmsInventoryTask.getITEMTYPE()).put("goodsId"
-                    , wmsInventoryTask.getITEMID()).getMap();
+                    , wmsInventoryTask.getITEMID()).put("lotId",wmsInventoryTask.getPCH()).getMap();
             // 根据wms下发的相关信息找到需盘点的料箱
             List<InventoryGoodsDto> detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
 

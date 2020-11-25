@@ -81,6 +81,10 @@ public class WmsInboundTaskDto implements Serializable {
     @JsonProperty(value = "PCH")
     private String PCH;
 
+    @ApiModelProperty("批号")
+    @JsonProperty(value = "LOT")
+    private String LOT;
+
     @ApiModelProperty("生产日期")
     @JsonProperty(value = "PDATEFROM")
     private Date PDATEFROM;
@@ -315,6 +319,14 @@ public class WmsInboundTaskDto implements Serializable {
         this.EXSATTR5 = EXSATTR5;
     }
 
+    public String getLOT() {
+        return LOT;
+    }
+
+    public void setLOT(String LOT) {
+        this.LOT = LOT;
+    }
+
     @Override
     public String toString() {
         return "WmsInboundTaskDto{" +
@@ -329,11 +341,12 @@ public class WmsInboundTaskDto implements Serializable {
                 ", PARENTCONTAINERNO='" + PARENTCONTAINERNO + '\'' +
                 ", REMARK='" + REMARK + '\'' +
                 ", SEQNO='" + SEQNO + '\'' +
-                ", ITEMID='" + ITEMID + '\'' +
+                ", ITEMID=" + ITEMID +
                 ", ITEMNAME='" + ITEMNAME + '\'' +
                 ", JZS=" + JZS +
                 ", QTY=" + QTY +
                 ", PCH='" + PCH + '\'' +
+                ", LOT='" + LOT + '\'' +
                 ", PDATEFROM=" + PDATEFROM +
                 ", SJC=" + SJC +
                 ", SPECIAL=" + SPECIAL +

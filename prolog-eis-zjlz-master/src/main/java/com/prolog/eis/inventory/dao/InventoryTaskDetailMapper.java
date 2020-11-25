@@ -58,6 +58,9 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "</if>" +
             "<if test = 'map.branchType == \"B\"'>" +
             " and cpt.target_area IN ( 'MCS01','MCS02','MCS03','MCS04','MCS05')" +
+            "</if>" +
+            "<if test = 'map.lotId != null and map.lotId != \"\"'>" +
+            " and cs.lotId = #{map.lotId}" +
             "</if>"+
             "</script>")
     List<InventoryGoodsDto> getInventoryGoods(@Param("map") Map<String, Object> map);
@@ -101,9 +104,12 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\th.goods_type AS goodsType,\n" +
             "\th.goods_id AS goodsId,\n" +
             "\t( SELECT sum( d.original_count - d.modify_count ) FROM inventory_task_detail d WHERE d.inventory_task_id = h.id ) AS affQty,\n" +
-            "\t+ h.branch_type AS branchType \n" +
+            "\th.branch_type AS branchType,\n" +
+            "\tcs.lot_id \n" +
             "FROM\n" +
-            "\tinventory_task h \n" +
+            "\tinventory_task h\n" +
+            "\tLEFT JOIN inventory_task_detail d ON d.inventory_task_id = h.id\n" +
+            "\tJOIN container_store cs ON cs.container_no = d.container_no \n" +
             "WHERE\n" +
             "\th.id = #{id}")
     List<InventoryWmsDto> findWmsInventory(@Param("id") int id);
@@ -119,7 +125,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\tg.owner_drawn_no AS ownerDrawnNo,\n" +
             "\tt.bill_no AS billNo,\n" +
             "\tcs.qty AS goodsNum,\n" +
-            "\tcs.lot_id as lotId\n" +
+            "\tcs.lot as lot\n" +
             "FROM\n" +
             "\tinventory_task_detail td\n" +
             "\tJOIN container_store cs ON cs.container_no = td.container_no\n" +

@@ -74,7 +74,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     }
 
     @Override
-    public void doInventoryTask(String containerNo, int goodsNum, String lotId) throws Exception {
+    public void doInventoryTask(String containerNo, int goodsNum) throws Exception {
         if (StringUtils.isBlank(containerNo)) {
             throw new Exception("容器号不能为空");
         }
@@ -85,12 +85,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
             throw new Exception("容器【" + containerNo + "】无库存");
         }
         ContainerStore containerStore = containerStores.get(0);
-        //校验批次号
-        if (!StringUtils.isBlank(lotId)) {
-            if (!containerStore.getLotId().equals(lotId)) {
-                throw new Exception("容器【" + containerNo + "】批次号错误");
-            }
-        }
+
         //校验容器是否有盘点任务
         List<InventoryTaskDetail> details = taskDetailService.findByMap(MapUtils.put("containerNo", containerNo).put("taskState", InventoryTaskDetail.TASK_STATE_OUT).getMap());
         if (details.size() == 0) {

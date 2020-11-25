@@ -93,6 +93,7 @@ public class InventoryHistoryServiceImpl implements IInventoryHistoryService {
                 wmsInventoryCallBackDto.setSJZ(new Date());
                 wmsInventoryCallBackDto.setBRANCHCODE("C001");
                 wmsInventoryCallBackDto.setBRANCHAREA(inventoryWmsDto.getBranchType());
+                wmsInventoryCallBackDto.setPCH(inventoryWmsDto.getLotId());
                 wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
 
             }

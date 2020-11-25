@@ -60,6 +60,18 @@ public class WmsInventoryTaskDto {
     @JsonProperty(value = "SJC")
     private Date SJC;
 
+    @ApiModelProperty("批次id")
+    @JsonProperty(value = "PCH")
+    private String PCH;
+
+    public String getPCH() {
+        return PCH;
+    }
+
+    public void setPCH(String PCH) {
+        this.PCH = PCH;
+    }
+
     public String getTASKID() {
         return TASKID;
     }

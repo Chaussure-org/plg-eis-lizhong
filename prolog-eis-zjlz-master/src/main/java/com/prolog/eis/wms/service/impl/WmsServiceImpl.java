@@ -10,6 +10,7 @@ import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.wms.service.FeignService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
@@ -69,7 +70,7 @@ public class WmsServiceImpl implements IWmsService {
     @LogInfo(desci = "Eis出库任务完成回告",direction = "eis->wms",type = LogDto.WMS_TYPE_OUTBOUND_CALLBACK,systemType =
             LogDto.WMS)
     public EisRestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+        String url = this.getUrl(properties.getWms().getWmsSeedEndUrl());
         logger.info("EIS -> WCS 出库任务完成回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsOutboundCallBackDto),new TypeReference<EisRestMessage<String>>() {});
             return result;
@@ -87,7 +88,7 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "eis拣选开始回告",direction = "eis->wms",type = LogDto.WMS_TYPE_START_ORDER,systemType = LogDto.WMS)
     public EisRestMessage<String> startOrderCallBack(WmsStartOrderCallBackDto startOrderCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+        String url = this.getUrl(properties.getWms().getWmsStartSeedUrl());
         logger.info("EIS -> WCS eis开始拣选回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(startOrderCallBackDto),new TypeReference<EisRestMessage<String>>() {});
         return result;
