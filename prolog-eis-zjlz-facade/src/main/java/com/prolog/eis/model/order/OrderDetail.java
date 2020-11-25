@@ -85,6 +85,10 @@ public class OrderDetail {
     @ApiModelProperty("是否订单拖（麦头） 1 是 2 不是")
     private Integer special;
 
+    @Column("lot_no")
+    @ApiModelProperty("麦头")
+    private String lotNo;
+
     public Integer getSpecial() {
         return special;
     }
@@ -212,5 +216,13 @@ public class OrderDetail {
 
     public void setOutQty(Integer outQty) {
         this.outQty = outQty;
+    }
+
+    public String getLotNo() {
+        return lotNo;
+    }
+
+    public void setLotNo(String lotNo) {
+        this.lotNo = lotNo;
     }
 }

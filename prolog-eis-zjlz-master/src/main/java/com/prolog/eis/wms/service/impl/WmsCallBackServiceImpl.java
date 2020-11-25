@@ -5,6 +5,10 @@ import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wms.*;
+import com.prolog.eis.dto.wms.WmsGoodsDto;
+import com.prolog.eis.dto.wms.WmsInboundTaskDto;
+import com.prolog.eis.dto.wms.WmsInventoryTaskDto;
+import com.prolog.eis.dto.wms.WmsUpProiorityDto;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
@@ -24,7 +28,6 @@ import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +103,12 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setBillType(wmsInboundTaskDto.getBILLTYPE());
             wmsInboundTask.setBoxSpecs(wmsInboundTaskDto.getJZS());
             wmsInboundTask.setBranchType(wmsInboundTaskDto.getBRANCHTYPE());
-            wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());
+            // 此处修改容器号，如果该容器有麦头 则使用麦头作为容器号
+            if (wmsInboundTaskDto.getSPECIAL() == 1 && !StringUtils.isBlank(wmsInboundTaskDto.getLOTNO())) {
+                    wmsInboundTask.setContainerNo(wmsInboundTaskDto.getLOTNO());
+            } else {
+                wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());
+            }
             wmsInboundTask.setGoodsId(wmsInboundTaskDto.getITEMID());
             wmsInboundTask.setGoodsName(wmsInboundTaskDto.getITEMNAME());
             wmsInboundTask.setLineId(wmsInboundTaskDto.getLINEID());
@@ -153,7 +161,9 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         orderDetail.setHasPickQty(0);
                         orderDetail.setTrayPlanQty(0);
                         orderDetail.setCreateTime(new Date());
+                        // 订单麦头相关信息
                         orderDetail.setSpecial(Integer.valueOf(wmsOutboundTaskDto.getSPECIAL()));
+                        orderDetail.setLotNo(wmsOutboundTaskDto.getLOTNO());
                         orderDetails.add(orderDetail);
 
                     }else {
