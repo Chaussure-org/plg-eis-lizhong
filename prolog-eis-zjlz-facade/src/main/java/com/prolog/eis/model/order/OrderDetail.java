@@ -89,6 +89,11 @@ public class OrderDetail {
     @ApiModelProperty("是否贴标")
     private Integer decals;
 
+
+    @Column("lot_no")
+    @ApiModelProperty("麦头")
+    private Integer lotNo;
+
     public Integer getDecals() {
         return decals;
     }
@@ -224,5 +229,13 @@ public class OrderDetail {
 
     public void setOutQty(Integer outQty) {
         this.outQty = outQty;
+    }
+
+    public Integer getLotNo() {
+        return lotNo;
+    }
+
+    public void setLotNo(Integer lotNo) {
+        this.lotNo = lotNo;
     }
 }
