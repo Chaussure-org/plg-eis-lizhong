@@ -81,6 +81,18 @@ public class OrderDetail {
     @ApiModelProperty("出库数量")
     private Integer outQty;
 
+    @Column("special")
+    @ApiModelProperty("是否订单拖（麦头） 1 是 2 不是")
+    private Integer special;
+
+    public Integer getSpecial() {
+        return special;
+    }
+
+    public void setSpecial(Integer special) {
+        this.special = special;
+    }
+
     public Integer getTrayPlanQty() {
         return trayPlanQty;
     }

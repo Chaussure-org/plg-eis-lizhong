@@ -86,7 +86,7 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "\torder_bill ob\n" +
             "\tJOIN order_detail od ON od.order_bill_id = ob.id \n" +
             "WHERE\n" +
-            "\tod.plan_qty != od.has_pick_qty and ob.order_type = 'C'")
+            "\tod.plan_qty != od.has_pick_qty and ob.order_type = 2")
     FinishNotSeedDTO getFinishSeedCount();
 
 

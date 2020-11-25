@@ -79,31 +79,52 @@ public class WmsOutboundTaskDto {
     private String LOTNO;
 
     @ApiModelProperty("拓展字段1  是否成品")
+    @JsonProperty(value = "EXSATTR1")
     private String EXSATTR1;
 
     @ApiModelProperty("拓展字段2  成品用-产品类别")
+    @JsonProperty(value = "EXSATTR2")
     private String EXSATTR2;
 
     @ApiModelProperty("拓展字段3 成品用-客户号")
+    @JsonProperty(value = "EXSATTR3")
     private String EXSATTR3;
 
     @ApiModelProperty("拓展字段4 贴标区")
+    @JsonProperty(value = "EXSATTR4")
     private String EXSATTR4;
 
     @ApiModelProperty("拓展字段5 成品用-客户名称")
+    @JsonProperty(value = "EXSATTR5")
     private String EXSATTR5;
 
     @ApiModelProperty("拓展字段6 成品用-派工数量")
+    @JsonProperty(value = "EXSATTR6")
     private String EXSATTR6;
 
     @ApiModelProperty("拓展字段7 成品用-订单交期")
+    @JsonProperty(value = "EXSATTR7")
     private Date EXSATTR7;
 
     @ApiModelProperty("拓展字段8 成品用-客户合同号")
+    @JsonProperty(value = "EXSATTR8")
     private String EXSATTR8;
 
     @ApiModelProperty("拓展字段9 成品用-产品名称")
+    @JsonProperty(value = "EXSATTR9")
     private String EXSATTR9;
+
+    @ApiModelProperty("拓展字段10 是否铁笼")
+    @JsonProperty(value = "EXSATTR10")
+    private String EXSATTR10;
+
+    public String getEXSATTR10() {
+        return EXSATTR10;
+    }
+
+    public void setEXSATTR10(String EXSATTR10) {
+        this.EXSATTR10 = EXSATTR10;
+    }
 
     public String getTASKID() {
         return TASKID;

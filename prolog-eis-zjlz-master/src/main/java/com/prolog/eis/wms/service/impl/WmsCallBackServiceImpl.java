@@ -153,7 +153,9 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         orderDetail.setHasPickQty(0);
                         orderDetail.setTrayPlanQty(0);
                         orderDetail.setCreateTime(new Date());
+                        orderDetail.setSpecial(Integer.valueOf(wmsOutboundTaskDto.getSPECIAL()));
                         orderDetails.add(orderDetail);
+
                     }else {
                         OrderFinish orderFinish = new OrderFinish();
                         orderFinish.setOrderBillId(orderBill.getId());

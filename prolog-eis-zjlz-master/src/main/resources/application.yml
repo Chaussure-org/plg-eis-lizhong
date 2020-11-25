@@ -21,7 +21,7 @@ server:
 management.endpoints.web.exposure.include: "*"
 
 spring:
-  profiles.active: dev
+  profiles.active: test
 
 #熔断配置
 hystrix:
