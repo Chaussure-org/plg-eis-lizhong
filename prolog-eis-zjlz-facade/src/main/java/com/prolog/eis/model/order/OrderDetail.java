@@ -85,6 +85,18 @@ public class OrderDetail {
     @ApiModelProperty("是否订单拖（麦头） 1 是 2 不是")
     private Integer special;
 
+    @Column("decals")
+    @ApiModelProperty("是否贴标")
+    private Integer decals;
+
+    public Integer getDecals() {
+        return decals;
+    }
+
+    public void setDecals(Integer decals) {
+        this.decals = decals;
+    }
+
     public Integer getSpecial() {
         return special;
     }
