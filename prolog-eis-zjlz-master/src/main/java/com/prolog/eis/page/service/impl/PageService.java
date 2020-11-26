@@ -244,8 +244,8 @@ public class PageService implements IPageService {
     }
 
     @Override
-    public void updateBoxGroupLock(String groupNo) {
-        storeLocationService.updateGroupLock(groupNo);
+    public void updateBoxGroupLock(String groupNo,int isLock) throws Exception {
+        storeLocationService.updateGroupLock(groupNo,isLock);
     }
 
     @Override
@@ -254,8 +254,8 @@ public class PageService implements IPageService {
     }
 
     @Override
-    public void updateTrayGroupLock(String groupNo) {
-        storeLocationService.updateGroupLock(groupNo);
+    public void updateTrayGroupLock(String groupNo,int isLock) throws Exception {
+        storeLocationService.updateGroupLock(groupNo,isLock);
     }
 
     @Override

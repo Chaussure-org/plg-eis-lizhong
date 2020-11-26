@@ -3,6 +3,7 @@ package com.prolog.eis.pick.service.impl;
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.bz.OrderTrayWeighDTO;
+import com.prolog.eis.dto.bz.PickWmsDto;
 import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
@@ -30,6 +31,7 @@ import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.store.service.IPickingOrderHistoryService;
 import com.prolog.eis.store.service.IPickingOrderService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wms.service.IWmsService;
@@ -280,7 +282,7 @@ public class StationBZServiceImpl implements IStationBZService {
         if (stationIds.size() == 0) {
             //直接放行
             if (stations.size() > 0) {
-                //todo：上层输送线  循环线点位
+                //上层输送线  循环线点位
 
                 String taskId = PrologStringUtils.newGUID();
                 PointLocation point = pointLocationService.getPointByStationId(stationId);
@@ -289,7 +291,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
                 ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
                 if (containerStore.getQty() == 0){
-                    //空箱回库改容器商品id和类型(空箱类型)
+                    //空箱回库改容器默认商品id -1，库存为1
                     containerStoreService.updateEmptyContainer(containerNo);
                 }
             } else {
@@ -306,7 +308,7 @@ public class StationBZServiceImpl implements IStationBZService {
             if (stations.size() > 0) {
                 //计算合适站台
                 int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
-                //todo：上层输送线 发送点位
+                //上层输送线 发送点位
                 String taskId = PrologStringUtils.newGUID();
                 PointLocation point = pointLocationService.getPointByStationId(stationId);
                 PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
@@ -423,9 +425,19 @@ public class StationBZServiceImpl implements IStationBZService {
         if (containerBindingDetail == null) {
             return;
         }
-        WmsOutboundCallBackDto wmsOrderBill = orderBillService.findWmsOrderBill(containerBindingDetail.getOrderDetailId()).get(0);
+        List<PickWmsDto> pickWmsDtos = orderBillService.findWmsOrderBill(containerBindingDetail.getOrderDetailId());
+        PickWmsDto pickWmsDto = pickWmsDtos.get(0);
+        WmsOutboundCallBackDto wmsOrderBill = new WmsOutboundCallBackDto();
         wmsOrderBill.setSJC(new Date());
         wmsOrderBill.setCONTAINERNO(containerBindingDetail.getContainerNo());
+        wmsOrderBill.setITEMID(EisStringUtils.getRemouldId(pickWmsDto.getGoodsId()));
+        wmsOrderBill.setBILLNO(pickWmsDto.getOrderNo());
+        wmsOrderBill.setBILLDATE(pickWmsDto.getBillDate());
+        wmsOrderBill.setLOTID(pickWmsDto.getLotId());
+        wmsOrderBill.setBILLTYPE(String.valueOf(pickWmsDto.getOrderType()));
+        wmsOrderBill.setTASKID(pickWmsDto.getTaskId());
+        wmsOrderBill.setQTY(Double.valueOf(pickWmsDto.getCompleteQty()));
+
         //回告wms
         wmsService.outboundTaskCallBack(wmsOrderBill);
 
@@ -446,14 +458,17 @@ public class StationBZServiceImpl implements IStationBZService {
         if (containerBinDings == null) {
             throw new Exception("容器【" + containerNo + "】无在播明细");
         }
+        if (completeNum > containerBinDings.getSeedNum() ){
+            throw new Exception("短拣数量不能大于播种数量");
+        }
         OrderDetail orderDetail = orderDetailService.findOrderDetailById(containerBinDings.getOrderDetailId());
         if (orderDetail == null) {
             throw new RuntimeException("绑定料箱【" + containerNo + "】无订单明细");
         }
         //更新orderDetail
         orderDetail.setHasPickQty(orderDetail.getHasPickQty() + containerBinDings.getSeedNum());
-        if (completeNum >= 0) {
-            logger.info("站台{}订单明细【{}】短拣完成", stationId, orderDetail.getId());
+        if (!containerBinDings.getSeedNum().equals(completeNum) && completeNum > 0) {
+            logger.info("站台【{}】订单明细【{}】短拣完成", stationId, orderDetail.getId());
             orderDetail.setCompleteQty(orderDetail.getCompleteQty() + completeNum);
         } else {
             orderDetail.setCompleteQty(orderDetail.getCompleteQty() + containerBinDings.getSeedNum());
@@ -551,7 +566,7 @@ public class StationBZServiceImpl implements IStationBZService {
         OrderTrayWeighDTO orderTrayWeighDTO = new OrderTrayWeighDTO();
         orderTrayWeighDTO.setPassBoxWeigh(containerWeigh);
         orderTrayWeighDTO.setWeigh(sumWeigh);
-        //todo：误差率
+        //误差率
         BigDecimal errorRate = eisProperties.getErrorRate();
         /**
          * 计算是否符合误差，是则回告前端true，否则判断第二次称重是否有值

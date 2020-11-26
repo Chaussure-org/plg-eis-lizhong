@@ -29,8 +29,13 @@ public class Station {
      */
     public static final int TASK_TYPE_EMPTY= 0;
 
-
+    /**
+     * 半成品库
+     */
     public static final int STATION_TYPE_UNFINISHEDPROD = 1;
+    /**
+     * 成品库
+     */
     public static final int STATION_TYPE_FINISHEDPROD = 2;
 
     public static final int UN_LOCK = 0;

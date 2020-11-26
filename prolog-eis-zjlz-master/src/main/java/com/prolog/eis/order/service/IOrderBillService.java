@@ -3,6 +3,7 @@ package com.prolog.eis.order.service;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.bz.PickWmsDto;
 import com.prolog.eis.dto.page.OrderInfoDto;
 import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
@@ -69,7 +70,7 @@ public interface IOrderBillService {
      * @param orderBillId
      * @return
      */
-    List<WmsOutboundCallBackDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
+    List<PickWmsDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
 
     /**
      * 获取成品库未完成订单总量及明细情况

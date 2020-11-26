@@ -1,6 +1,11 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * @Author wangkang
@@ -10,44 +15,58 @@ import io.swagger.annotations.ApiModelProperty;
 public class WmsGoodsDto {
 
     @ApiModelProperty("商品id")
+    @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
     @ApiModelProperty("商品名称")
+    @JsonProperty(value = "ITEMNAME")
     private String ITEMNAME;
 
     @ApiModelProperty("分包数")
+    @JsonProperty(value = "JZS")
     private Double JZS;
 
     @ApiModelProperty("大类")
+    @JsonProperty(value = "ITEMTYPE")
     private String ITEMTYPE;
 
     @ApiModelProperty("类别")
+    @JsonProperty(value = "GATEGORYID")
     private String GATEGORYID;
 
     @ApiModelProperty("商品条码")
+    @JsonProperty(value = "ITEMBARCODE")
     private String ITEMBARCODE;
 
     @ApiModelProperty("称重")
-    private Double weight;
+    @JsonProperty(value = "WEIGHT")
+    private Double WEIGHT;
 
     @ApiModelProperty("拓展字段1")
+    @JsonProperty(value = "EXSATTR1")
     private String EXSATTR1;
 
     @ApiModelProperty("拓展字段2")
+    @JsonProperty(value = "EXSATTR2")
     private String EXSATTR2;
 
     @ApiModelProperty("拓展字段3")
+    @NotEmpty(message = "商品贴标不能为空")
+    @JsonProperty(value = "EXSATTR3")
     private String EXSATTR3;
 
     @ApiModelProperty("拓展字段4")
+    @JsonProperty(value = "EXSATTR4")
     private String EXSATTR4;
 
-    public Double getWeight() {
-        return weight;
+
+
+    public Double getWEIGHT() {
+        return WEIGHT;
     }
 
-    public void setWeight(Double weight) {
-        this.weight = weight;
+    public void setWEIGHT(Double WEIGHT) {
+        this.WEIGHT = WEIGHT;
     }
 
     public String getITEMID() {

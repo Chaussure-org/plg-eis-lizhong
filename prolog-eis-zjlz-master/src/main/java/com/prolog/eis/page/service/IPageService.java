@@ -135,7 +135,7 @@ public interface IPageService {
      * 解锁货位组
      * @param groupNo
      */
-    void updateBoxGroupLock(String groupNo);
+    void updateBoxGroupLock(String groupNo,int isLock) throws Exception;
 
     /**
      * 立库货位信息查询
@@ -148,7 +148,7 @@ public interface IPageService {
      * 立库货位组解锁
      * @param groupNo
      */
-    void updateTrayGroupLock(String groupNo);
+    void updateTrayGroupLock(String groupNo,int isLock) throws Exception;
 
     /**
      * agv区域货位信息

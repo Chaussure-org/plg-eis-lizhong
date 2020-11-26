@@ -4,18 +4,23 @@ import com.github.pagehelper.PageHelper;
 import com.prolog.eis.dto.OrderBillDto;
 import com.prolog.eis.dto.bz.FinishNotSeedDTO;
 import com.prolog.eis.dto.bz.FinishTrayDTO;
+import com.prolog.eis.dto.bz.PickWmsDto;
 import com.prolog.eis.dto.page.OrderInfoDto;
 import com.prolog.eis.dto.page.OrderQueryDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderBillHistory;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.service.IOrderBillHistoryService;
 import com.prolog.eis.order.service.IOrderBillService;
+import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.store.service.IStoreService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
+import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.prolog.eis.order.service.IOrderDetailService;
@@ -40,6 +45,9 @@ public class OrderBillServiceImpl implements IOrderBillService {
     private IOrderBillHistoryService orderBillHistoryService;
     @Autowired
     private IOrderDetailService orderDetailService;
+
+    @Autowired
+    private IContainerStoreService containerStoreService;
 
     @Override
     public void saveOrderBill(OrderBill orderBill) {
@@ -99,7 +107,18 @@ public class OrderBillServiceImpl implements IOrderBillService {
             List<OrderDetail> orderDetailByMap = orderDetailService.findOrderDetailByMap(MapUtils.put("orderBillId",
                     orderBillId).getMap());
             for (OrderDetail orderDetail : orderDetailByMap) {
-                if(orderDetail.getPlanQty() < (map.get(orderDetail.getGoodsId()))){
+                //如果订单明细有麦头就确定map中是否有麦头存在
+                if (!StringUtils.isBlank(orderDetail.getWheatHead())) {
+                    //验证当前麦头是否在库存里无任务状态
+                    String lotNo = orderDetail.getWheatHead();
+                    List<ContainerStore> containerStores = containerStoreService.findByMap(MapUtils.put("wheatHead",
+                            lotNo).getMap());
+                    if (containerStores == null || containerStores.size() ==0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else if(orderDetail.getPlanQty() < (map.get(orderDetail.getGoodsId()))){
                     map.put(orderDetail.getGoodsId(),map.get(orderDetail.getGoodsId())-orderDetail.getPlanQty());
                 }else{
                     return false;
@@ -122,7 +141,7 @@ public class OrderBillServiceImpl implements IOrderBillService {
     }
 
     @Override
-    public List<WmsOutboundCallBackDto> findWmsOrderBill(int orderDetailId) {
+    public List<PickWmsDto> findWmsOrderBill(int orderDetailId) {
         return orderBillMapper.findWmsOrderBill(orderDetailId);
     }
 

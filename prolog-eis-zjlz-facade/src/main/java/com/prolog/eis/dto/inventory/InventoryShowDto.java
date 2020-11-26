@@ -12,8 +12,8 @@ import lombok.Data;
 @Data
 public class InventoryShowDto {
 
-    @ApiModelProperty("商品条码")
-    private String goodsNo;
+    @ApiModelProperty("图号")
+    private String ownerDrawnNo;
 
     @ApiModelProperty("商品名称")
     private String goodsName;
@@ -25,5 +25,5 @@ public class InventoryShowDto {
     private String billNo;
 
     @ApiModelProperty("批号")
-    private String lotId;
+    private String lot;
 }

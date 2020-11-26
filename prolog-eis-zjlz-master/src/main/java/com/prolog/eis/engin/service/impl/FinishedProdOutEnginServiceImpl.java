@@ -5,6 +5,7 @@ import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.engin.dao.FinishedProdOutEnginMapper;
 import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderBill;
@@ -15,6 +16,7 @@ import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.framework.utils.MapUtils;
+import com.prolog.framework.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,8 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
 
     @Autowired
     private IContainerBindingDetailService containerBindingDetailService;
+    @Autowired
+    private PathSchedulingService pathSchedulingService;
 
     /**
      * 1.优先考虑借道成品
@@ -66,58 +70,68 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         boolean flag = this.checkStation();
         if (flag) {
             Map<Integer, Integer> map = this.initFinishedTrayLib();
-            List<OrderBillDto> orderBillDtos =  orderBillService.initFinishProdOrder(map);
-            if (orderBillDtos != null && orderBillDtos.size()>0) {
-                this.trayOut(orderBillDtos.get(0));
+            List<OrderBillDto> orderBillDtos = orderBillService.initFinishProdOrder(map);
+            if (orderBillDtos != null && orderBillDtos.size() > 0) {
+                List<OrderBillDto> collect =
+                        orderBillDtos.stream().filter(x -> x.getWmsOrderPriority() == OrderBill.WMS_ADD_PRIORITY).collect(Collectors.toList());
+                if (collect == null || collect.size() == 0) {
+                    this.trayOut(orderBillDtos.get(0));
+                }else {
+                    this.trayOut(collect.get(0));
+                }
             }
-        }else {
+        } else {
             logger.warn("当前站台锁定状态");
         }
     }
 
     /**
      * 根据最优订单出库
+     *
      * @param orderBillDto 订单实体
      * @throws Exception
      */
     private void trayOut(OrderBillDto orderBillDto) throws Exception {
-        Map<String, Object> param = MapUtils.put("orderBillId",orderBillDto.getOrderBillId()).getMap();
+        Map<String, Object> param = MapUtils.put("orderBillId", orderBillDto.getOrderBillId()).getMap();
         List<OrderDetail> orderDetailByMap = orderDetailService.findOrderDetailByMap(param);
-        if (orderDetailByMap != null && orderDetailByMap.size() >0) {
-            //所有需要出库的托盘
-            for (OrderDetail orderDetail : orderDetailByMap) {
-                int bindingNum = 0;
+        //所有需要出库的托盘
+        for (OrderDetail orderDetail : orderDetailByMap) {
+            ContainerStore containerStore = null;
+            int bindingNum = 0;
+            if (!StringUtils.isBlank(orderDetail.getWheatHead())){
+                List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("wheatHead",
+                        orderDetail.getWheatHead()).getMap());
+                containerStore = containerStoreList.get(0);
+                bindingNum = 1;
+            } else {
                 //找一个能出的出
                 List<ContainerStore> containerListByGoodsId =
                         containerStoreService.findContainerListByGoodsId(orderDetail.getGoodsId());
                 List<ContainerStore> collect =
-                        containerListByGoodsId.stream().filter(x -> x.getQty() >= orderDetail.getPlanQty()-orderDetail.getOutQty()).collect(Collectors.toList());
-                ContainerStore containerStore = null;
-                if (collect.size()>0){
-                     containerStore = collect.get(0);
-                     bindingNum = orderDetail.getPlanQty()-orderDetail.getOutQty();
-                }else {
+                        containerListByGoodsId.stream().filter(x -> x.getQty() >= orderDetail.getPlanQty() - orderDetail.getOutQty()).collect(Collectors.toList());
+                if (collect.size() > 0) {
+                    containerStore = collect.get(0);
+                    bindingNum = orderDetail.getPlanQty() - orderDetail.getOutQty();
+                } else {
                     List<ContainerStore> collect1 =
                             containerListByGoodsId.stream().sorted(Comparator.comparing(ContainerStore::getQty).reversed()).collect(Collectors.toList());
                     containerStore = collect1.get(0);
                     bindingNum = containerStore.getQty();
                 }
-                try{
-                    this.getOutTray(containerStore,orderDetail,bindingNum);
-                    break;
-                }catch (Exception e){
-                    logger.warn(containerStore.getContainerNo()+"出库失败："+e.getMessage());
-                    continue;
-                }
-
             }
-        }else{
-            logger.warn("未找到可出库订单");
+            try {
+                this.getOutTray(containerStore, orderDetail, bindingNum);
+                break;
+            } catch (Exception e) {
+                logger.warn(containerStore.getContainerNo() + "出库失败：" + e.getMessage());
+                continue;
+            }
         }
     }
 
     /**
      * 出库托盘
+     *
      * @param containerStore
      */
     @Transactional(rollbackFor = Exception.class)
@@ -128,11 +142,25 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
          * 修改托盘任务类型
          * 出库
          */
-        orderDetail = checkOrderDetailStatus(containerStore,orderDetail);
+        orderDetail = checkOrderDetailStatus(containerStore, orderDetail);
         orderBillService.updateOrderBillStatus(orderDetail);
-        createContainerBindindDetail(containerStore,orderDetail,bindingNum);
         containerStoreService.updateContainerTaskType(containerStore);
+        if (StringUtils.isBlank(orderDetail.getWheatHead())) {
+
+            createContainerBindindDetail(containerStore, orderDetail, bindingNum);
+            if (containerStore.getQty().equals(bindingNum)){
+                //没麦头 尾拖出库
+                pathSchedulingService.containerMoveTask(containerStore.getContainerNo(),"WCS052",null);
+            }else {
+                //todo：没麦头---》拣选站
+            }
+        }else {
+            //有麦头出库
+            pathSchedulingService.containerMoveTask(containerStore.getContainerNo(),"WCS052",null);
+        }
+
         //todo 修改路径相关进行出库
+
 
     }
 
@@ -150,14 +178,15 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
 
     /**
      * 改变订单明细的数量
+     *
      * @param orderDetail
      * @return
      */
-    private OrderDetail checkOrderDetailStatus(ContainerStore containerStore,OrderDetail orderDetail) {
+    private OrderDetail checkOrderDetailStatus(ContainerStore containerStore, OrderDetail orderDetail) {
         Integer planQty = orderDetail.getPlanQty();
-        if (planQty>orderDetail.getOutQty()+containerStore.getQty()){
-            orderDetail.setOutQty(orderDetail.getOutQty()+containerStore.getQty());
-        }else {
+        if (planQty > orderDetail.getOutQty() + containerStore.getQty()) {
+            orderDetail.setOutQty(orderDetail.getOutQty() + containerStore.getQty());
+        } else {
             orderDetail.setOutQty(planQty);
         }
         return orderDetail;
@@ -165,6 +194,7 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
 
     /**
      * 检查站台当前状态是否完成当前订单
+     *
      * @return
      */
     private boolean checkStation() throws Exception {
@@ -174,7 +204,7 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
     /**
      * 初始化成品立库信息
      */
-    private Map<Integer,Integer> initFinishedTrayLib() {
+    private Map<Integer, Integer> initFinishedTrayLib() {
         return this.getCanBeUsedStore();
     }
 
@@ -182,33 +212,33 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
      * 获取可用库存
      */
     @Override
-    public Map<Integer,Integer> getCanBeUsedStore() {
+    public Map<Integer, Integer> getCanBeUsedStore() {
         //所有成品拖
-        Map<Integer,Integer> allGoodsCount = changeList(mapper.findAllGoodsCount());
+        Map<Integer, Integer> allGoodsCount = changeList(mapper.findAllGoodsCount());
 
         //绑定任务成品拖
-        Map<Integer,Integer> usedGoodsCount = changeList(mapper.findUsedGoodsCount());
+        Map<Integer, Integer> usedGoodsCount = changeList(mapper.findUsedGoodsCount());
         //可使用成品拖
-        Map<Integer,Integer> canBeUsedStore = new HashMap<>();
+        Map<Integer, Integer> canBeUsedStore = new HashMap<>();
         if (usedGoodsCount == null || usedGoodsCount.size() == 0) {
             return allGoodsCount;
         }
         usedGoodsCount.forEach((k, v) -> {
-                if (allGoodsCount.get(k)!=null){
-                    allGoodsCount.put(k,allGoodsCount.get(k)-v);
-                }
-            });
+            if (allGoodsCount.get(k) != null) {
+                allGoodsCount.put(k, allGoodsCount.get(k) - v);
+            }
+        });
         canBeUsedStore.putAll(allGoodsCount);
         return canBeUsedStore;
     }
 
     private Map<Integer, Integer> changeList(List<Map<String, Integer>> list) {
-        Map<Integer,Integer> useMap = new HashMap();
-        if (list ==null || list.size()==0){
+        Map<Integer, Integer> useMap = new HashMap();
+        if (list == null || list.size() == 0) {
             return useMap;
         }
         for (Map<String, Integer> map : list) {
-            useMap.put(map.get("goodsId"),map.get("num"));
+            useMap.put(map.get("goodsId"), map.get("num"));
         }
         return useMap;
     }

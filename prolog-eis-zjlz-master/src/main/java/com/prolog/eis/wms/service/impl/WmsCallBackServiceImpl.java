@@ -5,6 +5,10 @@ import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wms.*;
+import com.prolog.eis.dto.wms.WmsGoodsDto;
+import com.prolog.eis.dto.wms.WmsInboundTaskDto;
+import com.prolog.eis.dto.wms.WmsInventoryTaskDto;
+import com.prolog.eis.dto.wms.WmsUpProiorityDto;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
@@ -24,7 +28,6 @@ import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +80,11 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
         //2.校验 商品id 和 商品名称是否与 EIS 一致
         List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
+        //校验同批入库任务是否存在相同容器
+        HashSet<WmsInboundTaskDto> wmsInboundTaskDtos1 = new HashSet<>(wmsInboundTaskDtos);
+        if (wmsInboundTaskDtos.size() != 0 && wmsInboundTaskDtos.size() != wmsInboundTaskDtos1.size()  ){
+            throw new Exception("入库任务存在相同容器号，此次所有订单任务下发失败");
+        }
         List<WmsInboundTask> wmsInboundTaskList = new ArrayList<>();
         for (WmsInboundTaskDto wmsInboundTaskDto : wmsInboundTaskDtos) {
             if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())) {
@@ -87,7 +95,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 throw new Exception("该容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+wmsInboundTaskDto.getITEMID() + "不存在，此次所有订单任务下发失败！");
             }else {
                 if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())){
-                    throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名成与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
+                    throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
                 }
             }
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
@@ -96,6 +104,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setBoxSpecs(wmsInboundTaskDto.getJZS());
             wmsInboundTask.setBranchType(wmsInboundTaskDto.getBRANCHTYPE());
             wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());
+            // 此处修改容器号，如果该容器有麦头 则使用麦头作为容器号
+            wmsInboundTask.setWheatHead(wmsInboundTaskDto.getLOTNO());
             wmsInboundTask.setGoodsId(wmsInboundTaskDto.getITEMID());
             wmsInboundTask.setGoodsName(wmsInboundTaskDto.getITEMNAME());
             wmsInboundTask.setLineId(wmsInboundTaskDto.getLINEID());
@@ -103,6 +113,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setSeqNo(wmsInboundTaskDto.getSEQNO());
             wmsInboundTask.setTaskState(WmsInboundTask.TYPE_INBOUND);
             wmsInboundTask.setCreateTime(new Date());
+            wmsInboundTask.setLotId(wmsInboundTaskDto.getPCH());
+            wmsInboundTask.setLot(wmsInboundTaskDto.getLOT());
             wmsInboundTaskList.add(wmsInboundTask);
         }
         mapper.saveBatch(wmsInboundTaskList);
@@ -131,11 +143,12 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 orderBill.setOrderTaskState(0);
                 orderBill.setBillDate(order.get(0).getBILLDATE());
                 orderBill.setTaskId(order.get(0).getTASKID());
+                orderBill.setIronTray(Integer.valueOf(order.get(0).getEXSATTR10()));
                 orderBillService.saveOrderBill(orderBill);
                 List<OrderDetail> orderDetails = new ArrayList<>();
                 List<OrderFinish> orderFinishes = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
-                    if (StringUtils.isBlank(wmsOutboundTaskDto.getEXSATTR1())){
+                    if (!"1".equals(wmsOutboundTaskDto.getEXSATTR1())){
                         OrderDetail orderDetail = new OrderDetail();
                         orderDetail.setOrderBillId(orderBill.getId());
                         orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
@@ -146,7 +159,11 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         orderDetail.setHasPickQty(0);
                         orderDetail.setTrayPlanQty(0);
                         orderDetail.setCreateTime(new Date());
+                        // 订单麦头相关信息
+                        orderDetail.setSpecial(Integer.valueOf(wmsOutboundTaskDto.getSPECIAL()));
+                        orderDetail.setWheatHead(wmsOutboundTaskDto.getLOTNO());
                         orderDetails.add(orderDetail);
+                        //成品客户信息供打印使用
                     }else {
                         OrderFinish orderFinish = new OrderFinish();
                         orderFinish.setOrderBillId(orderBill.getId());
@@ -190,18 +207,24 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 goods.setGoodsOneType(goodsDto.getITEMTYPE());
                 goods.setGoodsType(goodsDto.getGATEGORYID());
                 goods.setCreateTime(new Date());
-                goods.setWeight(new BigDecimal(goodsDto.getWeight()));
+                goods.setWeight(new BigDecimal(goodsDto.getWEIGHT()));
+                goods.setPackageNumber(goodsDto.getJZS());
+                goods.setPastLabelFlg(Integer.parseInt(goodsDto.getEXSATTR3()));
                 newGoods.add(goods);
             } else {
-                goods.setWeight(new BigDecimal(goodsDto.getWeight()));
-                goods.setGoodsName(goodsDto.getITEMNAME());
-                goods.setGoodsNo(goodsDto.getITEMBARCODE());
-                goods.setOwnerDrawnNo(goodsDto.getITEMBARCODE());
-                goods.setGoodsOneType(goodsDto.getITEMTYPE());
-                goods.setGoodsType(goodsDto.getGATEGORYID());
-                goods.setUpdateTime(new Date());
-                updateGoods.add(goods);
+                goodsByGoodId.setWeight(new BigDecimal(goodsDto.getWEIGHT()));
+                goodsByGoodId.setGoodsName(goodsDto.getITEMNAME());
+                goodsByGoodId.setGoodsNo(goodsDto.getITEMBARCODE());
+                goodsByGoodId.setOwnerDrawnNo(goodsDto.getITEMBARCODE());
+                goodsByGoodId.setGoodsOneType(goodsDto.getITEMTYPE());
+                goodsByGoodId.setGoodsType(goodsDto.getGATEGORYID());
+                goodsByGoodId.setUpdateTime(new Date());
+                goodsByGoodId.setPackageNumber(goodsDto.getJZS());
+                goodsByGoodId.setPastLabelFlg(Integer.parseInt(goodsDto.getEXSATTR3()));
+                updateGoods.add(goodsByGoodId);
+
             }
+
         }
         goodsService.saveAndUpdateGoods(newGoods, updateGoods);
     }
@@ -215,7 +238,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             Map<String, Object> param = MapUtils.put("branchType", BranchTypeEnum.getEisBranchType(wmsInventoryTask.getBRANCHTYPE())).put(
                     "containerNo",
                     wmsInventoryTask.getCONTAINERNO()).put("goodsType", wmsInventoryTask.getITEMTYPE()).put("goodsId"
-                    , wmsInventoryTask.getITEMID()).getMap();
+                    , wmsInventoryTask.getITEMID()).put("lotId",wmsInventoryTask.getPCH()).getMap();
             // 根据wms下发的相关信息找到需盘点的料箱
             List<InventoryGoodsDto> detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
 

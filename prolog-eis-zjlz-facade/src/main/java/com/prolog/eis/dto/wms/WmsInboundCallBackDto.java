@@ -19,10 +19,10 @@ public class WmsInboundCallBackDto {
     private String BILLNO;
 
     @ApiModelProperty("单据类型")
-    private String BILLTYPE;
+    private Integer BILLTYPE;
 
     @ApiModelProperty("容器号")
-    private String CONTAINERID;
+    private String CONTAINERNO;
 
     @ApiModelProperty("单据行号")
     private String SEQNO;
@@ -55,20 +55,20 @@ public class WmsInboundCallBackDto {
         this.BILLNO = BILLNO;
     }
 
-    public String getBILLTYPE() {
+    public Integer getBILLTYPE() {
         return BILLTYPE;
     }
 
-    public void setBILLTYPE(String BILLTYPE) {
+    public void setBILLTYPE(Integer BILLTYPE) {
         this.BILLTYPE = BILLTYPE;
     }
 
-    public String getCONTAINERID() {
-        return CONTAINERID;
+    public String getCONTAINERNO() {
+        return CONTAINERNO;
     }
 
-    public void setCONTAINERID(String CONTAINERID) {
-        this.CONTAINERID = CONTAINERID;
+    public void setCONTAINERNO(String CONTAINERNO) {
+        this.CONTAINERNO = CONTAINERNO;
     }
 
     public String getSEQNO() {
@@ -117,7 +117,7 @@ public class WmsInboundCallBackDto {
                 "LINEID='" + LINEID + '\'' +
                 ", BILLNO='" + BILLNO + '\'' +
                 ", BILLTYPE='" + BILLTYPE + '\'' +
-                ", CONTAINERID='" + CONTAINERID + '\'' +
+                ", CONTAINERNO='" + CONTAINERNO + '\'' +
                 ", SEQNO='" + SEQNO + '\'' +
                 ", ITEMID='" + ITEMID + '\'' +
                 ", ITEMNAME='" + ITEMNAME + '\'' +

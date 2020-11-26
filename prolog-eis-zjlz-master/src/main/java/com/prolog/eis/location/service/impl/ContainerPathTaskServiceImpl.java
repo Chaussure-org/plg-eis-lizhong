@@ -272,6 +272,12 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         containerPathTaskMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
     }
 
+    @Override
+    public void deletePathByContainer(String containerNo) {
+        containerPathTaskMapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),ContainerPathTask.class);
+        containerPathTaskDetailMapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),ContainerPathTaskDetail.class);
+    }
+
     private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){
 
         List<StoreAreaPriorityDTO> result = new ArrayList<>();

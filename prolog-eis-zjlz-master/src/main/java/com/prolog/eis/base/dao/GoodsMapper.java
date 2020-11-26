@@ -39,7 +39,7 @@ public interface GoodsMapper extends BaseMapper<Goods> {
             "\tgoods g \n" +
             "WHERE 1=1\n" +
             "<if test = 'queryPageDto.goodsOneType != null and queryPageDto.goodsOneType != \"\"'>\n" +
-            "and g.goods_one_type like (concat('%',#{queryPageDto.goodsOneType},'%')\n" +
+            "and g.goods_one_type like concat('%',#{queryPageDto.goodsOneType},'%')\n" +
             "</if>\n" +
             "<if test = 'queryPageDto.goodsId != null and queryPageDto.goodsId != \"\"'>\n" +
             "and g.id like concat('%',#{queryPageDto.goodsId},'%')\n" +
@@ -53,7 +53,7 @@ public interface GoodsMapper extends BaseMapper<Goods> {
             "<if test = 'queryPageDto.goodsType != null and queryPageDto.goodsType != \"\"'>\n" +
             "and g.goods_type like concat('%',#{queryPageDto.goodsType},'%')\n" +
             "</if>\n" +
-            "<if test = 'queryPageDto.pastLabelFlg != null and queryPageDto.pastLabelFlg != \"\" '>\n" +
+            "<if test = 'queryPageDto.pastLabelFlg != null'>\n" +
             "\tand g.past_label_flg = #{queryPageDto.pastLabelFlg}\n" +
             "</if>\n" +
             "order by g.id asc" +

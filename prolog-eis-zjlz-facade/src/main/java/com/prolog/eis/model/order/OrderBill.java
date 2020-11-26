@@ -105,6 +105,18 @@ public class OrderBill {
     @ApiModelProperty("出库截止时间，越靠小越先出")
     private Date outTime;
 
+    @Column("iron_tray")
+    @ApiModelProperty("是否铁笼装 1是 2 不是")
+    private Integer ironTray;
+
+    public Integer getIronTray() {
+        return ironTray;
+    }
+
+    public void setIronTray(Integer ironTray) {
+        this.ironTray = ironTray;
+    }
+
     public String getBranchType() {
         return branchType;
     }

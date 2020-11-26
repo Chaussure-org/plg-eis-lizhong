@@ -13,6 +13,7 @@ import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class GoodsServiceImpl implements IGoodsService {
 
     @Override
     public void saveAndUpdateGoods(List<Goods> newGoods, List<Goods> updateGoods) {
-        if (newGoods != null){
+        if (newGoods.size() != 0){
             goodsMapper.saveBatch(newGoods);
         }
         for (Goods updateGood : updateGoods) {

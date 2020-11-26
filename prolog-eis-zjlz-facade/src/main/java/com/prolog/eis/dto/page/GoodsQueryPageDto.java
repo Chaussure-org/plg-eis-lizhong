@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 public class GoodsQueryPageDto {
     @ApiModelProperty("商品id")
-    private int goodsId;
+    private Integer goodsId;
     @ApiModelProperty("商品大类")
     private String goodsOneType;
 
@@ -27,7 +27,7 @@ public class GoodsQueryPageDto {
     @ApiModelProperty("商品类别")
     private String goodsType;
     @ApiModelProperty("贴标标识(0:未贴标，1：贴标)")
-    private int pastLabelFlg;
+    private Integer pastLabelFlg;
     @NotNull
     @ApiModelProperty("当前页码")
     private int pageNum;

@@ -74,8 +74,12 @@ public class ContainerStore {
     private Integer goodsId;
 
     @Column("lot_id")
-    @ApiModelProperty("批次")
+    @ApiModelProperty("批次id")
     private String lotId;
+
+    @Column("lot")
+    @ApiModelProperty("批次")
+    private String lot;
 
     @Column("goods_order_no")
     @ApiModelProperty("商品订单号")
@@ -92,6 +96,19 @@ public class ContainerStore {
     @Column("update_time")
     @ApiModelProperty("更新时间")
     private java.util.Date updateTime;
+
+    @Column("wheat_head")
+    @ApiModelProperty("麦头")
+    private String wheatHead;
+
+
+    public String getWheatHead() {
+        return wheatHead;
+    }
+
+    public void setWheatHead(String wheatHead) {
+        this.wheatHead = wheatHead;
+    }
 
     public Integer getTaskStatus() {
         return taskStatus;
@@ -188,4 +205,11 @@ public class ContainerStore {
         this.updateTime = updateTime;
     }
 
+    public String getLot() {
+        return lot;
+    }
+
+    public void setLot(String lot) {
+        this.lot = lot;
+    }
 }

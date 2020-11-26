@@ -74,7 +74,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     }
 
     @Override
-    public void doInventoryTask(String containerNo, int qty, String lotId) throws Exception {
+    public void doInventoryTask(String containerNo, int goodsNum) throws Exception {
         if (StringUtils.isBlank(containerNo)) {
             throw new Exception("容器号不能为空");
         }
@@ -85,12 +85,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
             throw new Exception("容器【" + containerNo + "】无库存");
         }
         ContainerStore containerStore = containerStores.get(0);
-        //校验批次号
-        if (!StringUtils.isBlank(lotId)) {
-            if (!containerStore.getLotId().equals(lotId)) {
-                throw new Exception("容器【" + containerNo + "】批次号错误");
-            }
-        }
+
         //校验容器是否有盘点任务
         List<InventoryTaskDetail> details = taskDetailService.findByMap(MapUtils.put("containerNo", containerNo).put("taskState", InventoryTaskDetail.TASK_STATE_OUT).getMap());
         if (details.size() == 0) {
@@ -102,15 +97,16 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).getMap());
         List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", containerNo)
                 .put("sourceArea", StoreArea.RCS01).put("targetArea", StoreArea.RCS01).getMap());
-        if (stations.size() == 0 && containerPathTasks.size() == 0) {
-            throw new Exception("容器【" + containerNo + "】不在盘点区域");
-        }
+        //todo:注释校验
+//        if (stations.size() == 0 && containerPathTasks.size() == 0) {
+//            throw new Exception("容器【" + containerNo + "】不在盘点区域");
+//        }
 
 
 
         containerStore.setUpdateTime(new Date());
         //修改盘点计划
-        inventoryTaskDetail.setModifyCount(qty);
+        inventoryTaskDetail.setModifyCount(goodsNum);
         inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_FINISH);
         inventoryTaskDetail.setEndTime(new Date());
         if (stations.size() > 1) {
@@ -121,20 +117,20 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         }
         taskDetailService.updateInventoryDetail(inventoryTaskDetail);
         //盘点数量和实际数量不符则修改库存并回告wms
-        if (!containerStore.getQty().equals(qty)) {
-            containerStore.setQty(qty);
+        if (!containerStore.getQty().equals(goodsNum)) {
+            containerStore.setQty(goodsNum);
             //修改库存
             containerStoreService.updateContainerStore(containerStore);
         }
-        //容器放行
-        if (stations.size() > 0) {
-            //上层输送线放行回箱库
-            containerLeaveByStation(stations.get(0).getId(), PointLocation.POINT_ID_LXHK, containerNo);
-        } else {
-            //下层agv放行回立库找堆垛机任务最少的巷道
-            RickerInfoDto rickerInfoDto = computeAreaNo();
-            pathSchedulingService.containerMoveTask(containerNo, rickerInfoDto.getAreaNo(), null);
-        }
+        //todo:注释容器放行
+//        if (stations.size() > 0) {
+//            //上层输送线放行回箱库
+//            containerLeaveByStation(stations.get(0).getId(), PointLocation.POINT_ID_LXHK, containerNo);
+//        } else {
+//            //下层agv放行回立库找堆垛机任务最少的巷道
+//            RickerInfoDto rickerInfoDto = computeAreaNo();
+//            pathSchedulingService.containerMoveTask(containerNo, rickerInfoDto.getAreaNo(), null);
+//        }
         //转历史
         inventoryHistoryService.inventoryToHistory(containerNo);
     }
@@ -187,7 +183,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         if (details.size() == 0) {
             throw new Exception("容器【" + containerNo + "】无盘点任务");
         }
-        //校验容器是否在盘点位
+        //todo:校验容器是否在盘点位
         boolean b = this.checkArrive(containerNo);
         if (b) {
             throw new Exception("容器【" + containerNo + "】不在盘点区域");
@@ -197,16 +193,16 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
     }
 
     private boolean checkArrive(String containerNo) throws Exception {
-        List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).getMap());
-        if (stations.size() == 0) {
-            return true;
-        }
-        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", containerNo)
-                .put("sourceArea", StoreArea.RCS01).put("targetArea", StoreArea.RCS01).getMap());
-        if (containerPathTasks.size() == 0) {
-            return true;
-        }
-        return false;
+//        List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).getMap());
+//        if (stations.size() > 0) {
+            return false;
+//        }
+//        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", containerNo)
+//                .put("sourceArea", StoreArea.RCS01).put("targetArea", StoreArea.RCS01).getMap());
+//        if (containerPathTasks.size() > 0) {
+//            return false;
+//        }
+//        return true;
     }
 
 

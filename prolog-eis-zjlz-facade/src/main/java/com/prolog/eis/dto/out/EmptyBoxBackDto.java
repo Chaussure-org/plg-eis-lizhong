@@ -14,12 +14,11 @@ import javax.validation.constraints.Size;
  */
 @Data
 public class EmptyBoxBackDto {
-
-    private String TASKID;
-    private String BILLNO;
-    private String STATUS;
+    
+    private String billNo;
+    private String status;
     @Size(max = 3,min = 1)
-    private int BILLTYPE;
+    private int billType;
     @Min(1)
-    private int QTY;
+    private int qty;
 }

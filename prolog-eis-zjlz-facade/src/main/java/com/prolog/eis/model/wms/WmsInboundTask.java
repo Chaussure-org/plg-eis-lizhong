@@ -90,6 +90,42 @@ public class WmsInboundTask {
   @ApiModelProperty("完成时间")
   private java.util.Date completeTime;
 
+  @Column("lot_id")
+  @ApiModelProperty("批次id")
+  private String lotId;
+
+  @Column("lot")
+  @ApiModelProperty("批次")
+  private String lot;
+
+  @Column("wheat_head")
+  @ApiModelProperty("麦头")
+  private String wheatHead;
+
+  public String getWheatHead() {
+    return wheatHead;
+  }
+
+  public void setWheatHead(String wheatHead) {
+    this.wheatHead = wheatHead;
+  }
+
+  public String getLot() {
+    return lot;
+  }
+
+  public void setLot(String lot) {
+    this.lot = lot;
+  }
+
+  public String getLotId() {
+    return lotId;
+  }
+
+  public void setLotId(String lotId) {
+    this.lotId = lotId;
+  }
+
   public Integer getId() {
     return id;
   }

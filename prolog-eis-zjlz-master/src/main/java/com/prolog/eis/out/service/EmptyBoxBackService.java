@@ -10,5 +10,5 @@ import com.prolog.eis.dto.out.EmptyBoxBackDto;
  */
 public interface EmptyBoxBackService {
 
-    void outEmptyBox(EmptyBoxBackDto emptyBoxBackDto) throws Exception;
+    void outEmptyBox(int qty) throws Exception;
 }

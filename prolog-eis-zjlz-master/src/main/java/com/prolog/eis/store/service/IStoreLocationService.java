@@ -29,7 +29,7 @@ public interface IStoreLocationService {
      * 解锁货位组
      * @param groupNo
      */
-    void updateGroupLock(String groupNo);
+    void updateGroupLock(String groupNo,int isLock) throws Exception;
 
     /**
      * 立库货位分页

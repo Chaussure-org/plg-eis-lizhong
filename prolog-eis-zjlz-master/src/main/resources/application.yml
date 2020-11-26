@@ -3,18 +3,17 @@ eureka:
   instance:
     # 注册时使用ip而不是主机名
     preferIpAddress: true
-    instanceId: ${eureka.instance.ipAddress}.${server.port}
+    instanceId: ${spring.cloud.client.ip-address}.${server.port}
     health-check-url-path: /actuator/health
     # 状态地址为api地址
     statusPageUrlPath: /${server.servlet.contextpath:}/apidoc.html
     leaseRenewalIntervalInSeconds: 20 #租期更新时间间隔（默认30秒）
     leaseExpirationDurationInSeconds: 60 #租期到期时间（默认90秒）
-    ipAddress: 127.0.0.1 # 根据项目部署地址变动，指定此实例部署的主机ip
+    ipAddress: 192.168.41.191 # 根据项目部署地址变动，指定此实例部署的主机ip
 
 
 server:
-  ipAddress: 127.0.0.1
-  port: 20310
+  port: 30010
   servlet:
     context-path:
 

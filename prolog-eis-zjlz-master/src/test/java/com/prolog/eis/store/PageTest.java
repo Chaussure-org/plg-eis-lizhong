@@ -3,8 +3,12 @@ package com.prolog.eis.store;
 import com.github.pagehelper.PageHelper;
 import com.prolog.eis.ZjlzApplication;
 import com.prolog.eis.base.service.IGoodsService;
+import com.prolog.eis.dto.inventory.InventoryWmsDto;
 import com.prolog.eis.dto.page.*;
+import com.prolog.eis.dto.station.StationInfoDto;
 import com.prolog.eis.dto.store.ContainerInfoDto;
+import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
+import com.prolog.eis.inventory.dao.InventoryTaskDetailMapper;
 import com.prolog.eis.inventory.service.IInventoryHistoryService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
 import com.prolog.eis.location.service.AgvLocationService;
@@ -13,11 +17,15 @@ import com.prolog.eis.log.dao.WmsLogMapper;
 import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.model.log.WcsLog;
 import com.prolog.eis.model.log.WmsLog;
+import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.page.service.IPageService;
+import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.store.service.IStoreLocationService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.core.pojo.Page;
 import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
@@ -62,6 +70,12 @@ public class PageTest {
     private AgvLocationService agvLocationService;
     @Autowired
     private WcsLogMapper wcsLogMapper;
+    @Autowired
+    private IWmsService wmsService;
+    @Autowired
+    private IStationBZService stationBZService;
+    @Autowired
+    private InventoryTaskDetailMapper taskDetailMapper;
     @Test
     public void pageContainer(){
         System.out.println("aaaa");
@@ -174,4 +188,38 @@ public class PageTest {
     public void test11(){
         wcsLogMapper.deleteByMap(MapUtils.put("type",5).getMap(), WcsLog.class);
     }
+
+
+    @Test
+    public void testStr(){
+        String remouldId = EisStringUtils.getRemouldId(12345678);
+        System.out.println(remouldId);
+    }
+
+
+    @Test
+    public void testToWms() throws Exception {
+        ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
+        containerBindingDetail.setOrderDetailId(1060);
+        stationBZService.seedToWms(containerBindingDetail);
+    }
+
+
+    @Test
+    public void testInventoryToWms(){
+        List<InventoryWmsDto> wmsInventory = taskDetailMapper.findWmsInventory(3);
+        System.out.println("aaa");
+    }
+
+    @Test
+    public void testStationUpdate() throws Exception {
+        StationInfoDto stationInfoDto = new StationInfoDto();
+        stationInfoDto.setIsLock(0);
+        stationInfoDto.setStationIp("192.166.11.240");
+        stationInfoDto.setStationId(1);
+        stationInfoDto.setStationTaskType(10);
+
+        pageService.updateStationInfo(stationInfoDto);
+    }
+
 }

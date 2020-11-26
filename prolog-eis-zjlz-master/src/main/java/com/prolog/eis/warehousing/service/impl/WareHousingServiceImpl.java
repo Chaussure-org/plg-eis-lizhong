@@ -5,6 +5,7 @@ import com.prolog.eis.dto.page.InboundQueryDto;
 import com.prolog.eis.dto.page.WmsInboundInfoDto;
 import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wms.service.IWmsService;
@@ -63,13 +64,13 @@ public class WareHousingServiceImpl implements IWareHousingService {
         List<WmsInboundTask> inboundTasks = mapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(), WmsInboundTask.class);
         if (inboundTasks.size() == 0){
             return;
-        }
+    }
         WmsInboundTask wmsInboundTask = inboundTasks.get(0);
         WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setBILLNO(wmsInboundTask.getBillNo());
-        wmsInboundCallBackDto.setBILLTYPE(String.valueOf(wmsInboundTask.getBillType()));
-        wmsInboundCallBackDto.setCONTAINERID(wmsInboundTask.getContainerNo());
-        wmsInboundCallBackDto.setITEMID(String.valueOf(wmsInboundTask.getGoodsId()));
+        wmsInboundCallBackDto.setBILLTYPE(wmsInboundTask.getBillType());
+        wmsInboundCallBackDto.setCONTAINERNO(wmsInboundTask.getContainerNo());
+        wmsInboundCallBackDto.setITEMID(EisStringUtils.getRemouldId(wmsInboundTask.getGoodsId()));
         wmsInboundCallBackDto.setITEMNAME(wmsInboundTask.getGoodsName());
         wmsInboundCallBackDto.setSEQNO(wmsInboundTask.getSeqNo());
         wmsService.inboundTaskCallBack(wmsInboundCallBackDto);

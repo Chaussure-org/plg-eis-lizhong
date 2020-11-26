@@ -18,22 +18,14 @@ public class FinishTrayDTO {
     private String goodsName;
 
     @ApiModelProperty("商品编码")
-    private String goodsNo;
+    private String ownerDrawnNo;
 
     @ApiModelProperty("播种数量")
-    private int seedCount;
+    private Integer seedCount;
 
     @ApiModelProperty("订单id")
-    private int orderBillId;
+    private Integer orderBillId;
 
-
-    public int getOrderBillId() {
-        return orderBillId;
-    }
-
-    public void setOrderBillId(int orderBillId) {
-        this.orderBillId = orderBillId;
-    }
 
     public String getOrderNo() {
         return orderNo;
@@ -51,19 +43,27 @@ public class FinishTrayDTO {
         this.goodsName = goodsName;
     }
 
-    public String getGoodsNo() {
-        return goodsNo;
+    public String getOwnerDrawnNo() {
+        return ownerDrawnNo;
     }
 
-    public void setGoodsNo(String goodsNo) {
-        this.goodsNo = goodsNo;
+    public void setOwnerDrawnNo(String ownerDrawnNo) {
+        this.ownerDrawnNo = ownerDrawnNo;
     }
 
-    public int getSeedCount() {
+    public Integer getSeedCount() {
         return seedCount;
     }
 
-    public void setSeedCount(int seedCount) {
+    public void setSeedCount(Integer seedCount) {
         this.seedCount = seedCount;
+    }
+
+    public Integer getOrderBillId() {
+        return orderBillId;
+    }
+
+    public void setOrderBillId(Integer orderBillId) {
+        this.orderBillId = orderBillId;
     }
 }

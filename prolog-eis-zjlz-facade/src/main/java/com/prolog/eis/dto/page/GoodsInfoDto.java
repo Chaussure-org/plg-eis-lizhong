@@ -47,11 +47,11 @@ public class GoodsInfoDto {
     private Integer pastLabelFlg;
 
     @ApiModelProperty("创建时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private java.util.Date createTime;
 
     @ApiModelProperty("修改时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private java.util.Date updateTime;
 
 

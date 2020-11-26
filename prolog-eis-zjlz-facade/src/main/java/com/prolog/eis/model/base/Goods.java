@@ -6,6 +6,7 @@ import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 
@@ -53,10 +54,11 @@ public class Goods {
 
   @Column("package_number")
   @ApiModelProperty("包装数量")
-  private Integer packageNumber;
+  private Double packageNumber;
 
   @Column("past_label_flg")
   @ApiModelProperty("贴标标识")
+  @NotEmpty(message = "贴标标识不能为空")
   private Integer pastLabelFlg;
 
   @Column("create_time")
@@ -151,11 +153,11 @@ public class Goods {
     this.weight = weight;
   }
 
-  public Integer getPackageNumber() {
+  public Double getPackageNumber() {
     return packageNumber;
   }
 
-  public void setPackageNumber(Integer packageNumber) {
+  public void setPackageNumber(Double packageNumber) {
     this.packageNumber = packageNumber;
   }
 

@@ -35,7 +35,15 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
 
     @Override
     public FinishNotSeedDTO getNotSeedCount() throws Exception {
-        return orderBillService.getNoSeedCount();
+        FinishNotSeedDTO seedCount = orderBillService.getNoSeedCount();
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("stationType", Station.STATION_TYPE_FINISHEDPROD).getMap());
+        if (stations.size() != 1){
+            throw new Exception("成品库站台配置异常");
+        }
+        Station station = stations.get(0);
+        seedCount.setIsLock(station.getIsLock());
+        return seedCount;
+
     }
 
     @Override
@@ -83,9 +91,10 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
         if (stations.size() != 1) {
             throw new Exception("成品库站台配置有问题");
         }
-        if (!containerNo.equals(stations.get(0).getContainerNo())){
-            throw new Exception("容器【"+containerNo+"】不在播种站台");
-        }
+        //todo：注释校验
+//        if (!containerNo.equals(stations.get(0).getContainerNo())){
+//            throw new Exception("容器【"+containerNo+"】不在播种站台");
+//        }
         //校验托盘是否有播种任务
         boolean flag = stationBZService.checkContainerToStation(containerNo, stations.get(0).getId());
         if (flag){
@@ -94,7 +103,7 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
         List<FinishTrayDTO> finishSeedInfo = orderBillService.getFinishSeedInfo(containerNo, stations.get(0).getCurrentStationPickId());
 
         //订单第一次拣选回告wms
-        stationBZService.startSeedToWms(finishSeedInfo.get(0).getOrderBillId(),finishSeedInfo.get(0).getOrderNo());
+//        stationBZService.startSeedToWms(finishSeedInfo.get(0).getOrderBillId(),finishSeedInfo.get(0).getOrderNo());
         //播种页面展示
         return finishSeedInfo.get(0);
 

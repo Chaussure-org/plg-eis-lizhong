@@ -81,6 +81,35 @@ public class OrderDetail {
     @ApiModelProperty("出库数量")
     private Integer outQty;
 
+    @Column("special")
+    @ApiModelProperty("是否订单拖（麦头） 1 是 2 不是")
+    private Integer special;
+
+    @Column("decals")
+    @ApiModelProperty("是否贴标")
+    private Integer decals;
+
+
+    @Column("wheat_head")
+    @ApiModelProperty("麦头")
+    private String wheatHead;
+
+    public Integer getDecals() {
+        return decals;
+    }
+
+    public void setDecals(Integer decals) {
+        this.decals = decals;
+    }
+
+    public Integer getSpecial() {
+        return special;
+    }
+
+    public void setSpecial(Integer special) {
+        this.special = special;
+    }
+
     public Integer getTrayPlanQty() {
         return trayPlanQty;
     }
@@ -200,5 +229,13 @@ public class OrderDetail {
 
     public void setOutQty(Integer outQty) {
         this.outQty = outQty;
+    }
+
+    public String getWheatHead() {
+        return wheatHead;
+    }
+
+    public void setWheatHead(String wheatHead) {
+        this.wheatHead = wheatHead;
     }
 }

@@ -52,10 +52,17 @@ public class StoreLocationServiceImpl implements IStoreLocationService {
     }
 
     @Override
-    public void updateGroupLock(String groupNo) {
-        Criteria criteria = Criteria.forClass(SxStoreLocationGroup.class);
-        criteria.setRestriction(Restrictions.eq("groupNo",groupNo));
-        sxStoreLocationGroupMapper.updateMapByCriteria(MapUtils.put("isLock",0).getMap(),criteria);
+    public void updateGroupLock(String groupNo,int isLock) throws Exception {
+        if (isLock != 0 && isLock != 1){
+            throw new Exception("锁参数异常");
+        }
+        List<SxStoreLocationGroup> sxStoreLocationGroups = sxStoreLocationGroupMapper.findByMap(MapUtils.put("groupNo", groupNo).getMap(), SxStoreLocationGroup.class);
+        if (sxStoreLocationGroups.size() == 0){
+            throw new Exception("【"+groupNo+"】组不存在");
+        }
+        SxStoreLocationGroup sxStoreLocationGroup = sxStoreLocationGroups.get(0);
+        sxStoreLocationGroup.setIsLock(isLock);
+        sxStoreLocationGroupMapper.update(sxStoreLocationGroup);
     }
 
     @Override

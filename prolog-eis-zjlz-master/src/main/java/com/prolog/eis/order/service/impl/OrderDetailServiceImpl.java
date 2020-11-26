@@ -16,10 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -110,9 +107,8 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
 
     @Override
     public boolean findOrderTrayGoodsLabel(int orderBillId, String orderTrayNo) {
-        int size = orderDetailMapper.goodsLabelInfo(orderBillId, orderTrayNo).stream().filter(x -> x.getPastLabelFlg() == 1)
-                .collect(Collectors.toList()).size();
-        if (size > 0){
+        int i = orderDetailMapper.decalsInfo(orderBillId, orderTrayNo);
+        if (i > 0){
             return true;
         }else {
             return false;
