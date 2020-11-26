@@ -26,10 +26,12 @@ public interface LineBindingDetailMapper extends BaseMapper<LineBindingDetail> {
             "\tlbd.binding_num AS bindingNum,\n" +
             "\tlbd.wms_order_priority AS wmsOrderPriority,\n" +
             "\tlbd.order_mx_id AS orderMxId,\n" +
-            "\tlbd.update_time AS updateTime \n" +
+            "\tlbd.update_time AS updateTime,\n" +
+            "\to.iron_tray AS ironTray \n" +
             "FROM\n" +
             "\tline_binding_detail lbd\n" +
-            "\tLEFT JOIN container_path_task cpt ON lbd.container_no = cpt.container_no \n" +
+            "\tLEFT JOIN container_path_task cpt ON lbd.container_no = cpt.container_no\n" +
+            "\tLEFT JOIN order_bill o ON o.id = lbd.order_bill_id \n" +
             "WHERE\n" +
             "\tcpt.target_area = 'WCS081' ")
     List<AgvBindingDetail> findLineDetails();

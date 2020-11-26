@@ -2,6 +2,7 @@ package com.prolog.eis.model.agv;
 
 import com.prolog.framework.core.annotation.Column;
 import com.prolog.framework.core.annotation.Id;
+import com.prolog.framework.core.annotation.Ignore;
 import com.prolog.framework.core.annotation.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -44,11 +45,9 @@ public class AgvBindingDetail {
     private Integer orderPriority;
 
 
-
     @Column("wms_order_priority")
     @ApiModelProperty("wms订单优先级")
     private Integer wmsOrderPriority;
-
 
 
     @Column("detail_status")
@@ -59,9 +58,22 @@ public class AgvBindingDetail {
     @ApiModelProperty("更新时间")
     private Date updateTime;
 
+    @ApiModelProperty("1-是 2-不是")
+    private int ironTray;
+
+    public int getIronTray() {
+        return ironTray;
+    }
+
+    public void setIronTray(int ironTray) {
+        this.ironTray = ironTray;
+    }
+
+
     public Integer getWmsOrderPriority() {
         return wmsOrderPriority;
     }
+
     public Integer getDetailStatus() {
         return detailStatus;
     }
@@ -69,9 +81,11 @@ public class AgvBindingDetail {
     public void setDetailStatus(Integer detailStatus) {
         this.detailStatus = detailStatus;
     }
+
     public void setWmsOrderPriority(Integer wmsOrderPriority) {
         this.wmsOrderPriority = wmsOrderPriority;
     }
+
     public Integer getBindingNum() {
         return bindingNum;
     }
