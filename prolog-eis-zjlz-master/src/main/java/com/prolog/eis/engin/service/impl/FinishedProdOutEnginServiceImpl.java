@@ -5,6 +5,7 @@ import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.engin.dao.FinishedProdOutEnginMapper;
 import com.prolog.eis.engin.service.FinishedProdOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.eis.model.order.OrderBill;
@@ -54,6 +55,8 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
 
     @Autowired
     private IContainerBindingDetailService containerBindingDetailService;
+    @Autowired
+    private PathSchedulingService pathSchedulingService;
 
     /**
      * 1.优先考虑借道成品
@@ -95,9 +98,9 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         for (OrderDetail orderDetail : orderDetailByMap) {
             ContainerStore containerStore = null;
             int bindingNum = 0;
-            if (!StringUtils.isBlank(orderDetail.getLotNo())){
-                List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("containerNo",
-                        orderDetail.getLotNo()).getMap());
+            if (!StringUtils.isBlank(orderDetail.getWheatHead())){
+                List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("wheatHead",
+                        orderDetail.getWheatHead()).getMap());
                 containerStore = containerStoreList.get(0);
                 bindingNum = 1;
             } else {
@@ -142,10 +145,22 @@ public class FinishedProdOutEnginServiceImpl implements FinishedProdOutEnginServ
         orderDetail = checkOrderDetailStatus(containerStore, orderDetail);
         orderBillService.updateOrderBillStatus(orderDetail);
         containerStoreService.updateContainerTaskType(containerStore);
-        if (!StringUtils.isBlank(orderDetail.getLotNo())) {
+        if (StringUtils.isBlank(orderDetail.getWheatHead())) {
+
             createContainerBindindDetail(containerStore, orderDetail, bindingNum);
+            if (containerStore.getQty().equals(bindingNum)){
+                //没麦头 尾拖出库
+                pathSchedulingService.containerMoveTask(containerStore.getContainerNo(),"WCS052",null);
+            }else {
+                //todo：没麦头---》拣选站
+            }
+        }else {
+            //有麦头出库
+            pathSchedulingService.containerMoveTask(containerStore.getContainerNo(),"WCS052",null);
         }
+
         //todo 修改路径相关进行出库
+
 
     }
 

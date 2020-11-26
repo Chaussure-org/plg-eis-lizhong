@@ -9,6 +9,7 @@ import com.prolog.eis.pick.service.IStationFinishSeedService;
 import com.prolog.eis.store.service.ITrayStoreReleaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author dengj
@@ -40,6 +41,7 @@ public class WmsPageServiceImpl implements IWmsPageService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doInventoryTask(String containerNo, int qty) throws Exception {
         iInventoryJobService.doInventoryTask(containerNo,qty);
     }
@@ -55,6 +57,7 @@ public class WmsPageServiceImpl implements IWmsPageService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void confirmSeed(String containerNo, int num) throws Exception {
            finishSeedService.confirmSeed(containerNo,num);
     }

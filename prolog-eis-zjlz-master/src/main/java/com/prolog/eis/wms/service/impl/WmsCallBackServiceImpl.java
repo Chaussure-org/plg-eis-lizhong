@@ -103,12 +103,9 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setBillType(wmsInboundTaskDto.getBILLTYPE());
             wmsInboundTask.setBoxSpecs(wmsInboundTaskDto.getJZS());
             wmsInboundTask.setBranchType(wmsInboundTaskDto.getBRANCHTYPE());
+            wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());
             // 此处修改容器号，如果该容器有麦头 则使用麦头作为容器号
-            if (wmsInboundTaskDto.getSPECIAL() == 1 && !StringUtils.isBlank(wmsInboundTaskDto.getLOTNO())) {
-                    wmsInboundTask.setContainerNo(wmsInboundTaskDto.getLOTNO());
-            } else {
-                wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());
-            }
+            wmsInboundTask.setWheatHead(wmsInboundTaskDto.getLOTNO());
             wmsInboundTask.setGoodsId(wmsInboundTaskDto.getITEMID());
             wmsInboundTask.setGoodsName(wmsInboundTaskDto.getITEMNAME());
             wmsInboundTask.setLineId(wmsInboundTaskDto.getLINEID());
@@ -146,11 +143,12 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 orderBill.setOrderTaskState(0);
                 orderBill.setBillDate(order.get(0).getBILLDATE());
                 orderBill.setTaskId(order.get(0).getTASKID());
+                orderBill.setIronTray(Integer.valueOf(order.get(0).getEXSATTR10()));
                 orderBillService.saveOrderBill(orderBill);
                 List<OrderDetail> orderDetails = new ArrayList<>();
                 List<OrderFinish> orderFinishes = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
-                    if (StringUtils.isBlank(wmsOutboundTaskDto.getEXSATTR1())){
+                    if (!"1".equals(wmsOutboundTaskDto.getEXSATTR1())){
                         OrderDetail orderDetail = new OrderDetail();
                         orderDetail.setOrderBillId(orderBill.getId());
                         orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
@@ -163,9 +161,9 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         orderDetail.setCreateTime(new Date());
                         // 订单麦头相关信息
                         orderDetail.setSpecial(Integer.valueOf(wmsOutboundTaskDto.getSPECIAL()));
-                        orderDetail.setLotNo(wmsOutboundTaskDto.getLOTNO());
+                        orderDetail.setWheatHead(wmsOutboundTaskDto.getLOTNO());
                         orderDetails.add(orderDetail);
-
+                        //成品客户信息供打印使用
                     }else {
                         OrderFinish orderFinish = new OrderFinish();
                         orderFinish.setOrderBillId(orderBill.getId());

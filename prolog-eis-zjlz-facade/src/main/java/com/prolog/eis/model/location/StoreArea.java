@@ -150,4 +150,10 @@ public class StoreArea implements Serializable {
     public static final String RCS03 = "RCS03";
 
 
+    /**
+     * 铁拖上架区
+     */
+    public static final String IT01 = "IT01";
+
+
 }

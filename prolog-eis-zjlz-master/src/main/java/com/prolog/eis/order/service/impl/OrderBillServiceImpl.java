@@ -108,10 +108,10 @@ public class OrderBillServiceImpl implements IOrderBillService {
                     orderBillId).getMap());
             for (OrderDetail orderDetail : orderDetailByMap) {
                 //如果订单明细有麦头就确定map中是否有麦头存在
-                if (!StringUtils.isBlank(orderDetail.getLotNo())) {
+                if (!StringUtils.isBlank(orderDetail.getWheatHead())) {
                     //验证当前麦头是否在库存里无任务状态
-                    String lotNo = orderDetail.getLotNo();
-                    List<ContainerStore> containerStores = containerStoreService.findByMap(MapUtils.put("containerNo",
+                    String lotNo = orderDetail.getWheatHead();
+                    List<ContainerStore> containerStores = containerStoreService.findByMap(MapUtils.put("wheatHead",
                             lotNo).getMap());
                     if (containerStores == null || containerStores.size() ==0) {
                         return false;

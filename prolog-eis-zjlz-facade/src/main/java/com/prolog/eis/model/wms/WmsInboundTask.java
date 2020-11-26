@@ -98,6 +98,18 @@ public class WmsInboundTask {
   @ApiModelProperty("批次")
   private String lot;
 
+  @Column("wheat_head")
+  @ApiModelProperty("麦头")
+  private String wheatHead;
+
+  public String getWheatHead() {
+    return wheatHead;
+  }
+
+  public void setWheatHead(String wheatHead) {
+    this.wheatHead = wheatHead;
+  }
+
   public String getLot() {
     return lot;
   }

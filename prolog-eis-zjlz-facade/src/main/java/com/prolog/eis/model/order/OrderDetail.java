@@ -90,9 +90,9 @@ public class OrderDetail {
     private Integer decals;
 
 
-    @Column("lot_no")
+    @Column("wheat_head")
     @ApiModelProperty("麦头")
-    private Integer lotNo;
+    private String wheatHead;
 
     public Integer getDecals() {
         return decals;
@@ -231,11 +231,11 @@ public class OrderDetail {
         this.outQty = outQty;
     }
 
-    public Integer getLotNo() {
-        return lotNo;
+    public String getWheatHead() {
+        return wheatHead;
     }
 
-    public void setLotNo(Integer lotNo) {
-        this.lotNo = lotNo;
+    public void setWheatHead(String wheatHead) {
+        this.wheatHead = wheatHead;
     }
 }

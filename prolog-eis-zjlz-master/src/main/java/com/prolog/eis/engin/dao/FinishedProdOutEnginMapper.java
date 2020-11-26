@@ -23,7 +23,7 @@ public interface FinishedProdOutEnginMapper extends BaseMapper {
             "cs\n" +
             "left join container_path_task cptd on cs.container_no = cptd.container_no\n" +
             "join sx_store_location sl on cptd.source_area = sl.area_no and cptd.source_location = sl.id\n" +
-            "where sl.area_no = \"D050\") kc group by kc.goods_id")
+            "where sl.area_no = \"MCS05\") kc group by kc.goods_id")
     List<Map<String, Integer>> findAllGoodsCount();
 
 

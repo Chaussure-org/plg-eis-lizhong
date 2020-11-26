@@ -282,7 +282,7 @@ public class StationBZServiceImpl implements IStationBZService {
         if (stationIds.size() == 0) {
             //直接放行
             if (stations.size() > 0) {
-                //todo：上层输送线  循环线点位
+                //上层输送线  循环线点位
 
                 String taskId = PrologStringUtils.newGUID();
                 PointLocation point = pointLocationService.getPointByStationId(stationId);
@@ -308,7 +308,7 @@ public class StationBZServiceImpl implements IStationBZService {
             if (stations.size() > 0) {
                 //计算合适站台
                 int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
-                //todo：上层输送线 发送点位
+                //上层输送线 发送点位
                 String taskId = PrologStringUtils.newGUID();
                 PointLocation point = pointLocationService.getPointByStationId(stationId);
                 PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
@@ -467,8 +467,8 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //更新orderDetail
         orderDetail.setHasPickQty(orderDetail.getHasPickQty() + containerBinDings.getSeedNum());
-        if (completeNum >= 0) {
-            logger.info("站台{}订单明细【{}】短拣完成", stationId, orderDetail.getId());
+        if (!containerBinDings.getSeedNum().equals(completeNum) && completeNum > 0) {
+            logger.info("站台【{}】订单明细【{}】短拣完成", stationId, orderDetail.getId());
             orderDetail.setCompleteQty(orderDetail.getCompleteQty() + completeNum);
         } else {
             orderDetail.setCompleteQty(orderDetail.getCompleteQty() + containerBinDings.getSeedNum());
@@ -566,7 +566,7 @@ public class StationBZServiceImpl implements IStationBZService {
         OrderTrayWeighDTO orderTrayWeighDTO = new OrderTrayWeighDTO();
         orderTrayWeighDTO.setPassBoxWeigh(containerWeigh);
         orderTrayWeighDTO.setWeigh(sumWeigh);
-        //todo：误差率
+        //误差率
         BigDecimal errorRate = eisProperties.getErrorRate();
         /**
          * 计算是否符合误差，是则回告前端true，否则判断第二次称重是否有值

@@ -131,6 +131,28 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\tAND s.order_tray_no = #{orderTrayNo}")
     List<OrderDetailLabelDTO> goodsLabelInfo(@Param("orderBillId") int orderBillId, @Param("orderTrayNo") String orderTrayNo);
 
+    /**
+     * 订单是否贴标
+     *
+     * @param orderBillId
+     * @param orderTrayNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tCOUNT(*) \n" +
+            "FROM\n" +
+            "\tseed_info s\n" +
+            "\tJOIN order_detail od ON od.id = s.order_detail_id \n" +
+            "WHERE\n" +
+            "\ts.order_bill_id = #{orderBillId}\n" +
+            "\tAND s.order_tray_no = #{orderTrayNo}" +
+            "and od.decals = 1")
+    int decalsInfo(@Param("orderBillId") int orderBillId, @Param("orderTrayNo") String orderTrayNo);
+
+
+
+
+
     @Select("SELECT \n" +
             "ob.id AS orderBillId,\n" +
             "od.id AS detailId,\n" +

@@ -97,6 +97,19 @@ public class ContainerStore {
     @ApiModelProperty("更新时间")
     private java.util.Date updateTime;
 
+    @Column("wheat_head")
+    @ApiModelProperty("麦头")
+    private String wheatHead;
+
+
+    public String getWheatHead() {
+        return wheatHead;
+    }
+
+    public void setWheatHead(String wheatHead) {
+        this.wheatHead = wheatHead;
+    }
+
     public Integer getTaskStatus() {
         return taskStatus;
     }

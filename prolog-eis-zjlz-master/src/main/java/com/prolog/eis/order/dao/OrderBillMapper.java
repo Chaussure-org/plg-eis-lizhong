@@ -122,7 +122,7 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
             "\tjoin order_detail od on od.id = cb.order_detail_id\n" +
             "\tJOIN goods g ON g.id = od.goods_id\n" +
             "WHERE\n" +
-            "\tcs.container_no = #{containerNo}\n" +
+            "\tcb.container_no = #{containerNo}\n" +
             "\tand ob.picking_order_id = #{pickingOrderId}")
     List<FinishTrayDTO> getFinishSeedInfo(@Param("containerNo") String containerNo,@Param("pickingOrderId") int pickingOrderId);
 
