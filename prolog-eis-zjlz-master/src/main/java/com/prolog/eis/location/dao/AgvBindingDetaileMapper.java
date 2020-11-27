@@ -20,17 +20,23 @@ import java.util.List;
  */
 public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
 
-    @Select("SELECT \n" +
-            "abd.container_no AS containerNo,\n" +
-            "abd.goods_id AS goodsId,\n" +
-            "abd.order_bill_id AS orderBillId,\n" +
-            "abd.order_mx_id AS orderMxId,\n" +
-            "abd.binding_num AS bindingNum,\n" +
-            "abd.order_priority AS orderPriority,\n" +
-            "abd.wms_order_priority AS wmsOrderPriority,\n" +
-            "abd.update_time AS updateTime\n" +
-            "FROM agv_binding_detail abd LEFT JOIN container_path_task cpt ON abd.container_no=cpt.container_no WHERE\n" +
-            "cpt.target_area='RCS01' AND cpt.task_state=0")
+    @Select("SELECT\n" +
+            "\tabd.container_no AS containerNo,\n" +
+            "\tabd.goods_id AS goodsId,\n" +
+            "\tabd.order_bill_id AS orderBillId,\n" +
+            "\tabd.order_mx_id AS orderMxId,\n" +
+            "\tabd.binding_num AS bindingNum,\n" +
+            "\tabd.order_priority AS orderPriority,\n" +
+            "\tabd.wms_order_priority AS wmsOrderPriority,\n" +
+            "\tabd.update_time AS updateTime,\n" +
+            "\to.iron_tray AS ironTray \n" +
+            "FROM\n" +
+            "\tagv_binding_detail abd\n" +
+            "\tLEFT JOIN container_path_task cpt ON abd.container_no = cpt.container_no\n" +
+            "\tLEFT JOIN order_bill o ON abd.order_bill_id = o.id \n" +
+            "WHERE\n" +
+            "\tcpt.target_area = 'RCS01' \n" +
+            "\tAND cpt.task_state =0")
     List<AgvBindingDetail> findAgvBindingDetails();
 
     @Select("\tSELECT abd.goodsId AS goodsId,cs.qty AS qty FROM agv_binding_detail abd LEFT JOIN container_store cs ON abd.container_no=cs.container_no\n")

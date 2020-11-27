@@ -74,7 +74,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             List<StationPickingOrderDto> pickOrders = pickingOrderMapper.findPickOrder();
             if (station.getCurrentStationPickId() == null) {
                 //为站台索取一个拣选单
-                this.tackPickOrder(station.getId(), details, pickOrders);
+                this.tackPickOrder(station, details, pickOrders);
             } else {
                 Optional<StationPickingOrderDto> first = pickOrders.stream().filter(x -> x.getStationId() == station.getId()).findFirst();
                 if (first.isPresent()) {
@@ -109,16 +109,28 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
     }
 
 
-    private void tackPickOrder(int stationId, List<AgvBindingDetail> agvDetailsTemp, List<StationPickingOrderDto> pickOrders) throws Exception {
+    private void tackPickOrder(Station station, List<AgvBindingDetail> agvDetailsTemp, List<StationPickingOrderDto> pickOrders) throws Exception {
+        int stationId = station.getId();
         List<AgvBindingDetail> agvArriveDetails = agvDetailsTemp.stream().filter(x -> x.getOrderPriority().equals(OrderBill.FIRST_PRIORITY)).collect(Collectors.toList());
+        List<AgvBindingDetail> irons = agvArriveDetails.stream().filter(x -> x.getIronTray() == 1).collect(Collectors.toList());
         if (agvArriveDetails.size() > 0) {
-            //先索取 agv区域到达的一类的 新订单
-            this.createPickOrder(stationId, pickOrders, agvArriveDetails, false);
+            //先索取 agv区域到达的 一类 的新订单
+            if (station.getStationType().equals(3) && irons.size() > 0) {
+                //铁笼托盘
+                this.createPickOrder(stationId, pickOrders, irons, false);
+            } else {
+                this.createPickOrder(stationId, pickOrders, agvArriveDetails, false);
+            }
         } else {
-            //找循环线体的 新订单,要去往到达循环线的箱子
+            //找循环线体的 新订单,要去往和到达 循环线的箱子
             List<AgvBindingDetail> lineDetails = lineBindingDetailMapper.findLineDetails();
+            List<AgvBindingDetail> collect = lineDetails.stream().filter(x -> x.getIronTray() == 1).collect(Collectors.toList());
             if (lineDetails.size() > 0) {
-                this.createPickOrder(stationId, pickOrders, lineDetails, true);
+                if (station.getStationType().equals(3) && collect.size() > 0) {
+                    this.createPickOrder(stationId, pickOrders, collect, true);
+                } else {
+                    this.createPickOrder(stationId, pickOrders, lineDetails, true);
+                }
             }
         }
     }
