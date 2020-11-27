@@ -81,4 +81,10 @@ public interface AgvLocationService {
 	 * @param storagelock
 	 */
 	void updateStoreLock(int agvStoreId, int storagelock) throws Exception;
+
+
+	/**
+	 * 查铁笼区的可用铁笼
+	 */
+	List<String> getIronTray(String areaNo);
 }

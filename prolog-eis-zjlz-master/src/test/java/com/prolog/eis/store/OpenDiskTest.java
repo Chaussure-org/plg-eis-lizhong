@@ -42,4 +42,13 @@ public class OpenDiskTest {
         openDisk.setTaskStatus(OpenDisk.TASK_STATUS_NOT);
         openDiskService.updateOpenDisk(openDisk);
     }
+
+    @Test
+    public void testIron() throws Exception {
+        orderTrayService.requestIronTray();
+    }
+
+    public static void main(String[] args) {
+        
+    }
 }

@@ -24,7 +24,7 @@ public class ContainerPathTask implements Serializable {
    */
   public static final int TASK_STATE_NOT = 0;
   /**
-   * 任务状态：无任务
+   * 任务状态：待发送任务
    */
   public static final int TASK_STATE_WAIT_SEND = 10;
   /**

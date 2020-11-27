@@ -18,8 +18,8 @@ public interface ITrayStoreReleaseService {
 
     /**
      * 空托上架入库
-     * @param trayNo
-     * @param transhipNo
+     * @param trayNo  托盘编号
+     * @param transhipNo  接驳点编号
      * @throws Exception
      */
     void emptyTrayPull(String trayNo,String transhipNo) throws Exception;

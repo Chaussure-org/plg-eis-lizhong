@@ -183,7 +183,7 @@ public class InventoryJobServiceImpl implements IInventoryJobService {
         if (details.size() == 0) {
             throw new Exception("容器【" + containerNo + "】无盘点任务");
         }
-        //todo:校验容器是否在盘点位
+        //todo:注释校验容器是否在盘点位
         boolean b = this.checkArrive(containerNo);
         if (b) {
             throw new Exception("容器【" + containerNo + "】不在盘点区域");

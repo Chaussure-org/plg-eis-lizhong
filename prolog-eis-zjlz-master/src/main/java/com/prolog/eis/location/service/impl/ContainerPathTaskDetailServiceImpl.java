@@ -33,4 +33,9 @@ public class ContainerPathTaskDetailServiceImpl implements IContainerPathTaskDet
     public void updateTaskDetail(ContainerPathTaskDetail containerPathTaskDetail) {
         mapper.update(containerPathTaskDetail);
     }
+
+    @Override
+    public void savePathDetail(ContainerPathTaskDetail containerPathTaskDetail) {
+        mapper.save(containerPathTaskDetail);
+    }
 }

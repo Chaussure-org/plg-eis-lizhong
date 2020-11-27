@@ -9,7 +9,7 @@ public interface IOrderTrayService {
 
 
     /**
-     * 请求订单拖
+     * 请求订单拖(拆盘机)
      */
     void requestOrderTray() throws Exception;
 
@@ -21,4 +21,9 @@ public interface IOrderTrayService {
     void orderTrayOut() throws Exception;
 
 
+    /**
+     * 请求铁笼
+     * @throws Exception
+     */
+    void requestIronTray() throws Exception;
 }

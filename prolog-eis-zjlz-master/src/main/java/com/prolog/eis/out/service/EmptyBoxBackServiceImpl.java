@@ -45,7 +45,7 @@ public class EmptyBoxBackServiceImpl implements EmptyBoxBackService {
         if (qty <= 0){
             throw new Exception("空箱退库数异常不能为【"+qty+"】");
         }
-        List<OutContainerDto> emptyBoxs = boxOutEnginService.outByGoodsId(-10, qty);
+        List<OutContainerDto> emptyBoxs = boxOutEnginService.outByGoodsId(-1, qty);
         if (emptyBoxs.size() < qty) {
             throw new Exception("当前空料箱数量" + emptyBoxs.size() + "不满足出库数量" + qty);
         }

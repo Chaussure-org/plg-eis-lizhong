@@ -1,5 +1,7 @@
 package com.prolog.eis.dto.store;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * @author dengj
  * @version 1.0
@@ -7,11 +9,12 @@ package com.prolog.eis.dto.store;
  * 站台任务拖dto
  */
 public class StationTrayDTO {
-
+    @ApiModelProperty("站台id")
     private int stationId;
-
-    private  int count;
-
+    @ApiModelProperty("空闲数")
+    private  int emptyCount;
+    @ApiModelProperty("已有托盘数")
+    private int useCount;
     public int getStationId() {
         return stationId;
     }
@@ -20,11 +23,19 @@ public class StationTrayDTO {
         this.stationId = stationId;
     }
 
-    public int getCount() {
-        return count;
+    public int getEmptyCount() {
+        return emptyCount;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setEmptyCount(int emptyCount) {
+        this.emptyCount = emptyCount;
+    }
+
+    public int getUseCount() {
+        return useCount;
+    }
+
+    public void setUseCount(int useCount) {
+        this.useCount = useCount;
     }
 }

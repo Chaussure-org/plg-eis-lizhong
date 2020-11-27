@@ -137,7 +137,7 @@ public interface IStationBZService {
      * @param orderBillId
      * @param orderTrayNo
      */
-    void saveTrayWeigh(int orderBillId, String orderTrayNo,String locationNo) throws Exception;
+    void saveTrayWeigh(int orderBillId, String orderTrayNo,String locationNo,boolean bool) throws Exception;
 
 
     /**

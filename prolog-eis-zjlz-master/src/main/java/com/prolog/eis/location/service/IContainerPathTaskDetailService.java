@@ -24,4 +24,11 @@ public interface IContainerPathTaskDetailService {
      * @param containerPathTaskDetail 路径任务详情
      */
     void updateTaskDetail(ContainerPathTaskDetail containerPathTaskDetail);
+
+
+    /**
+     * 保存路径明细
+     * @param containerPathTaskDetail
+     */
+    void savePathDetail(ContainerPathTaskDetail containerPathTaskDetail);
 }

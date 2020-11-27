@@ -179,5 +179,10 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 		agvStoragelocationMapper.update(agvStoragelocation);
 	}
 
+	@Override
+	public List<String> getIronTray(String areaNo) {
+		return agvStoragelocationMapper.getIronTrays(areaNo);
+	}
+
 
 }

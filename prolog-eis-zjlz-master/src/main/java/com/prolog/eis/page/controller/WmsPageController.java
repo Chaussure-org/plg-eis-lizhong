@@ -73,9 +73,9 @@ public class WmsPageController {
     public RestMessage<String> updateStation(@RequestParam() String trayNo,@RequestParam() String transhipNo) throws Exception {
         try {
             wmsPageService.emptyTrayPutaway(trayNo,transhipNo);
-            return RestMessage.newInstance(true,"操作成功",null);
+            return RestMessage.newInstance(true,"上架成功",null);
         } catch (Exception e) {
-            return RestMessage.newInstance(false,"操作失败:"+e.getMessage(),null);
+            return RestMessage.newInstance(false,"上架失败:"+e.getMessage(),null);
         }
 
     }

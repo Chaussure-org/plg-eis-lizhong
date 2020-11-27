@@ -38,6 +38,11 @@ public class Station {
      */
     public static final int STATION_TYPE_FINISHEDPROD = 2;
 
+    /**
+     * 铁笼站台
+     */
+    public static final int STATION_TYPE_IRON = 3;
+
     public static final int UN_LOCK = 0;
     public static final int LOCK = 1;
     @Column("id")
@@ -86,7 +91,7 @@ public class Station {
     private String containerNo;
 
     @Column("station_type")
-    @ApiModelProperty("站台类型（1-半成品站台，2-成品站台）")
+    @ApiModelProperty("站台类型（1-半成品站台，2-成品站台 3- 铁笼站台））")
     private Integer stationType;
 
     @Column("station_ip")

@@ -8,6 +8,7 @@ import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.pick.service.IOrderTrayService;
@@ -17,6 +18,8 @@ import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.wcs.service.IOpenDiskService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,16 +52,19 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
     private IContainerStoreService containerStoreService;
     @Autowired
     private IOpenDiskService openDiskService;
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderTrayServiceImpl.class);
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void requestOrderTray() throws Exception {
+    public synchronized void  requestOrderTray() throws Exception {
+
         //检测拆盘机出口是否有料箱
         List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("openDiskId", OpenDisk.OPEN_DISK_OUT).put("taskStatus", OpenDisk.TASK_STATUS_ARRIVE).getMap());
         if (openDisks.size() == 0){
             return;
         }
 
-        //找寻播种站台且索取订单的个数
+        //找寻播种站台且索取订单的 个数
         List<Integer> stations = this.getStation();
         if (stations.size() == 0){
             return;
@@ -67,8 +73,9 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
         //寻找一个最合适的站台输送订单框
         String storeArea = "OD01";
         List<StationTrayDTO> stationTrayDTOS = agvLocationService.findTrayTaskStation(storeArea, stations);
-        List<StationTrayDTO> collect = stationTrayDTOS.stream().sorted(Comparator.comparing(StationTrayDTO::getCount).reversed()).collect(Collectors.toList());
-        if (collect.get(0).getCount() == 0){
+        //找订单托最少，有空闲区域的站台
+        List<StationTrayDTO> collect = stationTrayDTOS.stream().sorted(Comparator.comparing(StationTrayDTO::getUseCount)).filter(x ->x.getEmptyCount() != 0).collect(Collectors.toList());
+        if (collect.size() == 0){
             //未找到需要订单拖的站台
             return;
         }else {
@@ -125,6 +132,45 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
         openDisk.setTaskStatus(1);
         openDiskService.updateOpenDisk(openDisk);
 
+    }
+
+    /**
+     * 铁笼站台请求订单拖，
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void requestIronTray() throws Exception {
+        //找站台
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("stationTaskType", Station.TASK_TYPE_SEED)
+                .put("isLock", Station.UN_LOCK).put("stationType", Station.STATION_TYPE_IRON).getMap());
+        if (stations.size() == 0){
+            return;
+        }
+        List<Integer> ids = stations.stream().map(Station::getId).collect(Collectors.toList());
+        //寻找一个最合适的站台输送订单框
+        String storeArea = "OD01";
+        List<StationTrayDTO> stationTrayDTOS = agvLocationService.findTrayTaskStation(storeArea, ids);
+        //找订单托最少，有空闲区域的站台
+        List<StationTrayDTO> collect = stationTrayDTOS.stream().sorted(Comparator.comparing(StationTrayDTO::getUseCount)).filter(x ->x.getEmptyCount() != 0).collect(Collectors.toList());
+        if (collect.size() == 0) {
+            //未找到需要订单拖的站台
+            return;
+        }else {
+            //找铁笼
+            List<String> ironTray = agvLocationService.getIronTray(StoreArea.IT01);
+            if (ironTray.size() == 0){
+                logger.info("铁笼区无可用铁笼调度去拣选站");
+                return;
+            }
+            //去往对应站台
+            int targetStationId = collect.get(0).getStationId();
+            List<String> usableStore = agvLocationService.getUsableStore(storeArea,targetStationId);
+            if (usableStore.size() == 0){
+                throw new Exception("站台【"+targetStationId+"】没找到可用区域");
+            }
+            pathSchedulingService.containerMoveTask(ironTray.get(0),storeArea,usableStore.get(0));
+
+        }
     }
 
 

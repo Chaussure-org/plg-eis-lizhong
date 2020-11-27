@@ -46,7 +46,8 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
      */
     @Select("<script> SELECT\n" +
             "\ta.device_no AS stationId,\n" +
-            "\tCOUNT( a.id ) - count( c.target_location ) AS count \n" +
+            "\tCOUNT( a.id ) - count( c.target_location ) AS emptyCount," +
+            "count(c.target_location) as useCount \n" +
             "FROM\n" +
             "\tagv_storagelocation a\n" +
             "\tLEFT JOIN container_path_task c ON a.location_no = c.target_location \n" +
@@ -156,4 +157,20 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
             "\t\tcpt.container_no DESC" +
             "</script>")
     List<AgvStoreInfoDto> getAgvStoreInfo(@Param("agvQueryDto") AgvStoreQueryDto agvQueryDto);
+
+    /**
+     * 查铁笼区铁笼集合
+     * @param areaNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tcpt.container_no \n" +
+            "FROM\n" +
+            "\tagv_storagelocation a\n" +
+            "\tJOIN container_path_task cpt ON cpt.source_location = a.location_no \n" +
+            "WHERE\n" +
+            "\tcpt.task_state = 0\n" +
+            "\tand a.storage_lock = 0\n" +
+            "\tand a.area_no = #{areaNo}")
+    List<String> getIronTrays(@Param("areaNo") String areaNo);
 }

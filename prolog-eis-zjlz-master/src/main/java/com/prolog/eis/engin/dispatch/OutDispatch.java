@@ -2,9 +2,13 @@ package com.prolog.eis.engin.dispatch;
 
 import com.prolog.eis.engin.service.*;
 import com.prolog.eis.model.wcs.CrossLayerTask;
+import com.prolog.eis.util.VisiableThreadPoolTaskExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
 
 /**
  * ClassName:OutDispatch
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class OutDispatch {
+    public static final Logger logger = LoggerFactory.getLogger(OutDispatch.class);
 
     @Autowired
     private TrayOutEnginService trayOutEnginService;
@@ -118,7 +123,7 @@ public class OutDispatch {
             System.out.println("盘点调度");
             inventoryBoxOutService.inventoryBoxOut();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("盘点出库失败"+e.getMessage());
         }
     }
 }

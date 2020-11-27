@@ -71,6 +71,9 @@ public class EisProperties {
      * 称重误差率
      */
     private BigDecimal errorRate = new BigDecimal("0.05");
+
+
+    private String ironTrayPrefix = "T";
     private WCSProperties wcs = new WCSProperties();
 
     private RCSProperties rcs = new RCSProperties();
@@ -253,5 +256,13 @@ public class EisProperties {
 
     public void setErrorRate(BigDecimal errorRate) {
         this.errorRate = errorRate;
+    }
+
+    public String getIronTrayPrefix() {
+        return ironTrayPrefix;
+    }
+
+    public void setIronTrayPrefix(String ironTrayPrefix) {
+        this.ironTrayPrefix = ironTrayPrefix;
     }
 }

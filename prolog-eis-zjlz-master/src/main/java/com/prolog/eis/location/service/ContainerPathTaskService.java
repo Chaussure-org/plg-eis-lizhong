@@ -102,4 +102,10 @@ public interface ContainerPathTaskService {
      * @param containerNo
      */
     void deletePathByContainer(String containerNo);
+
+    /**
+     * 保存对象
+     * @param containerPathTask
+     */
+    void saveContainerPath(ContainerPathTask containerPathTask);
 }

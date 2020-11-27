@@ -92,7 +92,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             }
             Optional<Goods> first = goods.stream().filter(x -> x.getId().equals(wmsInboundTaskDto.getITEMID())).findFirst();
             if (!first.isPresent()){
-                throw new Exception("该容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+wmsInboundTaskDto.getITEMID() + "不存在，此次所有订单任务下发失败！");
+                throw new Exception("容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+wmsInboundTaskDto.getITEMID() + "不存在，此次所有订单任务下发失败！");
             }else {
                 if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())){
                     throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
@@ -104,7 +104,6 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setBoxSpecs(wmsInboundTaskDto.getJZS());
             wmsInboundTask.setBranchType(wmsInboundTaskDto.getBRANCHTYPE());
             wmsInboundTask.setContainerNo(wmsInboundTaskDto.getCONTAINERNO());
-            // 此处修改容器号，如果该容器有麦头 则使用麦头作为容器号
             wmsInboundTask.setWheatHead(wmsInboundTaskDto.getLOTNO());
             wmsInboundTask.setGoodsId(wmsInboundTaskDto.getITEMID());
             wmsInboundTask.setGoodsName(wmsInboundTaskDto.getITEMNAME());
