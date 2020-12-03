@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.page;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -37,8 +38,10 @@ public class InventoryInfoDto {
     private String seqNo;
 
     @ApiModelProperty("单据日期")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date billDate;
 
     @ApiModelProperty("创建时间")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 }

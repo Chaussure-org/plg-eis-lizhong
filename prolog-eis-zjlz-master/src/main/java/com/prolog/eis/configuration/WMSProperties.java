@@ -10,9 +10,18 @@ public class WMSProperties {
     private int port;
 
     /**
+     * 入库任务回告wms服务名
+     */
+    private String inboundServiceName = "lizhong-wms-bc-entry";
+    /**
      * 入库上架回告
      */
     private String wmsInboundUrl="/inTransferTask/eisTaskConfirm/v1.0";
+
+    /**
+     * 拣选回告wms服务名(开始拣选任务、拣选完成回告)
+     */
+    private String seedServiceName = "lizhong-wms-bc-taskcenter";
     /**
      * 开始拣选回告
      */
@@ -61,5 +70,21 @@ public class WMSProperties {
 
     public void setWmsSeedEndUrl(String wmsSeedEndUrl) {
         this.wmsSeedEndUrl = wmsSeedEndUrl;
+    }
+
+    public String getSeedServiceName() {
+        return seedServiceName;
+    }
+
+    public void setSeedServiceName(String seedServiceName) {
+        this.seedServiceName = seedServiceName;
+    }
+
+    public String getInboundServiceName() {
+        return inboundServiceName;
+    }
+
+    public void setInboundServiceName(String inboundServiceName) {
+        this.inboundServiceName = inboundServiceName;
     }
 }

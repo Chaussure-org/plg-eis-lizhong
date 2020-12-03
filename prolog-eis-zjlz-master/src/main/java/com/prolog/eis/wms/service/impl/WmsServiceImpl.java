@@ -43,8 +43,8 @@ public class WmsServiceImpl implements IWmsService {
      * @param path
      * @return
      */
-    private String getUrl(String path){
-        return String.format("http://%s:%s%s",properties.getWms().getHost(),properties.getWms().getPort(),path);
+    private String getUrl(String serviceName,String path){
+        return String.format("http://%s:%s%s",serviceName,properties.getWms().getPort(),path);
     }
 
     /**
@@ -55,7 +55,8 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "EIS入库任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INBOUND_CALLBACK,systemType = LogDto.WMS)
     public EisRestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWms().getWmsInboundUrl());
+            String serviceName = properties.getWms().getInboundServiceName();
+        String url = this.getUrl(serviceName,properties.getWms().getWmsInboundUrl());
         logger.info("EIS -> WMS 入库任务回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInboundCallBackDto),new TypeReference<EisRestMessage<String>>() {});
             return result;
@@ -70,7 +71,7 @@ public class WmsServiceImpl implements IWmsService {
     @LogInfo(desci = "Eis出库任务完成回告",direction = "eis->wms",type = LogDto.WMS_TYPE_OUTBOUND_CALLBACK,systemType =
             LogDto.WMS)
     public EisRestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWms().getWmsSeedEndUrl());
+        String url = this.getUrl(properties.getWms().getSeedServiceName(),properties.getWms().getWmsSeedEndUrl());
         logger.info("EIS -> WCS 出库任务完成回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsOutboundCallBackDto),new TypeReference<EisRestMessage<String>>() {});
             return result;
@@ -79,7 +80,7 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "eis盘点任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INVENTORY_CALLBACK,systemType = LogDto.WMS)
     public EisRestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+        String url = this.getUrl(null,properties.getWcs().getLineMoveUrl());
         logger.info("EIS -> WCS 出库任务完成回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInventoryCallBackDto),new TypeReference<EisRestMessage<String>>() {});
             return result;
@@ -88,7 +89,7 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "eis拣选开始回告",direction = "eis->wms",type = LogDto.WMS_TYPE_START_ORDER,systemType = LogDto.WMS)
     public EisRestMessage<String> startOrderCallBack(WmsStartOrderCallBackDto startOrderCallBackDto) throws Exception {
-        String url = this.getUrl(properties.getWms().getWmsStartSeedUrl());
+        String url = this.getUrl(properties.getWms().getSeedServiceName(),properties.getWms().getWmsStartSeedUrl());
         logger.info("EIS -> WCS eis开始拣选回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(startOrderCallBackDto),new TypeReference<EisRestMessage<String>>() {});
         return result;

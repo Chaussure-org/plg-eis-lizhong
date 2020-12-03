@@ -28,6 +28,7 @@ import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import com.thoughtworks.xstream.core.util.ArrayIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,9 +81,13 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
         //2.校验 商品id 和 商品名称是否与 EIS 一致
         List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
-        //校验同批入库任务是否存在相同容器
-        HashSet<WmsInboundTaskDto> wmsInboundTaskDtos1 = new HashSet<>(wmsInboundTaskDtos);
-        if (wmsInboundTaskDtos.size() != 0 && wmsInboundTaskDtos.size() != wmsInboundTaskDtos1.size()  ){
+        //校验同批入库任务是否存在相同容器  根据容器号去重
+        List<WmsInboundTaskDto> collect = wmsInboundTaskDtos.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(
+                        () -> new TreeSet<>(Comparator.comparing(WmsInboundTaskDto::getCONTAINERNO))),
+                ArrayList::new));
+        
+        if (wmsInboundTaskDtos.size() != 0 && wmsInboundTaskDtos.size() != collect.size()  ){
             throw new Exception("入库任务存在相同容器号，此次所有订单任务下发失败");
         }
         List<WmsInboundTask> wmsInboundTaskList = new ArrayList<>();

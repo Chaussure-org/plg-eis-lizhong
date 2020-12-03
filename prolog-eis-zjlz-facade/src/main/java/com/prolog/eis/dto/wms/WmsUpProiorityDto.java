@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.auth.In;
 
@@ -13,9 +14,11 @@ import java.util.Date;
 public class WmsUpProiorityDto {
 
     @ApiModelProperty("单据号")
+    @JsonProperty(value = "BILLNO")
     private String BILLNO;
 
     @ApiModelProperty("状态")
+    @JsonProperty(value = "STATUS")
     private Integer STATUS;
 
     public String getBILLNO() {
