@@ -12,6 +12,7 @@
         <module>prolog-eis-zjlz-master</module>
         <module>prolog-eis-zjlz-common</module>
         <module>prolog-eis-zjlz-simulator</module>
+        <module>prolog-eis-wcs</module>
     </modules>
     <packaging>pom</packaging>
 
