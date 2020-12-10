@@ -24,7 +24,9 @@ public class AgvMoveTaskLister {
     public String handleAgvMove(@Payload String message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel) {
         try {
             System.out.println(message);
-            channel.basicAck(deliveryTag, false);
+            //channel.basicAck(deliveryTag, true);
+            channel.basicReject(deliveryTag, true);
+
             return "成功";
         } catch (IOException e) {
             e.printStackTrace();
