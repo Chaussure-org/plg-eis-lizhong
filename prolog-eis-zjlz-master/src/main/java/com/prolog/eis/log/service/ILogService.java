@@ -4,6 +4,7 @@ import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.page.LogInfoDto;
 import com.prolog.eis.dto.page.LogQueryDto;
 import com.prolog.framework.core.pojo.Page;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @CreateTime 2020/7/20 21:42
  */
 public interface ILogService {
+
     void save(LogDto log);
 
 

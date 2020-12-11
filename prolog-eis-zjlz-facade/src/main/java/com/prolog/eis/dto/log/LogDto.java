@@ -167,6 +167,11 @@ public class LogDto {
      */
     public static final int MCS_TYPE_GETCATINFO = 3;
 
+    /**
+     * eis移库任务回告
+     */
+    public static final int SAS_TYPE_SEND_MOVE_TASK_CALLBACK = 4;
+
 
     @ApiModelProperty("id")
     private Integer id;
