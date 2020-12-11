@@ -22,14 +22,21 @@ import java.util.List;
  */
 public interface ContainerPathTaskMapper extends EisBaseMapper<ContainerPathTask> {
 
+    /**
+     * 查询可生成路径任务的数据
+     *
+     * @param palletNo    载具号
+     * @param containerNo 容器号
+     * @param taskState   路径状态
+     * @return
+     */
     @Select({"<script>" +
             "select cpt.* from container_path_task cpt \r\n" +
-            "where (cpt.source_area != cpt.target_area or cpt.target_area is null)\r\n" +
-            "and (cpt.source_location != cpt.target_location or cpt.target_location is null)\r\n" +
-            "<if test='palletNo!=null'> \r\n" +
+            "where (cpt.source_area != cpt.target_area or cpt.target_area is null or cpt.source_location != cpt.target_location or cpt.target_location is null) \r\n" +
+            "<if test='palletNo!=null and palletNo!=\"\"'> \r\n" +
             "   and cpt.pallet_no = #{palletNo} \r\n" +
             "</if> \r\n" +
-            "<if test='containerNo!=null'> \r\n" +
+            "<if test='containerNo!=null and containerNo!=\"\"'> \r\n" +
             "   and cpt.container_no = #{containerNo} \r\n" +
             "</if> \r\n" +
             "<if test='taskState!=null'> \r\n" +
