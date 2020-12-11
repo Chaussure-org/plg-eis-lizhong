@@ -9,11 +9,11 @@ public class SASProperties {
     private String host;
     private int port;
 
-    private String getCarInfoUrl = "/eis/getCarInfo";
+    private String getCarInfoUrl = "/Interface/SearchRgv";
 
-    private String getHoisterInfoDtoUrl = "/eis/getHoisterInfoDto";
+    private String getHoisterInfoDtoUrl = "/Interface/SearchHoist";
 
-    private String sendContainerTaskUrl = "/eis/sendContainerTask";
+    private String sendContainerTaskUrl = "/Interface/Request";
 
     public String getGetCarInfoUrl() {
         return getCarInfoUrl;

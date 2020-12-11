@@ -52,7 +52,7 @@ public class LogServiceImpl implements ILogService {
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED,rollbackFor = Exception.class)
     public void save(LogDto log) {
-        switch (log.getSystemType()){
+        new Thread(()->{switch (log.getSystemType()){
             case LogDto.WMS:
                 WmsLog wmsLog = new WmsLog();
                 BeanUtils.copyProperties(log,wmsLog);
@@ -80,7 +80,8 @@ public class LogServiceImpl implements ILogService {
                 break;
             default:
                 logger.error("没有找到正确的日志类型");
-        }
+        }}).start();
+
     }
 
     @Override
