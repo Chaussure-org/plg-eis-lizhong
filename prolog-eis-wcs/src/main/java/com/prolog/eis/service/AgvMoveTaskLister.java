@@ -24,13 +24,19 @@ public class AgvMoveTaskLister {
     public String handleAgvMove(@Payload String message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel) {
         try {
             System.out.println(message);
-            //channel.basicAck(deliveryTag, true);
-            channel.basicReject(deliveryTag, true);
+            channel.basicAck(deliveryTag, true);
+            //channel.basicReject(deliveryTag, true);
 
             return "成功";
         } catch (IOException e) {
             e.printStackTrace();
             return "";
         }
+    }
+
+    @RabbitListener(queues = "sunQueue")
+    public void sun(@Payload String message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel) throws IOException {
+        channel.basicReject(deliveryTag, true);
+        System.out.println(message);
     }
 }

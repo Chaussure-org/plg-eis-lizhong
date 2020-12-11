@@ -67,7 +67,7 @@ prolog:
       host: service-ai-eis-zjlz-simulator
       port: 0
     mcs:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     wms:
       host: 192.168.1.81

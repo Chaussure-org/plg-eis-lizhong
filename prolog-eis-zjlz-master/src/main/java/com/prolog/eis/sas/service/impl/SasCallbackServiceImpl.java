@@ -65,7 +65,7 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
      */
     @Override
 
-    @Transactional(rollbackFor = Exception.class,timeout = 600)
+    @Transactional(rollbackFor = Exception.class,timeout = 6000)
     public RestMessage<String> executeTaskCallback(TaskCallbackDTO taskCallbackDTO) throws Exception {
         if (taskCallbackDTO == null) {
             return success;
