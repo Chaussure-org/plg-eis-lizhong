@@ -119,13 +119,15 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
         try {
             switch (bcrDataDTO.getType()) {
+                //一楼入库Bcr
                 case ConstantEnum.TYPE_RK:
                     this.inboundTaskCallback(bcrDataDTO);
                     break;
+                //二楼进站Bcr
                 case ConstantEnum.TYPE_IN:
                     this.inStation(bcrDataDTO);
                     break;
-                //箱库二楼入库BCR请求
+                //箱库二楼入库BCR
                 case ConstantEnum.TYPE_MOVE:
                     this.checkGoOn(bcrDataDTO);
                     break;
@@ -142,7 +144,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Override
     @LogInfo(desci = "wcs拆盘机入口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_IN, systemType = LogDto.WCS)
     public RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) {
-        if (openDiskDto == null){
+        if (openDiskDto == null) {
             return success;
         }
         try {
@@ -157,7 +159,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Override
     @LogInfo(desci = "wcs拆盘机出口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_OUT, systemType = LogDto.WCS)
     public RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto) {
-        if (openDiskDto == null){
+        if (openDiskDto == null) {
             return success;
         }
         try {
@@ -171,16 +173,17 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
     /**
      * 拆盘机出口agv接驳口回告
+     *
      * @param openDiskDto
      */
     private void openDiskOut(OpenDiskFinishDto openDiskDto) throws Exception {
         List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("deviceNo", openDiskDto.getDeviceId()).
                 put("openDiskId", OpenDisk.OPEN_DISK_OUT).getMap());
         OpenDisk openDisk = openDisks.get(0);
-        if (openDisks.size() == 0){
-            throw new Exception("【"+openDiskDto.getDeviceId()+"】拆盘机点位没有被管理");
+        if (openDisks.size() == 0) {
+            throw new Exception("【" + openDiskDto.getDeviceId() + "】拆盘机点位没有被管理");
         }
-        if (openDiskDto.getIsArrive().equals("1")){
+        if (openDiskDto.getIsArrive().equals("1")) {
             openDisk.setTaskStatus(1);
             openDiskService.updateOpenDisk(openDisk);
         }
@@ -188,16 +191,17 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
     /**
      * 拆盘机入口回告
+     *
      * @param openDiskDto
      */
     public void openDiskIn(OpenDiskDto openDiskDto) throws Exception {
         List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("deviceNo", openDiskDto.getDeviceId()).
                 put("openDiskId", OpenDisk.OPEN_DISK_IN).getMap());
         OpenDisk openDisk = openDisks.get(0);
-        if (openDisks.size() == 0){
-            throw new Exception("【"+openDiskDto.getDeviceId()+"】拆盘机点位没有被管理");
+        if (openDisks.size() == 0) {
+            throw new Exception("【" + openDiskDto.getDeviceId() + "】拆盘机点位没有被管理");
         }
-        if (openDiskDto.getStatus().equals("0")){
+        if (openDiskDto.getStatus().equals("0")) {
             openDisk.setTaskStatus(0);
             openDiskService.updateOpenDisk(openDisk);
         }
@@ -342,7 +346,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 break;
             //盘点
             case 21:
-                inventoryBoxOutService.inventoryAllotStation(containerNo,bcrDataDTO.getAddress());
+                inventoryBoxOutService.inventoryAllotStation(containerNo, bcrDataDTO.getAddress());
                 break;
             //移库
             case 22:
