@@ -57,7 +57,9 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void doContainerPathTaskByContainer(String palletNo, String containerNo) throws Exception {
-       // logger.info("开始生成容器任务");
+        /**
+         * 1.所有区域 2.区域方向 3.任务状态未开始的集合 4.生成路径明细
+         */
         //获取区域集合
         List<StoreArea> storeAreaList = storeAreaMapper.findByMap(Maps.newHashMap(), StoreArea.class);
         if (CollectionUtils.isEmpty(storeAreaList)) {
@@ -96,7 +98,7 @@ public class LocationServiceImpl implements LocationService {
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
             List<ContainerPathTaskDetailDTO> containerPathTaskDetailList =
                     containerPathTaskDetailMapper.listContainerPathTaskDetais(containerPathTask.getPalletNo()
-                    , containerPathTask.getContainerNo(), LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
+                            , containerPathTask.getContainerNo(), LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
             if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
                 throw new Exception("当前没有可执行的容器任务！");
             }
@@ -118,8 +120,7 @@ public class LocationServiceImpl implements LocationService {
             } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
                 //RCS TO RCS
                 pathExecutionService.doRcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            }
-            else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
                 //SAS TO WCS
                 pathExecutionService.doSasToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {

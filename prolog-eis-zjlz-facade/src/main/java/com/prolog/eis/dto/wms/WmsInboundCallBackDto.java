@@ -2,9 +2,6 @@ package com.prolog.eis.dto.wms;
 
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-
 /**
  * @Author wangkang
  * @Description

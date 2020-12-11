@@ -363,6 +363,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<Integer> boxDetailIds = new ArrayList<>();
 //            storeMap.forEach((k, value) -> agvStoreMap.merge(k, value, Integer::sum));
         boolean isAdd = true;
+        //对单个订单 数据进行库存的判断
         for (Integer orderBillId : orderDetailMap.keySet()) {
             isAdd = true;
             for (OutDetailDto orderDetail : orderDetailMap.get(orderBillId)) {

@@ -58,13 +58,13 @@ logging:
 prolog:
   eis:
     wcs:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     rcs:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     sas:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     mcs:
       host: service-ai-eis-zjlz-simulator-wk
