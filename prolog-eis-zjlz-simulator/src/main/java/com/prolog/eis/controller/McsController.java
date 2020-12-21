@@ -30,6 +30,7 @@ public class McsController {
     @Autowired
     private McsService mcsService;
 
+
     @ApiOperation(value = "托盘移动",notes = "托盘移动")
     @RequestMapping("/mcsContainerMove")
     public RestMessage<String> mcsContainerMove(@RequestBody McsCarryListDto mcsCarryListDto) throws Exception {

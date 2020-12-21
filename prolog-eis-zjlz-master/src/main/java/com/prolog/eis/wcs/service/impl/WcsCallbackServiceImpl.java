@@ -126,13 +126,15 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
         try {
             switch (bcrDataDTO.getType()) {
+                //一楼入库Bcr
                 case ConstantEnum.TYPE_RK:
                     this.inboundTaskCallback(bcrDataDTO);
                     break;
+                //二楼进站Bcr
                 case ConstantEnum.TYPE_IN:
                     this.inStation(bcrDataDTO);
                     break;
-                //箱库二楼入库BCR请求
+                //箱库二楼入库BCR
                 case ConstantEnum.TYPE_MOVE:
                     this.checkGoOn(bcrDataDTO);
                     break;

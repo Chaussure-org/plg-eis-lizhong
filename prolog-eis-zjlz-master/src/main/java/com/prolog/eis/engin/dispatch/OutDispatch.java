@@ -38,6 +38,7 @@ public class OutDispatch {
 
     @Autowired
     private AgvInBoundEnginService agvInBoundEnginService;
+
     /**
      * 托盘库 出库
      */

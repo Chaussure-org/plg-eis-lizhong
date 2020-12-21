@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,9 @@ public class LogAspect {
 
     @Autowired
     private ServerConfiguration serverConfiguration;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Pointcut("@annotation(com.prolog.eis.util.LogInfo)")
     public void doLog() {
@@ -78,16 +82,17 @@ public class LogAspect {
                 log.setCreateTime(new Date());
                 System.out.println(log);
                 logService.save(log);
+                rabbitTemplate.convertAndSend("sunppLog", "sun", JsonUtils.toString(log));
                 return proceed;
             } catch (Exception e) {
                 log.setSuccess(false);
                 log.setException(e.getMessage().toString());
                 log.setCreateTime(new Date());
                 logService.save(log);
+                rabbitTemplate.convertAndSend("sunppLog", "sun", JsonUtils.toString(log));
                 //调试
                 e.printStackTrace();
                 throw e;
-
             }
         } else {
             return joinPoint.proceed();

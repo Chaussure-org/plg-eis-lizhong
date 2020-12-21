@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 @MapperScan({"com.prolog.eis.dao","com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService
-@EnableFeignClients
 public class SimulatorApplication {
 
 	@Bean

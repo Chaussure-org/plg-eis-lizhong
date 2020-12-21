@@ -35,75 +35,76 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
     private ContainerStoreMapper containerStoreMapper;
     @Autowired
     private GoodsMapper goodsMapper;
+
     @Override
     public void updateContainerStore(ContainerStore containerStore) {
-        if (containerStore != null){
+        if (containerStore != null) {
             containerStoreMapper.update(containerStore);
         }
 
     }
 
     @Override
-    public void updateContainerStoreNum(int num,String containerNo) {
+    public void updateContainerStoreNum(int num, String containerNo) {
         List<ContainerStore> containerStoreList = containerStoreMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerStore.class);
-        if (containerStoreList.size() == 0 ){
-            throw new RuntimeException("容器【"+containerNo+"】未被管理");
+        if (containerStoreList.size() == 0) {
+            throw new RuntimeException("容器【" + containerNo + "】未被管理");
         }
         ContainerStore containerStore = containerStoreList.get(0);
-        if (containerStore.getQty() < num){
-            logger.info("容器【{}】库存不足",containerNo);
+        if (containerStore.getQty() < num) {
+            logger.info("容器【{}】库存不足", containerNo);
         }
         containerStore.setQty(containerStore.getQty() - num);
         this.updateContainerStore(containerStore);
     }
 
-	@Override
-	public List<ContainerStore> findByMap(Map map) {
-		return containerStoreMapper.findByMap(map,ContainerStore.class);
-	}
+    @Override
+    public List<ContainerStore> findByMap(Map map) {
+        return containerStoreMapper.findByMap(map, ContainerStore.class);
+    }
 
 
-	@Override
-	public GoodsInfo findContainerStockInfo(String containerNo) {
-		
-		ContainerStore containerStore = containerStoreMapper.findFirstByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerStore.class);
-		if(null == containerStore) {
-			return getEmptyGoods();
-		}else {
-			if(containerStore.getGoodsId()==ContainerStore.EMPTY_TRAY) {
-				//空托盘
-				return getEmptyGoods();
-			}else {
-				//任务托
+    @Override
+    public GoodsInfo findContainerStockInfo(String containerNo) {
+
+        ContainerStore containerStore = containerStoreMapper.findFirstByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerStore.class);
+        if (null == containerStore) {
+            return getEmptyGoods();
+        } else {
+            if (containerStore.getGoodsId() == ContainerStore.EMPTY_TRAY) {
+                //空托盘
+                return getEmptyGoods();
+            } else {
+                //任务托
                 GoodsInfo goodsInfo = new GoodsInfo();
                 goodsInfo.setId(containerStore.getGoodsId());
                 goodsInfo.setLotId(containerStore.getLotId());
                 goodsInfo.setOwnerId(containerStore.getOwnerId());
                 return goodsInfo;
             }
-		}
-	}
-	
-	@Override
-	public String buildTaskProperty1(GoodsInfo goodsInfo) {
-        if (goodsInfo == null){
+        }
+    }
+
+    @Override
+    public String buildTaskProperty1(GoodsInfo goodsInfo) {
+        if (goodsInfo == null) {
             return null;
         }
-		return goodsInfo.getId() + "And" + goodsInfo.getLotId();
-	}
+        return goodsInfo.getId() + "And" + goodsInfo.getLotId();
+    }
 
-	@Override
-	public String buildTaskProperty2(GoodsInfo goodsInfo) {
-        if (goodsInfo == null){
+    @Override
+    public String buildTaskProperty2(GoodsInfo goodsInfo) {
+        if (goodsInfo == null) {
             return null;
         }
-		return goodsInfo.getOwnerId();
-	}
+        return goodsInfo.getOwnerId();
+    }
 
-	@Override
-	public boolean setContainerStoreEmpty(String containerNo) {
-		return false;
-	}
+    @Override
+    public boolean setContainerStoreEmpty(String containerNo) {
+        return false;
+    }
 
     @Override
     public List<ContainerStore> findContainerListByGoodsId(Integer goodsId) {
@@ -119,20 +120,21 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 
     @Override
     public void updateTaskStausByContainer(String containerNo, int type) {
-        Criteria ctr=Criteria.forClass(ContainerStore.class);
-        ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskStatus",type).getMap(),ctr);
+        Criteria ctr = Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containerNo", containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskStatus", type).getMap(), ctr);
     }
 
     @Override
     public void updateTaskTypeByContainer(String containerNo, int type) {
-        Criteria ctr=Criteria.forClass(ContainerStore.class);
-        ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
+        Criteria ctr = Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containerNo", containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType", type).getMap(), ctr);
     }
 
     /**
      * 新建库存
+     *
      * @param containerStore
      */
     @Override
@@ -141,24 +143,24 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
     }
 
     @Override
-    public void updateContainerStore(String containerNo, int taskType,int taskState) throws Exception {
+    public void updateContainerStore(String containerNo, int taskType, int taskState) throws Exception {
         Criteria criteria = Criteria.forClass(ContainerStore.class);
-        criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType",taskType).
-                put("taskState",taskState).put("updateTime",new Date()).getMap(),criteria);
+        criteria.setRestriction(Restrictions.eq("containerNo", containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("taskType", taskType).
+                put("taskState", taskState).put("updateTime", new Date()).getMap(), criteria);
     }
 
     @Override
     public void updateEmptyContainer(String containerNo) {
         Criteria criteria = Criteria.forClass(ContainerStore.class);
-        criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerStoreMapper.updateMapByCriteria(MapUtils.put("goodsId",-1).put("qty",1).
-                put("updateTime",new Date()).getMap(),criteria);
+        criteria.setRestriction(Restrictions.eq("containerNo", containerNo));
+        containerStoreMapper.updateMapByCriteria(MapUtils.put("goodsId", -1).put("qty", 1).
+                put("updateTime", new Date()).getMap(), criteria);
     }
 
     @Override
     public Page<ContainerInfoDto> queryContainersPage(ContainerQueryDto containerQueryDto) {
-        PageHelper.startPage(containerQueryDto.getPageNum(),containerQueryDto.getPageSize());
+        PageHelper.startPage(containerQueryDto.getPageNum(), containerQueryDto.getPageSize());
         List<ContainerInfoDto> containerInfoDtos = containerStoreMapper.queryContainer(containerQueryDto);
         Page<ContainerInfoDto> page = PageUtils.getPage(containerInfoDtos);
         return page;
@@ -166,17 +168,17 @@ public class ContainerStoreServiceImpl implements IContainerStoreService {
 
     @Override
     public void deleteContainerByMap(String containerNo) {
-        containerStoreMapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),ContainerStore.class);
+        containerStoreMapper.deleteByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerStore.class);
     }
 
     private GoodsInfo getEmptyGoods() {
-		GoodsInfo goodsInfo = new GoodsInfo();
-		goodsInfo.setOwnerId("");
-		goodsInfo.setGoodsCode("");
-		goodsInfo.setGoodsBarcode("");
-		goodsInfo.setLotId("");
-		
-		return goodsInfo;
-	}
+        GoodsInfo goodsInfo = new GoodsInfo();
+        goodsInfo.setOwnerId("");
+        goodsInfo.setGoodsCode("");
+        goodsInfo.setGoodsBarcode("");
+        goodsInfo.setLotId("");
+
+        return goodsInfo;
+    }
 
 }

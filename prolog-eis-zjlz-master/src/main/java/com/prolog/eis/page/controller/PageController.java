@@ -11,12 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,7 +29,13 @@ import java.util.List;
 public class PageController {
     @Autowired
     private IPageService pageService;
-
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    @PostMapping("mqtest")
+    public String test() {
+        rabbitTemplate.convertAndSend("rcsMoveExchange", "rcs", "cs测试数据=================================================");
+        return "发送成功";
+    }
     @RequestMapping("/station/findAll")
     @ApiOperation(value = "查询所有站台信息", notes = "查询所有站台信息")
     public RestMessage<List<StationInfoVo>> findStation() {

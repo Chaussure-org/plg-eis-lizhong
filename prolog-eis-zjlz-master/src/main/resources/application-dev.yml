@@ -16,27 +16,27 @@ spring:
     password: prolog-redis-0212
     host: 192.168.0.167
     port: 6379
-#    password: prolog0212
+    #    password: prolog0212
     database: 0
   #链路跟踪  
   zipkin:
     sender.type: rabbit
     rabbitmq.queue: trace
-  sleuth: 
+  sleuth:
     enabled: true
-    sampler: 
+    sampler:
       probability: 1.0
-  devtools: 
-    restart: 
+  devtools:
+    restart:
       enabled: true
-  datasource: 
-#    driverClassName: com.mysql.jdbc.Driver #oracle.jdbc.driver.OracleDriver
-#    url: jdbc:mysql://192.168.1.13:2206/eis?characterEncoding=utf8&useSSL=false
-#    username: dev
-#    password: prolog0212-dev
+  datasource:
+    #    driverClassName: com.mysql.jdbc.Driver #oracle.jdbc.driver.OracleDriver
+    #    url: jdbc:mysql://192.168.1.13:2206/eis?characterEncoding=utf8&useSSL=false
+    #    username: dev
+    #    password: prolog0212-dev
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://192.168.1.13:2206/ai-lizhong?characterEncoding=utf8&useSSL=false
-#    url: jdbc:mysql://39.96.69.213:3306/zjlz?characterEncoding=utf8&useSSL=false
+    #    url: jdbc:mysql://39.96.69.213:3306/zjlz?characterEncoding=utf8&useSSL=false
     username: dev
     password: prolog0212-dev
     initialSize: 0 #初始化大小
@@ -50,20 +50,22 @@ spring:
     username: eis
     password: eis
     virtual-host: /eis
-    
+    listener:
+      direct:
+        acknowledge-mode: manual
 logging:
   config: classpath:log4j2-dev.xml
 
 prolog:
   eis:
     wcs:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     rcs:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     sas:
-      host: service-ai-eis-zjlz-simulator-wk
+      host: service-ai-eis-zjlz-simulator
       port: 0
     mcs:
       host: service-ai-eis-zjlz-simulator-wk
