@@ -15,13 +15,16 @@ public class McsMoveTaskDto implements Serializable {
 
     @ApiModelProperty("任务id")
     private String taskId;
+
     @ApiModelProperty("任务类型")
     int type;
+
     @ApiModelProperty("容器号")
     String containerNo;
     @ApiModelProperty("源地址")
     String address;
     @ApiModelProperty("目标地址")
+
     String target;
     @ApiModelProperty("重量")
     String weight;

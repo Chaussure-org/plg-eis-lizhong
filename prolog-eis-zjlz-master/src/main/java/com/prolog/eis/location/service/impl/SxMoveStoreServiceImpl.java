@@ -451,11 +451,12 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     private void sendMoveTask(String containerNo, String taskId, int taskType, String sourceStoreNo,
                               Integer sourceGroupId, String nextStoreNo, Integer nextGroupId, int pathTaskId,
                               int pathTaskDetailId, String sourceDeviceSystem) {
-        //发送mcs移动指令
         try {
+            //发送mcs移动指令
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem)) {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0);
+                // TODO: 2020/12/18 更改为想数据库插入数据
                 McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
                 if (mcsResultDto.isRet()) {
                     //发送成功
@@ -631,6 +632,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         StoreArea sourceStoreArea = storeAreaMapper.findById(containerPathTaskDetail.getSourceArea(), StoreArea.class);
         StoreArea targetStoreArea = storeAreaMapper.findById(containerPathTaskDetail.getNextArea(), StoreArea.class);
 
+        //0 借道 1 入库 2出库 3 移位
         int mcsTaskType = this.getMcsTaskType(sourceStoreArea, targetStoreArea);
 
         if (mcsTaskType == 2) {

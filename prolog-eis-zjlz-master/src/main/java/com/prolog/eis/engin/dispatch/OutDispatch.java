@@ -1,6 +1,7 @@
 package com.prolog.eis.engin.dispatch;
 
 import com.prolog.eis.engin.service.*;
+import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.model.wcs.CrossLayerTask;
 import com.prolog.eis.util.VisiableThreadPoolTaskExecutor;
 import org.slf4j.Logger;
@@ -38,6 +39,9 @@ public class OutDispatch {
 
     @Autowired
     private AgvInBoundEnginService agvInBoundEnginService;
+
+    @Autowired
+    private IMcsCallBackService mcsCallbackService;
 
     /**
      * 托盘库 出库
@@ -126,5 +130,17 @@ public class OutDispatch {
         } catch (Exception e) {
             logger.error("盘点出库失败"+e.getMessage());
         }
+    }
+
+    /**
+     * mcs 回告 基与刷表的方式
+     */
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
+    public void mcsCallBack(){
+        /** 1.刷新任务表 任务状态，mcs是否接受成功吧，然后更改路径表状态
+            2.刷新回告表 任务回告状态 后续处理与之前相同的 业务。
+            3.堆垛机本身的信息 表，检查有异常的 堆垛机，并排除改 堆垛机的任务。
+        //mcsCallbackService.mcsCallback();
+         */
     }
 }

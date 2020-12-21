@@ -26,19 +26,8 @@ public class RabbitMqConf {
      */
     @Bean
     public Queue agvMove() {
-        return new Queue("agvMove", true);
+        return new Queue("mcsMove", true);
     }
-
-    @Bean
-    public Queue rcsMove() {
-        return new Queue("rcsMove", true);
-    }
-
-    @Bean
-    public Queue sasMove() {
-        return new Queue("sasMove", true);
-    }
-
 
     /**
      * 声明交换机 交换机类型
@@ -50,15 +39,6 @@ public class RabbitMqConf {
         return new DirectExchange("mcsMoveExchange", true, false);
     }
 
-    @Bean
-    public DirectExchange rcsMoveExchange() {
-        return new DirectExchange("rcsMoveExchange", true, false);
-    }
-
-    @Bean
-    public DirectExchange sasMoveExchange() {
-        return new DirectExchange("sasMoveExchange", true, false);
-    }
 
     /**
      * 设置 队列和 交换机的bangding 关系，并给定路由key
@@ -69,13 +49,4 @@ public class RabbitMqConf {
         return BindingBuilder.bind(agvMove()).to(mcsMoveExchange()).with("mcs");
     }
 
-    @Bean
-    Binding bind2() {
-        return BindingBuilder.bind(rcsMove()).to(rcsMoveExchange()).with("rcs");
-    }
-
-    @Bean
-    Binding bind3() {
-        return BindingBuilder.bind(sasMove()).to(sasMoveExchange()).with("sas");
-    }
 }

@@ -281,9 +281,6 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerDtoList;
     }
 
-    private void sendPathTask() {
-
-    }
 
     private OutContainerDto getOutContainer(RoadWayGoodsCountDto goodsCountDto, int goodsId) {
         OutContainerDto outContainerDto = new OutContainerDto();
@@ -294,15 +291,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerDto;
     }
 
-    /**
-     * 删除原来agv绑定的订单明细
-     */
-    private void deleteAgvBindingDetail(OutContainerDto outContainerDto) {
-        if (!outContainerDto.getDetailList().isEmpty()) {
-            agvBindingDetaileMapper.deleteByMap(MapUtils.put("containerNo", outContainerDto.getContainerNo()).getMap(), AgvBindingDetail.class);
 
-        }
-    }
 
     /**
      * 计算订单所满足的 区域

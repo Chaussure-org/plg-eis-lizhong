@@ -34,7 +34,7 @@ public interface IWmsCallBackService {
      * 商品资料同步
      * @param goodsDtos 商品参数
      */
-    void goodsSync(List<WmsGoodsDto> goodsDtos);
+    void goodsSync(List<WmsGoodsDto> goodsDtos) throws Exception;
 
     /**
      * 盘点计划下发

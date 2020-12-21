@@ -26,7 +26,7 @@ public class SasServiceImpl implements SasService {
 
     @Override
     public synchronized void doCallBack(SasMoveTaskDto sasMoveTaskDto) {
-        String url = "http://service-ai-eis-zjlz-master-wk/sas/task/callback";
+        String url = "http://service-ai-eis-zjlz-master/sas/task/callback";
         try {
             TaskCallbackDTO taskCallbackDTO = new TaskCallbackDTO();
             taskCallbackDTO.setTaskId(sasMoveTaskDto.getTaskId());
