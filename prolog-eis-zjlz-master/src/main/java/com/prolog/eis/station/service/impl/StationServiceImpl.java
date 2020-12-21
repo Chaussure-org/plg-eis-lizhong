@@ -77,7 +77,10 @@ public class StationServiceImpl implements IStationService {
         if (stations.size() != 1) {
             throw new Exception("成品库站台配置有问题");
         }
-        stationMapper.updateStationLock(isLock, stations.get(0).getId());
+        Station station = stations.get(0);
+        station.setUpdateTime(new Date());
+        station.setIsLock(isLock);
+        stationMapper.update(station);
 
     }
 
@@ -183,6 +186,11 @@ public class StationServiceImpl implements IStationService {
     @Override
     public StationInfoVo queryById(int stationId) {
         return stationMapper.queryById(stationId);
+    }
+
+    @Override
+    public boolean checkSeedFinish(String containerNo, int stationId) {
+        return false;
     }
 
     @Override

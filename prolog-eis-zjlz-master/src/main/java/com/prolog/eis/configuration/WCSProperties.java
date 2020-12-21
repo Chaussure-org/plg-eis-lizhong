@@ -6,6 +6,13 @@ public class WCSProperties {
     private int bankId=1;
     private String lineMoveUrl="/eis/lineMove";//输送线行走
 
+
+    /**
+     * 拆盘机入口托盘到位
+     * @return
+     */
+    private String trayArriveUrl = "/WcsApi/AgvArrive";
+
     public String getLineMoveUrl() {
         return lineMoveUrl;
     }
@@ -36,5 +43,13 @@ public class WCSProperties {
 
     public void setBankId(int bankId) {
         this.bankId = bankId;
+    }
+
+    public String getTrayArriveUrl() {
+        return trayArriveUrl;
+    }
+
+    public void setTrayArriveUrl(String trayArriveUrl) {
+        this.trayArriveUrl = trayArriveUrl;
     }
 }

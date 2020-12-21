@@ -63,8 +63,8 @@ public class WmsOutboundTaskDto {
     private Double QTY;
 
     @ApiModelProperty("贴标区")
-    @JsonProperty(value = "SFTB")
-    private String SFTB;
+    @JsonProperty(value = "SF_TB")
+    private String SF_TB;
 
     @ApiModelProperty("时间戳")
     @JsonProperty(value = "SJC")
@@ -222,12 +222,12 @@ public class WmsOutboundTaskDto {
         this.QTY = QTY;
     }
 
-    public String getSFTB() {
-        return SFTB;
+    public String getSF_TB() {
+        return SF_TB;
     }
 
-    public void setSFTB(String SFTB) {
-        this.SFTB = SFTB;
+    public void setSF_TB(String SF_TB) {
+        this.SF_TB = SF_TB;
     }
 
     public Date getSJC() {
@@ -341,7 +341,7 @@ public class WmsOutboundTaskDto {
                 ", ITMENAME='" + ITMENAME + '\'' +
                 ", JZS=" + JZS +
                 ", QTY=" + QTY +
-                ", SFTB='" + SFTB + '\'' +
+                ", SF_TB='" + SF_TB + '\'' +
                 ", SJC=" + SJC +
                 ", SPECIAL=" + SPECIAL +
                 ", LOTNO='" + LOTNO + '\'' +
@@ -354,6 +354,7 @@ public class WmsOutboundTaskDto {
                 ", EXSATTR7=" + EXSATTR7 +
                 ", EXSATTR8='" + EXSATTR8 + '\'' +
                 ", EXSATTR9='" + EXSATTR9 + '\'' +
+                ", EXSATTR10='" + EXSATTR10 + '\'' +
                 '}';
     }
 }

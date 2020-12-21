@@ -61,20 +61,33 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
         //获取当前播种拣选单
         List<Integer> orderBillIds = stationService.findPickingOrderBillId(station.getId());
         if (orderBillIds.size() == 0) {
-            throw new Exception("站台【" + station.getId() + "】无播种订单");
+            throw new Exception("站台【" + station.getId() + "】无拣选订单");
         }
         //执行拣选
-        stationBZService.doPicking(station.getId(), containerNo, num, orderBillIds.get(0), null);
+        ContainerBindingDetail containerBinDings = stationBZService.doPicking(station.getId(), containerNo, num, orderBillIds.get(0), null);
         //
         boolean flag = orderDetailService.orderPickingFinish(orderBillIds.get(0));
-        if (flag) {
-            //切换拣选单
-            stationBZService.changePickingOrder(station);
-            //明细转历史
-            orderBillService.orderBillToHistory(orderBillIds.get(0));
+        boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
 
+        //todo:注释放行
+//        this.finishTrayLeave(containerNo);
+
+
+        if (b) {
+            // TODO: 2020/11/6  当前订单明细完成，回告wms
+            stationBZService.seedToWms(containerBinDings);
         }
-        this.finishTrayLeave(containerNo);
+        try {
+            if (flag) {
+                //切换拣选单
+                stationBZService.changePickingOrder(station);
+                //明细转历史
+                orderBillService.orderBillToHistory(orderBillIds.get(0));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -101,9 +114,11 @@ public class StationFinishSeedServiceImpl implements IStationFinishSeedService {
             throw new Exception("容器【"+containerNo+"】没有站台的绑定明细");
         }
         List<FinishTrayDTO> finishSeedInfo = orderBillService.getFinishSeedInfo(containerNo, stations.get(0).getCurrentStationPickId());
-
+        if (finishSeedInfo.size() == 0){
+            throw new Exception("容器【"+containerNo+"】没有拣选明细");
+        }
         //订单第一次拣选回告wms
-//        stationBZService.startSeedToWms(finishSeedInfo.get(0).getOrderBillId(),finishSeedInfo.get(0).getOrderNo());
+        stationBZService.startSeedToWms(finishSeedInfo.get(0).getOrderBillId(),finishSeedInfo.get(0).getOrderNo());
         //播种页面展示
         return finishSeedInfo.get(0);
 

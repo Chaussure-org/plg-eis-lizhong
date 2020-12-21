@@ -23,6 +23,7 @@ import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.order.service.IOrderFinishService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
@@ -97,10 +98,10 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             }
             Optional<Goods> first = goods.stream().filter(x -> x.getId().equals(wmsInboundTaskDto.getITEMID())).findFirst();
             if (!first.isPresent()){
-                throw new Exception("容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+wmsInboundTaskDto.getITEMID() + "不存在，此次所有订单任务下发失败！");
+                throw new Exception("容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+EisStringUtils.getRemouldId(wmsInboundTaskDto.getITEMID()) + "不存在，此次所有订单任务下发失败！");
             }else {
                 if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())){
-                    throw new Exception("商品Id"+wmsInboundTaskDto.getITEMID()  + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
+                    throw new Exception("商品Id"+ EisStringUtils.getRemouldId(wmsInboundTaskDto.getITEMID())  + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
                 }
             }
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
@@ -138,7 +139,12 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         if (wmsOutboundTaskDtos.size() > 0) {
             List<String> billNoList =
                     wmsOutboundTaskDtos.stream().map(x -> x.getBILLNO()).distinct().collect(Collectors.toList());
+            List<OrderBill> orderBills = orderBillService.findByMap(null);
             for (String s : billNoList) {
+                //判断当前订单是否已经下发eis
+                if (orderBills.contains(s)){
+                    throw new Exception("订单编号【"+s+"】已下发EIS出库任务");
+                }
                 List<WmsOutboundTaskDto> order =
                         wmsOutboundTaskDtos.stream().filter(x -> s.equals(x.getBILLNO())).collect(Collectors.toList());
                 OrderBill orderBill = new OrderBill();
@@ -153,7 +159,20 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 List<OrderDetail> orderDetails = new ArrayList<>();
                 List<OrderFinish> orderFinishes = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
-                    if (!"1".equals(wmsOutboundTaskDto.getEXSATTR1())){
+                    if ("1".equals(wmsOutboundTaskDto.getEXSATTR1())){
+                        //成品客户信息供打印使用
+                        OrderFinish orderFinish = new OrderFinish();
+                        orderFinish.setOrderBillId(orderBill.getId());
+                        orderFinish.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
+                        orderFinish.setGoodsName(wmsOutboundTaskDto.getEXSATTR9());
+                        orderFinish.setPlanQty(Integer.valueOf(wmsOutboundTaskDto.getEXSATTR6()));
+                        orderFinish.setProductType(wmsOutboundTaskDto.getEXSATTR2());
+                        orderFinish.setClientMark(wmsOutboundTaskDto.getEXSATTR3());
+                        orderFinish.setClientName(wmsOutboundTaskDto.getEXSATTR5());
+                        orderFinish.setOrderDelivery(wmsOutboundTaskDto.getEXSATTR7());
+                        orderFinish.setClientContract(wmsOutboundTaskDto.getEXSATTR8());
+                        orderFinishes.add(orderFinish);
+                    }else {
                         OrderDetail orderDetail = new OrderDetail();
                         orderDetail.setOrderBillId(orderBill.getId());
                         orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
@@ -167,20 +186,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         // 订单麦头相关信息
                         orderDetail.setSpecial(Integer.valueOf(wmsOutboundTaskDto.getSPECIAL()));
                         orderDetail.setWheatHead(wmsOutboundTaskDto.getLOTNO());
+                        orderDetail.setDecals(Integer.valueOf(wmsOutboundTaskDto.getSF_TB()));
                         orderDetails.add(orderDetail);
-                        //成品客户信息供打印使用
-                    }else {
-                        OrderFinish orderFinish = new OrderFinish();
-                        orderFinish.setOrderBillId(orderBill.getId());
-                        orderFinish.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
-                        orderFinish.setGoodsName(wmsOutboundTaskDto.getEXSATTR9());
-                        orderFinish.setPlanQty(Integer.valueOf(wmsOutboundTaskDto.getEXSATTR6()));
-                        orderFinish.setProductType(wmsOutboundTaskDto.getEXSATTR2());
-                        orderFinish.setClientMark(wmsOutboundTaskDto.getEXSATTR3());
-                        orderFinish.setClientName(wmsOutboundTaskDto.getEXSATTR5());
-                        orderFinish.setOrderDelivery(wmsOutboundTaskDto.getEXSATTR7());
-                        orderFinish.setClientContract(wmsOutboundTaskDto.getEXSATTR8());
-                        orderFinishes.add(orderFinish);
                     }
 
                 }
@@ -280,10 +287,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 inventoryTaskDetail.setPdType(0);
                 inventoryDeatils.add(inventoryTaskDetail);
             }
-
             inventoryTaskDetailService.saveInventoryDetailBatch(inventoryDeatils);
-
-
         }
     }
 }
