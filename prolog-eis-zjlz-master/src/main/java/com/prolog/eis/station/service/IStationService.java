@@ -114,4 +114,12 @@ public interface IStationService {
      * @param stationId
      */
     StationInfoVo queryById(int stationId);
+
+    /**
+     * 校验站台容器是否完成播种
+     * @param containerNo
+     * @param stationId
+     * @return
+     */
+    boolean checkSeedFinish(String containerNo,int stationId);
 }

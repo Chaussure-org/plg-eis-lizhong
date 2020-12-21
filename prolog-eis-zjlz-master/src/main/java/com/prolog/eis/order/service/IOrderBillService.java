@@ -70,7 +70,7 @@ public interface IOrderBillService {
      * @param orderBillId
      * @return
      */
-    List<PickWmsDto> findWmsOrderBill(@Param("orderBillId")int orderBillId);
+    List<PickWmsDto> findWmsOrderBill(int orderBillId);
 
     /**
      * 获取成品库未完成订单总量及明细情况

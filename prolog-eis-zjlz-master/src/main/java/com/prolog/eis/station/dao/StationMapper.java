@@ -131,4 +131,13 @@ public interface StationMapper extends BaseMapper<Station> {
             "FROM\n" +
             "\tstation where id = #{stationId}")
     StationInfoVo queryById(int stationId);
+
+    /**
+     * 校验播种是否完成
+     * @param containerNo
+     * @param stationId
+     * @return
+     */
+    @Select("")
+    int checkSeedFinish(@Param("containerNo") String containerNo,@Param("stationId") int stationId);
 }

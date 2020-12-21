@@ -1,6 +1,7 @@
 package com.prolog.eis.wcs.service.impl;
 
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
@@ -17,6 +18,8 @@ import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.order.service.IContainerBindingDetailService;
+import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
@@ -75,6 +78,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private IInventoryBoxOutService inventoryBoxOutService;
     @Autowired
     private IOpenDiskService openDiskService;
+    @Autowired
+    private IContainerBindingDetailService containerBindingDetailService;
+    @Autowired
+    private IStationBZService stationBZService;
 
     @Autowired
     private StationMapper stationMapper;
@@ -142,7 +149,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Override
     @LogInfo(desci = "wcs拆盘机入口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_IN, systemType = LogDto.WCS)
     public RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) {
-        if (openDiskDto == null){
+        if (openDiskDto == null) {
             return success;
         }
         try {
@@ -157,7 +164,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Override
     @LogInfo(desci = "wcs拆盘机出口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_OUT, systemType = LogDto.WCS)
     public RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto) {
-        if (openDiskDto == null){
+        if (openDiskDto == null) {
             return success;
         }
         try {
@@ -169,18 +176,34 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
     }
 
+    @Override
+    @LogInfo(desci = "wcs拣选站料箱放行", direction = "wcs->eis", type = LogDto.WCS_TYPE_CONTAINER_LEAVE, systemType = LogDto.WCS)
+    public RestMessage<String> containerLeave(ContainerLeaveDto containerLeaveDto) {
+        if (containerLeaveDto == null) {
+            return faliure;
+        }
+        try {
+            this.stationContainerLeave(containerLeaveDto);
+            return success;
+        } catch (Exception e) {
+            logger.warn("wcs拣选站料箱放行失败", e);
+            return faliure;
+        }
+    }
+
     /**
      * 拆盘机出口agv接驳口回告
+     *
      * @param openDiskDto
      */
     private void openDiskOut(OpenDiskFinishDto openDiskDto) throws Exception {
         List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("deviceNo", openDiskDto.getDeviceId()).
                 put("openDiskId", OpenDisk.OPEN_DISK_OUT).getMap());
         OpenDisk openDisk = openDisks.get(0);
-        if (openDisks.size() == 0){
-            throw new Exception("【"+openDiskDto.getDeviceId()+"】拆盘机点位没有被管理");
+        if (openDisks.size() == 0) {
+            throw new Exception("【" + openDiskDto.getDeviceId() + "】拆盘机点位没有被管理");
         }
-        if (openDiskDto.getIsArrive().equals("1")){
+        if (openDiskDto.getIsArrive().equals("1")) {
             openDisk.setTaskStatus(1);
             openDiskService.updateOpenDisk(openDisk);
         }
@@ -188,16 +211,17 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
     /**
      * 拆盘机入口回告
+     *
      * @param openDiskDto
      */
     public void openDiskIn(OpenDiskDto openDiskDto) throws Exception {
         List<OpenDisk> openDisks = openDiskService.findOpenDiskByMap(MapUtils.put("deviceNo", openDiskDto.getDeviceId()).
                 put("openDiskId", OpenDisk.OPEN_DISK_IN).getMap());
         OpenDisk openDisk = openDisks.get(0);
-        if (openDisks.size() == 0){
-            throw new Exception("【"+openDiskDto.getDeviceId()+"】拆盘机点位没有被管理");
+        if (openDisks.size() == 0) {
+            throw new Exception("【" + openDiskDto.getDeviceId() + "】拆盘机点位没有被管理");
         }
-        if (openDiskDto.getStatus().equals("0")){
+        if (openDiskDto.getStatus().equals("0")) {
             openDisk.setTaskStatus(0);
             openDiskService.updateOpenDisk(openDisk);
         }
@@ -342,7 +366,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 break;
             //盘点
             case 21:
-                inventoryBoxOutService.inventoryAllotStation(containerNo,bcrDataDTO.getAddress());
+                inventoryBoxOutService.inventoryAllotStation(containerNo, bcrDataDTO.getAddress());
                 break;
             //移库
             case 22:
@@ -382,6 +406,42 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(PrologStringUtils.newGUID(), address, "-1",
                 containerNo, 5);
         wcsService.lineMove(wcsLineMoveDto, 0);
+    }
+
+    /**
+     * 拣选站料箱按钮放行处理逻辑
+     *
+     * @param containerLeaveDto
+     */
+    private void stationContainerLeave(ContainerLeaveDto containerLeaveDto) throws Exception {
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("id", Integer.parseInt(containerLeaveDto.getDeviceId())).getMap());
+        if (stations.size() == 0) {
+            throw new Exception("拣选站编号【" + containerLeaveDto.getDeviceId() + "】EIS管理");
+        }
+        Station station = stations.get(0);
+        //校验播种是否完成
+        //判断当容器是否还有绑定明细
+        List<Integer> stationIds = containerBindingDetailService.getContainerBindingToStation(containerLeaveDto.getContainerNo());
+        if (stationIds.contains(station.getId())) {
+            throw new Exception("容器【" + containerLeaveDto.getContainerNo() + "】播种未完成，放行失败");
+        }
+        if (stationIds.size() == 0) {
+            //放行回库
+            String taskId = PrologStringUtils.newGUID();
+            PointLocation point = pointLocationService.getPointByStationId(station.getId());
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, point.getPointId(), PointLocation.POINT_ID_LXHK, containerLeaveDto.getContainerNo(), 5);
+            wcsService.lineMove(wcsLineMoveDto, 0);
+        } else {
+            //计算合适拣选站，发往
+            int targetStationId = stationBZService.computeContainerTargetStation(stationIds, station.getId());
+            //上层输送线 发送点位
+            String taskId = PrologStringUtils.newGUID();
+            PointLocation point = pointLocationService.getPointByStationId(station.getId());
+            PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, point.getPointId(), targetPoint.getPointId(), containerLeaveDto.getContainerNo(), 5);
+            wcsService.lineMove(wcsLineMoveDto, 0);
+        }
+
     }
 
 }

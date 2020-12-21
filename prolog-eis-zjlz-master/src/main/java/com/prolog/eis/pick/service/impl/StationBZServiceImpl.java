@@ -294,10 +294,10 @@ public class StationBZServiceImpl implements IStationBZService {
             if (stations.size() > 0) {
                 //上层输送线  循环线点位
 
-                String taskId = PrologStringUtils.newGUID();
-                PointLocation point = pointLocationService.getPointByStationId(stationId);
-                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),PointLocation.POINT_ID_LXHK,containerNo,5);
-                wcsService.lineMove(wcsLineMoveDto,0);
+//                String taskId = PrologStringUtils.newGUID();
+//                PointLocation point = pointLocationService.getPointByStationId(stationId);
+//                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),PointLocation.POINT_ID_LXHK,containerNo,5);
+//                wcsService.lineMove(wcsLineMoveDto,0);
 
                 ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
                 if (containerStore.getQty() == 0){
@@ -316,14 +316,14 @@ public class StationBZServiceImpl implements IStationBZService {
             containerStoreService.updateTaskTypeByContainer(containerNo,0);
         } else {
             if (stations.size() > 0) {
-                //计算合适站台
-                int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
-                //上层输送线 发送点位
-                String taskId = PrologStringUtils.newGUID();
-                PointLocation point = pointLocationService.getPointByStationId(stationId);
-                PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
-                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),targetPoint.getPointId(),containerNo,5);
-                wcsService.lineMove(wcsLineMoveDto,0);
+//                //计算合适站台
+//                int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
+//                //上层输送线 发送点位
+//                String taskId = PrologStringUtils.newGUID();
+//                PointLocation point = pointLocationService.getPointByStationId(stationId);
+//                PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
+//                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),targetPoint.getPointId(),containerNo,5);
+//                wcsService.lineMove(wcsLineMoveDto,0);
 
             } else {
                 //下层agv 只有一条绑定明细尾拖则直接去贴标区或非贴标区
@@ -462,7 +462,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
 
     @Override
-    public void doPicking(int stationId, String containerNo, int completeNum, int orderBillId, String orderBoxNo) throws Exception {
+    public ContainerBindingDetail doPicking(int stationId, String containerNo, int completeNum, int orderBillId, String orderBoxNo) throws Exception {
         ContainerBindingDetail containerBinDings = containerBindingDetailService.findMap(MapUtils.put("containerNo", containerNo)
                 .put("orderBillId", orderBillId).getMap()).get(0);
         if (containerBinDings == null) {
@@ -490,14 +490,14 @@ public class StationBZServiceImpl implements IStationBZService {
         containerStoreService.updateContainerStoreNum(containerBinDings.getSeedNum(), containerNo);
         // 删除绑定明细
         containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderDetailId()).getMap());
-        boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
-        if (b) {
-            // TODO: 2020/11/6  当前订单明细完成，回告wms
-            //this.seedToWms(containerBinDings);
-        }
+
+
         //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存
         seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum(), orderDetail.getGoodsId());
+
+        return containerBinDings;
+
     }
 
     @Override
@@ -689,6 +689,8 @@ public class StationBZServiceImpl implements IStationBZService {
         if (b) {
             throw new Exception("容器【" + containerNo + "】已离开站台请勿重复操作");
         }
+        //物料容器放行
+        this.containerNoLeave(containerNo, stationId);
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -699,8 +701,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //订单拖放行 贴标区或非贴标区
             this.orderTrayLeave(orderTrayNo, orderBillId);
         }
-        //物料容器放行
-        this.containerNoLeave(containerNo, stationId);
+
     }
 
     @Override

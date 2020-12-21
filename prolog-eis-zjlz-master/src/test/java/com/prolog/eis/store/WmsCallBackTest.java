@@ -41,12 +41,12 @@ public class WmsCallBackTest {
     public void testInbound() throws Exception {
         WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setSEQNO("0");
-        wmsInboundCallBackDto.setITEMNAME("10#圆钢");
-        wmsInboundCallBackDto.setITEMID("0000002206");
-        wmsInboundCallBackDto.setCONTAINERNO("15");
+        wmsInboundCallBackDto.setITEMNAME("内接头总成");
+        wmsInboundCallBackDto.setITEMID("0000002405");
+        wmsInboundCallBackDto.setCONTAINERNO("600018");
         wmsInboundCallBackDto.setBILLTYPE(1);
-        wmsInboundCallBackDto.setBILLNO("RCV0000004724");
-        wmsInboundCallBackDto.setLINEID("21954551");
+        wmsInboundCallBackDto.setBILLNO("RCV0000004803");
+        wmsInboundCallBackDto.setLINEID("21954703");
         EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
         System.out.println("aaaa");
     }
@@ -77,7 +77,7 @@ public class WmsCallBackTest {
     @Test
     public void testStartSeed() throws Exception {
         WmsStartOrderCallBackDto wmsStartOrderCallBackDto = new WmsStartOrderCallBackDto();
-        wmsStartOrderCallBackDto.setBILLNO("DO20201201001522");
+        wmsStartOrderCallBackDto.setBILLNO("DO20201207001501");
         wmsStartOrderCallBackDto.setSTATUS("1");
         EisRestMessage<String> restMessage = wmsService.startOrderCallBack(wmsStartOrderCallBackDto);
         System.out.println("aaaa");

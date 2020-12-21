@@ -112,7 +112,7 @@ public interface IStationBZService {
      * @param orderBoxNo
      * @throws Exception
      */
-    void doPicking(int stationId, String containerNo,int completeNum,int orderBillId,String orderBoxNo) throws Exception;
+    ContainerBindingDetail doPicking(int stationId, String containerNo,int completeNum,int orderBillId,String orderBoxNo) throws Exception;
 
     /**
      * 找寻站台托盘到达的合适点位

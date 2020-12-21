@@ -2,6 +2,7 @@ package com.prolog.eis.wcs.service;
 
 import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.dto.wcs.HoisterInfoDto;
+import com.prolog.eis.dto.wcs.TrayCallbackDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.framework.common.message.RestMessage;
 
@@ -18,7 +19,7 @@ public interface IWcsService {
      */
     RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto, int i) throws Exception;
 
-
+    RestMessage<String> trayToOpenDisk(TrayCallbackDto trayCallbackDto) throws Exception;
 //    /**
 //     * 请求订单箱
 //     *

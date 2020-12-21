@@ -107,6 +107,18 @@ public class LogDto {
      */
     public static final int WCS_TYPE_OPEN_DISK_OUT = 5;
 
+
+    /**
+     * wcs容器放行回告
+     */
+    public static final int WCS_TYPE_CONTAINER_LEAVE = 6;
+
+
+    /**
+     * eis托盘到位回告wcs
+     */
+    public static final int WCS_TYPE_TARY_ARRIVE = 7;
+
     /**
      * sas入库任务回告eis
      */

@@ -27,7 +27,7 @@ public class EmptyBoxBackController {
     @RequestMapping("back")
     public RestMessage back(@RequestParam()int qty) throws Exception {
         try {
-//            emptyBoxBackService.outEmptyBox(qty);
+            emptyBoxBackService.outEmptyBox(qty);
             return RestMessage.newInstance(true,"",null);
         } catch (Exception e) {
            return RestMessage.newInstance(false,"操作失败:"+e.getMessage(),null);

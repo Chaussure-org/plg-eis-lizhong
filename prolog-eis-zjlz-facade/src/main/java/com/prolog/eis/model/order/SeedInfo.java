@@ -52,6 +52,30 @@ public class SeedInfo {
   @ApiModelProperty("商品id")
   private Integer goodsId;
 
+  @Column("order_no")
+  @ApiModelProperty("订单编号")
+  private String orderNo;
+
+  @Column("operator")
+  @ApiModelProperty("操作人")
+  private String operator;
+
+  public String getOrderNo() {
+    return orderNo;
+  }
+
+  public void setOrderNo(String orderNo) {
+    this.orderNo = orderNo;
+  }
+
+  public String getOperator() {
+    return operator;
+  }
+
+  public void setOperator(String operator) {
+    this.operator = operator;
+  }
+
   public Integer getGoodsId() {
     return goodsId;
   }

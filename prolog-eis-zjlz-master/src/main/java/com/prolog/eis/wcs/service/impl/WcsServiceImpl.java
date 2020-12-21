@@ -3,6 +3,7 @@ package com.prolog.eis.wcs.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.wcs.TrayCallbackDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.model.wcs.WcsCommandRepeat;
 import com.prolog.eis.util.HttpUtils;
@@ -69,6 +70,23 @@ public class WcsServiceImpl implements IWcsService {
                     wcsLineMoveDto.getType(), new Date());
             wcsCommandRepeatService.saveWcsCommand(wcsCommandRepeat);
         }
+        return result;
+    }
+
+    /**
+     * 拆盘机入口托盘到位通知wcs
+     * @param trayCallbackDto
+     * @return
+     * @throws Exception
+     */
+    @Override
+    @LogInfo(desci = "eis回告wcs拆盘机口有订单拖", direction = "eis->wcs", type = LogDto.WCS_TYPE_TARY_ARRIVE, systemType = LogDto.WCS)
+    public RestMessage<String> trayToOpenDisk(TrayCallbackDto trayCallbackDto) throws Exception {
+        String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+        logger.info("EIS -> WCS 输送线行走:{}", url);
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(trayCallbackDto),
+                new TypeReference<RestMessage<String>>() {
+                });
         return result;
     }
 

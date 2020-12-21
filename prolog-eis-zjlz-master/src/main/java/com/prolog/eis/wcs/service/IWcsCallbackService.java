@@ -32,4 +32,11 @@ public interface IWcsCallbackService {
      * @return
      */
     RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto);
+
+    /**
+     * 拣选站容器放行
+     * @param containerLeaveDto
+     * @return
+     */
+    RestMessage<String> containerLeave(ContainerLeaveDto containerLeaveDto);
 }
