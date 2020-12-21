@@ -33,14 +33,6 @@ public class WcsController {
     @PostMapping("/task/callback")
     public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception{
         logger.info("接收任务回告,{}",JsonUtils.toString(taskCallbackDTO));
-
-
-
-    @ApiOperation(value = "任务回告", notes = "此接口包含输送线行走任务回告")
-    @PostMapping("/wcs/task/callback")
-    public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception {
-
-        logger.info("接收任务回告,{}", JsonUtils.toString(taskCallbackDTO));
         return wcsService.executeTaskCallback(taskCallbackDTO);
     }
 
@@ -49,17 +41,9 @@ public class WcsController {
     public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception{
             logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
             return wcsService.executeBcrCallback(bcrDataDTO);
-    @ApiOperation(value = "bcr请求", notes = "此接口包含料箱进站请求、订单框进站请求、体积检测请求、入库口请求")
-    @PostMapping("/wcs/bcr")
-    public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception {
-        logger.info("bcr请求,{}", JsonUtils.toString(bcrDataDTO));
-        return wcsService.executeBcrCallback(bcrDataDTO);
     }
 
-    @ApiOperation(value = "拆盘机入口信息回告", notes = "拆码盘设备空闲时，WCS上传空闲信号")
-    @PostMapping("/WcsApi/UnstackerStatus")
-    public RestMessage<String> openDiskEntrance(@RequestBody OpenDiskDto openDiskDto) throws Exception {
-        logger.info("拆盘机入口信息回告,{}", JsonUtils.toString(openDiskDto));
+
     @ApiOperation(value="拆盘机入口信息回告",notes="拆码盘设备空闲时，WCS上传空闲信号")
     @PostMapping("/openDisk/in/callback")
     public RestMessage<String> openDiskEntrance(@RequestBody OpenDiskDto openDiskDto) throws Exception{
@@ -67,17 +51,40 @@ public class WcsController {
         return wcsService.openDiskEntranceCallback(openDiskDto);
     }
 
-
-    @ApiOperation(value="拆盘机出口信息回告",notes="拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
-    @PostMapping("openDisk/out/callback")
-    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception{
-        logger.info("拆盘机出口信息回告,{}",JsonUtils.toString(openDiskDto));
-    @ApiOperation(value = "拆盘机出口信息回告", notes = "拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
-    @PostMapping("/WcsApi/PalletArrive")
-    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception {
-        logger.info("拆盘机出口信息回告,{}", JsonUtils.toString(openDiskDto));
-        return wcsService.openDiskOuTCallback(openDiskDto);
-    }
+//    @ApiOperation(value="bcr请求",notes="此接口包含料箱进站请求、订单框进站请求、体积检测请求、入库口请求")
+//    @PostMapping("/bcr")
+//    public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception{
+//            logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));
+//            return wcsService.executeBcrCallback(bcrDataDTO);
+//    @ApiOperation(value = "bcr请求", notes = "此接口包含料箱进站请求、订单框进站请求、体积检测请求、入库口请求")
+//    @PostMapping("/wcs/bcr")
+//    public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception {
+//        logger.info("bcr请求,{}", JsonUtils.toString(bcrDataDTO));
+//        return wcsService.executeBcrCallback(bcrDataDTO);
+//    }
+//
+//    @ApiOperation(value = "拆盘机入口信息回告", notes = "拆码盘设备空闲时，WCS上传空闲信号")
+//    @PostMapping("/WcsApi/UnstackerStatus")
+//    public RestMessage<String> openDiskEntrance(@RequestBody OpenDiskDto openDiskDto) throws Exception {
+//        logger.info("拆盘机入口信息回告,{}", JsonUtils.toString(openDiskDto));
+//    @ApiOperation(value="拆盘机入口信息回告",notes="拆码盘设备空闲时，WCS上传空闲信号")
+//    @PostMapping("/openDisk/in/callback")
+//    public RestMessage<String> openDiskEntrance(@RequestBody OpenDiskDto openDiskDto) throws Exception{
+//        logger.info("拆盘机入口信息回告,{}",JsonUtils.toString(openDiskDto));
+//        return wcsService.openDiskEntranceCallback(openDiskDto);
+//    }
+//
+//
+//    @ApiOperation(value="拆盘机出口信息回告",notes="拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
+//    @PostMapping("openDisk/out/callback")
+//    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception{
+//        logger.info("拆盘机出口信息回告,{}",JsonUtils.toString(openDiskDto));
+//    @ApiOperation(value = "拆盘机出口信息回告", notes = "拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
+//    @PostMapping("/WcsApi/PalletArrive")
+//    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception {
+//        logger.info("拆盘机出口信息回告,{}", JsonUtils.toString(openDiskDto));
+//        return wcsService.openDiskOuTCallback(openDiskDto);
+//    }
 
 
     @ApiOperation(value="拣选站料箱放行",notes="拣选完成，上层料箱通过按钮放行")
