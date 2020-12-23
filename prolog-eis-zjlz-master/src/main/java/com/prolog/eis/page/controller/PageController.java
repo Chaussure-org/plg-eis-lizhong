@@ -45,7 +45,6 @@ public class PageController {
             return RestMessage.newInstance(true, "200", "查询成功", stations);
         } catch (Exception e) {
             return RestMessage.newInstance(false, "500", "查询失败:" + e.getMessage(), null);
-
         }
     }
     @RequestMapping("/station/findById")

@@ -19,4 +19,13 @@ public class EisStringUtils {
         String format = String.format("%010d", i);
         return format;
     }
+
+    /**
+     * MCS-->EIS 由于坐标不同 MCS左边转换为 EIS坐标
+     * @param point
+     * @return
+     */
+    public static String getMcsPoint(String point){
+        return "";
+    }
 }

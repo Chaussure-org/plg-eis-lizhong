@@ -18,7 +18,7 @@ import java.util.List;
  * @Version: V1.0
  */
 @Component
-@FeignClient(value="service-ai-eis-zjlz-master-wk")
+@FeignClient(value="service-ai-eis-zjlz-master")
 public interface FeignService {
 
     @PostMapping(value = "/api/v1/agv/agvCallbackService/agvCallback")

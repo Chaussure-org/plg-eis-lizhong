@@ -33,13 +33,15 @@ public class McsServiceImpl implements IMcsService {
     @Autowired
     private EisProperties eisProperties;
 
-    private String getUrl(String url){
-        return String.format("http://%s%s",eisProperties.getMcs().getHost(),url);
+    private String getUrl(String url) {
+        return String.format("http://%s%s", eisProperties.getMcs().getHost(), url);
     }
 
     @Override
-    @LogInfo(desci = "eis发起托盘移动任务",direction = "eis->mcs",type = LogDto.MCS_TYPE_CONTIANER_MOVE,systemType = LogDto.MCS)
+    @LogInfo(desci = "eis发起托盘移动任务", direction = "eis->mcs", type = LogDto.MCS_TYPE_CONTIANER_MOVE, systemType = LogDto.MCS)
     public McsResultDto mcsContainerMove(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
+        //Mcs的坐标经过一个 方法 处理 INT【任务类型：1：入库:2：出库 3：同巷道移库】
+
         List<McsMoveTaskDto> mcsSendTaskDtos = new ArrayList<McsMoveTaskDto>();
         mcsSendTaskDtos.add(mcsMoveTaskDto);
         Map<String, Object> map = new HashMap<String, Object>();
@@ -61,7 +63,7 @@ public class McsServiceImpl implements IMcsService {
     }
 
     @Override
-    @LogInfo(desci = "eis查询堆垛机信息",direction = "eis-mcs",type = LogDto.MCS_TYPE_GETCATINFO,systemType = LogDto.MCS)
+    @LogInfo(desci = "eis查询堆垛机信息", direction = "eis-mcs", type = LogDto.MCS_TYPE_GETCATINFO, systemType = LogDto.MCS)
     public List<McsCarInfoDto> getMcsCarInfo() throws Exception {
         String url = this.getUrl(eisProperties.getMcs().getGetMcsCarInfoUrl());
         logger.info("EIS -> MCS 获取堆垛机信息:{}", url);

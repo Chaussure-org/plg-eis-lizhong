@@ -135,7 +135,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     @Override
     @LogInfo(desci = "wms出库任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK, systemType = LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
-    public void sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
+    public void  sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
         if (wmsOutboundTaskDtos.size() > 0) {
             List<String> billNoList =
                     wmsOutboundTaskDtos.stream().map(x -> x.getBILLNO()).distinct().collect(Collectors.toList());
@@ -154,6 +154,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 orderBill.setBillDate(order.get(0).getBILLDATE());
                 orderBill.setTaskId(order.get(0).getTASKID());
                 orderBill.setIronTray(Integer.valueOf(order.get(0).getEXSATTR10()));
+                orderBill.setCreateTime(new Date());
                 orderBillService.saveOrderBill(orderBill);
                 List<OrderDetail> orderDetails = new ArrayList<>();
                 List<OrderFinish> orderFinishes = new ArrayList<>();
@@ -204,10 +205,13 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
 
     @Override
     @LogInfo(desci = "wms同步商品资料", direction = "wms->eis", type = LogDto.WMS_TYPE_GOODS_SYNC, systemType = LogDto.WMS)
-    public void goodsSync(List<WmsGoodsDto> goodsDtos) {
+    public void goodsSync(List<WmsGoodsDto> goodsDtos) throws Exception {
         List<Goods> newGoods = new ArrayList<>();
         List<Goods> updateGoods = new ArrayList<>();
         for (WmsGoodsDto goodsDto : goodsDtos) {
+            if(goodsDto.getITEMID().startsWith("ITEM")){
+                throw new Exception("ITEMID，前面多给了 ITEM 四个字母"+goodsDto.getITEMID());
+            }
             Goods goodsByGoodId = goodsService.getGoodsByGoodId(Integer.parseInt(goodsDto.getITEMID()));
             Goods goods = new Goods();
             if (goodsByGoodId == null) {

@@ -28,7 +28,7 @@ public class WMSProperties {
     private String wmsStartSeedUrl = "/TaskDispatch/eisUpPrioritylevel/v1.0";
 
     /**
-     * 拣选完成回告
+     * 播种完成回告
      */
     private String wmsSeedEndUrl = "/TaskDispatch/returnDo/v1.0";
 

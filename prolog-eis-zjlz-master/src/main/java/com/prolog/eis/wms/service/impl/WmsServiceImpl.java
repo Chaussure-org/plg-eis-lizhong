@@ -68,7 +68,7 @@ public class WmsServiceImpl implements IWmsService {
      * @return
      */
     @Override
-    @LogInfo(desci = "Eis出库任务完成回告",direction = "eis->wms",type = LogDto.WMS_TYPE_OUTBOUND_CALLBACK,systemType =
+    @LogInfo(desci = "播种完成回告",direction = "eis->wms",type = LogDto.WMS_TYPE_OUTBOUND_CALLBACK,systemType =
             LogDto.WMS)
     public EisRestMessage<String> outboundTaskCallBack(WmsOutboundCallBackDto wmsOutboundCallBackDto) throws Exception {
         String url = this.getUrl(properties.getWms().getSeedServiceName(),properties.getWms().getWmsSeedEndUrl());
