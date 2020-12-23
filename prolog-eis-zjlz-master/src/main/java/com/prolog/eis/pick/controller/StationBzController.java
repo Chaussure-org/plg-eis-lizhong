@@ -66,7 +66,7 @@ public class StationBzController {
 
     @ApiOperation(value = "称重检测", notes = "称重检测")
     @RequestMapping("/checkWeigh")
-    public RestMessage<OrderTrayWeighDTO> checkWeigh(@RequestParam(defaultValue = "0") int stationId, @RequestParam(defaultValue = "0") int orderDetailId,@RequestParam String passBoxNo) throws Exception {
+    public RestMessage<OrderTrayWeighDTO> checkWeigh(@RequestParam(defaultValue = "0") int stationId, @RequestParam(defaultValue = "0") int orderDetailId,@RequestParam(defaultValue = "0") String passBoxNo) throws Exception {
         try {
             OrderTrayWeighDTO orderTrayWeighDTO = stationBZService.weighCheck(stationId, orderDetailId, passBoxNo);
             return RestMessage.newInstance(true,"200","操作成功",orderTrayWeighDTO);
