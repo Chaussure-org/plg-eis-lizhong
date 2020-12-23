@@ -240,7 +240,7 @@ public class PageController {
 
 
     @RequestMapping("/tray/store/update")
-    @ApiOperation(value = "箱库异常货位组解锁",notes = "箱库异常货位组解锁")
+    @ApiOperation(value = "箱库立库货位组解锁",notes = "箱库异常货位组解锁")
     public RestMessage<String> updateTrayGroup(@RequestParam(defaultValue = "001")String groupNo,@RequestParam(defaultValue = "-1")int isLock){
         try {
             pageService.updateTrayGroupLock(groupNo,isLock);

@@ -45,7 +45,7 @@ public class StationController {
         try {
             String ipAddr = IPUtils.getIpAddr(request);
             Station station = stationService.getStationId(ipAddr);
-            Map<String, Integer> map = new HashMap<>(1);
+            Map<String, Integer> map = new HashMap<>(2);
             map.put("stationId",station.getId());
             map.put("flag",station.getIsLock());
 
