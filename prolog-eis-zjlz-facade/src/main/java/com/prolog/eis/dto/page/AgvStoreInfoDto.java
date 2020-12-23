@@ -34,7 +34,7 @@ public class AgvStoreInfoDto {
     private String containerNo;
 
     @ApiModelProperty("位置类型 1存储位 2 输送线 3托盘作业位")
-    private String locationType;
+    private Integer locationType;
 
     @ApiModelProperty("任务锁  0 空闲1任务中")
     private int taskLock;
