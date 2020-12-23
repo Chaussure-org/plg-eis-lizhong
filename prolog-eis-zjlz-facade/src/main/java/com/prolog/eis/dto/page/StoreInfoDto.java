@@ -39,6 +39,6 @@ public class StoreInfoDto {
     private int storeLockState;
     @ApiModelProperty("货位组锁")
     private int groupLockState;
-    @ApiModelProperty("是否锁定 0 未锁定1锁定")
+    @ApiModelProperty("是否锁定 0 未锁定 1锁定")
     private int isLock;
 }

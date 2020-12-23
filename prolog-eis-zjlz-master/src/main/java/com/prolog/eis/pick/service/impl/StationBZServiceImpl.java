@@ -268,9 +268,12 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("订单拖【"+orderTrayNo+"】没有到位,路径状态为【"+containerPathTasks.get(0).getTaskState()+"】");
         }
 
-        if (agvStoragelocations.contains(containerPathTasks.get(0).getSourceLocation())){
-            return false;
+        for (AgvStoragelocation agvStoragelocation : agvStoragelocations) {
+            if (agvStoragelocation.getLocationNo().equals(containerPathTasks.get(0).getSourceLocation())){
+                return false;
+            }
         }
+  
 
         return true;
     }
@@ -293,7 +296,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //直接放行
             if (stations.size() > 0) {
                 //上层输送线  循环线点位
-
+                  //todo：注释输送线放行
 //                String taskId = PrologStringUtils.newGUID();
 //                PointLocation point = pointLocationService.getPointByStationId(stationId);
 //                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),PointLocation.POINT_ID_LXHK,containerNo,5);
@@ -316,6 +319,7 @@ public class StationBZServiceImpl implements IStationBZService {
             containerStoreService.updateTaskTypeByContainer(containerNo,0);
         } else {
             if (stations.size() > 0) {
+                //todo：注释输送线放行
 //                //计算合适站台
 //                int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
 //                //上层输送线 发送点位
@@ -689,8 +693,8 @@ public class StationBZServiceImpl implements IStationBZService {
         if (b) {
             throw new Exception("容器【" + containerNo + "】已离开站台请勿重复操作");
         }
-        //物料容器放行
-        this.containerNoLeave(containerNo, stationId);
+        //todo:注释物料容器放行
+//        this.containerNoLeave(containerNo, stationId);
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -699,7 +703,8 @@ public class StationBZServiceImpl implements IStationBZService {
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
-            this.orderTrayLeave(orderTrayNo, orderBillId);
+            //todo:注释订单拖放行
+//            this.orderTrayLeave(orderTrayNo, orderBillId);
         }
 
     }
