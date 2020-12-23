@@ -55,7 +55,7 @@ public class Station {
     private Integer currentStationPickId;
 
     @Column("is_lock")
-    @ApiModelProperty("是否锁定 0不锁定  1锁定")
+    @ApiModelProperty("是否锁定 0不锁定（索取）  1锁定（不索取）")
     private Integer isLock;
 
     @Column("picking_user_id")

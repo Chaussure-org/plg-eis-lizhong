@@ -268,9 +268,12 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("订单拖【"+orderTrayNo+"】没有到位,路径状态为【"+containerPathTasks.get(0).getTaskState()+"】");
         }
 
-        if (agvStoragelocations.contains(containerPathTasks.get(0).getSourceLocation())){
-            return false;
+        for (AgvStoragelocation agvStoragelocation : agvStoragelocations) {
+            if (agvStoragelocation.getLocationNo().equals(containerPathTasks.get(0).getSourceLocation())){
+                return false;
+            }
         }
+  
 
         return true;
     }
@@ -293,11 +296,11 @@ public class StationBZServiceImpl implements IStationBZService {
             //直接放行
             if (stations.size() > 0) {
                 //上层输送线  循环线点位
-
-//                String taskId = PrologStringUtils.newGUID();
-//                PointLocation point = pointLocationService.getPointByStationId(stationId);
-//                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),PointLocation.POINT_ID_LXHK,containerNo,5);
-//                wcsService.lineMove(wcsLineMoveDto,0);
+                  //todo：注释输送线放行
+                String taskId = PrologStringUtils.newGUID();
+                PointLocation point = pointLocationService.getPointByStationId(stationId);
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId,point.getPointId(),PointLocation.POINT_ID_LXHK,containerNo,5);
+                wcsService.lineMove(wcsLineMoveDto,0);
 
                 ContainerStore containerStore = containerStoreService.findByMap(MapUtils.put("containerNo", containerNo).getMap()).get(0);
                 if (containerStore.getQty() == 0){
@@ -316,6 +319,7 @@ public class StationBZServiceImpl implements IStationBZService {
             containerStoreService.updateTaskTypeByContainer(containerNo,0);
         } else {
             if (stations.size() > 0) {
+                //todo：注释输送线放行
 //                //计算合适站台
 //                int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
 //                //上层输送线 发送点位
