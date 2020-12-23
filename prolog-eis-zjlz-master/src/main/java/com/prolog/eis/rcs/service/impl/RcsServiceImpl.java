@@ -35,7 +35,7 @@ public class RcsServiceImpl implements IRcsService {
 	private RestTemplate restTemplate;
 
 	private String getUrl(String url){
-		return String.format("http://%s%s",properties.getRcs().getHost(),url);
+		return String.format("http://%s:%s%s",properties.getRcs().getHost(),properties.getRcs().getPort(),url);
 	}
 
 

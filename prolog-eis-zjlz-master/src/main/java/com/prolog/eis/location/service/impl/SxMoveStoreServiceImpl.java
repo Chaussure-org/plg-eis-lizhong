@@ -212,7 +212,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     //找不到货位
                     return;
                 }
-
+//找到货位开始发送 mcs 指令  add sunpp
                 sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 1,
                         containerPathTaskDetailDTO.getSourceLocation(), null,
                         targetSxStoreLocation.getStoreNo(), targetSxStoreLocation.getStoreLocationGroupId(),
@@ -456,7 +456,6 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem)) {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0);
-                // TODO: 2020/12/18 更改为想数据库插入数据
                 McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
                 if (mcsResultDto.isRet()) {
                     //发送成功
@@ -542,9 +541,9 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
     @Override
     public void updateContainerPathTaskComplete(ContainerPathTask containerPathTask,
-                                                 ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception {
+                                                ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception {
         //更新库存任务状态
-        iContainerStoreService.updateTaskStausByContainer(containerPathTask.getContainerNo(),0);
+        iContainerStoreService.updateTaskStausByContainer(containerPathTask.getContainerNo(), 0);
         //判断当前的任务节点是否为最后一个节点
         ContainerPathTaskDetail nextContainerPathTaskDetail = containerPathTaskDetailMapper.findFirstByMap(
                 MapUtils.put("palletNo", containerPathTaskDetail.getPalletNo())

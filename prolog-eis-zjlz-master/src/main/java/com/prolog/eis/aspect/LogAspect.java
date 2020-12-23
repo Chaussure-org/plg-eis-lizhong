@@ -83,14 +83,14 @@ public class LogAspect {
                 log.setCreateTime(new Date());
                 System.out.println(log);
                 logService.save(log);
-                rabbitTemplate.convertAndSend("mcsMoveExchange", "mcsMove", JsonUtils.toString(log));
+                //rabbitTemplate.convertAndSend("mcsMoveExchange", "mcsMove", JsonUtils.toString(log));
                 return proceed;
             } catch (Exception e) {
                 log.setSuccess(false);
                 log.setException(e.getMessage().toString());
                 log.setCreateTime(new Date());
                 logService.save(log);
-                rabbitTemplate.convertAndSend("mcsMoveExchange", "mcsMove", JsonUtils.toString(log));
+                //rabbitTemplate.convertAndSend("mcsMoveExchange", "mcsMove", JsonUtils.toString(log));
                 //调试
                 e.printStackTrace();
                 throw e;

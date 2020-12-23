@@ -305,6 +305,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 }
                 target = "SAS01";
             } else {
+                // TODO: 2020/12/22 BCR点位 是否是  BCR0102     BCR0103
                 if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
                     throw new Exception("入库输送线有误，请核对");
                 }

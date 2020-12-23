@@ -43,8 +43,8 @@ public class WmsServiceImpl implements IWmsService {
      * @param path
      * @return
      */
-    private String getUrl(String serviceName,String path){
-        return String.format("http://%s:%s%s",serviceName,properties.getWms().getPort(),path);
+    private String getUrl(String ip,String path){
+        return String.format("http://%s:%s%s",ip,properties.getWms().getSeedServicePort(),path);
     }
 
     /**
@@ -55,7 +55,7 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "EIS入库任务回告",direction = "eis->wms",type = LogDto.WMS_TYPE_INBOUND_CALLBACK,systemType = LogDto.WMS)
     public EisRestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception {
-            String serviceName = properties.getWms().getInboundServiceName();
+        String serviceName = properties.getWms().getSeedServiceIp();
         String url = this.getUrl(serviceName,properties.getWms().getWmsInboundUrl());
         logger.info("EIS -> WMS 入库任务回告:{}",url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInboundCallBackDto),new TypeReference<EisRestMessage<String>>() {});

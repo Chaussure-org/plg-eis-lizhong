@@ -34,7 +34,7 @@ public class McsServiceImpl implements IMcsService {
     private EisProperties eisProperties;
 
     private String getUrl(String url) {
-        return String.format("http://%s%s", eisProperties.getMcs().getHost(), url);
+        return String.format("http://%s:%s%s", eisProperties.getMcs().getHost(),eisProperties.getMcs().getPort(), url);
     }
 
     @Override

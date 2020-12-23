@@ -9,7 +9,7 @@ eureka:
     statusPageUrlPath: /${server.servlet.contextpath:}/apidoc.html
     leaseRenewalIntervalInSeconds: 20 #租期更新时间间隔（默认30秒）
     leaseExpirationDurationInSeconds: 60 #租期到期时间（默认90秒）
-    ipAddress: 10.0.2.244 # 根据项目部署地址变动，指定此实例部署的主机ip
+    ipAddress: 10.0.2.135 # 根据项目部署地址变动，指定此实例部署的主机ip
 
 
 server:
@@ -64,7 +64,13 @@ prolog:
     clientId: wms
     clientSecret: wms
     oauthServer: api-gateway/service-authorization
+  #    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,*/wms/*
   web:
     multipart:  #文件上传配置
       maxFileSize: 100MB
       maxRequestSize: 100MB
+  auth:
+    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,/api/**,/wcs/**，/mcs/**,/rcs/**,/sas/**
+  #auth:
+
+

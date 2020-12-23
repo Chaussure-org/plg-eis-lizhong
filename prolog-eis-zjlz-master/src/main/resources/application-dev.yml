@@ -50,17 +50,17 @@ logging:
 prolog:
   eis:
     wcs:
-      host: service-ai-eis-zjlz-simulator
-      port: 0
+      host: 127.0.0.1
+      port: 10020
     rcs:
-      host: service-ai-eis-zjlz-simulator
-      port: 0
+      host: 127.0.0.1
+      port: 10020
     sas:
-      host: service-ai-eis-zjlz-simulator
-      port: 0
+      host: 127.0.0.1
+      port: 10020
     mcs:
-      host: service-ai-eis-zjlz-simulator
-      port: 0
+      host: 127.0.0.1
+      port: 10020
     wms:
-      host: 192.168.1.81
-      port: 20815
+      host: 10.0.2.135
+      port: 20631

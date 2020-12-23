@@ -3,6 +3,7 @@ package com.prolog.eis.wms.controller;
 import com.prolog.eis.dto.wms.*;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.wms.service.IWmsCallBackService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import io.swagger.annotations.Api;
@@ -34,6 +35,22 @@ public class WmsController {
     @Autowired
     private IWmsCallBackService wmsCallBackService;
 
+    @Autowired
+    private IWmsService wmsService;
+
+    @PostMapping("test")
+    public String test() throws Exception {
+        WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
+        wmsInboundCallBackDto.setSEQNO("0");
+        wmsInboundCallBackDto.setITEMNAME("内接头总成");
+        wmsInboundCallBackDto.setITEMID("0000002405");
+        wmsInboundCallBackDto.setCONTAINERNO("600018");
+        wmsInboundCallBackDto.setBILLTYPE(1);
+        wmsInboundCallBackDto.setBILLNO("RCV0000004803");
+        wmsInboundCallBackDto.setLINEID("21954703");
+        EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
+        return "发送成功";
+    }
     @ApiOperation(value = "入库任务下发",notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")
     public EisRestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {

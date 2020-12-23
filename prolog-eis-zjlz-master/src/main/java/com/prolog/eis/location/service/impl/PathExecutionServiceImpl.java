@@ -111,6 +111,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
         containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
         containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+        // TODO: 2020/12/22 这里输送线还未上报 堆垛机库外的点位到达，后面可能修改为容器到达后再发送mcs 行走。 add sunpp
         sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
         containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),

@@ -6,6 +6,7 @@ import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,7 +19,10 @@ import java.util.Map;
 
 @Component
 public class HttpUtils {
+
+    @Autowired
 	private RestTemplate restTemplate;
+
 	private final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
 	public HttpUtils(RestTemplate restTemplate){
@@ -29,6 +33,7 @@ public class HttpUtils {
 		HttpEntity<Map<String, Object>> entity = this.parseParams(params);
 		System.out.println(entity.toString());
 		String data = this.restTemplate.postForObject(url,entity,String.class);
+        //String data = this.restTemplate.postForObject("http://10.0.2.135:20631/TaskDispatch/returnDo/v1.0",entity,String.class);
 		logger.info("EIS <- WCS Resutl: {}",data);
 		EisRestMessage<T> result = EisRestMessage.parseJsonString(data,typeReference);
 		return result;

@@ -14,7 +14,7 @@ eureka:
 
 server:
   ipAddress: 127.0.0.1
-  port: 20210
+  port: 10020
   servlet:
     context-path:
 

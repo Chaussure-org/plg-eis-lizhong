@@ -3,8 +3,11 @@ package com.prolog.eis.page.controller;
 import com.prolog.eis.dto.page.*;
 import com.prolog.eis.dto.station.StationInfoDto;
 import com.prolog.eis.dto.store.ContainerInfoDto;
+import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.page.service.IPageService;
+import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.vo.station.StationInfoVo;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.core.pojo.Page;
 import io.swagger.annotations.Api;
@@ -29,13 +32,9 @@ import java.util.List;
 public class PageController {
     @Autowired
     private IPageService pageService;
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-    @PostMapping("mqtest")
-    public String test() {
-        rabbitTemplate.convertAndSend("rcsMoveExchange", "rcs", "cs测试数据=================================================");
-        return "发送成功";
-    }
+//    @Autowired
+//    private RabbitTemplate rabbitTemplate;
+
     @RequestMapping("/station/findAll")
     @ApiOperation(value = "查询所有站台信息", notes = "查询所有站台信息")
     public RestMessage<List<StationInfoVo>> findStation() {
