@@ -44,6 +44,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -114,6 +115,7 @@ public class StationBZServiceImpl implements IStationBZService {
         if (StringUtils.isBlank(containerNo)) {
             throw new RuntimeException("容器编号不能为空");
         }
+
         if (StringUtils.isBlank(orderBoxNo)) {
             throw new RuntimeException("订单拖编号不能为空");
         }
