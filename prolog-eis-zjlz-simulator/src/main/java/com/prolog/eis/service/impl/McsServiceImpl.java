@@ -44,7 +44,7 @@ public class McsServiceImpl implements McsService {
            throw e;
         }
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         }catch (Exception e){
             e.printStackTrace();
         }

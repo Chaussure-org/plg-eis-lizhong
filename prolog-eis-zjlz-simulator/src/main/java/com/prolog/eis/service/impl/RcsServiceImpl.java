@@ -36,7 +36,7 @@ public class RcsServiceImpl implements RcsService {
             System.out.println("rcscallback失败");
         }
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
