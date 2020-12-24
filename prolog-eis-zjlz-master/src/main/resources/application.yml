@@ -70,7 +70,7 @@ prolog:
       maxFileSize: 100MB
       maxRequestSize: 100MB
   auth:
-    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,/api/**,/wcs/**，/mcs/**,/rcs/**,/sas/**
+    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,/api/**,/wcs/**,/mcs/**,/rcs/**,/sas/**
   #auth:
 
 

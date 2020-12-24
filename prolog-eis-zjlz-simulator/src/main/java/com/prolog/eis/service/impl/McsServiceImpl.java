@@ -28,7 +28,7 @@ public class McsServiceImpl implements McsService {
     @Override
     public  void doCallBack(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
 
-        String startUrl = "http://service-ai-eis-zjlz-master/mcs/callback";
+        String startUrl = "http://127.0.0.1:10010/mcs/callback";
         try {
             McsCallBackDto mcsCallBackDto = new McsCallBackDto();
             mcsCallBackDto.setTaskId(mcsMoveTaskDto.getTaskId());
@@ -48,7 +48,7 @@ public class McsServiceImpl implements McsService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        String endUrl = "http://service-ai-eis-zjlz-master/mcs/callback";
+        String endUrl = "http://127.0.0.1:10010/mcs/callback";
         try {
             McsCallBackDto mcsCallBackDto = new McsCallBackDto();
             mcsCallBackDto.setTaskId(mcsMoveTaskDto.getTaskId());
