@@ -694,7 +694,7 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("容器【" + containerNo + "】已离开站台请勿重复操作");
         }
         //todo:注释物料容器放行
-//        this.containerNoLeave(containerNo, stationId);
+       this.containerNoLeave(containerNo, stationId);
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -704,7 +704,7 @@ public class StationBZServiceImpl implements IStationBZService {
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
             //todo:注释订单拖放行
-//            this.orderTrayLeave(orderTrayNo, orderBillId);
+           this.orderTrayLeave(orderTrayNo, orderBillId);
         }
 
     }
