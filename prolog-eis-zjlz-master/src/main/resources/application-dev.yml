@@ -63,4 +63,5 @@ prolog:
       port: 10020
     wms:
       host: 10.0.2.135
-      port: 20631
+      outPort: 20631
+      inPort: 20815
