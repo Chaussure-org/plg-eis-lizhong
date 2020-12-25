@@ -240,18 +240,18 @@ public class StationBZServiceImpl implements IStationBZService {
      */
     @Override
     public boolean checkContainerExist(String containerNo, int stationId) throws Exception {
-
         //上层输送线
         List<Station> stations = stationService.findStationByMap(MapUtils.put("containerNo", containerNo).put("id", stationId).getMap());
         int containerArrive = agvLocationService.findContainerArrive(containerNo, stationId);
         if (stations.size() == 0 && containerArrive == 0) {
             return true;
         }
-//        String areaNo = "OD01";
-//        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
-//        if (b){
-//            return true;
-//        }
+
+        String areaNo = "OD01";
+        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
+        if (b){
+            return true;
+        }
         return false;
     }
 

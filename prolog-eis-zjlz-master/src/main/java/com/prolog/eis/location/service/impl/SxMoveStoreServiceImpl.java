@@ -126,8 +126,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             this.unlockStartkSxStoreLocation(containerPathTaskDetail);
         } catch (Exception e) {
             // TODO: handle exception
-            //return false;
-            int a = 0;
+
         }
         //
     }

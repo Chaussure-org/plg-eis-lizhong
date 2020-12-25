@@ -105,18 +105,21 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 
     @Override
     public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
-        System.out.println("wcs to mcs");
+
+        //
         this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
         ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
         BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
         containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
         containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
-        // TODO: 2020/12/22 这里输送线还未上报 堆垛机库外的点位到达，后面可能修改为容器到达后再发送mcs 行走。 add sunpp
+        System.out.println("wcs-->mcs 输送线去往 堆垛机 执行 ");
         sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
-        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
+        // 发送 wcs移动指令
+        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(
+                containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
-                containerPathTaskDetailDTO.getNextLocation(), containerPathTaskDetailDTO.getContainerNo(), 5);
+                PointChangeEnum.getCorr("in" + containerPathTaskDetailDTO.getSourceLocation()),
+                containerPathTaskDetailDTO.getContainerNo(), 5);
         wcsService.lineMove(wcsLineMoveDto, 0);
     }
 
@@ -175,7 +178,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     public void doWcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to wcs");
-
+        //update汇总表状态为10,待发送任务 明细表 0 到位
         this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
         ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
         BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);

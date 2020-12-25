@@ -17,16 +17,14 @@ import java.nio.charset.StandardCharsets;
 @EnableScheduling
 @EnablePrologResourceServer
 //@EnablePrologEmptySecurityServer //无权限控制
-@MapperScan(basePackages={"com.prolog.eis.*.dao"})
+@MapperScan(basePackages = {"com.prolog.eis.*.dao"})
 @EnableAsync
 @EnablePrologService
 @EnableFeignClients
-public class  ZjlzApplication {
-	public static void main( String[] args )
-    {
-    	SpringApplication.run(ZjlzApplication.class, args);
+public class ZjlzApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ZjlzApplication.class, args);
     }
-
 
     @Bean
     public RestTemplate restTemplate() {
@@ -35,7 +33,7 @@ public class  ZjlzApplication {
         httpRequestFactory.setConnectTimeout(5000);
         httpRequestFactory.setReadTimeout(30000);
         RestTemplate restTemplate = new RestTemplate(httpRequestFactory);
-        restTemplate.getMessageConverters().set(1,new StringHttpMessageConverter(StandardCharsets.UTF_8)); // 支持中文编码
+        restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8)); // 支持中文编码
         return restTemplate;
     }
 }

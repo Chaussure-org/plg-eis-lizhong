@@ -17,24 +17,30 @@ public class McsMoveTaskDto implements Serializable {
     private String taskId;
 
     @ApiModelProperty("任务类型")
-    int type;
+    private int type;
 
     @ApiModelProperty("容器号")
-    String containerNo;
+    private String containerNo;
+
     @ApiModelProperty("源地址")
-    String address;
+    private String address;
+
     @ApiModelProperty("目标地址")
+    private String target;
 
-    String target;
     @ApiModelProperty("重量")
-    String weight;
-    @ApiModelProperty("优先级")
-    String priority;
-    @ApiModelProperty("状态")
-    int status;
+    private String weight;
 
-    public McsMoveTaskDto(String taskId, int type, String containerNo, String address, String target, String weight,
-                          String priority, int status) {
+    @ApiModelProperty("优先级")
+    private String priority;
+
+    @ApiModelProperty("状态")
+    private int status;
+
+    @ApiModelProperty("任务类型")
+    private int bankId;
+
+    public McsMoveTaskDto(String taskId, int type, String containerNo, String address, String target, String weight, String priority, int status, int bankId) {
         this.taskId = taskId;
         this.type = type;
         this.containerNo = containerNo;
@@ -43,9 +49,22 @@ public class McsMoveTaskDto implements Serializable {
         this.weight = weight;
         this.priority = priority;
         this.status = status;
+        this.bankId = bankId;
     }
 
-    public McsMoveTaskDto() {
+    @Override
+    public String toString() {
+        return "McsMoveTaskDto{" +
+                "taskId='" + taskId + '\'' +
+                ", type=" + type +
+                ", containerNo='" + containerNo + '\'' +
+                ", address='" + address + '\'' +
+                ", target='" + target + '\'' +
+                ", weight='" + weight + '\'' +
+                ", priority='" + priority + '\'' +
+                ", status=" + status +
+                ", bankId=" + bankId +
+                '}';
     }
 
     public String getTaskId() {
@@ -112,18 +131,16 @@ public class McsMoveTaskDto implements Serializable {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "MoveTaskDto{" +
-                "taskId='" + taskId + '\'' +
-                ", type=" + type +
-                ", containerNo='" + containerNo + '\'' +
-                ", address='" + address + '\'' +
-                ", target='" + target + '\'' +
-                ", weight='" + weight + '\'' +
-                ", priority='" + priority + '\'' +
-                ", status=" + status +
-                '}';
+    public int getBankId() {
+        return bankId;
     }
+
+    public void setBankId(int bankId) {
+        this.bankId = bankId;
+    }
+
+
+
+
 
 }

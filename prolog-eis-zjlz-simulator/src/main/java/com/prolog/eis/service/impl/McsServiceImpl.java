@@ -43,8 +43,9 @@ public class McsServiceImpl implements McsService {
             e.printStackTrace();
            throw e;
         }
+        System.out.println(mcsMoveTaskDto.getContainerNo()+"mcs回告开始");
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -59,7 +60,7 @@ public class McsServiceImpl implements McsService {
             mcsCallBackDto.setAddress(mcsMoveTaskDto.getTarget());
             RestMessage<String> result = httpUtils.post(endUrl, MapUtils.convertBean(mcsCallBackDto),
                     new TypeReference<RestMessage<String>>() {});
-            System.out.println("mcscallback成功");
+            System.out.println(mcsMoveTaskDto.getContainerNo()+"mcs回告结束");
         } catch (Exception e) {
             System.out.println("mcscallback失败");
         }

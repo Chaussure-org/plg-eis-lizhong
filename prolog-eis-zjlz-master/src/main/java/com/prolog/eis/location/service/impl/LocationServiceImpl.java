@@ -100,7 +100,7 @@ public class LocationServiceImpl implements LocationService {
                     containerPathTaskDetailMapper.listContainerPathTaskDetais(containerPathTask.getPalletNo()
                             , containerPathTask.getContainerNo(), LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
             if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
-                throw new Exception("当前没有可执行的容器任务！");
+                throw new Exception(containerPathTask.getContainerNo()+"没有任务明细，无法执行");
             }
             String sourceDeviceSystem = containerPathTaskDetailList.get(0).getSourceDeviceSystem();
             String nextDeviceSystem = containerPathTaskDetailList.get(0).getNextDeviceSystem();

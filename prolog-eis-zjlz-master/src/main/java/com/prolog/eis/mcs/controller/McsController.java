@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Author wangkang
  * @Description
@@ -50,12 +52,12 @@ public class McsController {
     @ApiOperation(value = "堆垛机信息上报", notes = "堆垛机信息上报")
     @LogInfo(desci = "堆垛机信息上报", direction = "sps->eis", type = LogDto.MCS, systemType = LogDto.MCS)
     @RequestMapping("/info")
-    public RestMessage<McsCarInfoDto> mcsInfo(@RequestBody McsCarInfoDto carInfo) throws Exception {
+    public RestMessage<McsCarInfoDto> mcsInfo(@RequestBody List<McsCarInfoDto> carInfo) throws Exception {
         String json = JsonUtils.toString(carInfo);
         logger.info("接收任务信息,{}", json);
         try {
-            redisTemplate.opsForValue().set("eisSpsInfo", json);
-            return RestMessage.newInstance(true, "接受成功");
+            redisTemplate.opsForValue().set("mcsInfo", json);
+            return RestMessage.newInstance(true, "接收成功");
         } catch (Exception e) {
             return RestMessage.newInstance(false, "接受失败" + e.getMessage());
         }
