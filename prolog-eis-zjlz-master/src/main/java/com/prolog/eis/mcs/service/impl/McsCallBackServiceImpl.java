@@ -152,13 +152,16 @@ public class McsCallBackServiceImpl implements IMcsCallBackService {
      * @param nowTime
      * @throws Exception
      */
-    private void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime) throws Exception {
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
         Integer taskState = containerPathTaskDetail.getTaskState();
         // 上架完成回告wms
         iWareHousingService.deleteInboundTask(containerPathTaskDetail.getContainerNo());
+        //更改容器状态
         iContainerStoreService.updateTaskStausByContainer(containerPathTaskDetail.getContainerNo(),0);
-
+        //更改业务状态
+        iContainerStoreService.updateTaskTypeByContainer(containerPathTaskDetail.getContainerNo(),0);
         switch (taskState) {
             //先回告了开始，才能改成完成状态
             case LocationConstants.PATH_TASK_DETAIL_STATE_START:

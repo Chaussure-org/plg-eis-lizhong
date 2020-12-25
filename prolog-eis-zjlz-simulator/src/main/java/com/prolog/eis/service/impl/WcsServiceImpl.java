@@ -24,7 +24,7 @@ public class WcsServiceImpl implements WcsService {
 
     @Override
     public void doCallBack(WcsLineMoveDto wcsLineMoveDto) {
-        String url = "http://127.0.0.1:10010/wcs/task/callback";
+        String url = "http://10.0.2.135:10010/wcs/task/callback";
         try {
             TaskCallbackDTO taskCallbackDTO = new TaskCallbackDTO();
             taskCallbackDTO.setTaskId(wcsLineMoveDto.getTaskId());
@@ -44,7 +44,7 @@ public class WcsServiceImpl implements WcsService {
 
     @Override
     public synchronized void doBcrRequest(WcsLineMoveDto wcsLineMoveDto, int type) {
-        String url = "http://127.0.0.1:10010/wcs/bcr";
+        String url = "http://10.0.2.135:10010/wcs/bcr";
         try {
             BCRDataDTO bcrDataDTO = new BCRDataDTO();
             bcrDataDTO.setContainerNo(wcsLineMoveDto.getContainerNo());

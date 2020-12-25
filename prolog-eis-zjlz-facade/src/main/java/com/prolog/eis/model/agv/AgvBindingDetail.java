@@ -59,6 +59,7 @@ public class AgvBindingDetail {
     private Date updateTime;
 
     @ApiModelProperty("1-是 2-不是")
+    @Ignore
     private int ironTray;
 
     public int getIronTray() {

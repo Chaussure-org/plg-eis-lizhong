@@ -7,36 +7,16 @@ package com.prolog.eis.configuration;
  */
 public class WMSProperties {
     private String host;
-    private int port;
+
+    private String inPort;
+
+    private String outPort;
 
     /**
-     * 入库任务回告wms服务名
+     * 入库上架回告 url 地址
      */
-    private String inboundServiceName = "lizhong-wms-bc-entry";
+    private String wmsInboundUrl = "/inTransferTask/eisTaskConfirm/v1.0";
 
-    /**
-     * 入库任务回告wms服务名
-     */
-    private String inboundServiceIp = "10.0.2.135";
-
-    /**
-     * 入库上架回告WMSIp
-     */
-    private String wmsInboundUrl="/inTransferTask/eisTaskConfirm/v1.0";
-
-    private int wmsInboundPort = 20631;
-
-
-    /**
-     * 拣选回告wms服务名(开始拣选任务、拣选完成回告)
-     */
-    private String seedServiceName = "lizhong-wms-bc-taskcenter";
-    /**
-     * 入库上架回告WMSIp
-     */
-    private String seedServiceIp="10.0.2.135";
-
-    private int seedServicePort = 20631;
     /**
      * 开始拣选回告
      */
@@ -47,6 +27,19 @@ public class WMSProperties {
      */
     private String wmsSeedEndUrl = "/TaskDispatch/returnDo/v1.0";
 
+
+//======================================== 目前 eis--> wms 使用 IP 回告方式 add sunpp
+    /**
+     * 入库任务回告wms服务名
+     */
+    private String inboundServiceName = "lizhong-wms-bc-entry";
+
+    /**
+     * 拣选回告wms服务名(开始拣选任务、拣选完成回告)
+     */
+    private String seedServiceName = "lizhong-wms-bc-taskcenter";
+
+
     public String getHost() {
         return host;
     }
@@ -55,12 +48,20 @@ public class WMSProperties {
         this.host = host;
     }
 
-    public int getPort() {
-        return port;
+    public String getInPort() {
+        return inPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setInPort(String inPort) {
+        this.inPort = inPort;
+    }
+
+    public String getOutPort() {
+        return outPort;
+    }
+
+    public void setOutPort(String outPort) {
+        this.outPort = outPort;
     }
 
     public String getWmsInboundUrl() {
@@ -87,14 +88,6 @@ public class WMSProperties {
         this.wmsSeedEndUrl = wmsSeedEndUrl;
     }
 
-    public String getSeedServiceName() {
-        return seedServiceName;
-    }
-
-    public void setSeedServiceName(String seedServiceName) {
-        this.seedServiceName = seedServiceName;
-    }
-
     public String getInboundServiceName() {
         return inboundServiceName;
     }
@@ -103,35 +96,11 @@ public class WMSProperties {
         this.inboundServiceName = inboundServiceName;
     }
 
-    public String getInboundServiceIp() {
-        return inboundServiceIp;
+    public String getSeedServiceName() {
+        return seedServiceName;
     }
 
-    public void setInboundServiceIp(String inboundServiceIp) {
-        this.inboundServiceIp = inboundServiceIp;
-    }
-
-    public int getWmsInboundPort() {
-        return wmsInboundPort;
-    }
-
-    public void setWmsInboundPort(int wmsInboundPort) {
-        this.wmsInboundPort = wmsInboundPort;
-    }
-
-    public String getSeedServiceIp() {
-        return seedServiceIp;
-    }
-
-    public void setSeedServiceIp(String seedServiceIp) {
-        this.seedServiceIp = seedServiceIp;
-    }
-
-    public int getSeedServicePort() {
-        return seedServicePort;
-    }
-
-    public void setSeedServicePort(int seedServicePort) {
-        this.seedServicePort = seedServicePort;
+    public void setSeedServiceName(String seedServiceName) {
+        this.seedServiceName = seedServiceName;
     }
 }

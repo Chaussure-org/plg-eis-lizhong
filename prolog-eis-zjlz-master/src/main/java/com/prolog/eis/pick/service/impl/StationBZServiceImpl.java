@@ -44,6 +44,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -114,6 +115,7 @@ public class StationBZServiceImpl implements IStationBZService {
         if (StringUtils.isBlank(containerNo)) {
             throw new RuntimeException("容器编号不能为空");
         }
+
         if (StringUtils.isBlank(orderBoxNo)) {
             throw new RuntimeException("订单拖编号不能为空");
         }
@@ -694,7 +696,7 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("容器【" + containerNo + "】已离开站台请勿重复操作");
         }
         //todo:注释物料容器放行
-//        this.containerNoLeave(containerNo, stationId);
+       this.containerNoLeave(containerNo, stationId);
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -704,7 +706,7 @@ public class StationBZServiceImpl implements IStationBZService {
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
             //todo:注释订单拖放行
-//            this.orderTrayLeave(orderTrayNo, orderBillId);
+           this.orderTrayLeave(orderTrayNo, orderBillId);
         }
 
     }

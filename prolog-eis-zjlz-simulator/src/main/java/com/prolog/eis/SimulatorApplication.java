@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 public class SimulatorApplication {
 
 	@Bean
-	@LoadBalanced
+	//@LoadBalanced
 	public RestTemplate restTemplate() {
 		HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
 		httpRequestFactory.setConnectionRequestTimeout(30000);

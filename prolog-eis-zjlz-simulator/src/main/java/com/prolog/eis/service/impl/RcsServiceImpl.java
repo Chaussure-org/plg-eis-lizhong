@@ -25,7 +25,7 @@ public class RcsServiceImpl implements RcsService {
 
     @Override
     public  void doCallBack(RcsTaskDto rcsTaskDto) {
-        String startUrl = "http://127.0.0.1:10010/rcs/agvCallback";
+        String startUrl = "http://10.0.2.135:10010/rcs/agvCallback";
         try {
             RestMessage<String> result = httpUtils.post(startUrl, MapUtils.put("reqCode", rcsTaskDto.getReqCode()).put("taskCode",
                     rcsTaskDto.getReqCode()).put("method", "outbin").getMap(),
@@ -36,13 +36,13 @@ public class RcsServiceImpl implements RcsService {
             System.out.println("rcscallback失败");
         }
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-        String endUrl = "http://127.0.0.1:10010/rcs/agvCallback";
+        String endUrl = "http://10.0.2.135:10010/rcs/agvCallback";
         try {
             RestMessage<String> result = httpUtils.post(endUrl, MapUtils.put("reqCode", rcsTaskDto.getReqCode()).put("taskCode",
                     rcsTaskDto.getReqCode()).put("method", "end").getMap(),
