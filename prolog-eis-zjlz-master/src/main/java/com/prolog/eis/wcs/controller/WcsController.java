@@ -75,16 +75,12 @@ public class WcsController {
 //    }
 //
 //
-//    @ApiOperation(value="拆盘机出口信息回告",notes="拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
-//    @PostMapping("openDisk/out/callback")
-//    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception{
-//        logger.info("拆盘机出口信息回告,{}",JsonUtils.toString(openDiskDto));
-//    @ApiOperation(value = "拆盘机出口信息回告", notes = "拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
-//    @PostMapping("/WcsApi/PalletArrive")
-//    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception {
-//        logger.info("拆盘机出口信息回告,{}", JsonUtils.toString(openDiskDto));
-//        return wcsService.openDiskOuTCallback(openDiskDto);
-//    }
+    @ApiOperation(value="拆盘机出口信息回告",notes="拆码盘完成后，托盘到达agv接泊位，WCS上传托盘到位信号")
+    @PostMapping("openDisk/out/callback")
+    public RestMessage<String> openDiskOut(@RequestBody OpenDiskFinishDto openDiskDto) throws Exception{
+        logger.info("拆盘机出口信息回告,{}", JsonUtils.toString(openDiskDto));
+        return wcsService.openDiskOuTCallback(openDiskDto);
+    }
 
 
     @ApiOperation(value="拣选站料箱放行",notes="拣选完成，上层料箱通过按钮放行")
