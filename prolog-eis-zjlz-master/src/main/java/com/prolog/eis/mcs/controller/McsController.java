@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author wangkang
@@ -39,13 +41,21 @@ public class McsController {
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")
-    public RestMessage<String> taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
+    public Map taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
             mcsCallbackService.mcsCallback(mcsCallBackDto);
-            return RestMessage.newInstance(true, "回告成功");
+            Map mcsMap = new HashMap();
+            mcsMap.put("ret", true);
+            mcsMap.put("msg", "回告成功");
+            mcsMap.put("data", null);
+            return mcsMap;
         } catch (Exception e) {
-            return RestMessage.newInstance(false, "回告失败" + e.getMessage());
+            Map mcsMap = new HashMap();
+            mcsMap.put("ret", false);
+            mcsMap.put("msg", "回告失败");
+            mcsMap.put("data", null);
+            return mcsMap;
         }
     }
 

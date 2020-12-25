@@ -454,7 +454,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             //发送mcs移动指令
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem)) {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
-                        nextStoreNo, "", "99", 0);
+                        nextStoreNo, "", "99", 0,1);
                 McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
                 if (mcsResultDto.isRet()) {
                     //发送成功
