@@ -1,7 +1,10 @@
 package com.prolog.eis.mcs.controller;
 
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.mcs.McsCallBackDto;
+import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.mcs.service.IMcsCallBackService;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import io.swagger.annotations.Api;
@@ -9,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,15 +32,33 @@ public class McsController {
     @Autowired
     private IMcsCallBackService mcsCallbackService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")
     public RestMessage<String> taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
             mcsCallbackService.mcsCallback(mcsCallBackDto);
-            return RestMessage.newInstance(true,"回告成功");
-        }catch (Exception e){
-            return RestMessage.newInstance(false,"回告失败"+e.getMessage());
+            return RestMessage.newInstance(true, "回告成功");
+        } catch (Exception e) {
+            return RestMessage.newInstance(false, "回告失败" + e.getMessage());
         }
     }
+
+    @ApiOperation(value = "堆垛机信息上报", notes = "堆垛机信息上报")
+    @LogInfo(desci = "堆垛机信息上报", direction = "sps->eis", type = LogDto.MCS, systemType = LogDto.MCS)
+    @RequestMapping("/info")
+    public RestMessage<McsCarInfoDto> mcsInfo(@RequestBody McsCarInfoDto carInfo) throws Exception {
+        String json = JsonUtils.toString(carInfo);
+        logger.info("接收任务信息,{}", json);
+        try {
+            redisTemplate.opsForValue().set("eisSpsInfo", json);
+            return RestMessage.newInstance(true, "接受成功");
+        } catch (Exception e) {
+            return RestMessage.newInstance(false, "接受失败" + e.getMessage());
+        }
+    }
+
 }
