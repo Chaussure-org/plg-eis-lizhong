@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,16 +46,16 @@ public class McsController {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
             mcsCallbackService.mcsCallback(mcsCallBackDto);
-            Map mcsMap = new HashMap();
+            Map mcsMap = new HashMap(3);
             mcsMap.put("ret", true);
             mcsMap.put("msg", "回告成功");
-            mcsMap.put("data", null);
+            mcsMap.put("data", new ArrayList());
             return mcsMap;
         } catch (Exception e) {
-            Map mcsMap = new HashMap();
+            Map mcsMap = new HashMap(3);
             mcsMap.put("ret", false);
             mcsMap.put("msg", "回告失败");
-            mcsMap.put("data", null);
+            mcsMap.put("data", new ArrayList());
             return mcsMap;
         }
     }

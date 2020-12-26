@@ -125,7 +125,7 @@ public class OutDispatch {
     @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void inventoryBoxOut(){
         try {
-            System.out.println("盘点调度");
+            //System.out.println("盘点调度");
             inventoryBoxOutService.inventoryBoxOut();
         } catch (Exception e) {
             logger.error("盘点出库失败"+e.getMessage());
