@@ -45,7 +45,7 @@ public class McsController {
     public Map taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
-            mcsCallbackService.mcsCallback(mcsCallBackDto);
+            //mcsCallbackService.mcsCallback(mcsCallBackDto);
             Map mcsMap = new HashMap(3);
             mcsMap.put("ret", true);
             mcsMap.put("msg", "回告成功");

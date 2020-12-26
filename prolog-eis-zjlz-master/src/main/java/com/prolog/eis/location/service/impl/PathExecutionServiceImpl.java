@@ -186,7 +186,9 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         containerPathTaskDetailDTO1.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
         containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getSourceLocation()));
         containerPathTaskDetailDTO1.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
+        //发送mcs 移动指令
         sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
+        //发送 wcs 移动指令
         containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
