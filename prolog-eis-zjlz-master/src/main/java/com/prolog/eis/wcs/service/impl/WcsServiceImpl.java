@@ -3,6 +3,7 @@ package com.prolog.eis.wcs.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.wcs.CheckPositionDto;
 import com.prolog.eis.dto.wcs.TrayCallbackDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.model.wcs.WcsCommandRepeat;
@@ -21,10 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 
 /**
-* @Author  wangkang
-* @Description  wcs服务实现
-* @CreateTime  2020-11-02 9:20
-*/
+ * @Author wangkang
+ * @Description wcs服务实现
+ * @CreateTime 2020-11-02 9:20
+ */
 @Service
 public class WcsServiceImpl implements IWcsService {
     @Autowired
@@ -57,7 +58,7 @@ public class WcsServiceImpl implements IWcsService {
      */
     @Override
     @LogInfo(desci = "eis发送输送线行走命令", direction = "eis->wcs", type = LogDto.WCS_TYPE_LINE_MOVE, systemType = LogDto.WCS)
-    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto,int i) throws Exception {
+    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto, int i) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
 
         logger.info("EIS -> WCS 输送线行走:{}", url);
@@ -66,9 +67,9 @@ public class WcsServiceImpl implements IWcsService {
                 });
 
         // 输送线任务不成功，则存表，定时器扫描后再次发送
-        if (!result.isSuccess()&&i==0) {
+        if (!result.isSuccess() && i == 0) {
             WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
-                    wcsLineMoveDto.getAddress(),wcsLineMoveDto.getTarget(),wcsLineMoveDto.getContainerNo(),
+                    wcsLineMoveDto.getAddress(), wcsLineMoveDto.getTarget(), wcsLineMoveDto.getContainerNo(),
                     wcsLineMoveDto.getType(), new Date());
             wcsCommandRepeatService.saveWcsCommand(wcsCommandRepeat);
         }
@@ -77,6 +78,7 @@ public class WcsServiceImpl implements IWcsService {
 
     /**
      * 拆盘机入口托盘到位通知wcs
+     *
      * @param trayCallbackDto
      * @return
      * @throws Exception
@@ -93,6 +95,13 @@ public class WcsServiceImpl implements IWcsService {
     }
 
 
-    //public RestMessage<String> checkOut
+    @LogInfo(desci = "eis请求wcs出库口点位是否空闲", direction = "eis->wcs", type = 888, systemType = LogDto.WCS)
+    public RestMessage<String> checkPosition(CheckPositionDto checkPositionDto) throws Exception {
+        String url = this.getUrl(properties.getWcs().getCheckPosition());
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(checkPositionDto),
+                new TypeReference<RestMessage<String>>() {
+                });
+        return null;
+    }
 
 }
