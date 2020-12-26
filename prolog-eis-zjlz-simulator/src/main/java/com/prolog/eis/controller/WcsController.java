@@ -30,9 +30,13 @@ public class WcsController {
         new Thread(()->{
             wcsService.doCallBack(wcsLineMoveDto);
             if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 1) {
+
                 wcsService.doBcrRequest(wcsLineMoveDto, 1);
+
             } else if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 2) {
+
                 wcsService.doBcrRequest(wcsLineMoveDto, 2);
+
             }
         }).start();
         return RestMessage.newInstance(true, "200", "操作成功", null);
