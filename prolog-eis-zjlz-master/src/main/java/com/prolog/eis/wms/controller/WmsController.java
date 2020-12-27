@@ -45,6 +45,7 @@ public class WmsController {
 
     @Autowired
     private WareHousingMapper wareHousingMapper;
+
     @Autowired
     private IMcsService mcsService;
 
