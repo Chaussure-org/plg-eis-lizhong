@@ -5,6 +5,8 @@ import com.prolog.eis.dto.mcs.McsCallBackDto;
 import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.warehousing.service.IWareHousingService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
@@ -38,8 +40,13 @@ public class McsController {
     @Autowired
     private IMcsCallBackService mcsCallbackService;
 
+
     @Autowired
     private RedisTemplate redisTemplate;
+
+    //=====test===
+    @Autowired
+    private IWareHousingService iWareHousingService;
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")
@@ -47,18 +54,21 @@ public class McsController {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
             //mcsCallbackService.mcsCallback(mcsCallBackDto);
+            if (mcsCallBackDto.getStatus() == 2) {
+                iWareHousingService.deleteInboundTask(mcsCallBackDto.getContainerNo());
+            }
             return MapUtils.put("ret", true).put("msg", "回告成功").put("data", new ArrayList()).getMap();
         } catch (Exception e) {
             return MapUtils.put("ret", false).put("msg", "回告失败").put("data", new ArrayList()).getMap();
         }
     }
 
+    //@LogInfo(desci = "堆垛机信息上报", direction = "sps->eis", type = LogDto.MCS, systemType = LogDto.MCS)
     @ApiOperation(value = "堆垛机信息上报", notes = "堆垛机信息上报")
-    @LogInfo(desci = "堆垛机信息上报", direction = "sps->eis", type = LogDto.MCS, systemType = LogDto.MCS)
     @RequestMapping("/info")
     public Map mcsInfo(@RequestBody List<McsCarInfoDto> carInfo) throws Exception {
         String json = JsonUtils.toString(carInfo);
-        logger.info("接收任务信息,{}", json);
+        //logger.info("接收任务信息,{}", json);
         try {
             redisTemplate.opsForValue().set("mcsInfo", json);
             return MapUtils.put("ret", true).put("msg", "回告成功").put("data", new ArrayList()).getMap();

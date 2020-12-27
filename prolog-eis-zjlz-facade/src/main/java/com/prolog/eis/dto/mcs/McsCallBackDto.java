@@ -21,8 +21,10 @@ public class McsCallBackDto implements Serializable {
     private short type;
     @ApiModelProperty("料箱编号")
     private String containerNo;
+
     @ApiModelProperty("小车编号")
-    private String rgvId;
+    private String stackerId;
+
     @ApiModelProperty("当前坐标")
     private String address;
 
@@ -58,13 +60,7 @@ public class McsCallBackDto implements Serializable {
         this.containerNo = containerNo;
     }
 
-    public String getRgvId() {
-        return rgvId;
-    }
 
-    public void setRgvId(String rgvId) {
-        this.rgvId = rgvId;
-    }
 
     public String getAddress() {
         return address;
@@ -76,13 +72,21 @@ public class McsCallBackDto implements Serializable {
 
     @Override
     public String toString() {
-        return "TaskCallbackDTO{" +
+        return "McsCallBackDto{" +
                 "taskId='" + taskId + '\'' +
                 ", status=" + status +
                 ", type=" + type +
                 ", containerNo='" + containerNo + '\'' +
-                ", rgvId='" + rgvId + '\'' +
+                ", stackerId='" + stackerId + '\'' +
                 ", address='" + address + '\'' +
                 '}';
+    }
+
+    public String getStackerId() {
+        return stackerId;
+    }
+
+    public void setStackerId(String stackerId) {
+        this.stackerId = stackerId;
     }
 }

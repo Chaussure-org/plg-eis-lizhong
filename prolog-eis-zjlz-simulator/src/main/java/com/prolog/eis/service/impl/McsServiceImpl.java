@@ -35,7 +35,7 @@ public class McsServiceImpl implements McsService {
             mcsCallBackDto.setContainerNo(mcsMoveTaskDto.getContainerNo());
             mcsCallBackDto.setType((short) mcsMoveTaskDto.getType());
             mcsCallBackDto.setStatus((short) 1);
-            mcsCallBackDto.setRgvId(null);
+            mcsCallBackDto.setStackerId(null);
             mcsCallBackDto.setAddress(mcsMoveTaskDto.getTarget());
             RestMessage<String> result = httpUtils.post(startUrl, MapUtils.convertBean(mcsCallBackDto),
                     new TypeReference<RestMessage<String>>() {});
@@ -56,7 +56,7 @@ public class McsServiceImpl implements McsService {
             mcsCallBackDto.setContainerNo(mcsMoveTaskDto.getContainerNo());
             mcsCallBackDto.setType((short) mcsMoveTaskDto.getType());
             mcsCallBackDto.setStatus((short) 2);
-            mcsCallBackDto.setRgvId(null);
+            mcsCallBackDto.setStackerId(null);
             mcsCallBackDto.setAddress(mcsMoveTaskDto.getTarget());
             RestMessage<String> result = httpUtils.post(endUrl, MapUtils.convertBean(mcsCallBackDto),
                     new TypeReference<RestMessage<String>>() {});

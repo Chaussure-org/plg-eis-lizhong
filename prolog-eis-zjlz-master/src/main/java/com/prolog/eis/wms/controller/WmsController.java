@@ -21,15 +21,11 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @Author wangkang
@@ -57,27 +53,62 @@ public class WmsController {
     @Autowired
     private IContainerStoreService containerStoreService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @PostMapping("test")
-    public String test() throws Exception {
-        McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto();
+    public String test(@RequestParam("address") String address, @RequestParam("target") String target, @RequestParam("type") int type) throws Exception {
+        Map map = new HashMap();
+        map.put("0100360022", 1);
+        map.put("0100360023", 1);
+        map.put("0100360024", 1);
+        map.put("0100360025", 1);
+        map.put("0100360026", 1);
+        map.put("0100360027", 1);
+        map.put("0100360028", 1);
+        map.put("0100360029", 1);
+        map.put("0100360030", 1);
+
+        map.put("0100360031", 0);
+        map.put("0100360032", 0);
+        map.put("0100360033", 0);
+        map.put("0100360034", 0);
+        map.put("0100360035", 0);
+        map.put("0100360036", 0);
+        map.put("0100360037", 0);
+        map.put("0100360038", 0);
+        map.put("0100360039", 0);
+        map.put("0100360040", 0);
+        map.put("0100360041", 0);
+        map.put("0100360042", 0);
+        map.put("0100360043", 0);
+        map.put("0100360044", 0);
+        map.put("0100360045", 0);
+        redisTemplate.opsForValue().set("testIn", map);
+
+        return "";
+
+        /*McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto();
         String taskId = PrologStringUtils.newGUID();
         ;
         mcsMoveTaskDto.setTaskId(taskId);
-        mcsMoveTaskDto.setAddress("01001001");
-        mcsMoveTaskDto.setTarget("04004002");
+        mcsMoveTaskDto.setAddress(address);
+        mcsMoveTaskDto.setTarget(target);
         mcsMoveTaskDto.setBankId(1);
-        mcsMoveTaskDto.setType(3);
+        mcsMoveTaskDto.setType(type);
         mcsMoveTaskDto.setPriority("99");
-        mcsMoveTaskDto.setStatus(1);
+        mcsMoveTaskDto.setStatus(0);
         mcsMoveTaskDto.setWeight("10");
         List<WmsInboundTask> list = wareHousingMapper.findByMap(null, WmsInboundTask.class);
+        if (list.size() == 0) {
+            return "数据库 没找到入库任务";
+        }
         mcsMoveTaskDto.setContainerNo(list.get(0).getContainerNo());
         WmsInboundTask wareHousing = list.get(0);
-
         //发送任务
         McsResultDto mcsResultDto = mcsService.mcsContainerMove(mcsMoveTaskDto);
         if (!mcsResultDto.isRet()) {
-    return "调用堆垛机 移动指令 失败";
+            return "调用堆垛机 移动指令 失败";
         }
         //生成库存
         ContainerStore containerStore = new ContainerStore();
@@ -91,7 +122,7 @@ public class WmsController {
         containerStore.setUpdateTime(new Date());
         containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
         containerStoreService.saveContainerStore(containerStore);
-        return mcsResultDto.getMsg();
+        return "测试流程已走通";*/
     }
 
 

@@ -53,8 +53,8 @@ public class McsServiceImpl implements IMcsService {
         logger.info("EIS -> MCS 发起托盘移动任务:{}", postUrl);
         restJson = restTemplate.postForObject(postUrl, PrologHttpUtils.getRequestEntity(data), String.class);
         PrologApiJsonHelper helper = PrologApiJsonHelper.createHelper(restJson);
-        Boolean success = helper.getBoolean("success");
-        String message = helper.getString("message");
+        Boolean success = helper.getBoolean("ret");
+        String message = helper.getString("msg");
 
         McsResultDto result = new McsResultDto();
         result.setRet(success);

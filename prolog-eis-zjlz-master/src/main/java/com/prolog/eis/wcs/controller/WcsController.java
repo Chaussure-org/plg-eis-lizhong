@@ -36,7 +36,7 @@ public class WcsController {
         return wcsService.executeTaskCallback(taskCallbackDTO);
     }
 
-    @ApiOperation(value="bcr请求",notes="1-入库 2-出库 3-料箱进站 ")
+    @ApiOperation(value="bcr请求",notes="请求类型 1-入库 2-出库 3-料箱进站 ")
     @PostMapping("/bcr")
     public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception{
             logger.info("bcr请求,{}",JsonUtils.toString(bcrDataDTO));

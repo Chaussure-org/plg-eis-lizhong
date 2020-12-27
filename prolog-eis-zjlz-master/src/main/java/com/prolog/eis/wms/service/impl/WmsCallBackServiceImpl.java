@@ -1,9 +1,13 @@
 package com.prolog.eis.wms.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.lorne.core.framework.utils.JsonUtils;
 import com.prolog.eis.base.dao.GoodsMapper;
 import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.dto.inventory.InventoryGoodsDto;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.mcs.McsMoveTaskDto;
+import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.dto.wms.*;
 import com.prolog.eis.dto.wms.WmsGoodsDto;
 import com.prolog.eis.dto.wms.WmsInboundTaskDto;
@@ -12,6 +16,8 @@ import com.prolog.eis.dto.wms.WmsUpProiorityDto;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
+import com.prolog.eis.mcs.service.IMcsService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.inventory.InventoryTask;
 import com.prolog.eis.model.inventory.InventoryTaskDetail;
@@ -23,14 +29,17 @@ import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
 import com.prolog.eis.order.service.IOrderFinishService;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import com.thoughtworks.xstream.core.util.ArrayIterator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,25 +79,35 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     @Autowired
     private IOrderFinishService orderFinishService;
 
+    @Autowired
+    private WareHousingMapper wareHousingMapper;
+
+    @Autowired
+    private IMcsService mcsService;
+
+    @Autowired
+    private IContainerStoreService containerStoreService;
+
     /**
      * 处理wms下发的入库任务
      *
      * @param wmsInboundTaskDtos
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @LogInfo(desci = "wms入库任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_INBOUND_TASK, systemType = LogDto.WMS)
     public void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         //1.如果库内已经存在该箱子，测不允许生成该箱子的任务
         List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
         //2.校验 商品id 和 商品名称是否与 EIS 一致
-        List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
+        //List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
         //校验同批入库任务是否存在相同容器  根据容器号去重
         List<WmsInboundTaskDto> collect = wmsInboundTaskDtos.stream().collect(Collectors.collectingAndThen(
                 Collectors.toCollection(
                         () -> new TreeSet<>(Comparator.comparing(WmsInboundTaskDto::getCONTAINERNO))),
                 ArrayList::new));
-        
-        if (wmsInboundTaskDtos.size() != 0 && wmsInboundTaskDtos.size() != collect.size()  ){
+
+        if (wmsInboundTaskDtos.size() != 0 && wmsInboundTaskDtos.size() != collect.size()) {
             throw new Exception("入库任务存在相同容器号，此次所有订单任务下发失败");
         }
         List<WmsInboundTask> wmsInboundTaskList = new ArrayList<>();
@@ -96,14 +115,14 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())) {
                 throw new Exception("该容器已经被占用" + wmsInboundTaskDto.getCONTAINERNO() + "此次所有订单任务下发失败！");
             }
-            Optional<Goods> first = goods.stream().filter(x -> x.getId().equals(wmsInboundTaskDto.getITEMID())).findFirst();
-            if (!first.isPresent()){
-                throw new Exception("容器" + wmsInboundTaskDto.getCONTAINERNO()+"商品Id"+EisStringUtils.getRemouldId(wmsInboundTaskDto.getITEMID()) + "不存在，此次所有订单任务下发失败！");
-            }else {
-                if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())){
-                    throw new Exception("商品Id"+ EisStringUtils.getRemouldId(wmsInboundTaskDto.getITEMID())  + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
+           /* Optional<Goods> first = goods.stream().filter(x -> x.getId().equals(wmsInboundTaskDto.getITEMID())).findFirst();
+            if (!first.isPresent()) {
+                throw new Exception("容器" + wmsInboundTaskDto.getCONTAINERNO() + "商品Id" + EisStringUtils.getRemouldId(wmsInboundTaskDto.getITEMID()) + "不存在，此次所有订单任务下发失败！");
+            } else {
+                if (!first.get().getGoodsName().equals(wmsInboundTaskDto.getITEMNAME())) {
+                    throw new Exception("商品Id" + EisStringUtils.getRemouldId(wmsInboundTaskDto.getITEMID()) + "的商品名称与EIS 不一致，请维护商品资料！此次所有订单任务下发失败！");
                 }
-            }
+            }*/
             WmsInboundTask wmsInboundTask = new WmsInboundTask();
             wmsInboundTask.setBillNo(wmsInboundTaskDto.getBILLNO());
             wmsInboundTask.setBillType(wmsInboundTaskDto.getBILLTYPE());
@@ -123,6 +142,69 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTaskList.add(wmsInboundTask);
         }
         mapper.saveBatch(wmsInboundTaskList);
+        System.out.println(JSON.toJSON(wmsInboundTaskList) + "=======================接收 wms 入库任务==========");
+        //================================== 12/27
+        this.test1227(wmsInboundTaskDtos);
+
+    }
+
+    //==============测试
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    private void test1227(List<WmsInboundTaskDto> dtos) throws Exception {
+        McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto();
+        String taskId = PrologStringUtils.newGUID();
+        mcsMoveTaskDto.setTaskId(taskId);
+        mcsMoveTaskDto.setAddress("0100360019");
+        Map<String, Integer> testIn = (Map<String, Integer>) redisTemplate.opsForValue().get("testIn");
+        System.out.println(JSON.toJSON(testIn));
+        String target = "";
+        for (String str : testIn.keySet()) {
+            if (testIn.get(str).equals(0)) {
+                target = str;
+                //将此货位修改位不可用
+                testIn.put(str, 1);
+                break;
+            }
+        }
+        mcsMoveTaskDto.setTarget(target);
+        mcsMoveTaskDto.setBankId(1);
+        mcsMoveTaskDto.setType(1);
+        mcsMoveTaskDto.setPriority("99");
+        mcsMoveTaskDto.setStatus(0);
+        mcsMoveTaskDto.setWeight("10");
+        List<WmsInboundTask> list = wareHousingMapper.findByMap(null, WmsInboundTask.class).stream().sorted(Comparator.comparing(WmsInboundTask::getCreateTime,
+                Comparator.reverseOrder())
+        ).collect(Collectors.toList());
+        if (list.size() == 0) {
+            return;
+        }
+        mcsMoveTaskDto.setContainerNo(list.get(0).getContainerNo());
+        WmsInboundTask wareHousing = list.get(0);
+        //发送任务
+        System.out.println("发送 SPS 入库任务" + JSON.toJSON(mcsMoveTaskDto));
+        McsResultDto mcsResultDto = mcsService.mcsContainerMove(mcsMoveTaskDto);
+        if (!mcsResultDto.isRet()) {
+            return;
+        }
+        System.out.println("发送 SPS 入库任务,成功");
+        //生成库存
+        ContainerStore containerStore = new ContainerStore();
+        containerStore.setContainerNo(wareHousing.getContainerNo());
+        containerStore.setTaskType(10);
+        containerStore.setTaskStatus(10);
+        containerStore.setWorkCount(0);
+        containerStore.setGoodsId(Integer.valueOf(wareHousing.getGoodsId()));
+        containerStore.setQty(wareHousing.getQty());
+        containerStore.setCreateTime(new Date());
+        containerStore.setUpdateTime(new Date());
+        containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
+        containerStoreService.saveContainerStore(containerStore);
+        System.out.println("生成库存");
+        redisTemplate.opsForValue().set("testIn", testIn);
+        System.out.println(JSON.toJSON(testIn));
+        System.out.println("==========锁定货位" + target+"=============");
     }
 
 
@@ -135,15 +217,15 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     @Override
     @LogInfo(desci = "wms出库任务下发", direction = "wms->eis", type = LogDto.WMS_TYPE_SEND_OUTBOUND_TASK, systemType = LogDto.WMS)
     @Transactional(rollbackFor = Exception.class)
-    public void  sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
+    public void sendOutBoundTask(List<WmsOutboundTaskDto> wmsOutboundTaskDtos) throws Exception {
         if (wmsOutboundTaskDtos.size() > 0) {
             List<String> billNoList =
                     wmsOutboundTaskDtos.stream().map(x -> x.getBILLNO()).distinct().collect(Collectors.toList());
             List<OrderBill> orderBills = orderBillService.findByMap(null);
             for (String s : billNoList) {
                 //判断当前订单是否已经下发eis
-                if (orderBills.contains(s)){
-                    throw new Exception("订单编号【"+s+"】已下发EIS出库任务");
+                if (orderBills.contains(s)) {
+                    throw new Exception("订单编号【" + s + "】已下发EIS出库任务");
                 }
                 List<WmsOutboundTaskDto> order =
                         wmsOutboundTaskDtos.stream().filter(x -> s.equals(x.getBILLNO())).collect(Collectors.toList());
@@ -159,7 +241,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 List<OrderDetail> orderDetails = new ArrayList<>();
                 List<OrderFinish> orderFinishes = new ArrayList<>();
                 for (WmsOutboundTaskDto wmsOutboundTaskDto : order) {
-                    if ("1".equals(wmsOutboundTaskDto.getEXSATTR1())){
+                    if ("1".equals(wmsOutboundTaskDto.getEXSATTR1())) {
                         //成品客户信息供打印使用
                         OrderFinish orderFinish = new OrderFinish();
                         orderFinish.setOrderBillId(orderBill.getId());
@@ -172,7 +254,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         orderFinish.setOrderDelivery(wmsOutboundTaskDto.getEXSATTR7());
                         orderFinish.setClientContract(wmsOutboundTaskDto.getEXSATTR8());
                         orderFinishes.add(orderFinish);
-                    }else {
+                    } else {
                         OrderDetail orderDetail = new OrderDetail();
                         orderDetail.setOrderBillId(orderBill.getId());
                         orderDetail.setGoodsId(Integer.valueOf(wmsOutboundTaskDto.getITEMID()));
@@ -209,8 +291,8 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         List<Goods> newGoods = new ArrayList<>();
         List<Goods> updateGoods = new ArrayList<>();
         for (WmsGoodsDto goodsDto : goodsDtos) {
-            if(goodsDto.getITEMID().startsWith("ITEM")){
-                throw new Exception("ITEMID，前面多给了 ITEM 四个字母"+goodsDto.getITEMID());
+            if (goodsDto.getITEMID().startsWith("ITEM")) {
+                throw new Exception("ITEMID，前面多给了 ITEM 四个字母" + goodsDto.getITEMID());
             }
             Goods goodsByGoodId = goodsService.getGoodsByGoodId(Integer.parseInt(goodsDto.getITEMID()));
             Goods goods = new Goods();
@@ -253,7 +335,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             Map<String, Object> param = MapUtils.put("branchType", BranchTypeEnum.getEisBranchType(wmsInventoryTask.getBRANCHTYPE())).put(
                     "containerNo",
                     wmsInventoryTask.getCONTAINERNO()).put("goodsType", wmsInventoryTask.getITEMTYPE()).put("goodsId"
-                    , wmsInventoryTask.getITEMID()).put("lotId",wmsInventoryTask.getPCH()).getMap();
+                    , wmsInventoryTask.getITEMID()).put("lotId", wmsInventoryTask.getPCH()).getMap();
             // 根据wms下发的相关信息找到需盘点的料箱
             List<InventoryGoodsDto> detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
 
