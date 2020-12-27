@@ -59,10 +59,12 @@ public class WcsServiceImpl implements IWcsService {
     @LogInfo(desci = "eis发送输送线行走命令", direction = "eis->wcs", type = LogDto.WCS_TYPE_LINE_MOVE, systemType = LogDto.WCS)
     public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto,int i) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+
         logger.info("EIS -> WCS 输送线行走:{}", url);
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
                 new TypeReference<RestMessage<String>>() {
                 });
+
         // 输送线任务不成功，则存表，定时器扫描后再次发送
         if (!result.isSuccess()&&i==0) {
             WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
@@ -90,52 +92,7 @@ public class WcsServiceImpl implements IWcsService {
         return result;
     }
 
-//    /**
-//     * 请求订单箱
-//     *
-//     * @param taskId
-//     * @param address
-//     * @return
-//     */
-//    @Override
-//    public RestMessage<String> requestOrderBox(String taskId, String address) {
-//        String url = this.getUrl(properties.getWcs().getOrderBoxReqUrl());
-//        logger.info("EIS -> WCS 订单框请求:{}",url);
-//        try {
-//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address)
-//            .getMap(),new TypeReference<RestMessage<String>>() {});
-//            return result;
-//        } catch (Exception e) {
-//            logger.warn("EIS -> WCS 请求订单框异常",e);
-//            return RestMessage.newInstance(false,"500",e.getMessage(),null);
-//        }
-//    }
-//
-//    /**
-//     * 亮灯
-//     *
-//     * @param pickStationNo
-//     * @param lights
-//     * @return
-//     */
-//    @Override
-//    public RestMessage<String> light(String pickStationNo, String[] lights) {
-//        String url = this.getUrl(properties.getWcs().getLightControlUrl());
-//        logger.info("EIS -> WCS 灯光控制请求:{}",url);
-//        try {
-//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("stationNo",pickStationNo).put("lights",
-//            lights).getMap(),new TypeReference<RestMessage<String>>() {});
-//            return result;
-//        } catch (Exception e) {
-//            logger.warn("EIS -> WCS 请求灯光异常",e);
-//            return RestMessage.newInstance(false,"500",e.getMessage(),null);
-//        }
-//    }
-//
-//
-//    @Override
-//    public void openDoor(String doorNo, boolean open) throws Exception {
-//
-//    }
+
+    //public RestMessage<String> checkOut
 
 }

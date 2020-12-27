@@ -145,7 +145,7 @@ public class PageService implements IPageService {
                 for (McsCarInfoDto mcsCarInfoDto : mcsCarInfo) {
                     FacilityInfoDto facilityInfoDto = new FacilityInfoDto();
                     facilityInfoDto.setFacilityName("堆垛机");
-                    facilityInfoDto.setFacilityNo(mcsCarInfoDto.getRgvId());
+                    facilityInfoDto.setFacilityNo(mcsCarInfoDto.getStackerId());
                     facilityInfoDto.setFacilityLayer(1);
                     if (mcsCarInfoDto.getStatus() == 0) {
                         facilityInfoDto.setFacilityStatus("正常");

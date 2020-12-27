@@ -123,6 +123,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         //判断agv_binding_detail 里有状态为10 的，并且本身位置不是在agv区域的 ,加判断agv区域的空位 发送路径任务
         List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findAgvContainerTopath();
         if (!detailStatus.isEmpty()) {
+            // TODO: 2020/12/26  出库判断 堆垛机接驳口 是否有货
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.RCS01, null);
             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
             logger.info(detailStatus.get(0).getContainerNo()+"生成去往agv区域路径======================");
