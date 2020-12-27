@@ -40,6 +40,8 @@ public class McsMoveTaskDto implements Serializable {
     @ApiModelProperty("任务类型")
     private int bankId;
 
+    public McsMoveTaskDto(){};
+
     public McsMoveTaskDto(String taskId, int type, String containerNo, String address, String target, String weight, String priority, int status, int bankId) {
         this.taskId = taskId;
         this.type = type;

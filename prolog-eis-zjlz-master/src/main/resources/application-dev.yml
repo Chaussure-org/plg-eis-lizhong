@@ -59,8 +59,8 @@ prolog:
       host: 10.0.2.26
       port: 10020
     mcs:
-      host: 10.0.2.26
-      port: 10020
+      host: 172.22.9.2
+      port: 80
     wms:
       host: 10.0.2.135
       outPort: 20631
