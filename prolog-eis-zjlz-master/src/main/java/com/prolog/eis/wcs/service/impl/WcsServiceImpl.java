@@ -3,6 +3,7 @@ package com.prolog.eis.wcs.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.wcs.CheckPositionDto;
 import com.prolog.eis.dto.wcs.TrayCallbackDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.model.wcs.WcsCommandRepeat;
@@ -21,10 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 
 /**
-* @Author  wangkang
-* @Description  wcs服务实现
-* @CreateTime  2020-11-02 9:20
-*/
+ * @Author wangkang
+ * @Description wcs服务实现
+ * @CreateTime 2020-11-02 9:20
+ */
 @Service
 public class WcsServiceImpl implements IWcsService {
     @Autowired
@@ -57,16 +58,18 @@ public class WcsServiceImpl implements IWcsService {
      */
     @Override
     @LogInfo(desci = "eis发送输送线行走命令", direction = "eis->wcs", type = LogDto.WCS_TYPE_LINE_MOVE, systemType = LogDto.WCS)
-    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto,int i) throws Exception {
+    public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto, int i) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
+
         logger.info("EIS -> WCS 输送线行走:{}", url);
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
                 new TypeReference<RestMessage<String>>() {
                 });
+
         // 输送线任务不成功，则存表，定时器扫描后再次发送
-        if (!result.isSuccess()&&i==0) {
+        if (!result.isSuccess() && i == 0) {
             WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
-                    wcsLineMoveDto.getAddress(),wcsLineMoveDto.getTarget(),wcsLineMoveDto.getContainerNo(),
+                    wcsLineMoveDto.getAddress(), wcsLineMoveDto.getTarget(), wcsLineMoveDto.getContainerNo(),
                     wcsLineMoveDto.getType(), new Date());
             wcsCommandRepeatService.saveWcsCommand(wcsCommandRepeat);
         }
@@ -75,6 +78,7 @@ public class WcsServiceImpl implements IWcsService {
 
     /**
      * 拆盘机入口托盘到位通知wcs
+     *
      * @param trayCallbackDto
      * @return
      * @throws Exception
@@ -90,52 +94,14 @@ public class WcsServiceImpl implements IWcsService {
         return result;
     }
 
-//    /**
-//     * 请求订单箱
-//     *
-//     * @param taskId
-//     * @param address
-//     * @return
-//     */
-//    @Override
-//    public RestMessage<String> requestOrderBox(String taskId, String address) {
-//        String url = this.getUrl(properties.getWcs().getOrderBoxReqUrl());
-//        logger.info("EIS -> WCS 订单框请求:{}",url);
-//        try {
-//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("taskId",taskId).put("address",address)
-//            .getMap(),new TypeReference<RestMessage<String>>() {});
-//            return result;
-//        } catch (Exception e) {
-//            logger.warn("EIS -> WCS 请求订单框异常",e);
-//            return RestMessage.newInstance(false,"500",e.getMessage(),null);
-//        }
-//    }
-//
-//    /**
-//     * 亮灯
-//     *
-//     * @param pickStationNo
-//     * @param lights
-//     * @return
-//     */
-//    @Override
-//    public RestMessage<String> light(String pickStationNo, String[] lights) {
-//        String url = this.getUrl(properties.getWcs().getLightControlUrl());
-//        logger.info("EIS -> WCS 灯光控制请求:{}",url);
-//        try {
-//            RestMessage<String> result = httpUtils.post(url,MapUtils.put("stationNo",pickStationNo).put("lights",
-//            lights).getMap(),new TypeReference<RestMessage<String>>() {});
-//            return result;
-//        } catch (Exception e) {
-//            logger.warn("EIS -> WCS 请求灯光异常",e);
-//            return RestMessage.newInstance(false,"500",e.getMessage(),null);
-//        }
-//    }
-//
-//
-//    @Override
-//    public void openDoor(String doorNo, boolean open) throws Exception {
-//
-//    }
+
+    @LogInfo(desci = "eis请求wcs出库口点位是否空闲", direction = "eis->wcs", type = 888, systemType = LogDto.WCS)
+    public RestMessage<String> checkPosition(CheckPositionDto checkPositionDto) throws Exception {
+        String url = this.getUrl(properties.getWcs().getCheckPosition());
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(checkPositionDto),
+                new TypeReference<RestMessage<String>>() {
+                });
+        return null;
+    }
 
 }

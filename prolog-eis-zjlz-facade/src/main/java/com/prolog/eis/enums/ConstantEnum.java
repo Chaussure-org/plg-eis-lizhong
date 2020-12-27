@@ -8,7 +8,7 @@ public class ConstantEnum {
     public static final short TASK_STATUS_EXCEPTION =3;//任务异常
 
     //任务类型 wcs -> eis
-    /**
+    /** 请求类型 6-料箱进站 7-订单框进站 8-体积检测 9-入库口
      * 入库
      */
     public static final int TYPE_RK = 1;

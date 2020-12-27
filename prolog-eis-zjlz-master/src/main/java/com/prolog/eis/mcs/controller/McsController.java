@@ -5,8 +5,11 @@ import com.prolog.eis.dto.mcs.McsCallBackDto;
 import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.warehousing.service.IWareHousingService;
+import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
+import com.prolog.framework.utils.MapUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -37,8 +40,13 @@ public class McsController {
     @Autowired
     private IMcsCallBackService mcsCallbackService;
 
+
     @Autowired
     private RedisTemplate redisTemplate;
+
+    //=====test===
+    @Autowired
+    private IWareHousingService iWareHousingService;
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")
@@ -46,31 +54,26 @@ public class McsController {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
             //mcsCallbackService.mcsCallback(mcsCallBackDto);
-            Map mcsMap = new HashMap(3);
-            mcsMap.put("ret", true);
-            mcsMap.put("msg", "回告成功");
-            mcsMap.put("data", new ArrayList());
-            return mcsMap;
+            if (mcsCallBackDto.getStatus() == 2) {
+                iWareHousingService.deleteInboundTask(mcsCallBackDto.getContainerNo());
+            }
+            return MapUtils.put("ret", true).put("msg", "回告成功").put("data", new ArrayList()).getMap();
         } catch (Exception e) {
-            Map mcsMap = new HashMap(3);
-            mcsMap.put("ret", false);
-            mcsMap.put("msg", "回告失败");
-            mcsMap.put("data", new ArrayList());
-            return mcsMap;
+            return MapUtils.put("ret", false).put("msg", "回告失败").put("data", new ArrayList()).getMap();
         }
     }
 
+    //@LogInfo(desci = "堆垛机信息上报", direction = "sps->eis", type = LogDto.MCS, systemType = LogDto.MCS)
     @ApiOperation(value = "堆垛机信息上报", notes = "堆垛机信息上报")
-    @LogInfo(desci = "堆垛机信息上报", direction = "sps->eis", type = LogDto.MCS, systemType = LogDto.MCS)
     @RequestMapping("/info")
-    public RestMessage<McsCarInfoDto> mcsInfo(@RequestBody List<McsCarInfoDto> carInfo) throws Exception {
+    public Map mcsInfo(@RequestBody List<McsCarInfoDto> carInfo) throws Exception {
         String json = JsonUtils.toString(carInfo);
-        logger.info("接收任务信息,{}", json);
+        //logger.info("接收任务信息,{}", json);
         try {
             redisTemplate.opsForValue().set("mcsInfo", json);
-            return RestMessage.newInstance(true, "接收成功");
+            return MapUtils.put("ret", true).put("msg", "回告成功").put("data", new ArrayList()).getMap();
         } catch (Exception e) {
-            return RestMessage.newInstance(false, "接受失败" + e.getMessage());
+            return MapUtils.put("ret", false).put("msg", "回告失败").put("data", new ArrayList()).getMap();
         }
     }
 

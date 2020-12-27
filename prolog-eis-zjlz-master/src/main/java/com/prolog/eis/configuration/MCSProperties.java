@@ -9,9 +9,15 @@ public class MCSProperties {
     private String host;
     private int port;
 
-    private String mcsContainerMoveUrl="/eis/mcsContainerMove";//出库（入库/同层移库）任务接口
+    /**
+     * 出库（入库/同层移库）任务接口
+     */
+    private String mcsContainerMoveUrl = "/interface/taskDataFromEis";
 
-    private String getMcsCarInfoUrl="/eis/getMcsCarInfo";
+    /**
+     *
+     */
+    private String getMcsCarInfoUrl = "/interface/taskDataFromEis";
 
     public String getGetMcsCarInfoUrl() {
         return getMcsCarInfoUrl;
