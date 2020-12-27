@@ -11,10 +11,13 @@ import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
+import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PointLocation;
+import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.model.wms.WmsInboundTask;
@@ -24,6 +27,7 @@ import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
+import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wcs.service.IOpenDiskService;
@@ -82,6 +86,9 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private IContainerBindingDetailService containerBindingDetailService;
     @Autowired
     private IStationBZService stationBZService;
+
+    @Autowired
+    private IContainerPathTaskDetailService containerPathTaskDetailService;
 
     @Autowired
     private StationMapper stationMapper;
@@ -253,6 +260,17 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             station.setContainerNo(taskCallbackDTO.getContainerNo());
             station.setUpdateTime(new Date());
             stationService.updateStation(station);
+            //判断在路径中是否存在任务
+            List<ContainerPathTaskDetail> containerPathTaskDetailList
+                    = containerPathTaskDetailService.getTaskDetailByTaskId(taskCallbackDTO.getTaskId());
+            if (containerPathTaskDetailList != null || containerPathTaskDetailList.size()>0) {
+                ContainerPathTask containerPathTask =
+                        containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
+                if (!containerPathTask.getSourceLocation().equals(containerPathTask.getTargetArea())) {
+                    containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetailList.get(0),
+                            containerPathTask, PrologDateUtils.parseObject(new Date()));
+                }
+            }
         }
     }
 

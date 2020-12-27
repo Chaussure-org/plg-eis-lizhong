@@ -106,21 +106,26 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
 
-        //
-        this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
-        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
-        BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
-        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
-        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
-        System.out.println("wcs-->mcs 输送线去往 堆垛机 执行 ");
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
-        // 发送 wcs移动指令
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(
-                containerPathTaskDetailDTO.getTaskId(),
-                containerPathTaskDetailDTO.getSourceLocation(),
-                PointChangeEnum.getCorr("in" + containerPathTaskDetailDTO.getSourceLocation()),
-                containerPathTaskDetailDTO.getContainerNo(), 5);
-        wcsService.lineMove(wcsLineMoveDto, 0);
+        //此处仅执行一个点位转换
+        System.out.println("wcs to mcs");
+        ContainerPathTaskDetail containerPathTaskDetail =
+                containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),ContainerPathTaskDetail.class);
+        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail,containerPathTask,
+                PrologDateUtils.parseObject(new Date()));
+//        this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
+//        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
+//        BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
+//        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
+//        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+//        System.out.println("wcs-->mcs 输送线去往 堆垛机 执行 ");
+//        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
+//        // 发送 wcs移动指令
+//        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(
+//                containerPathTaskDetailDTO.getTaskId(),
+//                containerPathTaskDetailDTO.getSourceLocation(),
+//                PointChangeEnum.getCorr("in" + containerPathTaskDetailDTO.getSourceLocation()),
+//                containerPathTaskDetailDTO.getContainerNo(), 5);
+//        wcsService.lineMove(wcsLineMoveDto, 0);
     }
 
     @Override
@@ -170,6 +175,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 
     /**
      * 执行wcs-wcs路径任务(借道)
+     * MODEFIED 现在修改为bcr到bcr
      *
      * @param containerPathTask          路径任务
      * @param containerPathTaskDetailDTO 详情实体
@@ -178,22 +184,24 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     public void doWcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to wcs");
-        //update汇总表状态为10,待发送任务 明细表 0 到位
-        this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
-        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
-        BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
-        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
-        containerPathTaskDetailDTO1.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
-        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getSourceLocation()));
-        containerPathTaskDetailDTO1.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
-        //发送mcs 移动指令
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
-        //发送 wcs 移动指令
-        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
         WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                 containerPathTaskDetailDTO.getSourceLocation(),
                 containerPathTaskDetailDTO.getNextLocation(), containerPathTaskDetailDTO.getContainerNo(), 5);
         wcsService.lineMove(wcsLineMoveDto, 0);
+    }
+
+    /**
+     * 执行mcs-mcs路径任务
+     * @param containerPathTask 路径任务
+     * @param containerPathTaskDetailDTO 详情实体
+     * @throws Exception
+     */
+    @Override
+    public void doMcsToMcsTask(ContainerPathTask containerPathTask,
+                               ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+        //发送mcs移动任务
+        System.out.println("mcs to mcs");
+        sxMoveStoreService.mcsContainerMove(containerPathTask,containerPathTaskDetailDTO);
     }
 
 

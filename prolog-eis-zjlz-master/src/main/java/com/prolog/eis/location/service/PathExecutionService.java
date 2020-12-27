@@ -71,4 +71,13 @@ public interface PathExecutionService {
      * @param containerPathTaskDetailDTO 详情实体
      */
     void doWcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception;
+
+    /**
+     * 执行mcs-mcs路径任务
+     * @param containerPathTask 路径任务
+     * @param containerPathTaskDetailDTO 详情实体
+     * @throws Exception
+     */
+    void doMcsToMcsTask(ContainerPathTask containerPathTask,
+                        ContainerPathTaskDetailDTO containerPathTaskDetailDTO)throws Exception;
 }
