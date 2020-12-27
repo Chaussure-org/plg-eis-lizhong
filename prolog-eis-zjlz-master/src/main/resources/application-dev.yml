@@ -1,16 +1,16 @@
 #eureka client配置
-eureka.client.serviceUrl.defaultZone: http://admin:prolog00212@10.0.2.135:8761/eureka/
+eureka.client.serviceUrl.defaultZone: http://admin:prolog00212@172.22.9.206:8761/eureka/
 #eureka: ,http://admin:prolog00212@192.168.1.22:6001/eureka/
-prolog.tx.url: http://10.0.2.135:7000/tx/manager/
+prolog.tx.url: http://172.22.9.206:7000/tx/manager/
 
 spring:
   application.name: service-ai-eis-zjlz-master
   #redis配置
   redis:
     cluster:
-      nodes: 10.0.2.135:6379,10.0.2.135:6380,10.0.2.135:6381,10.0.2.135:6382,10.0.2.135:6383,10.0.2.135:6384
+      nodes: 172.22.9.206:6379,172.22.9.206:6380,172.22.9.206:6381,172.22.9.206:6382,172.22.9.206:6383,172.22.9.206:6384
     password: prolog0212
-    host: 10.0.2.135
+    host: 172.22.9.206
     port: 6379
     #    password: prolog0212
     database: 0
@@ -37,7 +37,7 @@ spring:
     minEvictableIdleTimeMillis: 25200000 #最小生存時間  ,192.168.1.18:5672,192.168.1.19:5672
     remove-abandoned-timeout-millis: 252000000000
   rabbitmq:
-    addresses: 10.0.2.135:5672
+    addresses: 172.22.9.206:5672
     username: eis
     password: eis
     virtual-host: /eis_lizhong
@@ -50,18 +50,18 @@ logging:
 prolog:
   eis:
     wcs:
-      host: 10.0.2.26
+      host: 172.22.9.9
       port: 10020
     rcs:
-      host: 10.0.2.26
+      host: 172.22.9.9
       port: 10020
     sas:
-      host: 10.0.2.26
+      host: 172.22.9.9
       port: 10020
     mcs:
       host: 172.22.9.244
       port: 80
     wms:
-      host: 10.0.2.135
+      host: 172.22.9.206
       outPort: 20631
       inPort: 20815
