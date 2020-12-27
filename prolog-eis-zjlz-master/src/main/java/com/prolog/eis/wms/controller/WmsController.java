@@ -4,8 +4,11 @@ import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.dto.wms.*;
 import com.prolog.eis.mcs.service.IMcsService;
+import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.EisRestMessage;
+import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
 import com.prolog.eis.wms.service.IWmsService;
@@ -24,7 +27,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author wangkang
@@ -49,10 +54,15 @@ public class WmsController {
     @Autowired
     private IMcsService mcsService;
 
+    @Autowired
+    private IContainerStoreService containerStoreService;
+
     @PostMapping("test")
     public String test() throws Exception {
         McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto();
-        mcsMoveTaskDto.setTaskId("888888");
+        String taskId = PrologStringUtils.newGUID();
+        ;
+        mcsMoveTaskDto.setTaskId(taskId);
         mcsMoveTaskDto.setAddress("01001001");
         mcsMoveTaskDto.setTarget("04004002");
         mcsMoveTaskDto.setBankId(1);
@@ -62,10 +72,28 @@ public class WmsController {
         mcsMoveTaskDto.setWeight("10");
         List<WmsInboundTask> list = wareHousingMapper.findByMap(null, WmsInboundTask.class);
         mcsMoveTaskDto.setContainerNo(list.get(0).getContainerNo());
-        McsResultDto mcsResultDto = mcsService.mcsContainerMove(mcsMoveTaskDto);
+        WmsInboundTask wareHousing = list.get(0);
 
+        //发送任务
+        McsResultDto mcsResultDto = mcsService.mcsContainerMove(mcsMoveTaskDto);
+        if (!mcsResultDto.isRet()) {
+    return "调用堆垛机 移动指令 失败";
+        }
+        //生成库存
+        ContainerStore containerStore = new ContainerStore();
+        containerStore.setContainerNo(wareHousing.getContainerNo());
+        containerStore.setTaskType(10);
+        containerStore.setTaskStatus(10);
+        containerStore.setWorkCount(0);
+        containerStore.setGoodsId(Integer.valueOf(wareHousing.getGoodsId()));
+        containerStore.setQty(wareHousing.getQty());
+        containerStore.setCreateTime(new Date());
+        containerStore.setUpdateTime(new Date());
+        containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
+        containerStoreService.saveContainerStore(containerStore);
         return mcsResultDto.getMsg();
     }
+
 
     @ApiOperation(value = "入库任务下发", notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")
