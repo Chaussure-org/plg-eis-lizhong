@@ -41,12 +41,12 @@ public class WmsCallBackTest {
     public void testInbound() throws Exception {
         WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setSEQNO("0");
-        wmsInboundCallBackDto.setITEMNAME("内接头总成");
-        wmsInboundCallBackDto.setITEMID("0000002405");
-        wmsInboundCallBackDto.setCONTAINERNO("600018");
+        wmsInboundCallBackDto.setITEMNAME("内外管衬套总成");
+        wmsInboundCallBackDto.setITEMID("0000002411");
+        wmsInboundCallBackDto.setCONTAINERNO("11048");
         wmsInboundCallBackDto.setBILLTYPE(1);
-        wmsInboundCallBackDto.setBILLNO("RCV0000004803");
-        wmsInboundCallBackDto.setLINEID("21954703");
+        wmsInboundCallBackDto.setBILLNO("RCV0000004852");
+        wmsInboundCallBackDto.setLINEID("21954965");
         EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
         System.out.println("aaaa");
     }
