@@ -75,7 +75,7 @@ public class TestCache {
     }
 
    // @Scheduled(initialDelay = 3000, fixedDelay = 3000)
-    public synchronized void testWcs() {
+    public synchronized void testWcs() throws InterruptedException {
         if (CacheListUtils.getWcslist().size() > 0) {
             pWait();
             System.out.println(CacheListUtils.getWcslist().get(0));

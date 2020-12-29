@@ -14,7 +14,7 @@ public interface WcsService {
      * 回告
      * @param wcsLineMoveDto
      */
-    void doCallBack(WcsLineMoveDto wcsLineMoveDto);
+    void doCallBack(WcsLineMoveDto wcsLineMoveDto) throws InterruptedException;
 
     /**
      * bcr请求

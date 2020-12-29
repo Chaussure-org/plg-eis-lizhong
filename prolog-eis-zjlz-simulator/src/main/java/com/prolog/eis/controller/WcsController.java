@@ -28,7 +28,12 @@ public class WcsController {
     @RequestMapping("/lineMove")
     public RestMessage<String> lineMove(@RequestBody WcsLineMoveDto wcsLineMoveDto) {
         new Thread(()->{
-            wcsService.doCallBack(wcsLineMoveDto);
+            try {
+                wcsService.doCallBack(wcsLineMoveDto);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             if (PointUtils.isContain(wcsLineMoveDto.getTarget()) == 1) {
 
                 wcsService.doBcrRequest(wcsLineMoveDto, 1);

@@ -47,7 +47,7 @@ public class WcsServiceImpl implements IWcsService {
      * @return
      */
     private String getUrl(String path) {
-        return String.format("http://%s%s", properties.getWcs().getHost(), path);
+        return String.format("http://%s:%s%s", properties.getWcs().getHost(), properties.getWcs().getPort(),path);
     }
 
     /**
@@ -66,7 +66,7 @@ public class WcsServiceImpl implements IWcsService {
                 new TypeReference<RestMessage<String>>() {
                 });
 
-        // 输送线任务不成功，则存表，定时器扫描后再次发送
+        // 输送线任务不成功，则存表，定时器扫描后再次发送 add sunpp,发送失败 存表有 bug
         if (!result.isSuccess() && i == 0) {
             WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),
                     wcsLineMoveDto.getAddress(), wcsLineMoveDto.getTarget(), wcsLineMoveDto.getContainerNo(),

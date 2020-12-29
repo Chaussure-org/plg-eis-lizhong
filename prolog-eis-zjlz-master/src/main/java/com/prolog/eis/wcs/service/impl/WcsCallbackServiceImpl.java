@@ -244,11 +244,11 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      */
     @Transactional(rollbackFor = Exception.class, timeout = 600)
     public void doXZTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-        //判断 点位属于站台
+
         List<PointLocation> pointLocations = pointLocationService.getPointByType(20);
         List<PointLocation> collect = pointLocations.stream().filter(x -> x.getPointId().equals(taskCallbackDTO.getAddress())).collect(Collectors.toList());
         if (collect.size() > 0) {
-            //料箱到拣选站则将箱号写入到
+            //判断 点位 属于站台料箱到拣选站,则将箱号写入到
 //            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
 //            if (pointLocation == null){
 //                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
@@ -260,16 +260,17 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             station.setContainerNo(taskCallbackDTO.getContainerNo());
             station.setUpdateTime(new Date());
             stationService.updateStation(station);
-            //判断在路径中是否存在任务
-            List<ContainerPathTaskDetail> containerPathTaskDetailList
-                    = containerPathTaskDetailService.getTaskDetailByTaskId(taskCallbackDTO.getTaskId());
-            if (containerPathTaskDetailList != null || containerPathTaskDetailList.size()>0) {
-                ContainerPathTask containerPathTask =
-                        containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
-                if (!containerPathTask.getSourceLocation().equals(containerPathTask.getTargetArea())) {
-                    containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetailList.get(0),
-                            containerPathTask, PrologDateUtils.parseObject(new Date()));
-                }
+        }
+        //判断在路径中是否存在任务
+        List<ContainerPathTaskDetail> containerPathTaskDetailList
+                = containerPathTaskDetailService.getTaskDetailByTaskId(taskCallbackDTO.getTaskId());
+        if (containerPathTaskDetailList != null && containerPathTaskDetailList.size() > 0) {
+            ContainerPathTask containerPathTask =
+                    containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
+            //如果第一条路径不等于终点区域,则更新第一条路径，并且目的位置是 wcs
+            if (!containerPathTask.getSourceLocation().equals(containerPathTask.getTargetArea())) {
+                containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetailList.get(0),
+                        containerPathTask, PrologDateUtils.parseObject(new Date()));
             }
         }
     }

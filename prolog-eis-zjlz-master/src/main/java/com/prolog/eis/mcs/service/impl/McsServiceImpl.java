@@ -6,6 +6,7 @@ import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.mcs.service.IMcsService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import com.prolog.eis.util.PrologHttpUtils;
@@ -34,7 +35,7 @@ public class McsServiceImpl implements IMcsService {
     private EisProperties eisProperties;
 
     private String getUrl(String url) {
-        return String.format("http://%s:%s%s", eisProperties.getMcs().getHost(),eisProperties.getMcs().getPort(), url);
+        return String.format("http://%s:%s%s", eisProperties.getMcs().getHost(), eisProperties.getMcs().getPort(), url);
     }
 
     @Override
@@ -42,6 +43,9 @@ public class McsServiceImpl implements IMcsService {
     public McsResultDto mcsContainerMove(McsMoveTaskDto mcsMoveTaskDto) throws Exception {
         //Mcs的坐标经过一个 方法 处理 INT【任务类型：1：入库:2：出库 3：同巷道移库】
 
+        //更换从成mcs坐标
+        mcsMoveTaskDto.setTarget(EisStringUtils.getMcsPoint(mcsMoveTaskDto.getTarget()));
+        System.out.println(mcsMoveTaskDto.getTarget());
         List<McsMoveTaskDto> mcsSendTaskDtos = new ArrayList<McsMoveTaskDto>();
         mcsSendTaskDtos.add(mcsMoveTaskDto);
         Map<String, Object> map = new HashMap<String, Object>();
