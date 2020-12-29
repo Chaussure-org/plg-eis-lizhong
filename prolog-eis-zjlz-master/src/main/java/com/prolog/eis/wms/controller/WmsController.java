@@ -87,42 +87,6 @@ public class WmsController {
         redisTemplate.opsForValue().set("testIn", map);
 
         return "";
-
-        /*McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto();
-        String taskId = PrologStringUtils.newGUID();
-        ;
-        mcsMoveTaskDto.setTaskId(taskId);
-        mcsMoveTaskDto.setAddress(address);
-        mcsMoveTaskDto.setTarget(target);
-        mcsMoveTaskDto.setBankId(1);
-        mcsMoveTaskDto.setType(type);
-        mcsMoveTaskDto.setPriority("99");
-        mcsMoveTaskDto.setStatus(0);
-        mcsMoveTaskDto.setWeight("10");
-        List<WmsInboundTask> list = wareHousingMapper.findByMap(null, WmsInboundTask.class);
-        if (list.size() == 0) {
-            return "数据库 没找到入库任务";
-        }
-        mcsMoveTaskDto.setContainerNo(list.get(0).getContainerNo());
-        WmsInboundTask wareHousing = list.get(0);
-        //发送任务
-        McsResultDto mcsResultDto = mcsService.mcsContainerMove(mcsMoveTaskDto);
-        if (!mcsResultDto.isRet()) {
-            return "调用堆垛机 移动指令 失败";
-        }
-        //生成库存
-        ContainerStore containerStore = new ContainerStore();
-        containerStore.setContainerNo(wareHousing.getContainerNo());
-        containerStore.setTaskType(10);
-        containerStore.setTaskStatus(10);
-        containerStore.setWorkCount(0);
-        containerStore.setGoodsId(Integer.valueOf(wareHousing.getGoodsId()));
-        containerStore.setQty(wareHousing.getQty());
-        containerStore.setCreateTime(new Date());
-        containerStore.setUpdateTime(new Date());
-        containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
-        containerStoreService.saveContainerStore(containerStore);
-        return "测试流程已走通";*/
     }
 
 

@@ -16,6 +16,8 @@ import com.prolog.eis.dto.wms.WmsUpProiorityDto;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
 import com.prolog.eis.inventory.service.IInventoryTaskService;
+import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
+import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.mcs.service.IMcsService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.base.Goods;
@@ -24,6 +26,8 @@ import com.prolog.eis.model.inventory.InventoryTaskDetail;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
 import com.prolog.eis.model.order.OrderFinish;
+import com.prolog.eis.model.store.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.order.service.IOrderBillService;
 import com.prolog.eis.order.service.IOrderDetailService;
@@ -35,6 +39,8 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import com.thoughtworks.xstream.core.util.ArrayIterator;
@@ -99,7 +105,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     public void sendInboundTask(List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         //1.如果库内已经存在该箱子，测不允许生成该箱子的任务
         List<String> allStoreContainers = containerStoreMapper.findAllStoreContainers();
-        //2.校验 商品id 和 商品名称是否与 EIS 一致
+        //2.校验 商品id 和 商品名称是否与 EIS 一致 商品资料 9万条，查询时间过长。
         //List<Goods> goods = goodsMapper.findByMap(null, Goods.class);
         //校验同批入库任务是否存在相同容器  根据容器号去重
         List<WmsInboundTaskDto> collect = wmsInboundTaskDtos.stream().collect(Collectors.collectingAndThen(
@@ -142,33 +148,31 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTaskList.add(wmsInboundTask);
         }
         mapper.saveBatch(wmsInboundTaskList);
-        System.out.println(JSON.toJSON(wmsInboundTaskList) + "=======================接收 wms 入库任务==========");
-        //================================== 12/27
-        this.test1227(wmsInboundTaskDtos);
+        // ================================== 12/27
+        // this.test1227(wmsInboundTaskDtos);
 
     }
 
     //==============测试
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private SxStoreLocationMapper sxStoreLocationMapper;
+    @Autowired
+    private SxStoreLocationGroupMapper sxStoreLocationGroupMapper;
 
     private void test1227(List<WmsInboundTaskDto> dtos) throws Exception {
         McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto();
         String taskId = PrologStringUtils.newGUID();
         mcsMoveTaskDto.setTaskId(taskId);
-        mcsMoveTaskDto.setAddress("0100360019");
-        Map<String, Integer> testIn = (Map<String, Integer>) redisTemplate.opsForValue().get("testIn");
-        System.out.println(JSON.toJSON(testIn));
-        String target = "";
-        for (String str : testIn.keySet()) {
-            if (testIn.get(str).equals(0)) {
-                target = str;
-                //将此货位修改位不可用
-                testIn.put(str, 1);
-                break;
-            }
-        }
-        mcsMoveTaskDto.setTarget(target);
+        mcsMoveTaskDto.setAddress("0100350019");
+
+        List<SxStoreLocation> collect = sxStoreLocationMapper.tests();
+        List<SxStoreLocation> listStore = collect.stream().sorted(Comparator.comparing(SxStoreLocation::getY)).collect(Collectors.toList());
+
+        SxStoreLocation sxStoreLocation = listStore.get(0);
+
+        mcsMoveTaskDto.setTarget(sxStoreLocation.getStoreNo());
         mcsMoveTaskDto.setBankId(1);
         mcsMoveTaskDto.setType(1);
         mcsMoveTaskDto.setPriority("99");
@@ -183,28 +187,32 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         mcsMoveTaskDto.setContainerNo(list.get(0).getContainerNo());
         WmsInboundTask wareHousing = list.get(0);
         //发送任务
-        System.out.println("发送 SPS 入库任务" + JSON.toJSON(mcsMoveTaskDto));
+        System.out.println("=====================发送 SPS 入库任务" + JSON.toJSON(mcsMoveTaskDto) + "================================");
         McsResultDto mcsResultDto = mcsService.mcsContainerMove(mcsMoveTaskDto);
         if (!mcsResultDto.isRet()) {
             return;
         }
-        System.out.println("发送 SPS 入库任务,成功");
+        System.out.println("====================发送 SPS 入库任务,成功============");
         //生成库存
+
         ContainerStore containerStore = new ContainerStore();
         containerStore.setContainerNo(wareHousing.getContainerNo());
         containerStore.setTaskType(10);
         containerStore.setTaskStatus(10);
         containerStore.setWorkCount(0);
+        //将业主id 暂时写成 或为编号
+        containerStore.setOwnerId(sxStoreLocation.getStoreNo());
+        containerStore.setLot(EisStringUtils.getMcsPoint(sxStoreLocation.getStoreNo()));
         containerStore.setGoodsId(Integer.valueOf(wareHousing.getGoodsId()));
         containerStore.setQty(wareHousing.getQty());
         containerStore.setCreateTime(new Date());
         containerStore.setUpdateTime(new Date());
         containerStore.setTaskType(ContainerStore.TASK_TYPE_INBOUND);
         containerStoreService.saveContainerStore(containerStore);
-        System.out.println("生成库存");
-        redisTemplate.opsForValue().set("testIn", testIn);
-        System.out.println(JSON.toJSON(testIn));
-        System.out.println("==========锁定货位" + target+"=============");
+        //锁定货位
+        sxStoreLocationGroupMapper.updateMapById(sxStoreLocation.getStoreLocationGroupId(), MapUtils.put("isLock", 1).getMap(), SxStoreLocationGroup.class);
+
+        System.out.println("=========================================生成库存" + "锁定货位" + sxStoreLocation.getStoreLocationGroupId());
     }
 
 

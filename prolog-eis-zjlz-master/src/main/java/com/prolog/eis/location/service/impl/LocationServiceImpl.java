@@ -95,6 +95,7 @@ public class LocationServiceImpl implements LocationService {
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
             return;
         }
+
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
             List<ContainerPathTaskDetailDTO> containerPathTaskDetailList =
                     containerPathTaskDetailMapper.listContainerPathTaskDetais(containerPathTask.getPalletNo()
