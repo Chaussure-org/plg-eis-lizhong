@@ -40,13 +40,13 @@ public class WmsCallBackTest {
     @Test
     public void testInbound() throws Exception {
         WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
-        wmsInboundCallBackDto.setSEQNO("0");
-        wmsInboundCallBackDto.setITEMNAME("内外管衬套总成");
-        wmsInboundCallBackDto.setITEMID("0000002411");
-        wmsInboundCallBackDto.setCONTAINERNO("11048");
+        wmsInboundCallBackDto.setSEQNO("21954998");
+        wmsInboundCallBackDto.setITEMNAME("悬挂球头总成");
+        wmsInboundCallBackDto.setITEMID("0000002207");
+        wmsInboundCallBackDto.setCONTAINERNO("11051");
         wmsInboundCallBackDto.setBILLTYPE(1);
-        wmsInboundCallBackDto.setBILLNO("RCV0000004852");
-        wmsInboundCallBackDto.setLINEID("21954965");
+        wmsInboundCallBackDto.setBILLNO("0000043763");
+        wmsInboundCallBackDto.setLINEID("21954998");
         EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
         System.out.println("aaaa");
     }
@@ -58,13 +58,14 @@ public class WmsCallBackTest {
     @Test
     public void testSeed() throws Exception {
         WmsOutboundCallBackDto wmsOutboundCallBackDto = new WmsOutboundCallBackDto();
-        wmsOutboundCallBackDto.setQTY(1.0);
-        wmsOutboundCallBackDto.setTASKID("21955170");
-        wmsOutboundCallBackDto.setBILLTYPE("2");
-        wmsOutboundCallBackDto.setBILLDATE(new Date());
-        wmsOutboundCallBackDto.setITEMID(EisStringUtils.getRemouldId(2842));
-        wmsOutboundCallBackDto.setSTATUS(1);
-        wmsOutboundCallBackDto.setSJC(new Date());
+//        wmsOutboundCallBackDto.setQTY(1.0);
+        wmsOutboundCallBackDto.setTASKID("21954995");
+//        wmsOutboundCallBackDto.setBILLTYPE("3");
+//        wmsOutboundCallBackDto.setBILLDATE(new Date());
+//        wmsOutboundCallBackDto.setITEMID(EisStringUtils.getRemouldId(2207));
+//        wmsOutboundCallBackDto.setSTATUS(1);
+//        wmsOutboundCallBackDto.setSJC(new Date());
+        wmsOutboundCallBackDto.setCONTAINERNO("11051");
 //        wmsOutboundCallBackDto.setLOTID();
         EisRestMessage<String> restMessage = wmsService.outboundTaskCallBack(wmsOutboundCallBackDto);
         System.out.println("aaa");

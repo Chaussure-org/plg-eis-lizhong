@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -11,6 +12,7 @@ import java.util.Date;
  * @Description
  * @CreateTime 2020-09-25 16:37
  */
+@JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility= JsonAutoDetect.Visibility.NONE)
 public class WmsOutboundTaskDto {
 
     @ApiModelProperty("任务号")

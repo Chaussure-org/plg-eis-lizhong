@@ -25,7 +25,7 @@ public interface IWmsService {
     EisRestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception;
 
     /**
-     * 拣货完成回告wms
+     * 拣货完成回告wms或移库回告wms 移库回告taskId和容器号
      * @param wmsOutboundCallBackDto 回告实体
      * @return
      * @throws Exception
