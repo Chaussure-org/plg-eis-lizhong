@@ -12,7 +12,6 @@ spring:
     password: prolog0212
     host: 172.22.9.206
     port: 6379
-    #    password: prolog0212
     database: 0
   #链路跟踪  
   zipkin:
@@ -28,8 +27,8 @@ spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://172.22.9.205:3306/plog_eis?characterEncoding=utf8&useSSL=false
-    username: root
     password: prolog
+    username: root
     initialSize: 0 #初始化大小
     minIdle: 5 #最小空閒
     maxActive: 50 #最大連接數
@@ -51,19 +50,16 @@ prolog:
   eis:
     wcs:
       host: 172.22.9.2
-      port: 10020
+      port: 10021
     rcs:
-      host: 172.22.9.2
-      port: 10020
+      host: 172.22.9.203
+      port: 8181
     sas:
       host: 172.22.9.2
-      port: 10020
-#    mcs:
-#      host: 172.22.9.202
-#      port: 80
+      port: 10021
     mcs:
-      host: 172.22.9.2
-      port: 10020
+      host: 172.22.9.202
+      port: 80
     wms:
       host: 172.22.9.206
       outPort: 20631

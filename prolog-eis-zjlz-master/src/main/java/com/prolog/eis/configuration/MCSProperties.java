@@ -1,5 +1,7 @@
 package com.prolog.eis.configuration;
 
+import java.util.Arrays;
+
 /**
  * @Author wangkang
  * @Description
@@ -8,6 +10,7 @@ package com.prolog.eis.configuration;
 public class MCSProperties {
     private String host;
     private int port;
+
 
     /**
      * 出库（入库/同层移库）任务接口

@@ -1,12 +1,16 @@
 package com.prolog.eis.wms.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
+import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.wms.*;
 import com.prolog.eis.mcs.service.IMcsService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.util.Assert;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
@@ -54,42 +58,24 @@ public class WmsController {
     private IContainerStoreService containerStoreService;
 
     @Autowired
+    private IRcsService rcsService;
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @PostMapping("test")
-    public String test(@RequestParam("address") String address, @RequestParam("target") String target, @RequestParam("type") int type) throws Exception {
-        Map map = new HashMap();
-        map.put("0100360022", 1);
-        map.put("0100360023", 1);
-        map.put("0100360024", 1);
-        map.put("0100360025", 1);
-        map.put("0100360026", 1);
-        map.put("0100360027", 1);
-        map.put("0100360028", 1);
-        map.put("0100360029", 1);
-        map.put("0100360030", 1);
-
-        map.put("0100360031", 0);
-        map.put("0100360032", 0);
-        map.put("0100360033", 0);
-        map.put("0100360034", 0);
-        map.put("0100360035", 0);
-        map.put("0100360036", 0);
-        map.put("0100360037", 0);
-        map.put("0100360038", 0);
-        map.put("0100360039", 0);
-        map.put("0100360040", 0);
-        map.put("0100360041", 0);
-        map.put("0100360042", 0);
-        map.put("0100360043", 0);
-        map.put("0100360044", 0);
-        map.put("0100360045", 0);
-        redisTemplate.opsForValue().set("testIn", map);
-
-        return "";
+    public String test(@RequestParam("layer") int layer) throws Exception {
+        Assert.isTrue(layer < 15, "目前限制入库层高最多15,如超过 15 层，请联系帅帅");
+        redisTemplate.opsForValue().set("testIn", layer);
+        return "更改所入楼层为" + layer;
     }
 
+    @PostMapping("rcsMove")
+    public String recTest(@RequestBody RcsTaskDto rcsTaskDto){
 
+        rcsService.sendTask(rcsTaskDto);
+        return "";
+    }
+    //----------------------------------------------
     @ApiOperation(value = "入库任务下发", notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")
     public EisRestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {

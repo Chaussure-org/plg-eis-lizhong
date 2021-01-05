@@ -149,7 +149,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         }
         mapper.saveBatch(wmsInboundTaskList);
         // ================================== 12/27
-        // this.test1227(wmsInboundTaskDtos);
+        //this.test1227(wmsInboundTaskDtos);
 
     }
 
@@ -166,10 +166,13 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         String taskId = PrologStringUtils.newGUID();
         mcsMoveTaskDto.setTaskId(taskId);
         mcsMoveTaskDto.setAddress("0100350019");
-
-        List<SxStoreLocation> collect = sxStoreLocationMapper.tests();
+        int layer = (int) redisTemplate.opsForValue().get("testIn");
+        System.out.println("入库层为=====" + layer + "==========");
+        List<SxStoreLocation> collect = sxStoreLocationMapper.tests(String.valueOf(layer));
         List<SxStoreLocation> listStore = collect.stream().sorted(Comparator.comparing(SxStoreLocation::getY)).collect(Collectors.toList());
-
+        if (listStore.size() == 0) {
+            throw new Exception("未找到货位");
+        }
         SxStoreLocation sxStoreLocation = listStore.get(0);
 
         mcsMoveTaskDto.setTarget(sxStoreLocation.getStoreNo());

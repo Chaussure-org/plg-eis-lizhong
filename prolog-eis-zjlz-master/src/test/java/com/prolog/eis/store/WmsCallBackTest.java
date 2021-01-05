@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author dengj
@@ -35,11 +37,14 @@ public class WmsCallBackTest {
 
     /**
      * 入库回告
+     *
      * @throws Exception
      */
     @Test
     public void testInbound() throws Exception {
-        WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
+        int[] arr = new int[]{1, 1, 2};
+        Long collect = Arrays.stream(arr).distinct().count();
+       /* WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setSEQNO("0");
         wmsInboundCallBackDto.setITEMNAME("内接头总成");
         wmsInboundCallBackDto.setITEMID("0000002405");
@@ -47,12 +52,13 @@ public class WmsCallBackTest {
         wmsInboundCallBackDto.setBILLTYPE(1);
         wmsInboundCallBackDto.setBILLNO("RCV0000004803");
         wmsInboundCallBackDto.setLINEID("21954703");
-        EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
+        EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);*/
         System.out.println("aaaa");
     }
 
     /**
      * 拣选完成回告
+     *
      * @throws Exception
      */
     @Test
@@ -85,6 +91,7 @@ public class WmsCallBackTest {
 
     /**
      * 盘点任务回告
+     *
      * @throws Exception
      */
     @Test

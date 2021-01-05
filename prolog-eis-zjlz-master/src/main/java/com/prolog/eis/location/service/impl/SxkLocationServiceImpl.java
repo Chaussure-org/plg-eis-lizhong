@@ -371,7 +371,10 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		 */
 
 		Criteria criteria = Criteria.forClass(SxStoreLocation.class);
-		criteria.setRestriction(Restrictions.and(Restrictions.eq("storeLocationGroupId",locationGroupId),Restrictions.eq("isInBoundLocation",1),Restrictions.ge("limitWeight",weight)));
+		criteria.setRestriction(Restrictions.and(
+				Restrictions.eq("storeLocationGroupId",locationGroupId),
+				Restrictions.eq("isInBoundLocation",1),
+				Restrictions.ge("limitWeight",weight)));
 		List<SxStoreLocation> sxStoreLocations1 = sxStoreLocationMapper.findByCriteria(criteria);
 
 		//List<SxStoreLocation> sxStoreLocations1 = sxStoreLocationMapper.checkWeight(locationGroupId, weight);

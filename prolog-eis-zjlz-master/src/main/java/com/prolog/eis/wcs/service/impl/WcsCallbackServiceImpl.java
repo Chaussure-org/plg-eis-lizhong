@@ -7,9 +7,11 @@ import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.*;
 import com.prolog.eis.engin.service.IInventoryBoxOutService;
+import com.prolog.eis.enums.BcrPointEnum;
 import com.prolog.eis.enums.BranchTypeEnum;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.inventory.service.IInventoryTaskDetailService;
+import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.location.service.IPointLocationService;
@@ -18,6 +20,7 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.model.wms.WmsInboundTask;
@@ -26,6 +29,7 @@ import com.prolog.eis.pick.service.IStationBZService;
 import com.prolog.eis.station.dao.StationMapper;
 import com.prolog.eis.station.service.IStationService;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.util.Assert;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
@@ -42,9 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,6 +93,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private IContainerPathTaskDetailService containerPathTaskDetailService;
 
     @Autowired
+    private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
+
+
+    @Autowired
     private StationMapper stationMapper;
     private final RestMessage<String> success = RestMessage.newInstance(true, "200", "操作成功", null);
     private final RestMessage<String> faliure = RestMessage.newInstance(false, "500", "操作失败", null);
@@ -131,19 +137,21 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (bcrDataDTO == null) {
             return success;
         }
+
+
         try {
             switch (bcrDataDTO.getType()) {
-                //入库Bcr
-                case ConstantEnum.TYPE_RK:
+                //入库类型
+                case ConstantEnum.TYPE_IN:
                     this.inboundTaskCallback(bcrDataDTO);
                     break;
-                //二楼环线进站Bcr 环线
-                case ConstantEnum.TYPE_IN:
-                    this.inStation(bcrDataDTO);
+                //出库类型
+                case ConstantEnum.TYPE_OUT:
+                    this.outBcrCallBack(bcrDataDTO);
                     break;
-                //二楼环线入库BCR 箱库
-                case ConstantEnum.TYPE_MOVE:
-                    this.checkGoOn(bcrDataDTO);
+                //进站
+                case ConstantEnum.TYPE_STATION:
+                    this.inStation(bcrDataDTO);
                     break;
                 default:
                     throw new Exception("没有找到该类型");
@@ -265,9 +273,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         List<ContainerPathTaskDetail> containerPathTaskDetailList
                 = containerPathTaskDetailService.getTaskDetailByTaskId(taskCallbackDTO.getTaskId());
         if (containerPathTaskDetailList != null && containerPathTaskDetailList.size() > 0) {
-            ContainerPathTask containerPathTask =
-                    containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
-            //如果第一条路径不等于终点区域,则更新第一条路径，并且目的位置是 wcs
+            ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
+            //如果第一条路径不等于终点区域,则更新第一条路径
             if (!containerPathTask.getSourceLocation().equals(containerPathTask.getTargetArea())) {
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetailList.get(0),
                         containerPathTask, PrologDateUtils.parseObject(new Date()));
@@ -275,6 +282,30 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
     }
 
+    /**
+     * 出库 类型 BCR 请求
+     *
+     * @param bcrDataDTO
+     * @throws Exception
+     */
+    private void outBcrCallBack(BCRDataDTO bcrDataDTO) throws Exception {
+        String containerNo = bcrDataDTO.getContainerNo();
+        String address = bcrDataDTO.getAddress();
+        PointLocation point = pointLocationService.getPointByPointId(address);
+        if (point == null) {
+            throw new RuntimeException("找不到入口点位");
+        }
+        if (ConstantEnum.secondOutBcrs.contains(address)) {
+            String rcsPoint = BcrPointEnum.findRcsPoint(address);
+            List<ContainerPathTaskDetail> list = containerPathTaskDetailMapper.findByMap(
+                    MapUtils.put("sourceLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
+            Assert.notEmpty(list, "无此任务路径明细");
+            ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(list.get(0));
+            containerPathTaskService.updateNextContainerPathTaskDetail(list.get(0),
+                    containerPathTask, PrologDateUtils.parseObject(new Date()));
+        }
+
+    }
 
     /**
      * 入库任务
@@ -287,11 +318,12 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         String containerNo = bcrDataDTO.getContainerNo();
         String address = bcrDataDTO.getAddress();
         PointLocation point = pointLocationService.getPointByPointId(address);
-
         if (point == null) {
             throw new RuntimeException("找不到入口点位");
         }
 
+        //查询入库 任务
+        List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
         //外形检测不合格
         if (!bcrDataDTO.isShapeInspect()) {
             //回退
@@ -299,7 +331,6 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             logger.info("体积不合格");
             return;
         }
-
         //重量检测不合格
         double weight = Double.parseDouble(bcrDataDTO.getWeightInspect());
         if (weight > properties.getLimitWeight()) {
@@ -307,40 +338,58 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             logger.info("重量不合格{}>{}", weight, properties.getLimitWeight());
             return;
         }
-        if ("BCR0209".equals(point) || "BCR0210".equals(point)) {
-            //此类型为借道
-            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(),
-                    "WCS052");
-        } else {
-            //查询是否存在入库任务
-            List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
-            if (wareHousings.size() == 0) {
-                throw new Exception("此容器" + containerNo + "没有入库任务");
+
+        // 一楼 堆垛机库区 入库 BCR请求
+        if ("BCR0102".equals(point) || "BCR0103".equals(point)) {
+            Assert.notEmpty(wareHousings, "未查到入库任务" + containerNo);
+            if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
+                throw new Exception("入库输送线有误，请核对");
             }
-            String target = null;
-            if (ConstantEnum.BCR_TYPE_XKRK == point.getPointType()) {
-                if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
-                    throw new Exception("入库输送线有误，请核对");
-                }
-                target = "SAS01";
-            } else {
-                // TODO: 2020/12/22 BCR点位 是否是  BCR0102     BCR0103 校验
-                if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
-                    throw new Exception("入库输送线有误，请核对");
-                }
-                if (ConstantEnum.BCR_TYPE_LKRK == point.getPointType()) {
-                    //先分配堆垛机
-                    target = containerPathTaskService.computeAreaIn();
-                } else {
-                    target = "MCS05";
-                }
-            }
-            //先找入库点位
-            //调用入库方法
+
+            String target = containerPathTaskService.computeAreaIn();
+            Assert.notEmpty(target, "一楼入库堆垛机库区，未找到库区");
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
-            // 生成库存
             createContainerInfo(wareHousings.get(0));
         }
+
+        //一楼 穿梭车库 入库 BCR请求
+        if ("BCR0101".equals(point)) {
+            Assert.notEmpty(wareHousings, "未查到入库任务" + containerNo);
+            if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
+                throw new Exception("入库输送线有误，请核对");
+            }
+
+            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, StoreArea.SAS01);
+            createContainerInfo(wareHousings.get(0));
+        }
+
+        //二楼 成品库 BCR请求
+        if ("BCR0209".equals(point) || "BCR0210".equals(point)) {
+            if (wareHousings.size() == 0) {
+                // 成品库借道任务 请求
+                pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), "WCS052");
+            } else {
+                //成品库 入库任务请求
+                pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, StoreArea.MCS05);
+                createContainerInfo(wareHousings.get(0));
+            }
+        }
+        //二楼 循环线Bcr 请求
+        this.checkGoOn(bcrDataDTO);
+        //二楼 入库BCR 请求
+        if (ConstantEnum.secondInBcrs.contains(address)) {
+            /**处理二楼 Bcr请求 如果点位属于二楼的 入库Bcr 点位
+             * 1.根据容器号 和 起始点位 找到 路径明细
+             * */
+            String rcsPoint = BcrPointEnum.findRcsPoint(address);
+            List<ContainerPathTaskDetail> list = containerPathTaskDetailMapper.findByMap(
+                    MapUtils.put("sourceLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
+            Assert.notEmpty(list, "无此任务路径明细");
+            ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(list.get(0));
+            containerPathTaskService.updateNextContainerPathTaskDetail(list.get(0),
+                    containerPathTask, PrologDateUtils.parseObject(new Date()));
+        }
+
     }
 
 
@@ -398,6 +447,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
 
     }
+
 
     /**
      * 判断箱子是否继续

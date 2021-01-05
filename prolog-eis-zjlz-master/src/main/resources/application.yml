@@ -21,7 +21,7 @@ server:
 management.endpoints.web.exposure.include: "*"
 
 spring:
-  profiles.active: dev
+  profiles.active: test
 
 #熔断配置
 hystrix:
@@ -64,13 +64,12 @@ prolog:
     clientId: wms
     clientSecret: wms
     oauthServer: api-gateway/service-authorization
-  #    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,*/wms/*
   web:
-    multipart:  #文件上传配置
+    multipart: #文件上传配置
       maxFileSize: 100MB
       maxRequestSize: 100MB
   auth:
-    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,/api/**,/wcs/**,/mcs/**,/rcs/**,/sas/**
+    permitResource: /*.html,/**/*.css,/**/*.js,/**/*.ico,/**/*.png,/**/*.gif,/**/*.jpg,/**/font/*,/wms/**,/api/**,/wcs/**,/mcs/**,/rcs/**,/sas/**,/agv/**
   #auth:
 
 

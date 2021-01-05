@@ -122,7 +122,7 @@ public class RcsCallbackServiceImpl implements IRcsCallbackService {
                             .put("arriveTime", nowTime)
                             .put("updateTime", nowTime).getMap()
                     , ContainerPathTaskDetail.class);
-            if (containerPathTaskDetail.getSourceArea().equals(StoreArea.RCS01)){
+            if (containerPathTaskDetail.getSourceArea().equals(StoreArea.RCS01)) {
                 agvBindingDetaileMapper.updateAgvStatus(containerPathTask.getContainerNo(), OrderBill.ORDER_STATUS_FINISH);
             }
         } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位

@@ -131,6 +131,7 @@ public class LocationServiceImpl implements LocationService {
                 //WCS TO WCS
                 pathExecutionService.doWcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             } else if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
+                //MCS TO MCS
                 pathExecutionService.doMcsToMcsTask(containerPathTask,containerPathTaskDetailList.get(0));
             }
         }

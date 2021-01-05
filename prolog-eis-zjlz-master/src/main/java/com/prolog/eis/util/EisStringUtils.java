@@ -23,7 +23,7 @@ public class EisStringUtils {
 
     /**
      * MCS-->EIS 由于坐标不同 MCS左边转换为 EIS坐标
-     *
+     *  030005001004
      * @param point 0100010001 z代表层，两位; x代表排，四位 ; y代表列,四位,升位  与巷道 平行的是 y轴
      * @return 010002000101
      * 010002000101
