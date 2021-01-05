@@ -8,6 +8,7 @@ import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.enums.PointChangeEnum;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
+import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.AgvLocationService;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.PathExecutionService;
@@ -22,6 +23,7 @@ import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.wcs.service.IWcsService;
+import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +51,9 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     private ContainerPathTaskService containerPathTaskService;
     @Autowired
     private SxkLocationService sxkLocationService;
+
+    @Autowired
+    private ContainerPathTaskMapper containerPathTaskMapper;
     @Autowired
     private IWcsService wcsService;
     @Autowired
@@ -115,21 +120,6 @@ public class PathExecutionServiceImpl implements PathExecutionService {
                 PrologDateUtils.parseObject(new Date()));
         this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
 
-//        System.out.println("wcs-->mcs 输送线去往 堆垛机 执行 ");
-        //     sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
-
-       /* ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
-        BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
-        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
-        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
-
-      发送 wcs移动指令
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(
-                containerPathTaskDetailDTO.getTaskId(),
-                containerPathTaskDetailDTO.getSourceLocation(),
-                PointChangeEnum.getCorr("in" + containerPathTaskDetailDTO.getSourceLocation()),
-                containerPathTaskDetailDTO.getContainerNo(), 5);
-        wcsService.lineMove(wcsLineMoveDto, 0);*/
     }
 
     @Override
@@ -196,7 +186,18 @@ public class PathExecutionServiceImpl implements PathExecutionService {
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                     containerPathTaskDetailDTO.getSourceLocation(),
                     containerPathTaskDetailDTO.getNextLocation(), containerPathTaskDetailDTO.getContainerNo(), 5);
-            wcsService.lineMove(wcsLineMoveDto, 0);
+            RestMessage<String> result = wcsService.lineMove(wcsLineMoveDto, 0);
+            if (result.isSuccess()) {
+                //输送线接收任务 成功，更改hz 表状态为 20
+                containerPathTaskMapper.updateMapById(containerPathTask.getId(),
+                        MapUtils.put("updateTime", PrologDateUtils.parseObject(new Date()))
+                                .put("taskState", LocationConstants.PATH_TASK_STATE_SEND).getMap(), ContainerPathTask.class);
+                //更改明细表状态为 50
+                containerPathTaskDetailMapper.updateMapById(containerPathTaskDetailDTO.getId(),
+                        MapUtils.put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_SEND).getMap(),
+                        ContainerPathTaskDetail.class);
+            }
+
         }
 
     }
@@ -233,4 +234,6 @@ public class PathExecutionServiceImpl implements PathExecutionService {
                 , LocationConstants.PATH_TASK_STATE_TOBESENT, LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
         return taskId;
     }
+
+
 }

@@ -80,7 +80,6 @@ public class WmsController {
     @PostMapping("/task/sendInbountTask")
     public EisRestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         logger.info("wms入库任务下发,{}", JsonUtils.toString(wmsInboundTaskDtos));
-
         try {
             wmsCallBackService.sendInboundTask(wmsInboundTaskDtos);
             return EisRestMessage.newInstance(true, "上架任务下发成功");

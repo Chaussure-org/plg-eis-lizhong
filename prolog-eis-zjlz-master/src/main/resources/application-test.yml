@@ -25,10 +25,10 @@ spring:
     restart:
       enabled: true
   datasource:
-    driverClassName: com.mysql.jdbc.Driver #oracle.jdbc.driver.OracleDriver
-    url: jdbc:mysql://192.168.1.13:2206/ai-lizhong?characterEncoding=utf8&useSSL=false
-    username: dev
-    password: prolog0212-dev
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.0.2.192:3306/plog_eis?characterEncoding=utf8&useSSL=false
+    password: prolog0212
+    username: root
     initialSize: 0 #初始化大小
     minIdle: 5 #最小空閒
     maxActive: 50 #最大連接數
@@ -61,6 +61,6 @@ prolog:
       host: localhost
       port: 10021
 #    wms:
-#      host: 172.22.9.201
+#      host: 172.22.9.206
 #      outPort: 20631
 #      inPort: 20815

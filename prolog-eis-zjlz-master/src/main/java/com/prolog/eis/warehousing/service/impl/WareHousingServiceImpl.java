@@ -50,7 +50,7 @@ public class WareHousingServiceImpl implements IWareHousingService {
     @Override
     public void deleteInboundTask(String containerNo) throws Exception {
         //删除入库任务前回告wms
-        // inboundReportWms(containerNo);
+        inboundReportWms(containerNo);
         mapper.deleteByMap(MapUtils.put("containerNo", containerNo).getMap(), WmsInboundTask.class);
     }
 

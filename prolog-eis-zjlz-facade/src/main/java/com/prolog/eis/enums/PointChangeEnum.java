@@ -27,22 +27,15 @@ public enum PointChangeEnum {
     MCS04("MCS04", "020004000101", "MCS04");
 
 
+    //点位
 
-
-
-    /**
-     * 点位
-     */
     private String point;
 
-    /**
-     * 库位
-     */
+    // 库位
+
     private String target;
 
-    /**
-     * 对应点
-     */
+    //对应点
     private String corr;
 
     PointChangeEnum(String point, String target, String corr) {

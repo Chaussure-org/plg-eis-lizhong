@@ -17,6 +17,7 @@ import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
@@ -137,8 +138,6 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (bcrDataDTO == null) {
             return success;
         }
-
-
         try {
             switch (bcrDataDTO.getType()) {
                 //入库类型
@@ -268,16 +267,19 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             station.setContainerNo(taskCallbackDTO.getContainerNo());
             station.setUpdateTime(new Date());
             stationService.updateStation(station);
-        }
-        //判断在路径中是否存在任务
-        List<ContainerPathTaskDetail> containerPathTaskDetailList
-                = containerPathTaskDetailService.getTaskDetailByTaskId(taskCallbackDTO.getTaskId());
-        if (containerPathTaskDetailList != null && containerPathTaskDetailList.size() > 0) {
-            ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
-            //如果第一条路径不等于终点区域,则更新第一条路径
-            if (!containerPathTask.getSourceLocation().equals(containerPathTask.getTargetArea())) {
-                containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetailList.get(0),
-                        containerPathTask, PrologDateUtils.parseObject(new Date()));
+        } else {
+            //判断在路径中是否存在任务
+            List<ContainerPathTaskDetail> containerPathTaskDetailList
+                    = containerPathTaskDetailService.getTaskDetailByTaskId(taskCallbackDTO.getTaskId());
+            if (containerPathTaskDetailList != null && containerPathTaskDetailList.size() > 0) {
+                ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(containerPathTaskDetailList.get(0));
+                //如果第一条路径不等于终点区域,则更新第一条路径
+                if (!containerPathTask.getSourceLocation().equals(containerPathTask.getTargetArea())) {
+                    containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetailList.get(0),
+                            containerPathTask, PrologDateUtils.parseObject(new Date()));
+                }
+            } else {
+                throw new Exception("此任务不存在");
             }
         }
     }
@@ -319,7 +321,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         String address = bcrDataDTO.getAddress();
         PointLocation point = pointLocationService.getPointByPointId(address);
         if (point == null) {
-            throw new RuntimeException("找不到入口点位");
+            throw new Exception("找不到入口点位");
         }
 
         //查询入库 任务
@@ -340,20 +342,19 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
 
         // 一楼 堆垛机库区 入库 BCR请求
-        if ("BCR0102".equals(point) || "BCR0103".equals(point)) {
+        if ("BCR0102".equals(address) || "BCR0103".equals(address)) {
             Assert.notEmpty(wareHousings, "未查到入库任务" + containerNo);
             if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
                 throw new Exception("入库输送线有误，请核对");
             }
-
-            String target = containerPathTaskService.computeAreaIn();
+            String target = "MCS04"; //= containerPathTaskService.computeAreaIn();
             Assert.notEmpty(target, "一楼入库堆垛机库区，未找到库区");
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
             createContainerInfo(wareHousings.get(0));
         }
 
         //一楼 穿梭车库 入库 BCR请求
-        if ("BCR0101".equals(point)) {
+        if ("BCR0101".equals(address)) {
             Assert.notEmpty(wareHousings, "未查到入库任务" + containerNo);
             if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
                 throw new Exception("入库输送线有误，请核对");
@@ -364,7 +365,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
 
         //二楼 成品库 BCR请求
-        if ("BCR0209".equals(point) || "BCR0210".equals(point)) {
+        if ("BCR0209".equals(address) || "BCR0210".equals(address)) {
             if (wareHousings.size() == 0) {
                 // 成品库借道任务 请求
                 pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), "WCS052");
@@ -375,7 +376,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             }
         }
         //二楼 循环线Bcr 请求
-        this.checkGoOn(bcrDataDTO);
+        //this.checkGoOn(bcrDataDTO);
+
         //二楼 入库BCR 请求
         if (ConstantEnum.secondInBcrs.contains(address)) {
             /**处理二楼 Bcr请求 如果点位属于二楼的 入库Bcr 点位
@@ -399,6 +401,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      * @param wareHousing 入库任务
      */
     private void createContainerInfo(WmsInboundTask wareHousing) {
+        // GoodsInfo containerStockInfo = containerStoreService.findByMap(MapUtils.put("",1))
         // 生成container_store
         ContainerStore containerStore = new ContainerStore();
         containerStore.setContainerNo(wareHousing.getContainerNo());

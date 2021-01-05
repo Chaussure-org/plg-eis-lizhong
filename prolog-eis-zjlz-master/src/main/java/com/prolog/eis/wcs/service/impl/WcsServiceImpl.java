@@ -65,7 +65,6 @@ public class WcsServiceImpl implements IWcsService {
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
                 new TypeReference<RestMessage<String>>() {
                 });
-
         // 输送线任务不成功，则存表，定时器扫描后再次发送 add sunpp,发送失败 存表有 bug
         if (!result.isSuccess() && i == 0) {
             WcsCommandRepeat wcsCommandRepeat = new WcsCommandRepeat(wcsLineMoveDto.getTaskId(),

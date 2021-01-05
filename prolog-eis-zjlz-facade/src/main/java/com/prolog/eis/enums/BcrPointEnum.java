@@ -17,12 +17,29 @@ public enum BcrPointEnum {
     BCR0203("BCR0203", "MTR0206", "RTM0205"),
     BCR0204("BCR0204", "RTM0208", "RTM0207");
 
+    /**
+     * bcr 编号
+     */
     private String bcrNo;
-
+    /**
+     * rcs point
+     */
     private String rcsPoint;
 
+    /**
+     * mcs point
+     */
     private String mcsPoint;
 
+    /**
+     * mcs 坐标
+     */
+    private String mcsLocation;
+
+    /**
+     * rcs 坐标
+     */
+    private String rcsLocation;
 
     public static String findRcsPoint(String bcrNo) {
         for (BcrPointEnum bcrPointEnum : BcrPointEnum.values()) {

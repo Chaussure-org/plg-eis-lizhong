@@ -213,7 +213,6 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     //找不到货位
                     return;
                 }
-                // TODO: 2020/12/31  找到货位开始发送 mcs 指令,wcs--> mcs  add sunpp
                 sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 1,
                         containerPathTaskDetailDTO.getSourceLocation(), null,
                         targetSxStoreLocation.getStoreNo(), targetSxStoreLocation.getStoreLocationGroupId(),
@@ -457,9 +456,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourSys)) {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0, 1);
-                //McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
-                McsResultDto mcsResultDto = new McsResultDto();
-                mcsResultDto.setRet(true);
+                McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
                 if (mcsResultDto.isRet()) {
                     //发送成功
                     //修改路径状态
