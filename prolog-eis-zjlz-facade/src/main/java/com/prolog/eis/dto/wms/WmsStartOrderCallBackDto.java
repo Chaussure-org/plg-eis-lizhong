@@ -1,5 +1,7 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -9,12 +11,15 @@ import io.swagger.annotations.ApiModelProperty;
  * WMS激活拣货任务dto
  */
 
+@JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility= JsonAutoDetect.Visibility.NONE)
 public class WmsStartOrderCallBackDto {
 
     @ApiModelProperty("订单编号")
+    @JsonProperty(value = "BILLNO")
     private String BILLNO;
 
     @ApiModelProperty("状态")
+    @JsonProperty(value = "STATUS")
     private String STATUS;
 
     public String getBILLNO() {

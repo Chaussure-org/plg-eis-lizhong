@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -10,45 +11,59 @@ import java.util.Date;
  * @Description
  * @CreateTime 2020-10-14 12:17
  */
+@JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility= JsonAutoDetect.Visibility.NONE)
 public class WmsInventoryCallBackDto {
 
     @ApiModelProperty("任务id")
+    @JsonProperty(value = "TASKID")
     private String TASKID;
 
     @ApiModelProperty("单据编号")
+    @JsonProperty(value = "BILLNO")
     private String BILLNO;
 
     @ApiModelProperty("单据日期")
+    @JsonProperty(value = "BILLDATE")
     private Date BILLDATE;
 
     @ApiModelProperty("仓库编号")
+    @JsonProperty(value = "BRANCHCODE")
     private String BRANCHCODE;
 
     @ApiModelProperty("库区")
+    @JsonProperty(value = "BRANCHAREA")
     private String BRANCHAREA;
 
     @ApiModelProperty("行号")
+    @JsonProperty(value = "SEQNO")
     private String SEQNO;
 
     @ApiModelProperty("商品id")
+    @JsonProperty(value = "ITEMID")
     private String ITEMID;
 
     @ApiModelProperty("商品类别")
+    @JsonProperty(value = "ITEMTYPE")
     private String ITEMTYPE;
 
     @ApiModelProperty("容器号")
+    @JsonProperty(value = "CONTAINERNO")
     private String CONTAINERNO;
 
     @ApiModelProperty("批号id")
+    @JsonProperty(value = "PCH")
     private String PCH;
 
     @ApiModelProperty("计划盘点日期")
+    @JsonProperty(value = "PLANDATE")
     private Date PLANDATE;
 
     @ApiModelProperty("时间戳")
+    @JsonProperty(value = "SJZ")
     private Date SJZ;
 
     @ApiModelProperty("差异数")
+    @JsonProperty(value = "AFFQTY")
     private Double AFFQTY;
 
     public String getTASKID() {
