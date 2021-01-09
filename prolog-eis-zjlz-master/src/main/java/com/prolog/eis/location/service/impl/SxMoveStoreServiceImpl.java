@@ -23,6 +23,7 @@ import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
@@ -207,8 +208,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 SxStoreLocation targetSxStoreLocation =
                         sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
                                 0, 0, 0, 0, taskProperty1, taskProperty2);
-                long cost = (System.currentTimeMillis() - start) / 1000;
-                System.out.println("------------------分配货位耗时" + cost + "------------------------------");
+                long cost = (System.currentTimeMillis() - start) ;
+                System.out.println("------------------分配货位耗时" + cost + "毫秒------------------------------");
                 if (null == targetSxStoreLocation) {
                     //找不到货位
                     return;
@@ -456,6 +457,10 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourSys)) {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0, 1);
+                //测试验证
+                if (!EisStringUtils.getMcsPoint(nextStoreNo).equals("0800380019")){
+
+                }
                 McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
                 if (mcsResultDto.isRet()) {
                     //发送成功

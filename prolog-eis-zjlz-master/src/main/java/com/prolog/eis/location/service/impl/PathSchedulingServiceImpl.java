@@ -49,12 +49,12 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
     @Transactional(rollbackFor = Exception.class)
     public void inboundTask(String palletNo, String containerNo, String sourceArea, String sourceLocation, String targetArea) throws Exception {
         //TODO 参数校验先放着
-     /*   List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.findByMap(
+        List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.findByMap(
                 MapUtils.put("containerNo", containerNo).getMap()
                 , ContainerPathTask.class);
-        if (!CollectionUtils.isEmpty(containerPathTaskList)) {
+        if (containerPathTaskList.size() > 0) {
             throw new Exception("此容器路径任务已经存在");
-        }*/
+        }
 
         //创建容器任务
         Timestamp nowTime = PrologDateUtils.parseObject(new Date());

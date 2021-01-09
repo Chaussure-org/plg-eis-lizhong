@@ -157,8 +157,12 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             }
             return success;
         } catch (Exception e) {
-            logger.warn("回告失败", e);
-            return faliure;
+            if ("BCR0102".equals(bcrDataDTO.getAddress()) || "BCR0103".equals(bcrDataDTO.getAddress())) {
+              return RestMessage.newInstance(false, "300", "托盘异常"+e.getMessage(), null);
+            }
+            else {
+                return faliure;
+            }
         }
     }
 
@@ -297,10 +301,11 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (point == null) {
             throw new RuntimeException("找不到入口点位");
         }
+        //二楼出库 BCR 回告
         if (ConstantEnum.secondOutBcrs.contains(address)) {
-            String rcsPoint = BcrPointEnum.findRcsPoint(address);
+            String mcsPoint = BcrPointEnum.findMcsPoint(address);
             List<ContainerPathTaskDetail> list = containerPathTaskDetailMapper.findByMap(
-                    MapUtils.put("sourceLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
+                    MapUtils.put("sourceLocation", mcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
             Assert.notEmpty(list, "无此任务路径明细");
             ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(list.get(0));
             containerPathTaskService.updateNextContainerPathTaskDetail(list.get(0),
@@ -318,6 +323,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Transactional(rollbackFor = Exception.class)
     public void inboundTaskCallback(BCRDataDTO bcrDataDTO) throws Exception {
         String containerNo = bcrDataDTO.getContainerNo();
+        //上报BCR
         String address = bcrDataDTO.getAddress();
         PointLocation point = pointLocationService.getPointByPointId(address);
         if (point == null) {
@@ -380,20 +386,26 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
         //二楼 入库BCR 请求
         if (ConstantEnum.secondInBcrs.contains(address)) {
-            /**处理二楼 Bcr请求 如果点位属于二楼的 入库Bcr 点位
-             * 1.根据容器号 和 起始点位 找到 路径明细
-             * */
-            String rcsPoint = BcrPointEnum.findRcsPoint(address);
+            /**
+             * BCR 请求 判断 此容器是否可以进行 行走任务 下发。
+             */
+
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto("12345",
+                    "RTM0208",
+                    "RTM0207", "8888", 5);
+            RestMessage<String> result = wcsService.lineMove(wcsLineMoveDto, 0);
+            return;
+            /*String rcsPoint = BcrPointEnum.findRcsPoint(address);
             List<ContainerPathTaskDetail> list = containerPathTaskDetailMapper.findByMap(
                     MapUtils.put("sourceLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
             Assert.notEmpty(list, "无此任务路径明细");
             ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(list.get(0));
             containerPathTaskService.updateNextContainerPathTaskDetail(list.get(0),
-                    containerPathTask, PrologDateUtils.parseObject(new Date()));
+                    containerPathTask, PrologDateUtils.parseObject(new Date()));*/
+
         }
 
     }
-
 
     /**
      * 生成库存

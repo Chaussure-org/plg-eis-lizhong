@@ -1,12 +1,18 @@
 package com.prolog.eis.wms.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.prolog.eis.dto.TestDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.wms.*;
+import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
+import com.prolog.eis.location.dao.ContainerPathTaskMapper;
+import com.prolog.eis.log.dao.McsLogMapper;
 import com.prolog.eis.mcs.service.IMcsService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.store.service.IContainerStoreService;
@@ -62,19 +68,47 @@ public class WmsController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private ContainerPathTaskMapper containerPathTaskMapper;
+
+    @Autowired
+    private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
+
+    @Autowired
+    private McsLogMapper mcsLogMapper;
+
     @PostMapping("test")
-    public String test(@RequestParam("layer") int layer) throws Exception {
-        Assert.isTrue(layer < 15, "目前限制入库层高最多15,如超过 15 层，请联系帅帅");
-        redisTemplate.opsForValue().set("testIn", layer);
-        return "更改所入楼层为" + layer;
+    public String test() throws Exception {
+
+/*        List<TestDto> testDtos = mcsLogMapper.frindLocation();
+        for (TestDto testDto : testDtos) {
+            ContainerPathTask task = new ContainerPathTask();
+            task.setContainerNo(testDto.getContainerNO());
+            task.setPalletNo(testDto.getContainerNO());
+            task.setSourceArea("MCS04");
+            task.setSourceLocation(testDto.getLocation());
+            task.setTargetArea("MCS04");
+            task.setTargetLocation(testDto.getLocation());
+            task.setTaskState(0);
+            task.setActualHeight(99);
+            task.setTaskType(0);
+            task.setCallBack(0);
+            task.setCreateTime(new Date());
+            task.setUpdateTime(new Date());
+            containerPathTaskMapper.save(task);
+            mcsLogMapper.saveDetail(testDto.getContainerNO(), testDto.getLocation());
+        }
+*/
+        return "";
     }
 
     @PostMapping("rcsMove")
-    public String recTest(@RequestBody RcsTaskDto rcsTaskDto){
+    public String recTest(@RequestBody RcsTaskDto rcsTaskDto) {
 
         rcsService.sendTask(rcsTaskDto);
         return "";
     }
+
     //----------------------------------------------
     @ApiOperation(value = "入库任务下发", notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")

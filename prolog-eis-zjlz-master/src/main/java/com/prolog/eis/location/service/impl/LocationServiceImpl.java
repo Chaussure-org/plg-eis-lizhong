@@ -77,8 +77,7 @@ public class LocationServiceImpl implements LocationService {
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo,
                 containerNo, LocationConstants.PATH_TASK_STATE_NOTSTARTED);
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
-//            throw new Exception("当前没有容器任务！");
-            logger.info("当前没有容器任务");
+            //logger.info("-----------路径调度执行中，没有容器任务-----------");
             return;
         }
         for (ContainerPathTask containerPathTask : containerPathTaskList) {

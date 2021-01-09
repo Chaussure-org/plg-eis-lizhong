@@ -16,12 +16,22 @@ public class ConstantEnum {
     //任务异常
     public static final short TASK_STATUS_EXCEPTION = 3;
 
-    public static List<String> secondInBcrs = Arrays.asList("BCR0205", "BCR0206", "BCR0207", "BCR0208");
+    public static List<String> secondInBcrs = Arrays.asList("BCR0201", "BCR0202", "BCR0203", "BCR0204");
 
-    public static List<String> secondOutBcrs = Arrays.asList("BCR0201", "BCR0202", "BCR0203", "BCR0204");
+    public static List<String> secondOutBcrs = Arrays.asList("BCR0205", "BCR0206", "BCR0207", "BCR0208");
 
     public static List<String> secondPoints = Arrays.asList("RTM0202", "RTM0201", "RTM0203", "RTM0204", "RTM0205", "RTM0206", "RTM0207", "RTM0208"
             , "MTR0201", "MTR0202", "MTR0203", "MTR0204", "MTR0205", "MTR0206", "MTR0207", "MTR0208");
+
+    /**
+     * 二楼出库 wcs 区域
+     */
+    public static List<String> secondOutPoints = Arrays.asList("MTR0201", "MTR0202", "MTR0203", "MTR0204", "MTR0205", "MTR0206", "MTR0207", "MTR0208");
+
+    /**
+     * 二楼 入库 点位
+     */
+    public static List<String> secondInPoints = Arrays.asList("RTM0202", "RTM0201", "RTM0203", "RTM0204", "RTM0205", "RTM0206", "RTM0207", "RTM0208");
 
     //任务类型 wcs -> eis
 

@@ -5,6 +5,7 @@ import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
+import com.prolog.eis.enums.BcrPointEnum;
 import com.prolog.eis.enums.ConstantEnum;
 import com.prolog.eis.enums.PointChangeEnum;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
@@ -105,7 +106,8 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         System.out.println("mcs to wcs");
         //此处只用发到出库接驳口，然后更改此条的状态
         containerPathTaskDetailDTO.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
-        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
+        //通过 出库wcs 点位 获取 mcs 点位
+        containerPathTaskDetailDTO.setNextLocation(BcrPointEnum.findMcsLocation(containerPathTaskDetailDTO.getNextLocation()));
         sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
     }
 
@@ -135,6 +137,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("rcs to wcs");
+        //在agv h回告那块处理这个逻辑
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),
                 ContainerPathTaskDetail.class);
         containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask,
@@ -180,8 +183,8 @@ public class PathExecutionServiceImpl implements PathExecutionService {
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to wcs");
         String location = containerPathTaskDetailDTO.getSourceLocation();
-        //二楼的 生成路径 无需给输送线 发送行走指令
-        if (!ConstantEnum.secondPoints.contains(location)) {
+        //二楼的  出库 无需发送路径任务，但入库需要发送 行走任务
+        if (!ConstantEnum.secondOutPoints.contains(location)) {
             this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
                     containerPathTaskDetailDTO.getSourceLocation(),
