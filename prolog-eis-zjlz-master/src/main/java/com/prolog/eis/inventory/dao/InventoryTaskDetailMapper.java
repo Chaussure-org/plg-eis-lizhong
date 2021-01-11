@@ -32,7 +32,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\tg.goods_name AS goodsName,\n" +
             "\tcs.qty AS originalCount,\n" +
             "\tg.id as goodsId," +
-            "g.owner_drawn_no as \n" +
+            "g.owner_drawn_no as ownerDrawnNo\n" +
             "FROM\n" +
             "\tcontainer_store cs\n" +
             "\tJOIN container_path_task cpt ON cpt.container_no = cs.container_no\n" +
@@ -55,7 +55,7 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "<if test = 'map.branchType == \"B\"'>" +
             " and cpt.target_area IN ( 'MCS01','MCS02','MCS03','MCS04','MCS05')" +
             "</if>" +
-            "<if test = 'map.lotId != null and map.lotId != \"\"'>" +
+            "<if test = 'map.lotId != null'>" +
             " and cs.lotId = #{map.lotId}" +
             "</if>"+
             "</script>")
@@ -99,15 +99,15 @@ public interface InventoryTaskDetailMapper extends BaseMapper<InventoryTaskDetai
             "\th.seq_no AS seqNo,\n" +
             "\th.goods_type AS goodsType,\n" +
             "\th.goods_id AS goodsId,\n" +
-            "\t( SELECT sum( d.original_count - d.modify_count ) FROM inventory_task_detail d WHERE d.inventory_task_id = h.id ) AS affQty,\n" +
+            "\t( SELECT sum(d.modify_count ) FROM inventory_task_detail d WHERE d.inventory_task_id = h.id ) AS affQty,\n" +
             "\th.branch_type AS branchType,\n" +
-            "\tcs.lot_id \n" +
+            "\tcs.lot_id as lotId\n" +
             "FROM\n" +
             "\tinventory_task h\n" +
             "\tLEFT JOIN inventory_task_detail d ON d.inventory_task_id = h.id\n" +
             "\tJOIN container_store cs ON cs.container_no = d.container_no \n" +
             "WHERE\n" +
-            "\th.id = #{id}")
+            "\th.id = #{id} limit 1")
     List<InventoryWmsDto> findWmsInventory(@Param("id") int id);
 
     /**

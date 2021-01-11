@@ -64,3 +64,5 @@ prolog:
       outPort: 20830
 #      入库
       inPort: 20815
+      #盘点回告
+      pdPort: 20835

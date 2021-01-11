@@ -6,6 +6,7 @@ import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
+import com.prolog.eis.inventory.dao.InventoryTaskMapper;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.wms.service.FeignService;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +34,8 @@ public class WmsCallBackTest {
     private IWmsService wmsService;
     @Autowired
     private FeignService feignService;
+    @Autowired
+    private InventoryTaskMapper taskMapper;
 
     /**
      * 入库回告
@@ -90,7 +94,23 @@ public class WmsCallBackTest {
      */
     @Test
     public void testInventory() throws Exception {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+        Date date = new Date();
+        date = df.parse("2020-12-30");
         WmsInventoryCallBackDto wmsInventoryCallBackDto = new WmsInventoryCallBackDto();
+
+        wmsInventoryCallBackDto.setITEMID("0000002207");
+        wmsInventoryCallBackDto.setBILLNO("PD202012300451");
+        wmsInventoryCallBackDto.setBILLDATE(date);
+        wmsInventoryCallBackDto.setAFFQTY(10.0);
+        wmsInventoryCallBackDto.setTASKID("PDD202012301026");
+        wmsInventoryCallBackDto.setBRANCHAREA("LTK");
+        wmsInventoryCallBackDto.setITEMTYPE("CP");
+        wmsInventoryCallBackDto.setCONTAINERNO("11112");
+        wmsInventoryCallBackDto.setBRANCHCODE("C001");
+        wmsInventoryCallBackDto.setSEQNO("PDD202012301026");
+        wmsInventoryCallBackDto.setSJZ(new Date());
         wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
+
     }
 }

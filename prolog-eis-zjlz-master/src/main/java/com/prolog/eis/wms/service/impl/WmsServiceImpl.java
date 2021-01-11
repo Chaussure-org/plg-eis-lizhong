@@ -86,7 +86,8 @@ public class WmsServiceImpl implements IWmsService {
     @Override
     @LogInfo(desci = "eis盘点任务回告", direction = "eis->wms", type = LogDto.WMS_TYPE_INVENTORY_CALLBACK, systemType = LogDto.WMS)
     public EisRestMessage<String> inventoryTaskCallBack(WmsInventoryCallBackDto wmsInventoryCallBackDto) throws Exception {
-        String url = this.getUrl(null, properties.getWcs().getLineMoveUrl());
+        String serviceIp = properties.getWms().getHost();
+        String url = this.getUrl(serviceIp, properties.getWms().getPdPort()) + properties.getWms().getWmsInventoryEndUrl();
         logger.info("EIS -> WCS 出库任务完成回告:{}", url);
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInventoryCallBackDto), new TypeReference<EisRestMessage<String>>() {
         });

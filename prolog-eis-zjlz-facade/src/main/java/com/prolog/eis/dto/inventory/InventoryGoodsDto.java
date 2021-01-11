@@ -25,13 +25,8 @@ public class InventoryGoodsDto {
     @ApiModelProperty("商品图号")
     private String ownerDrawnNo;
 
-    public String getOwnerDrawnNo() {
-        return ownerDrawnNo;
-    }
-
-    public void setOwnerDrawnNo(String ownerDrawnNo) {
-        this.ownerDrawnNo = ownerDrawnNo;
-    }
+    @ApiModelProperty("商品id")
+    private Integer goodsId;
 
     public String getContainerNo() {
         return containerNo;
@@ -65,6 +60,23 @@ public class InventoryGoodsDto {
         this.originalCount = originalCount;
     }
 
+    public String getOwnerDrawnNo() {
+        return ownerDrawnNo;
+    }
+
+    public void setOwnerDrawnNo(String ownerDrawnNo) {
+        this.ownerDrawnNo = ownerDrawnNo;
+    }
+
+    public Integer getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(Integer goodsId) {
+        this.goodsId = goodsId;
+    }
+
+
     @Override
     public String toString() {
         return "InventoryGoodsDto{" +
@@ -73,6 +85,7 @@ public class InventoryGoodsDto {
                 ", goodsName='" + goodsName + '\'' +
                 ", originalCount=" + originalCount +
                 ", ownerDrawnNo='" + ownerDrawnNo + '\'' +
+                ", goodsId=" + goodsId +
                 '}';
     }
 }

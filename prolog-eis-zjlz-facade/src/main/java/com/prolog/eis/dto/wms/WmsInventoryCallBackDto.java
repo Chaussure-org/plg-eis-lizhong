@@ -1,6 +1,7 @@
 package com.prolog.eis.dto.wms;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,6 +25,7 @@ public class WmsInventoryCallBackDto {
 
     @ApiModelProperty("单据日期")
     @JsonProperty(value = "BILLDATE")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date BILLDATE;
 
     @ApiModelProperty("仓库编号")
@@ -56,10 +58,12 @@ public class WmsInventoryCallBackDto {
 
     @ApiModelProperty("计划盘点日期")
     @JsonProperty(value = "PLANDATE")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date PLANDATE;
 
     @ApiModelProperty("时间戳")
     @JsonProperty(value = "SJZ")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date SJZ;
 
     @ApiModelProperty("差异数")

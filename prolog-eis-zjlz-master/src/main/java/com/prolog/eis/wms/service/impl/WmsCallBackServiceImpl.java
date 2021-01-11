@@ -39,6 +39,7 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
+import com.prolog.framework.authority.user.UserTemplate;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
@@ -93,6 +94,9 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
 
     @Autowired
     private IContainerStoreService containerStoreService;
+
+    @Autowired
+    private UserTemplate userTemplate;
 
     /**
      * 处理wms下发的入库任务
@@ -343,12 +347,13 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             Map<String, Object> param = MapUtils.put("branchType", BranchTypeEnum.getEisBranchType(wmsInventoryTask.getBRANCHTYPE())).put(
                     "containerNo",
                     wmsInventoryTask.getCONTAINERNO()).put("goodsType", wmsInventoryTask.getITEMTYPE()).put("goodsId"
-                    , wmsInventoryTask.getITEMID()).put("lotId", wmsInventoryTask.getPCH()).getMap();
+                    , Integer.parseInt(wmsInventoryTask.getITEMID())).put("lotId", wmsInventoryTask.getPCH()).getMap();
             // 根据wms下发的相关信息找到需盘点的料箱
             List<InventoryGoodsDto> detailsByMap = inventoryTaskDetailService.getDetailsByMap(param);
 
             if (detailsByMap.size() == 0 || detailsByMap == null) {
-                throw new Exception("【" + wmsInventoryTask.getBILLNO() + "】未找到满足盘点规则的容器");
+//                throw new Exception("【" + wmsInventoryTask.getBILLNO() + "】未找到满足盘点规则的容器");
+                System.out.println("==========任务已下发，无明细=======");
             }
             InventoryTask inventoryTask = new InventoryTask();
             inventoryTask.setBillNo(wmsInventoryTask.getBILLNO());
@@ -363,21 +368,22 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             inventoryTask.setTaskId(wmsInventoryTask.getTASKID());
             inventoryTask.setBranchType(wmsInventoryTask.getBRANCHTYPE());
             inventoryTaskService.saveInventoryTask(inventoryTask);
-            List<InventoryTaskDetail> inventoryDeatils = new ArrayList<>();
-            for (InventoryGoodsDto inventoryGoodsDto : detailsByMap) {
-                InventoryTaskDetail inventoryTaskDetail = new InventoryTaskDetail();
-                inventoryTaskDetail.setInventoryTaskId(inventoryTask.getId());
-                inventoryTaskDetail.setContainerNo(inventoryGoodsDto.getContainerNo());
-                inventoryTaskDetail.setCreateTime(new Date());
-                inventoryTaskDetail.setGoodsName(inventoryGoodsDto.getGoodsName());
-                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getOwnerDrawnNo());
-                inventoryTaskDetail.setOriginalCount(inventoryGoodsDto.getOriginalCount());
-                inventoryTaskDetail.setModifyCount(0);
-                inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_ISSUE);
-                inventoryTaskDetail.setPdType(0);
-                inventoryDeatils.add(inventoryTaskDetail);
-            }
-            inventoryTaskDetailService.saveInventoryDetailBatch(inventoryDeatils);
+//            List<InventoryTaskDetail> inventoryDeatils = new ArrayList<>();
+//            for (InventoryGoodsDto inventoryGoodsDto : detailsByMap) {
+//                InventoryTaskDetail inventoryTaskDetail = new InventoryTaskDetail();
+//                inventoryTaskDetail.setInventoryTaskId(inventoryTask.getId());
+//                inventoryTaskDetail.setContainerNo(inventoryGoodsDto.getContainerNo());
+//                inventoryTaskDetail.setCreateTime(new Date());
+//                inventoryTaskDetail.setGoodsName(inventoryGoodsDto.getGoodsName());
+//                inventoryTaskDetail.setGoodsNo(inventoryGoodsDto.getOwnerDrawnNo());
+//                inventoryTaskDetail.setOriginalCount(inventoryGoodsDto.getOriginalCount());
+//                inventoryTaskDetail.setModifyCount(0);
+//                inventoryTaskDetail.setTaskState(InventoryTaskDetail.TASK_STATE_ISSUE);
+//                inventoryTaskDetail.setPdType(0);
+//                inventoryDeatils.add(inventoryTaskDetail);
+//            }
+//            inventoryTaskDetailService.saveInventoryDetailBatch(inventoryDeatils);
         }
+
     }
 }

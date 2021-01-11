@@ -34,7 +34,7 @@ public class InventoryWmsDto {
     @ApiModelProperty("商品类别")
     private String goodsType;
 
-    @ApiModelProperty("差异数")
+    @ApiModelProperty("实际数")
     private Double affQty;
 
     @ApiModelProperty("批次id")

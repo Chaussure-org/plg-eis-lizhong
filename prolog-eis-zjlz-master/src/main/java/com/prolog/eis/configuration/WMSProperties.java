@@ -12,6 +12,8 @@ public class WMSProperties {
 
     private String outPort;
 
+    private String pdPort;
+
     /**
      * 入库上架回告 url 地址
      */
@@ -26,6 +28,11 @@ public class WMSProperties {
      * 播种完成回告
      */
     private String wmsSeedEndUrl = "/TaskDispatch/returnDo/v1.0";
+
+    /**
+     * 盘点完成回告
+     */
+    private String wmsInventoryEndUrl = "/stockcheck/returnPD/v1.0";
 
 
 //======================================== 目前 eis--> wms 使用 IP 回告方式 add sunpp
@@ -102,5 +109,21 @@ public class WMSProperties {
 
     public void setSeedServiceName(String seedServiceName) {
         this.seedServiceName = seedServiceName;
+    }
+
+    public String getWmsInventoryEndUrl() {
+        return wmsInventoryEndUrl;
+    }
+
+    public void setWmsInventoryEndUrl(String wmsInventoryEndUrl) {
+        this.wmsInventoryEndUrl = wmsInventoryEndUrl;
+    }
+
+    public String getPdPort() {
+        return pdPort;
+    }
+
+    public void setPdPort(String pdPort) {
+        this.pdPort = pdPort;
     }
 }

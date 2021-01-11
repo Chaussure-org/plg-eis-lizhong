@@ -1,5 +1,7 @@
 package com.prolog.eis.dto.wms;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -10,6 +12,7 @@ import java.util.Date;
  * @Description
  * @CreateTime 2020-10-14 10:50
  */
+@JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility= JsonAutoDetect.Visibility.NONE)
 public class WmsInventoryTaskDto {
 
     @ApiModelProperty("任务id")
@@ -22,6 +25,7 @@ public class WmsInventoryTaskDto {
 
     @ApiModelProperty("单据日期")
     @JsonProperty(value = "BILLDATE")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date BILLDATE;
 
     @ApiModelProperty("仓库编号")
