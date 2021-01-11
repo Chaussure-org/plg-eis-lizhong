@@ -49,18 +49,18 @@ logging:
 prolog:
   eis:
     wcs:
-      host: 172.22.9.28
+      host: 172.22.9.156
       port: 80
     rcs:
       host: localhost
       port: 10021
     sas:
-      host: localhost
-      port: 10021
+      host: 172.22.9.12
+      port: 8089
     mcs:
       host: localhost
       port: 10021
-#    wms:
-#      host: 172.22.9.206
-#      outPort: 20631
-#      inPort: 20815
+    wms:
+      host: 10.0.2.192
+      outPort: 20631
+      inPort: 20815

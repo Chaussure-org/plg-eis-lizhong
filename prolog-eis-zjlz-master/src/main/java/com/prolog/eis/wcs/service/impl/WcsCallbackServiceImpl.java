@@ -158,9 +158,11 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             return success;
         } catch (Exception e) {
             if ("BCR0102".equals(bcrDataDTO.getAddress()) || "BCR0103".equals(bcrDataDTO.getAddress())) {
-              return RestMessage.newInstance(false, "300", "托盘异常"+e.getMessage(), null);
+                return RestMessage.newInstance(false, "300", "托盘异常" + e.getMessage(), null);
             }
-            else {
+            if ("BCR0101".equals(bcrDataDTO.getAddress())) {
+                return RestMessage.newInstance(false, "300", "托盘异常" + e.getMessage(), null);
+            } else {
                 return faliure;
             }
         }

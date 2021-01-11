@@ -155,22 +155,37 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to sas");
+        //改为路径的更新和删除
+        ContainerPathTaskDetail containerPathTaskDetail =
+                containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(), ContainerPathTaskDetail.class);
+        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask,
+                PrologDateUtils.parseObject(new Date()));
+        this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
+
+/*
         //更新 1.hz表任务状态为10  2.更新明细表的时间
         this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
         ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
         BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
         containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
-        containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
         //给SAS发任务 入库任务
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
-        //目的点位给的是 R01 给WCS发任务
-        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getCorr(containerPathTaskDetailDTO.getSourceLocation()));
-        WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(containerPathTaskDetailDTO.getTaskId(),
-                containerPathTaskDetailDTO.getSourceLocation(),
-                containerPathTaskDetailDTO.getNextLocation(), containerPathTaskDetailDTO.getContainerNo(), 5);
-        wcsService.lineMove(wcsLineMoveDto, 0);
+        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);*/
     }
 
+    @Override
+    public void doSasToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+        System.out.println("sas to sas");
+        //改为路径的更新和删除
+
+        //更新 1.hz表任务状态为10  2.更新明细表的时间
+        this.updateTaskId(containerPathTask, containerPathTaskDetailDTO);
+        ContainerPathTaskDetailDTO containerPathTaskDetailDTO1 = new ContainerPathTaskDetailDTO();
+        BeanUtils.copyProperties(containerPathTaskDetailDTO, containerPathTaskDetailDTO1);
+        containerPathTaskDetailDTO1.setSourceDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
+        //containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
+        //给SAS发任务 入库任务
+        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
+    }
     /**
      * 执行wcs-wcs路径任务(借道)
      * MODEFIED 现在修改为bcr到bcr

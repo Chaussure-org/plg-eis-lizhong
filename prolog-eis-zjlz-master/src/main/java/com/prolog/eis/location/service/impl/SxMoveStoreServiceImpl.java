@@ -474,6 +474,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 //wcs --> sas
                 SasMoveTaskDto sasMoveTaskDto = new SasMoveTaskDto(taskId, taskType, containerNo,
                         sourceStoreNo, nextStoreNo, "", "99", 0);
+                //加跨层判断
 
                 RestMessage<String> result = sasService.sendContainerTask(sasMoveTaskDto);
                 if (result.isSuccess()) {

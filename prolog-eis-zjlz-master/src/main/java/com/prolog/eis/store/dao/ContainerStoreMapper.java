@@ -97,8 +97,21 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
     @Update("UPDATE container_store c set c.task_type=#{taskType},c.task_status=#{taskStatus} WHERE FIND_IN_SET(c.container_no,#{strContainers})")
     void updateContainerStatus(@Param("strContainers") String strContainers, @Param("taskType") int taskType, @Param("taskStatus") int taskStatus);
 
-    @Select("SELECT LEFT(cpt.source_location,2) AS layer ,COUNT(*) as outCount from container_store c LEFT JOIN container_path_task cpt on c.container_no=cpt.container_no\n" +
-            "WHERE  FIND_IN_SET(c.task_type,'20,21,22,23') AND cpt.source_area='SAS01' GROUP BY LEFT(cpt.source_location,2)")
+    /*@Select("SELECT LEFT(cpt.source_location,2) AS layer ,COUNT(*) as outCount from container_store c LEFT JOIN container_path_task cpt on c.container_no=cpt.container_no\n" +
+            "WHERE  FIND_IN_SET(c.task_type,'20,21,22,23') AND cpt.source_area='SAS01' GROUP BY LEFT(cpt.source_location,2)")*/
+    @Select("SELECT LEFT\n" +
+            "\t( d.next_location, 2 ) AS layer,\n" +
+            "\tCOUNT(*) AS outCount \n" +
+            "FROM\n" +
+            "\tcontainer_store c\n" +
+            "\tLEFT JOIN container_path_task_detail d ON c.container_no = d.container_no \n" +
+            "WHERE\n" +
+            "\tFIND_IN_SET( c.task_type, '10' ) \n" +
+            "\tAND d.next_area = 'SAS01' \n" +
+            "GROUP BY\n" +
+            "\tLEFT (\n" +
+            "\td.next_location,\n" +
+            "\t2);")
     List<LayerGoodsCountDto> findOutContainers();
 
     @Select("select container_no as containerNo from container_store")

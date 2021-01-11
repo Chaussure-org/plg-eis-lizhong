@@ -60,7 +60,6 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
         // 查询有没有下一条任务
         // 没有则修改汇总状态为0未开始,当前任务起点和终点改为一致
-        // 有则改下一条明细状态和点位,清除当前任务
         if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
             containerPathTaskMapper.updateMapById(containerPathTask.getId()
                     , MapUtils.put("sourceArea", containerPathTaskDetail.getNextArea())
@@ -77,6 +76,7 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
                             .put("updateTime", nowTime).getMap()
                     , ContainerPathTaskDetail.class);
         } else {
+            // 有则改下一条明细状态和点位,清除当前任务
             //更新hz 表状态 add sun
             containerPathTaskMapper.updateMapById(containerPathTask.getId()
                     , MapUtils.put("taskState", LocationConstants.PATH_TASK_STATE_TOBESENT)

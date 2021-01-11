@@ -44,9 +44,6 @@ public class McsController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    //=====test===
-    @Autowired
-    private IWareHousingService iWareHousingService;
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")

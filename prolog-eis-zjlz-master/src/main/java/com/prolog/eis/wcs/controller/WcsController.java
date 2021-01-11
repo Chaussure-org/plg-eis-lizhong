@@ -32,8 +32,8 @@ public class WcsController {
     @ApiOperation(value = "任务回告", notes = "此接口包含输送线行走任务回告")
     @PostMapping("/task/callback")
     public RestMessage<String> taskCallback(@RequestBody TaskCallbackDTO taskCallbackDTO) throws Exception {
-        return RestMessage.newInstance(true, "200", "操作成功", null);
-        //return wcsService.executeTaskCallback(taskCallbackDTO);
+
+        return wcsService.executeTaskCallback(taskCallbackDTO);
     }
 
     @ApiOperation(value = "bcr请求", notes = "请求类型 1-入库 2-出库 3-料箱进站 ")
