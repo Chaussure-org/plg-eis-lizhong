@@ -14,7 +14,7 @@ public class WCSProperties {
     /**
      * 输送线行走
      */
-    private String lineMoveUrl = "/eis/lineMove";
+    private String lineMoveUrl = "/LZApi/WebApi/WalkLower";
 
 
     /**

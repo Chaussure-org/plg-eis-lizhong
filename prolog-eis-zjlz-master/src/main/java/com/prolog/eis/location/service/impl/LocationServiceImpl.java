@@ -77,8 +77,7 @@ public class LocationServiceImpl implements LocationService {
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.listContainerPathTasks(palletNo,
                 containerNo, LocationConstants.PATH_TASK_STATE_NOTSTARTED);
         if (CollectionUtils.isEmpty(containerPathTaskList)) {
-//            throw new Exception("当前没有容器任务！");
-            logger.info("当前没有容器任务");
+            //logger.info("-----------路径调度执行中，没有容器任务-----------");
             return;
         }
         for (ContainerPathTask containerPathTask : containerPathTaskList) {
@@ -101,7 +100,7 @@ public class LocationServiceImpl implements LocationService {
                     containerPathTaskDetailMapper.listContainerPathTaskDetais(containerPathTask.getPalletNo()
                             , containerPathTask.getContainerNo(), LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
             if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
-                throw new Exception(containerPathTask.getContainerNo()+"没有任务明细，无法执行");
+                throw new Exception(containerPathTask.getContainerNo() + "没有任务明细，无法执行");
             }
             String sourceDeviceSystem = containerPathTaskDetailList.get(0).getSourceDeviceSystem();
             String nextDeviceSystem = containerPathTaskDetailList.get(0).getNextDeviceSystem();
@@ -131,7 +130,11 @@ public class LocationServiceImpl implements LocationService {
                 //WCS TO WCS
                 pathExecutionService.doWcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
             } else if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
-                pathExecutionService.doMcsToMcsTask(containerPathTask,containerPathTaskDetailList.get(0));
+                //MCS TO MCS
+                pathExecutionService.doMcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
+                //SAS TO SAS
+                pathExecutionService.doSasToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
             }
         }
     }

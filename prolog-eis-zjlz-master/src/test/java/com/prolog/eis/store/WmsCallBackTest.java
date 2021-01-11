@@ -19,8 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author dengj
@@ -39,6 +41,7 @@ public class WmsCallBackTest {
 
     /**
      * 入库回告
+     *
      * @throws Exception
      */
     @Test
@@ -48,15 +51,26 @@ public class WmsCallBackTest {
         wmsInboundCallBackDto.setITEMNAME("悬挂球头总成");
         wmsInboundCallBackDto.setITEMID("0000002207");
         wmsInboundCallBackDto.setCONTAINERNO("11051");
+        int[] arr = new int[]{1, 1, 2};
+        Long collect = Arrays.stream(arr).distinct().count();
+       /* WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
+        wmsInboundCallBackDto.setSEQNO("0");
+        wmsInboundCallBackDto.setITEMNAME("内接头总成");
+        wmsInboundCallBackDto.setITEMID("0000002405");
+        wmsInboundCallBackDto.setCONTAINERNO("600018");
         wmsInboundCallBackDto.setBILLTYPE(1);
         wmsInboundCallBackDto.setBILLNO("0000043763");
         wmsInboundCallBackDto.setLINEID("21954998");
         EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
+        wmsInboundCallBackDto.setBILLNO("RCV0000004803");
+        wmsInboundCallBackDto.setLINEID("21954703");
+        EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);*/
         System.out.println("aaaa");
     }
 
     /**
      * 拣选完成回告
+     *
      * @throws Exception
      */
     @Test
@@ -90,6 +104,7 @@ public class WmsCallBackTest {
 
     /**
      * 盘点任务回告
+     *
      * @throws Exception
      */
     @Test

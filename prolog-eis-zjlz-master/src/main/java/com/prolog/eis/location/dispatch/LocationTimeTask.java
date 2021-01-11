@@ -23,7 +23,7 @@ public class LocationTimeTask {
      * 生成并执行路径任务
      * @throws Exception
      */
-    @Scheduled(initialDelay = 10000, fixedDelay = 15000)
+    @Scheduled(initialDelay = 20000, fixedDelay = 2000)
     public void doContainerPathTask() throws Exception {
         locationService.doContainerPathTaskAndExecutionByContainer(null, null);
     }

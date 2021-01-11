@@ -1,7 +1,9 @@
 package com.prolog.eis.log.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.mcs.McsCallBackDto;
 import com.prolog.eis.dto.page.LogInfoDto;
 import com.prolog.eis.dto.page.LogQueryDto;
 import com.prolog.eis.log.dao.*;
@@ -47,45 +49,56 @@ public class LogServiceImpl implements ILogService {
 
     /**
      * 保存日志
+     *
      * @param log 日志
      */
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED,rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED, rollbackFor = Exception.class)
     public void save(LogDto log) {
-        new Thread(()->{switch (log.getSystemType()){
-            case LogDto.WMS:
-                WmsLog wmsLog = new WmsLog();
-                BeanUtils.copyProperties(log,wmsLog);
-                wmsLogMapper.save(wmsLog);
-                break;
-            case LogDto.WCS:
-                WcsLog wcsLog = new WcsLog();
-                BeanUtils.copyProperties(log,wcsLog);
-                wcsLogMapper.save(wcsLog);
-                break;
-            case LogDto.SAS:
-                SasLog sasLog = new SasLog();
-                BeanUtils.copyProperties(log,sasLog);
-                sasLogMapper.save(sasLog);
-                break;
-            case LogDto.MCS:
-                McsLog mcsLog = new McsLog();
-                BeanUtils.copyProperties(log,mcsLog);
-                mcsLogMapper.save(mcsLog);
-                break;
-            case LogDto.RCS:
-                RcsLog rcsLog = new RcsLog();
-                BeanUtils.copyProperties(log,rcsLog);
-                rcsLogMapper.save(rcsLog);
-                break;
-            default:
-                logger.error("没有找到正确的日志类型");
-        }}).start();
+        new Thread(() -> {
+            switch (log.getSystemType()) {
+                case LogDto.WMS:
+                    WmsLog wmsLog = new WmsLog();
+                    BeanUtils.copyProperties(log, wmsLog);
+                    wmsLogMapper.save(wmsLog);
+                    break;
+                case LogDto.WCS:
+                    WcsLog wcsLog = new WcsLog();
+                    BeanUtils.copyProperties(log, wcsLog);
+                    wcsLogMapper.save(wcsLog);
+                    break;
+                case LogDto.SAS:
+                    SasLog sasLog = new SasLog();
+                    BeanUtils.copyProperties(log, sasLog);
+                    sasLogMapper.save(sasLog);
+                    break;
+                case LogDto.MCS:
+                    McsLog mcsLog = new McsLog();
+                    McsCallBackDto dto = JSON.parseObject(log.getParams(), McsCallBackDto.class);
+                    String params = log.getParams();
+                    BeanUtils.copyProperties(log, mcsLog);
+                    mcsLog.setContainerNo(dto.getContainerNo());
+                    if (dto.getStatus() == 1) {
+                        mcsLog.setStatus("回告开始");
+                    } else {
+                        mcsLog.setStatus("回告完成");
+                    }
+                    mcsLogMapper.save(mcsLog);
+                    break;
+                case LogDto.RCS:
+                    RcsLog rcsLog = new RcsLog();
+                    BeanUtils.copyProperties(log, rcsLog);
+                    rcsLogMapper.save(rcsLog);
+                    break;
+                default:
+                    logger.error("没有找到正确的日志类型");
+            }
+        }).start();
 
     }
 
     @Override
-    public List<LogInfoDto> getLogPage(LogQueryDto logQueryDto,String tableName,String systemType) throws Exception {
-         return wmsLogMapper.getLogPage(logQueryDto,tableName,systemType);
+    public List<LogInfoDto> getLogPage(LogQueryDto logQueryDto, String tableName, String systemType) throws Exception {
+        return wmsLogMapper.getLogPage(logQueryDto, tableName, systemType);
     }
 }

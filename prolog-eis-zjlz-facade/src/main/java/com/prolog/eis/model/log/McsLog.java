@@ -30,6 +30,14 @@ public class McsLog {
     @ApiModelProperty("方法流向")
     private String direct;
 
+    @Column("container_no")
+    @ApiModelProperty("容器号")
+    private String containerNo;
+
+    @Column("status")
+    @ApiModelProperty("状态")
+    private String status;
+
     @Column("type")
     @ApiModelProperty("任务类型：1：入库 2：出库 3:移库 4:小车换层 5:输送线行走 \n" +
             "\t\t\t6-料箱进站 7-订单框进站 8-体积检测 9-入库口 10-订单箱到位 11-料箱到位")
@@ -62,6 +70,23 @@ public class McsLog {
     @Column("host_port")
     @ApiModelProperty("本机IP和PORT")
     private String hostPort;
+
+    public String getContainerNo() {
+        return containerNo;
+    }
+
+    public void setContainerNo(String containerNo) {
+        this.containerNo = containerNo;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     public String getHostPort() {
         return hostPort;

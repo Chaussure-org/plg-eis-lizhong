@@ -1,16 +1,17 @@
 #eureka client配置
-#eureka.client.serviceUrl.defaultZone: http://admin:prolog00212@192.168.1.21:6001/eureka/,http://admin:prolog00212@192.168.1.22:6001/eureka/
-eureka.client.serviceUrl.defaultZone: http://admin:plgtest00212@192.168.0.168:8761/eureka/
-
-prolog.tx.url: http://192.168.1.21:7000/tx/manager/
+eureka.client.serviceUrl.defaultZone: http://admin:prolog00212@172.22.9.206:8761/eureka/
+#eureka: ,http://admin:prolog00212@192.168.1.22:6001/eureka/
+prolog.tx.url: http://172.22.9.206:7000/tx/manager/
 
 spring:
   application.name: service-ai-eis-zjlz-master
   #redis配置
   redis:
-    host: 192.168.0.168
-    port: 6379
+    cluster:
+      nodes: 172.22.9.206:6379,172.22.9.206:6380,172.22.9.206:6381,172.22.9.206:6382,172.22.9.206:6383,172.22.9.206:6384
     password: prolog0212
+    host: 172.22.9.206
+    port: 6379
     database: 0
   #链路跟踪
   zipkin:
@@ -24,45 +25,44 @@ spring:
     restart:
       enabled: true
   datasource:
-    driverClassName: com.mysql.jdbc.Driver #oracle.jdbc.driver.OracleDriver
-    url: jdbc:mysql://192.168.1.13:2206/ai-lizhong?characterEncoding=utf8&useSSL=false
-    username: dev
-    password: prolog0212-dev
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.0.2.192:3306/plog_eis?characterEncoding=utf8&useSSL=false
+    password: prolog0212
+    username: root
     initialSize: 0 #初始化大小
     minIdle: 5 #最小空閒
     maxActive: 50 #最大連接數
     maxWait: 60000 #最大等待時間
-    minEvictableIdleTimeMillis: 25200000 #最小生存時間
+    minEvictableIdleTimeMillis: 25200000 #最小生存時間  ,192.168.1.18:5672,192.168.1.19:5672
+    remove-abandoned-timeout-millis: 252000000000
   rabbitmq:
-    addresses: 192.168.1.17:5672,192.168.1.18:5672,192.168.1.19:5672
+    addresses: 172.22.9.206:5672
     username: eis
     password: eis
-    virtual-host: /eis
-
+    virtual-host: /eis_lizhong
+    listener:
+      direct:
+        acknowledge-mode: manual
 logging:
-  config: classpath:log4j2-test.xml
-  level.root: debug
-
+  config: classpath:log4j2-dev.xml
 
 prolog:
   eis:
     wcs:
-      host: service-ai-eis-zjlz-simulator-wk
-      port: 0
+      host: 172.22.9.156
+      port: 80
     rcs:
-      host: service-ai-eis-zjlz-simulator-wk
-      port: 0
+      host: localhost
+      port: 10021
     sas:
-      host: service-ai-eis-zjlz-simulator-wk
-      port: 0
+      host: 172.22.9.12
+      port: 8089
     mcs:
-      host: service-ai-eis-zjlz-simulator-wk
-      port: 0
+      host: localhost
+      port: 10021
     wms:
-      host: 192.168.0.168
-
-      outPort: 20830
-#      入库
+      host: 10.0.2.192
+      outPort: 20631
       inPort: 20815
       #盘点回告
       pdPort: 20835

@@ -15,6 +15,16 @@ public class SASProperties {
 
     private String sendContainerTaskUrl = "/Interface/Request";
 
+    private String crossLoyer="/Interface/CrossLayer";
+
+    public String getCrossLoyer() {
+        return crossLoyer;
+    }
+
+    public void setCrossLoyer(String crossLoyer) {
+        this.crossLoyer = crossLoyer;
+    }
+
     public String getGetCarInfoUrl() {
         return getCarInfoUrl;
     }

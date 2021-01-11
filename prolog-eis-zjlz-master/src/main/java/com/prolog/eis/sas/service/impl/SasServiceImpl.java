@@ -47,7 +47,7 @@ public class SasServiceImpl implements ISasService {
      * @return
      */
     private String getUrl(String path) {
-        return String.format("http://%s%s", properties.getSas().getHost(), path);
+        return String.format("http://%s:%s%s", properties.getSas().getHost(), properties.getSas().getPort(), path);
     }
 
     /**
@@ -59,7 +59,7 @@ public class SasServiceImpl implements ISasService {
     @LogInfo(desci = "sas请求小车信息", direction = "eis->sas", type = LogDto.SAS_TYPE_GET_CARINFO, systemType = LogDto.SAS)
     public List<CarInfoDTO> getCarInfo() throws IOException {
         String url = this.getUrl(properties.getSas().getGetCarInfoUrl());
-       // logger.info("EIS -> SAS 请求小车信息:{}", url);
+        // logger.info("EIS -> SAS 请求小车信息:{}", url);
         RestMessage<CarListDTO> result = httpUtils.post(url, null, new TypeReference<RestMessage<CarListDTO>>() {
         });
         return result.getData().getCarryList();
@@ -92,9 +92,10 @@ public class SasServiceImpl implements ISasService {
     @Override
     @LogInfo(desci = "eis请求小车换层", direction = "eis->sas", type = LogDto.SAS_TYPE_CHANGE_LAYER, systemType = LogDto.SAS)
     public RestMessage<String> moveCar(SasMoveCarDto sasMoveCarDto) throws Exception {
-        String url = this.getUrl(properties.getSas().getGetCarInfoUrl());
+        String url = this.getUrl(properties.getSas().getCrossLoyer());
         logger.info("EIS -> SAS 请求小车换层:{}", url);
-        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto), new TypeReference<RestMessage<String>>() {});
+        RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto), new TypeReference<RestMessage<String>>() {
+        });
         return result;
     }
 

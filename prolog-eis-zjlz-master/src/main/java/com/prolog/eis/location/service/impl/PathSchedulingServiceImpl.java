@@ -49,12 +49,11 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
     @Transactional(rollbackFor = Exception.class)
     public void inboundTask(String palletNo, String containerNo, String sourceArea, String sourceLocation, String targetArea) throws Exception {
         //TODO 参数校验先放着
-
         List<ContainerPathTask> containerPathTaskList = containerPathTaskMapper.findByMap(
-                MapUtils.put("palletNo", palletNo).getMap()
+                MapUtils.put("containerNo", containerNo).getMap()
                 , ContainerPathTask.class);
-        if (!CollectionUtils.isEmpty(containerPathTaskList)) {
-            throw new Exception("载具已存在");
+        if (containerPathTaskList.size() > 0) {
+            throw new Exception("此容器路径任务已经存在");
         }
 
         //创建容器任务
@@ -83,7 +82,7 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
         containerPathTaskDetail.setCreateTime(nowTime);
         containerPathTaskDetailMapper.save(containerPathTaskDetail);
 
-       // locationService.doContainerPathTaskAndExecutionByContainer(palletNo, containerNo);
+        // locationService.doContainerPathTaskAndExecutionByContainer(palletNo, containerNo);
     }
 
     @Override
@@ -185,11 +184,12 @@ public class PathSchedulingServiceImpl implements PathSchedulingService {
     @Override
     public void containerPathDelete(String containerNo, String sourceLocation) throws Exception {
         List<ContainerPathTask> containerPathTasks = containerPathTaskMapper.findByMap(MapUtils.put("containerNo", containerNo).put("sourceLocation", sourceLocation).getMap(), ContainerPathTask.class);
-        if (containerPathTasks.size() > 0){
-            if (containerPathTasks.get(0).getTaskState() != 0){
+        if (containerPathTasks.size() > 0) {
+            if (containerPathTasks.get(0).getTaskState() != 0) {
                 throw new Exception("容器未到位删除失败");
 
-            }        }
+            }
+        }
 //        containerPathTaskMapper.deleteByCriteria()
     }
 }

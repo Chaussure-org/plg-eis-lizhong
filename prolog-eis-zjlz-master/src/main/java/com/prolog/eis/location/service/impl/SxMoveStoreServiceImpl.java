@@ -23,6 +23,7 @@ import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
@@ -203,15 +204,16 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     taskProperty1 = containerStoreService.buildTaskProperty1(goodsInfo);
                     taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
                 }
-
+                long start = System.currentTimeMillis();
                 SxStoreLocation targetSxStoreLocation =
                         sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
                                 0, 0, 0, 0, taskProperty1, taskProperty2);
+                long cost = (System.currentTimeMillis() - start) ;
+                System.out.println("------------------分配货位耗时" + cost + "毫秒------------------------------");
                 if (null == targetSxStoreLocation) {
                     //找不到货位
                     return;
                 }
-//找到货位开始发送 mcs 指令  add sunpp
                 sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 1,
                         containerPathTaskDetailDTO.getSourceLocation(), null,
                         targetSxStoreLocation.getStoreNo(), targetSxStoreLocation.getStoreLocationGroupId(),
@@ -236,6 +238,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             int a = 0;
         }
     }
+
 
     /**
      * 四向库出库任务
@@ -436,25 +439,28 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     /**
      * mcs移动方法
      *
-     * @param containerNo        容器号
-     * @param taskId             任务号
-     * @param taskType           任务类型
-     * @param sourceStoreNo      起点点位
-     * @param sourceGroupId      起点货位组
-     * @param nextStoreNo        目标点位
-     * @param nextGroupId        目的货位组
-     * @param pathTaskId         路径任务Id
-     * @param pathTaskDetailId   路径明细Id
-     * @param sourceDeviceSystem
+     * @param containerNo      容器号
+     * @param taskId           任务号
+     * @param taskType         任务类型
+     * @param sourceStoreNo    起点点位
+     * @param sourceGroupId    起点货位组
+     * @param nextStoreNo      目标点位
+     * @param nextGroupId      目的货位组
+     * @param pathTaskId       路径任务Id
+     * @param pathTaskDetailId 路径明细Id
+     * @param sourSys          区域
      */
     private void sendMoveTask(String containerNo, String taskId, int taskType, String sourceStoreNo,
                               Integer sourceGroupId, String nextStoreNo, Integer nextGroupId, int pathTaskId,
-                              int pathTaskDetailId, String sourceDeviceSystem) {
+                              int pathTaskDetailId, String sourSys) {
         try {
-            //发送mcs移动指令
-            if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem)) {
+            if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourSys)) {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
-                        nextStoreNo, "", "99", 0,1);
+                        nextStoreNo, "", "99", 0, 1);
+                //测试验证
+                if (!EisStringUtils.getMcsPoint(nextStoreNo).equals("0800380019")){
+
+                }
                 McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
                 if (mcsResultDto.isRet()) {
                     //发送成功
@@ -464,9 +470,11 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
                     this.lockSxStoreLocation(taskType, sourceGroupId, nextGroupId);
                 }
-            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem)) {
+            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourSys)) {
+                //wcs --> sas
                 SasMoveTaskDto sasMoveTaskDto = new SasMoveTaskDto(taskId, taskType, containerNo,
                         sourceStoreNo, nextStoreNo, "", "99", 0);
+                //加跨层判断
 
                 RestMessage<String> result = sasService.sendContainerTask(sasMoveTaskDto);
                 if (result.isSuccess()) {

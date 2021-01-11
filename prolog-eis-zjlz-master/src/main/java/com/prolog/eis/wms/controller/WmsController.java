@@ -1,12 +1,22 @@
 package com.prolog.eis.wms.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.prolog.eis.dto.TestDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
+import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.wms.*;
+import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
+import com.prolog.eis.location.dao.ContainerPathTaskMapper;
+import com.prolog.eis.log.dao.McsLogMapper;
 import com.prolog.eis.mcs.service.IMcsService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.store.service.IContainerStoreService;
+import com.prolog.eis.util.Assert;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
@@ -54,47 +64,56 @@ public class WmsController {
     private IContainerStoreService containerStoreService;
 
     @Autowired
+    private IRcsService rcsService;
+    @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private ContainerPathTaskMapper containerPathTaskMapper;
+
+    @Autowired
+    private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
+
+    @Autowired
+    private McsLogMapper mcsLogMapper;
+
     @PostMapping("test")
-    public String test(@RequestParam("address") String address, @RequestParam("target") String target, @RequestParam("type") int type) throws Exception {
-        Map map = new HashMap();
-        map.put("0100360022", 1);
-        map.put("0100360023", 1);
-        map.put("0100360024", 1);
-        map.put("0100360025", 1);
-        map.put("0100360026", 1);
-        map.put("0100360027", 1);
-        map.put("0100360028", 1);
-        map.put("0100360029", 1);
-        map.put("0100360030", 1);
+    public String test() throws Exception {
 
-        map.put("0100360031", 0);
-        map.put("0100360032", 0);
-        map.put("0100360033", 0);
-        map.put("0100360034", 0);
-        map.put("0100360035", 0);
-        map.put("0100360036", 0);
-        map.put("0100360037", 0);
-        map.put("0100360038", 0);
-        map.put("0100360039", 0);
-        map.put("0100360040", 0);
-        map.put("0100360041", 0);
-        map.put("0100360042", 0);
-        map.put("0100360043", 0);
-        map.put("0100360044", 0);
-        map.put("0100360045", 0);
-        redisTemplate.opsForValue().set("testIn", map);
-
+/*        List<TestDto> testDtos = mcsLogMapper.frindLocation();
+        for (TestDto testDto : testDtos) {
+            ContainerPathTask task = new ContainerPathTask();
+            task.setContainerNo(testDto.getContainerNO());
+            task.setPalletNo(testDto.getContainerNO());
+            task.setSourceArea("MCS04");
+            task.setSourceLocation(testDto.getLocation());
+            task.setTargetArea("MCS04");
+            task.setTargetLocation(testDto.getLocation());
+            task.setTaskState(0);
+            task.setActualHeight(99);
+            task.setTaskType(0);
+            task.setCallBack(0);
+            task.setCreateTime(new Date());
+            task.setUpdateTime(new Date());
+            containerPathTaskMapper.save(task);
+            mcsLogMapper.saveDetail(testDto.getContainerNO(), testDto.getLocation());
+        }
+*/
         return "";
     }
 
+    @PostMapping("rcsMove")
+    public String recTest(@RequestBody RcsTaskDto rcsTaskDto) {
 
+        rcsService.sendTask(rcsTaskDto);
+        return "";
+    }
+
+    //----------------------------------------------
     @ApiOperation(value = "入库任务下发", notes = "入库任务下发")
     @PostMapping("/task/sendInbountTask")
     public EisRestMessage<String> sendInbountTask(@Validated @RequestBody List<WmsInboundTaskDto> wmsInboundTaskDtos) throws Exception {
         logger.info("wms入库任务下发,{}", JsonUtils.toString(wmsInboundTaskDtos));
-
         try {
             wmsCallBackService.sendInboundTask(wmsInboundTaskDtos);
             return EisRestMessage.newInstance(true, "上架任务下发成功");

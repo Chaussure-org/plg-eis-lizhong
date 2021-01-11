@@ -140,6 +140,6 @@ public class SasLogicServiceImpl implements ISasLogicService {
     @Override
     @LogInfo(desci = "sas出库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_CHANGE_LAYER_CALLBACK,systemType = LogDto.SAS)
     public void doHcTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-        callBack(taskCallbackDTO);
+        //callBack(taskCallbackDTO);
     }
 }

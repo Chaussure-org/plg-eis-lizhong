@@ -44,19 +44,13 @@ public class McsController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    //=====test===
-    @Autowired
-    private IWareHousingService iWareHousingService;
 
     @ApiOperation(value = "堆垛机任务回告", notes = "堆垛机任务回告")
     @RequestMapping("/callback")
     public Map taskReturn(@RequestBody McsCallBackDto mcsCallBackDto) throws Exception {
         logger.info("接收任务回告,{}", JsonUtils.toString(mcsCallBackDto));
         try {
-            //mcsCallbackService.mcsCallback(mcsCallBackDto);
-            if (mcsCallBackDto.getStatus() == 2) {
-                iWareHousingService.deleteInboundTask(mcsCallBackDto.getContainerNo());
-            }
+            mcsCallbackService.mcsCallback(mcsCallBackDto);
             return MapUtils.put("ret", true).put("msg", "回告成功").put("data", new ArrayList()).getMap();
         } catch (Exception e) {
             return MapUtils.put("ret", false).put("msg", "回告失败").put("data", new ArrayList()).getMap();

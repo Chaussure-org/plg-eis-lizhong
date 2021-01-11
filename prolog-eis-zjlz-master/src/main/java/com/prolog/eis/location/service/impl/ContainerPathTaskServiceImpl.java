@@ -52,6 +52,7 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateNextContainerPathTaskDetail(ContainerPathTaskDetail containerPathTaskDetail, ContainerPathTask containerPathTask, Timestamp nowTime) throws Exception {
+        //查询 下一条任务是否存在  add sunpp
         List<ContainerPathTaskDetail> containerPathTaskDetailList = containerPathTaskDetailMapper.findByMap(
                 MapUtils.put("palletNo", containerPathTaskDetail.getPalletNo())
                         .put("sortIndex", containerPathTaskDetail.getSortIndex() + 1).getMap()
@@ -59,8 +60,7 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
         // 查询有没有下一条任务
         // 没有则修改汇总状态为0未开始,当前任务起点和终点改为一致
-        // 有则改下一条明细状态和点位,清除当前任务
-        if(CollectionUtils.isEmpty(containerPathTaskDetailList)){
+        if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
             containerPathTaskMapper.updateMapById(containerPathTask.getId()
                     , MapUtils.put("sourceArea", containerPathTaskDetail.getNextArea())
                             .put("sourceLocation", containerPathTaskDetail.getNextLocation())
@@ -76,11 +76,14 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
                             .put("updateTime", nowTime).getMap()
                     , ContainerPathTaskDetail.class);
         } else {
+            // 有则改下一条明细状态和点位,清除当前任务
+            //更新hz 表状态 add sun
             containerPathTaskMapper.updateMapById(containerPathTask.getId()
                     , MapUtils.put("taskState", LocationConstants.PATH_TASK_STATE_TOBESENT)
                             .put("updateTime", nowTime).getMap()
                     , ContainerPathTask.class);
 
+            //更新 明细表状态  add sun
             ContainerPathTaskDetail nextContainerPathTaskDetail = containerPathTaskDetailList.get(0);
             containerPathTaskDetailMapper.updateMapById(nextContainerPathTaskDetail.getId()
                     , MapUtils.put("sourceLocation", containerPathTaskDetail.getNextLocation())
@@ -94,11 +97,10 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
     }
 
     /**
-     *
      * @param containerPathTask
      * @param containerPathTaskDetailDTO
      * @param palletContainerPathTaskDetailDTO
-     * @param hzTaskState  10 容器任务状态待发送
+     * @param hzTaskState                      10 容器任务状态待发送
      * @param mxTaskState
      * @throws Exception
      */
@@ -136,15 +138,15 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         containerPathTaskDetailMapper.update(containerPathTaskDetail);
 
         //如传入载具明细，则是申请载具流程，需要生成一条rcs移载任务
-        if(null != palletContainerPathTaskDetailDTO){
+        if (null != palletContainerPathTaskDetailDTO) {
             ContainerPathTaskDetail palletContainerPathTaskDetail = new ContainerPathTaskDetail();
             BeanUtils.copyProperties(palletContainerPathTaskDetailDTO, palletContainerPathTaskDetail);
             ContainerPathTask palletContainerPathTask = containerPathTaskMapper.getRequestPallet(palletContainerPathTaskDetail.getPalletNo());
             containerPathTaskMapper.updateMapById(palletContainerPathTask.getId(),
-                    MapUtils.put("targetArea",containerPathTaskDetailDTO.getNextArea())
-                            .put("targetLocation",containerPathTaskDetailDTO.getNextLocation())
-                            .put("taskState",hzTaskState)
-                            .put("updateTime",nowTime).getMap()
+                    MapUtils.put("targetArea", containerPathTaskDetailDTO.getNextArea())
+                            .put("targetLocation", containerPathTaskDetailDTO.getNextLocation())
+                            .put("taskState", hzTaskState)
+                            .put("updateTime", nowTime).getMap()
                     , ContainerPathTask.class);
 
             containerPathTaskDetailMapper.updateMapById(palletContainerPathTaskDetail.getId(),
@@ -152,7 +154,7 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
                             .put("taskState", mxTaskState)
                             .put("nextArea", containerPathTaskDetailDTO.getNextArea())
                             .put("nextLocation", containerPathTaskDetailDTO.getNextLocation())
-                            .put("updateTime",nowTime).getMap()
+                            .put("updateTime", nowTime).getMap()
                     , ContainerPathTaskDetail.class);
         }
     }
@@ -177,11 +179,12 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
     /**
      * 区域排序
+     *
      * @param spList
      * @return
      */
     @Override
-    public List<StoreArea> findBestStoreAreaList(List<StoreAreaPriorityDTO> spList){
+    public List<StoreArea> findBestStoreAreaList(List<StoreAreaPriorityDTO> spList) {
 
         List<StoreArea> result = new ArrayList<>();
 
@@ -192,22 +195,24 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
         //LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem
         //按优先级排序
-        spList.sort((p1,p2)->{ return p2.getPriority() - p1.getPriority(); });
+        spList.sort((p1, p2) -> {
+            return p2.getPriority() - p1.getPriority();
+        });
         //按优先级分组
-        Map<Integer,List<StoreAreaPriorityDTO>> mapGroup = ListHelper.buildGroupDictionary(spList, p->p.getPriority());
+        Map<Integer, List<StoreAreaPriorityDTO>> mapGroup = ListHelper.buildGroupDictionary(spList, p -> p.getPriority());
         for (List<StoreAreaPriorityDTO> group : mapGroup.values()) {
             //拿到需要按任务数分组的集合
-            List<StoreAreaPriorityDTO> tasks = ListHelper.where(group, p->p.getTaskPower() > 0);
-            if(!tasks.isEmpty()){
+            List<StoreAreaPriorityDTO> tasks = ListHelper.where(group, p -> p.getTaskPower() > 0);
+            if (!tasks.isEmpty()) {
                 //计算区域任务数
-                List<StoreAreaPriorityDTO> taskPriorityList = this.getContainerTaskPriority(tasks,taskDetails);
-                result.addAll(ListHelper.select(taskPriorityList, p->p.getStoreArea()));
+                List<StoreAreaPriorityDTO> taskPriorityList = this.getContainerTaskPriority(tasks, taskDetails);
+                result.addAll(ListHelper.select(taskPriorityList, p -> p.getStoreArea()));
             }
 
             //计算剩下的区域排序
-            List<StoreAreaPriorityDTO> noTasks = ListHelper.where(group, p->p.getTaskPower() == 0);
-            List<StoreAreaPriorityDTO> containerCountPriorityList = this.getContainerCountPriority(noTasks,areaCount);
-            result.addAll(ListHelper.select(containerCountPriorityList, p->p.getStoreArea()));
+            List<StoreAreaPriorityDTO> noTasks = ListHelper.where(group, p -> p.getTaskPower() == 0);
+            List<StoreAreaPriorityDTO> containerCountPriorityList = this.getContainerCountPriority(noTasks, areaCount);
+            result.addAll(ListHelper.select(containerCountPriorityList, p -> p.getStoreArea()));
         }
 
         return result;
@@ -215,11 +220,12 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
     @Override
     public List<ContainerPathTask> findByMap(Map map) throws Exception {
-        return containerPathTaskMapper.findByMap(map,ContainerPathTask.class);
+        return containerPathTaskMapper.findByMap(map, ContainerPathTask.class);
     }
 
     /**
      * 更新路径任务
+     *
      * @param containerPathTask 路径任务
      */
     @Override
@@ -236,6 +242,7 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
     /**
      * 半成品入库分配堆垛机
+     *
      * @return
      */
     @Override
@@ -244,7 +251,7 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         //04区3个   03区2个  02 01 区一个
         List<TaskCountDto> mcs04 =
                 taskCountDtos.stream().filter(taskCountDto -> "MCS04".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 2).collect(Collectors.toList());
-        if (mcs04.size() == 0){
+        if (mcs04.size() == 0) {
             return "MCS04";
         }
         List<TaskCountDto> mcs03 =
@@ -267,15 +274,15 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
 
     @Override
     public void updatePathTaskTypeByContainer(String containerNo, int type) {
-        Criteria ctr=Criteria.forClass(ContainerStore.class);
-        ctr.setRestriction(Restrictions.eq("containerNo",containerNo));
-        containerPathTaskMapper.updateMapByCriteria(MapUtils.put("taskType",type).getMap(),ctr);
+        Criteria ctr = Criteria.forClass(ContainerStore.class);
+        ctr.setRestriction(Restrictions.eq("containerNo", containerNo));
+        containerPathTaskMapper.updateMapByCriteria(MapUtils.put("taskType", type).getMap(), ctr);
     }
 
     @Override
     public void deletePathByContainer(String containerNo) {
-        containerPathTaskMapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),ContainerPathTask.class);
-        containerPathTaskDetailMapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),ContainerPathTaskDetail.class);
+        containerPathTaskMapper.deleteByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerPathTask.class);
+        containerPathTaskDetailMapper.deleteByMap(MapUtils.put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
     }
 
     @Override
@@ -283,33 +290,33 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         containerPathTaskMapper.save(containerPathTask);
     }
 
-    private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails){
+    private List<StoreAreaPriorityDTO> getContainerTaskPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<ContainerPathTaskDetail> taskDetails) {
 
         List<StoreAreaPriorityDTO> result = new ArrayList<>();
 
-        Map<String,Integer> mapCount = new HashMap<>();
+        Map<String, Integer> mapCount = new HashMap<>();
         for (ContainerPathTaskDetail taskDetail : taskDetails) {
-            if(mapCount.containsKey(taskDetail.getSourceArea())){
-                mapCount.put(taskDetail.getSourceArea(),mapCount.get(taskDetail.getSourceArea()) + 1);
-            }else{
-                mapCount.put(taskDetail.getSourceArea(),1);
+            if (mapCount.containsKey(taskDetail.getSourceArea())) {
+                mapCount.put(taskDetail.getSourceArea(), mapCount.get(taskDetail.getSourceArea()) + 1);
+            } else {
+                mapCount.put(taskDetail.getSourceArea(), 1);
             }
-            if(mapCount.containsKey(taskDetail.getNextArea())){
-                mapCount.put(taskDetail.getNextArea(),mapCount.get(taskDetail.getNextArea()) + 1);
-            }else{
-                mapCount.put(taskDetail.getNextArea(),1);
+            if (mapCount.containsKey(taskDetail.getNextArea())) {
+                mapCount.put(taskDetail.getNextArea(), mapCount.get(taskDetail.getNextArea()) + 1);
+            } else {
+                mapCount.put(taskDetail.getNextArea(), 1);
             }
         }
-        Map<String,Integer> mapPower = new HashMap<>();
+        Map<String, Integer> mapPower = new HashMap<>();
         for (StoreAreaPriorityDTO storeAreaPriorityDTO : storeAreaPriorityList) {
-            mapPower.put(storeAreaPriorityDTO.getStoreArea().getAreaNo(),storeAreaPriorityDTO.getTaskPower());
+            mapPower.put(storeAreaPriorityDTO.getStoreArea().getAreaNo(), storeAreaPriorityDTO.getTaskPower());
         }
 
-        List<String> minAreas = PowerCalculation.minPower(mapCount,mapPower);
+        List<String> minAreas = PowerCalculation.minPower(mapCount, mapPower);
 
         for (String minArea : minAreas) {
-            StoreAreaPriorityDTO storeAreaPriorityDTO = ListHelper.firstOrDefault(storeAreaPriorityList, p->minArea.equals(p.getStoreArea().getAreaNo()));
-            if(null != storeAreaPriorityDTO){
+            StoreAreaPriorityDTO storeAreaPriorityDTO = ListHelper.firstOrDefault(storeAreaPriorityList, p -> minArea.equals(p.getStoreArea().getAreaNo()));
+            if (null != storeAreaPriorityDTO) {
                 result.add(storeAreaPriorityDTO);
             }
         }
@@ -317,23 +324,23 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
         return result;
     }
 
-    private List<StoreAreaPriorityDTO> getContainerCountPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<StoreAreaContainerCountDTO> areaCount){
+    private List<StoreAreaPriorityDTO> getContainerCountPriority(List<StoreAreaPriorityDTO> storeAreaPriorityList, List<StoreAreaContainerCountDTO> areaCount) {
 
         List<StoreAreaPriorityDTO> result = new ArrayList<>();
 
-        Map<String,Integer> mapCount = new HashMap<>();
+        Map<String, Integer> mapCount = new HashMap<>();
         for (StoreAreaContainerCountDTO storeAreaContainerCountDTO : areaCount) {
-            mapCount.put(storeAreaContainerCountDTO.getAreaNo(),storeAreaContainerCountDTO.getContainerCount());
+            mapCount.put(storeAreaContainerCountDTO.getAreaNo(), storeAreaContainerCountDTO.getContainerCount());
         }
-        Map<String,Integer> mapPower = new HashMap<>();
+        Map<String, Integer> mapPower = new HashMap<>();
         for (StoreAreaPriorityDTO storeAreaPriorityDTO : storeAreaPriorityList) {
-            mapPower.put(storeAreaPriorityDTO.getStoreArea().getAreaNo(),storeAreaPriorityDTO.getPriority());
+            mapPower.put(storeAreaPriorityDTO.getStoreArea().getAreaNo(), storeAreaPriorityDTO.getPriority());
         }
-        List<String> minAreas = PowerCalculation.minPower(mapCount,mapPower);
+        List<String> minAreas = PowerCalculation.minPower(mapCount, mapPower);
 
         for (String minArea : minAreas) {
-            StoreAreaPriorityDTO storeAreaPriorityDTO = ListHelper.firstOrDefault(storeAreaPriorityList, p->minArea.equals(p.getStoreArea().getAreaNo()));
-            if(null != storeAreaPriorityDTO){
+            StoreAreaPriorityDTO storeAreaPriorityDTO = ListHelper.firstOrDefault(storeAreaPriorityList, p -> minArea.equals(p.getStoreArea().getAreaNo()));
+            if (null != storeAreaPriorityDTO) {
                 result.add(storeAreaPriorityDTO);
             }
         }

@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Component
 public class RepeatCommandTask implements CommandLineRunner {
-    
+
     @Autowired
     private IWcsCommandRepeatService wcsCommandRepeatService;
 
@@ -29,6 +29,7 @@ public class RepeatCommandTask implements CommandLineRunner {
 
     /**
      * 开启则执行
+     *
      * @param args
      * @throws Exception
      */
@@ -44,7 +45,7 @@ public class RepeatCommandTask implements CommandLineRunner {
         int threadCount = 3;
         for (int i = 0; i < threadCount; i++) {
             CmdThread cmdThread = new CmdThread();
-            cmdThread.setName("cmd-repeat-send-"+i);
+            cmdThread.setName("cmd-repeat-send-" + i);
             cmdThread.start();
         }
     }
@@ -52,15 +53,16 @@ public class RepeatCommandTask implements CommandLineRunner {
     /**
      * 线程类
      */
-    class CmdThread extends Thread{
+    class CmdThread extends Thread {
 
         @Override
         public void run() {
             while (true) {
-                doRepeatTask();
-                try{
+                //重发任务报错 add sunpp
+                //doRepeatTask();
+                try {
                     Thread.sleep(2000);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -72,13 +74,13 @@ public class RepeatCommandTask implements CommandLineRunner {
      */
     private synchronized void doRepeatTask() {
         List<WcsCommandRepeat> allCommandByCreatTime = wcsCommandRepeatService.findAllCommandByCreatTime();
-        if (allCommandByCreatTime==null || allCommandByCreatTime.size() == 0) {
+        if (allCommandByCreatTime == null || allCommandByCreatTime.size() == 0) {
             return;
         }
         for (WcsCommandRepeat wcsCommandRepeat : allCommandByCreatTime) {
             try {
                 wcsCommandRepeatService.sendWcsCommand(wcsCommandRepeat);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -1,11 +1,13 @@
 package com.prolog.eis.warehousing.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.page.InboundQueryDto;
 import com.prolog.eis.dto.page.WmsInboundInfoDto;
 import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.util.EisStringUtils;
+import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wms.service.IWmsService;
@@ -34,13 +36,14 @@ public class WareHousingServiceImpl implements IWareHousingService {
 
     /**
      * 通过容器号找wms下发的入库任务
+     *
      * @param containerNo 容器号
      * @return
      */
     @Override
     public List<WmsInboundTask> getWareHousingByContainer(String containerNo) {
         Criteria criteria = Criteria.forClass(WmsInboundTask.class);
-        criteria.setRestriction(Restrictions.eq("containerNo",containerNo));
+        criteria.setRestriction(Restrictions.eq("containerNo", containerNo));
         return mapper.findByCriteria(criteria);
     }
 
@@ -48,12 +51,12 @@ public class WareHousingServiceImpl implements IWareHousingService {
     public void deleteInboundTask(String containerNo) throws Exception {
         //删除入库任务前回告wms
         inboundReportWms(containerNo);
-        mapper.deleteByMap(MapUtils.put("containerNo",containerNo).getMap(),WmsInboundTask.class);
+        mapper.deleteByMap(MapUtils.put("containerNo", containerNo).getMap(), WmsInboundTask.class);
     }
 
     @Override
     public Page<WmsInboundInfoDto> getInboundPage(InboundQueryDto inboundQueryDto) {
-        PageUtils.startPage(inboundQueryDto.getPageNum(),inboundQueryDto.getPageSize());
+        PageUtils.startPage(inboundQueryDto.getPageNum(), inboundQueryDto.getPageSize());
         List<WmsInboundInfoDto> wmsInboudns = mapper.getInboundInfo(inboundQueryDto);
         Page<WmsInboundInfoDto> page = PageUtils.getPage(wmsInboudns);
         return page;
@@ -62,9 +65,9 @@ public class WareHousingServiceImpl implements IWareHousingService {
     @Override
     public void inboundReportWms(String containerNo) throws Exception {
         List<WmsInboundTask> inboundTasks = mapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(), WmsInboundTask.class);
-        if (inboundTasks.size() == 0){
+        if (inboundTasks.size() == 0) {
             return;
-    }
+        }
         WmsInboundTask wmsInboundTask = inboundTasks.get(0);
         WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setLINEID(wmsInboundTask.getLineId());

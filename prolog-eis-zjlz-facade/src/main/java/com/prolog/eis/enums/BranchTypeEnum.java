@@ -10,7 +10,7 @@ public enum BranchTypeEnum {
     /**
      * 箱式库
      */
-    XSK("XSK","A"),
+    XSK("XTK","A"),
     /**
      * 立体库
      */

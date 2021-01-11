@@ -140,8 +140,8 @@ public interface SxStoreLocationMapper extends EisBaseMapper<SxStoreLocation> {
             " FROM sx_store_location s \n" +
             "LEFT JOIN sx_store_location_group g \n" +
             "on  s.store_location_group_id=g.id \n" +
-            "where s.area_no='MCS04' and s.layer=2 and s.depth=1 and g.is_lock=0 ")
-    List<SxStoreLocation> tests();
+            "where s.area_no='MCS04' and s.layer=#{layer} and s.depth=1 and g.is_lock=0 ")
+    List<SxStoreLocation> tests(@Param("layer") String layer);
 
 
     /**

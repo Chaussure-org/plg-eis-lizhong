@@ -38,15 +38,15 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public synchronized void findCrossLayerTask() throws Exception {
-        //所有的出库任务
+        //所有的出库任务( 此方法暂时改成 入库的自动跨层调度)
         List<LayerGoodsCountDto> outContainers = containerStoreMapper.findOutContainers();
-        if (outContainers.size()==0){
+        if (outContainers.size() == 0) {
             return;
         }
         //所有的车
-
-        List<CarInfoDTO> cars = ISasService.getCarInfo().stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
-        if (cars.size()==0){
+        List<CarInfoDTO> collect = ISasService.getCarInfo().stream().filter(x -> Arrays.asList(1, 2).contains(x.getStatus())).collect(Collectors.toList());
+        List<CarInfoDTO> cars = collect.stream().filter(x -> x.getLayer() != 0).collect(Collectors.toList());
+        if (cars.size() == 0) {
             return;
         }
         //1.找车 首先找没有任务的车 2.找层 有任务没有车的层 3. 这一层没有正在执行跨层任务的
@@ -54,12 +54,12 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         List<Integer> carLayers = cars.stream().map(CarInfoDTO::getLayer).collect(Collectors.toList());
         //有任务没车的层
         List<LayerGoodsCountDto> tasksNoCars = outContainers.stream().filter(x -> !carLayers.contains(x.getLayer())).collect(Collectors.toList());
-        if (tasksNoCars.size()==0){
+        if (tasksNoCars.size() == 0) {
             return;
         }
         List<CarInfoDTO> carNoTasks = cars.stream().filter(x -> !taskLayers.contains(x.getLayer())).collect(Collectors.toList());
         //没有空闲的车
-        if (carNoTasks.size()==0){
+        if (carNoTasks.size() == 0) {
             return;
         }
         //正在执行的跨层任务  1.有任务没车的 层 排除 已经生成跨层任务的任务层
@@ -74,8 +74,8 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         }
         //单次调度只生成一条跨层任务 1.优先任务数最多的层先执行跨层
         tasksNoCars.stream().sorted(Comparator.comparing(LayerGoodsCountDto::getOutCount, Comparator.reverseOrder()));
-        CarInfoDTO car=carNoTasks.get(0);
-        this.sendCrossLayerTask(car.getLayer(), tasksNoCars.get(0).getLayer(),car.getRgvId());
+        CarInfoDTO car = carNoTasks.get(0);
+        this.sendCrossLayerTask(car.getLayer(), tasksNoCars.get(0).getLayer(), car.getRgvId());
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         sasMoveCarDto.setTaskId(taskId);
         RestMessage<String> message = ISasService.moveCar(sasMoveCarDto);
         if (message.isSuccess()) {
-            this.saveCrossLayerTask(sourceLayer,targetLayer,rgvId);
+            this.saveCrossLayerTask(sourceLayer, targetLayer, rgvId);
         }
     }
 

@@ -16,44 +16,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("rcs")
 public class RcsController {
 
-	@Autowired
-	private IRcsCallbackService rcsCallbackService;
-	
-	@ApiOperation(value = "Rcs回告", notes = "Rcs回告")
-	@PostMapping("/agvCallback")
-	public String agvCallback(@RequestBody String json) throws Exception {
-		PrologApiJsonHelper helper = PrologApiJsonHelper.createHelper(json);
-		String reqCode = helper.getString("reqCode");
-		try {
-			String taskCode = helper.getString("taskCode");
-			String method = helper.getString("method");
-			rcsCallbackService.rcsCallback(taskCode, method);
-			String resultStr = returnSuccess(reqCode);
-			return  resultStr;
-		}
-		catch (Exception e) {
-			String resultStr = returnError(reqCode,e.getMessage());
-			//String errorMsg = "RCS-> EIS[agvCallback]返回" + reqCode +" json:" + resultStr;
-			//LogServices.logSys(e);
-            return resultStr;
-		}
-	}
-	
-	private String returnSuccess(String reqCode) {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("code", "0");
-		jsonObject.put("message", "成功");
-		jsonObject.put("reqCode", reqCode);
-		jsonObject.put("data", "");
-		return jsonObject.toString();
-	}
+    @Autowired
+    private IRcsCallbackService rcsCallbackService;
 
-	private String returnError(String reqCode,String errorMsg) {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("code", "99");
-		jsonObject.put("message", errorMsg);
-		jsonObject.put("reqCode", reqCode);
-		jsonObject.put("data", "");
-		return jsonObject.toString();
-	}
+    @ApiOperation(value = "Rcs回告", notes = "Rcs回告")
+    @PostMapping("/agvCallback")
+    public String agvCallback(@RequestBody String json) throws Exception {
+        PrologApiJsonHelper helper = PrologApiJsonHelper.createHelper(json);
+        String reqCode = helper.getString("reqCode");
+        try {
+            String taskCode = helper.getString("taskCode");
+            String method = helper.getString("method");
+            rcsCallbackService.rcsCallback(taskCode, method);
+            String resultStr = returnSuccess(reqCode);
+            return resultStr;
+        } catch (Exception e) {
+            String resultStr = returnError(reqCode, e.getMessage());
+            //String errorMsg = "RCS-> EIS[agvCallback]返回" + reqCode +" json:" + resultStr;
+            //LogServices.logSys(e);
+            return resultStr;
+        }
+    }
+
+    private String returnSuccess(String reqCode) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", "0");
+        jsonObject.put("message", "成功");
+        jsonObject.put("reqCode", reqCode);
+        jsonObject.put("data", "");
+        return jsonObject.toString();
+    }
+
+    private String returnError(String reqCode, String errorMsg) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", "99");
+        jsonObject.put("message", errorMsg);
+        jsonObject.put("reqCode", reqCode);
+        jsonObject.put("data", "");
+        return jsonObject.toString();
+    }
 }

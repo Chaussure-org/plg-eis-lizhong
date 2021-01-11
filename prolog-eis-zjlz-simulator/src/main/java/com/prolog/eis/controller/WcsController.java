@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @ApiModel("wcs模拟接口")
-@RequestMapping("/eis")
+@RequestMapping("LZApi")
 public class WcsController {
 
     @Autowired
     private WcsService wcsService;
     @ApiOperation(value = "输送线行走")
-    @RequestMapping("/lineMove")
+    @RequestMapping("WebApi/WalkLower")
     public RestMessage<String> lineMove(@RequestBody WcsLineMoveDto wcsLineMoveDto) {
         new Thread(()->{
             try {

@@ -45,8 +45,8 @@ public class RcsServiceImpl implements IRcsService {
 
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("reqCode", rcsTaskDto.getReqCode());
-		jsonObject.put("reqTime", (new SimpleDateFormat("yyyy MM dd HH:mm:ss")).format(new Date()));
-		jsonObject.put("clientCode", "");
+		jsonObject.put("reqTime", (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
+		jsonObject.put("clientCode", "eis");
 		jsonObject.put("tokenCode", "");
 		jsonObject.put("interfaceName", "genAgvSchedulingTask");
 
@@ -80,7 +80,7 @@ public class RcsServiceImpl implements IRcsService {
 		//String postUrl = String.format("http://%s:%s%s", properties.getRcs().getHost(), properties.getRcs().getPort(),properties.getRcs().getSendTaskUrl());
 		String postUrl = getUrl(properties.getRcs().getAgvmoveUrl());
 		String result = restTemplate.postForObject(postUrl, PrologHttpUtils.getRequestEntity(data), String.class);
-		//LogServices.logRcs(postUrl,data,"",result);
+		System.out.println(result);
 		RcsRequestResultDto resultObj = JSONObject.parseObject(result, RcsRequestResultDto.class);
 		return resultObj;
 	}
