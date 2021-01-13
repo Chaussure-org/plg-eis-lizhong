@@ -52,8 +52,8 @@ prolog:
       host: 172.22.9.156
       port: 80
     rcs:
-      host: localhost
-      port: 10021
+      host: 172.22.9.203
+      port: 8181
     sas:
       host: 172.22.9.12
       port: 8089

@@ -65,7 +65,6 @@ public class HttpPostTest {
         //锁定货位
         Criteria ctr = Criteria.forClass(AgvStoragelocation.class);
         ctr.setRestriction(Restrictions.eq("locationNo", end.getLocationNo()));
-
         agvStoragelocationMapper.updateMapByCriteria(MapUtils.put("taskLock", 1).getMap(), ctr);
     }
 

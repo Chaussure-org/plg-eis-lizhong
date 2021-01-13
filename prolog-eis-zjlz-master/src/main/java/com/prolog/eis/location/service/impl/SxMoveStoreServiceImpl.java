@@ -209,7 +209,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                         sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
                                 0, 0, 0, 0, taskProperty1, taskProperty2);
                 long cost = (System.currentTimeMillis() - start) ;
-                System.out.println("------------------分配货位耗时" + cost + "毫秒------------------------------");
+                System.out.println("------------------"+containerPathTask.getContainerNo()+"分配货位耗时" + cost + "毫秒------------------------------");
                 if (null == targetSxStoreLocation) {
                     //找不到货位
                     return;

@@ -355,6 +355,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
                 throw new Exception("入库输送线有误，请核对");
             }
+            //todo：设备未到位，半成品库四巷道入库，
             String target = "MCS04"; //= containerPathTaskService.computeAreaIn();
             Assert.notEmpty(target, "一楼入库堆垛机库区，未找到库区");
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);

@@ -106,7 +106,7 @@ public class WmsController {
     public String recTest(@RequestBody RcsTaskDto rcsTaskDto) {
 
         rcsService.sendTask(rcsTaskDto);
-        return "";
+        return "发送成功";
     }
 
     //----------------------------------------------

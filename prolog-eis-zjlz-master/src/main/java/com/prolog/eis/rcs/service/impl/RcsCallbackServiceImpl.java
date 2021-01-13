@@ -1,6 +1,7 @@
 package com.prolog.eis.rcs.service.impl;
 
 import com.prolog.eis.dto.log.LogDto;
+import com.prolog.eis.dto.rcs.RcsCallbackDto;
 import com.prolog.eis.location.dao.AgvBindingDetaileMapper;
 import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
@@ -16,11 +17,11 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.utils.MapUtils;
+import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -43,17 +44,17 @@ public class RcsCallbackServiceImpl implements IRcsCallbackService {
     @Override
     @LogInfo(desci = "rcs任务回告", direction = "rcs->eis", type = LogDto.RCS_TYPE_CALLBACK, systemType = LogDto.RCS)
     @Transactional(rollbackFor = Exception.class)
-    public void rcsCallback(String taskCode, String method) throws Exception {
-        if (StringUtils.isEmpty(taskCode) || StringUtils.isEmpty(method)) {
+    public void rcsCallback(RcsCallbackDto rcsCallbackDto) throws Exception {
+        if (StringUtils.isBlank(rcsCallbackDto.getMethod()) || StringUtils.isBlank(rcsCallbackDto.getTaskCode())) {
             throw new Exception("参数不能为空");
         }
         List<ContainerPathTaskDetail> containerPathTaskDetailList
-                = containerPathTaskDetailMapper.findByMap(MapUtils.put("taskId", taskCode).getMap(), ContainerPathTaskDetail.class);
+                = containerPathTaskDetailMapper.findByMap(MapUtils.put("taskId", rcsCallbackDto.getTaskCode()).getMap(), ContainerPathTaskDetail.class);
         if (CollectionUtils.isEmpty(containerPathTaskDetailList)) {
             throw new Exception("任务不存在");
         }
 
-        switch (method) {
+        switch (rcsCallbackDto.getMethod()) {
             case LocationConstants.RCS_TASK_METHOD_START:
             case LocationConstants.RCS_TASK_METHOD_OUTBIN:
                 this.callbackStart(containerPathTaskDetailList);

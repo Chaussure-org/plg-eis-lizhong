@@ -1,6 +1,7 @@
 package com.prolog.eis.rcs.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.prolog.eis.dto.rcs.RcsCallbackDto;
 import com.prolog.eis.rcs.service.IRcsCallbackService;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import io.swagger.annotations.Api;
@@ -27,11 +28,16 @@ public class RcsController {
         try {
             String taskCode = helper.getString("taskCode");
             String method = helper.getString("method");
-            rcsCallbackService.rcsCallback(taskCode, method);
+            System.out.println("=================="+taskCode+"."+method);
+            RcsCallbackDto rcsCallbackDto = new RcsCallbackDto();
+            rcsCallbackDto.setMethod(method);
+            rcsCallbackDto.setTaskCode(taskCode);
+            rcsCallbackService.rcsCallback(rcsCallbackDto);
             String resultStr = returnSuccess(reqCode);
             return resultStr;
         } catch (Exception e) {
-            String resultStr = returnError(reqCode, e.getMessage());
+            String resultStr = returnSuccess(reqCode);
+            System.out.println("=============rcr逻辑处理=======");
             //String errorMsg = "RCS-> EIS[agvCallback]返回" + reqCode +" json:" + resultStr;
             //LogServices.logSys(e);
             return resultStr;

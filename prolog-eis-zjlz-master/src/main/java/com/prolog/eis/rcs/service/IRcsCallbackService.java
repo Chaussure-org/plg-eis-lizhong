@@ -1,5 +1,7 @@
 package com.prolog.eis.rcs.service;
 
+import com.prolog.eis.dto.rcs.RcsCallbackDto;
+
 public interface IRcsCallbackService {
 
 	/**
@@ -8,5 +10,5 @@ public interface IRcsCallbackService {
 	 * @param method
 	 * @throws Exception
 	 */
-	void rcsCallback(String taskCode, String method) throws Exception;
+	void rcsCallback(RcsCallbackDto rcsCallbackDto) throws Exception;
 }
