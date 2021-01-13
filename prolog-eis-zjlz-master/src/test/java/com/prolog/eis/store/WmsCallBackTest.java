@@ -1,5 +1,6 @@
 package com.prolog.eis.store;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.ZjlzApplication;
 import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
@@ -9,6 +10,7 @@ import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
 import com.prolog.eis.inventory.dao.InventoryTaskMapper;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.EisStringUtils;
+import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.wms.service.FeignService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,6 +41,9 @@ public class WmsCallBackTest {
     private FeignService feignService;
     @Autowired
     private InventoryTaskMapper taskMapper;
+
+    @Autowired
+    private HttpUtils httpUtils;
 
     /**
      * 入库回告
@@ -127,5 +133,13 @@ public class WmsCallBackTest {
         wmsInventoryCallBackDto.setSJZ(new Date());
         wmsService.inventoryTaskCallBack(wmsInventoryCallBackDto);
 
+    }
+
+    @Test
+    public void testHttp() throws Exception {
+        WmsInboundCallBackDto wmsStartOrderCallBackDto = new WmsInboundCallBackDto();
+        wmsStartOrderCallBackDto.setLINEID("悬挂球头总成");
+        wmsStartOrderCallBackDto.setBILLNO("1001");
+        wmsService.inboundTaskCallBack(wmsStartOrderCallBackDto);
     }
 }
