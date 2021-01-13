@@ -39,7 +39,6 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
 import com.prolog.eis.wms.service.IWmsCallBackService;
-import com.prolog.framework.authority.user.UserTemplate;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
@@ -95,8 +94,6 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
     @Autowired
     private IContainerStoreService containerStoreService;
 
-    @Autowired
-    private UserTemplate userTemplate;
 
     /**
      * 处理wms下发的入库任务
