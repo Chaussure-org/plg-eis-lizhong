@@ -15,6 +15,11 @@ public interface ISasLogicService {
 
     void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception;
 
+    /**
+     * 入库任务回告
+     * @param taskCallbackDTO
+     * @throws Exception
+     */
     void doInboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception;
 
     void doHcTask(TaskCallbackDTO taskCallbackDTO) throws Exception;

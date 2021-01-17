@@ -127,7 +127,7 @@ public class OutDispatch {
         try {
             inventoryBoxOutService.inventoryBoxOut();
         } catch (Exception e) {
-            logger.error("盘点出库失败"+e.getMessage());
+            logger.error("盘点出库失败"+e.getMessage(),e);
         }
     }
 

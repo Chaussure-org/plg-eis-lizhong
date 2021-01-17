@@ -120,7 +120,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
         List<WmsInboundTask> wmsInboundTaskList = new ArrayList<>();
         for (WmsInboundTaskDto wmsInboundTaskDto : wmsInboundTaskDtos) {
             if (allStoreContainers.contains(wmsInboundTaskDto.getCONTAINERNO())) {
-                throw new Exception("该容器已经被占用" + wmsInboundTaskDto.getCONTAINERNO() + "此次所有订单任务下发失败！");
+                throw new Exception("该容器已经被占用【" + wmsInboundTaskDto.getCONTAINERNO() + "】此次所有订单任务下发失败！");
             }
            /* Optional<Goods> first = goods.stream().filter(x -> x.getId().equals(wmsInboundTaskDto.getITEMID())).findFirst();
             if (!first.isPresent()) {

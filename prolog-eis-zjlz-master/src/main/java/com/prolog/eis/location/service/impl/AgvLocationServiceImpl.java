@@ -63,7 +63,8 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 		}
 
 		List<String> locationList = containerPathTaskDetailMapper.findByMap(
-				MapUtils.put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap()
+//				MapUtils.put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap()
+				MapUtils.put("nextArea", area).getMap()
 				, ContainerPathTaskDetail.class)
 				.stream()
 				.map(ContainerPathTaskDetail::getNextLocation)
@@ -182,6 +183,11 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 	@Override
 	public List<String> getIronTray(String areaNo) {
 		return agvStoragelocationMapper.getIronTrays(areaNo);
+	}
+
+	@Override
+	public void updateTaskLockByLocationNo(String locationNo,int typeLock ) {
+		agvStoragelocationMapper.updateLocationLock(locationNo,typeLock);
 	}
 
 

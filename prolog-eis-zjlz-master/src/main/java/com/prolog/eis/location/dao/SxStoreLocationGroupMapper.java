@@ -33,7 +33,7 @@ public interface SxStoreLocationGroupMapper extends EisBaseMapper<SxStoreLocatio
 			"and slg.location_num > (select count(*) from sx_store_location sl inner join container_path_task s on \r\n" + 
 			"s.source_location = sl.store_no where sl.STORE_LOCATION_GROUP_ID = slg.ID) \r\n" + 
  			"and sl.area_no = #{area} \r\n" +
-//			"and EXISTS (select sl2.id from sx_store_location sl2 where sl2.limit_weight > #{weight} and sl2.STORE_LOCATION_GROUP_ID = slg.ID and sl2.is_inBound_location = 1) \r\n" +
+			"and EXISTS (select sl2.id from sx_store_location sl2 where sl2.limit_weight > #{weight} and sl2.STORE_LOCATION_GROUP_ID = slg.ID and sl2.is_inBound_location = 1) \r\n" +
 			"GROUP BY slg.ID ,slg.IN_OUT_NUM,slg.IN_OUT_NUM,slg.x,slg.y,slg.reserved_location,slg.entrance1_property1,slg.entrance1_property2,slg.entrance2_property1,slg.entrance2_property2")
 	List<InStoreLocationGroupDto> findStoreLocationGroupByArea(@Param("area")String area, @Param("weight") Double weight);
 

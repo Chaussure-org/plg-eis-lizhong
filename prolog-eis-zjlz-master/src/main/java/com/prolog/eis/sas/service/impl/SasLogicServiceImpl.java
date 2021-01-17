@@ -124,7 +124,8 @@ public class SasLogicServiceImpl implements ISasLogicService {
                 updateTaskInfo(containerPathTaskDetail, containerPathTask);
                 sxMoveStoreService.updateContainerPathTaskComplete(containerPathTask,containerPathTaskDetail,nowTime);
                 sxMoveStoreService.unlockCompletekSxStoreLocation(containerPathTaskDetail);
-            } else {//不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
+            } else {
+                //不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
             }
@@ -138,7 +139,7 @@ public class SasLogicServiceImpl implements ISasLogicService {
      * @param taskCallbackDTO
      */
     @Override
-    @LogInfo(desci = "sas出库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_CHANGE_LAYER_CALLBACK,systemType = LogDto.SAS)
+    @LogInfo(desci = "sas换层任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_CHANGE_LAYER_CALLBACK,systemType = LogDto.SAS)
     public void doHcTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
         //callBack(taskCallbackDTO);
     }

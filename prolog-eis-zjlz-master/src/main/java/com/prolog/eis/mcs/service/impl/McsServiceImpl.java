@@ -44,8 +44,15 @@ public class McsServiceImpl implements IMcsService {
         //Mcs的坐标经过一个 方法 处理 INT【任务类型：1：入库:2：出库 3：同巷道移库】
 
         //更换从成mcs坐标
-        mcsMoveTaskDto.setTarget(EisStringUtils.getMcsPoint(mcsMoveTaskDto.getTarget()));
-        System.out.println(mcsMoveTaskDto.getTarget());
+        if (mcsMoveTaskDto.getType() == 1 || mcsMoveTaskDto.getType() == 3){
+            mcsMoveTaskDto.setTarget(EisStringUtils.getMcsPoint(mcsMoveTaskDto.getTarget()));
+            System.out.println(mcsMoveTaskDto.getTarget());
+        }
+
+        if (mcsMoveTaskDto.getType() == 2 || mcsMoveTaskDto.getType() == 3){
+            mcsMoveTaskDto.setAddress(EisStringUtils.getMcsPoint(mcsMoveTaskDto.getAddress()));
+        }
+
         List<McsMoveTaskDto> mcsSendTaskDtos = new ArrayList<McsMoveTaskDto>();
         mcsSendTaskDtos.add(mcsMoveTaskDto);
         Map<String, Object> map = new HashMap<String, Object>();

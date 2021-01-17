@@ -15,6 +15,7 @@ import com.prolog.eis.location.dao.SxStoreMapper;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.mcs.service.IMcsService;
+import com.prolog.eis.mcs.service.impl.McsServiceImpl;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
@@ -30,8 +31,11 @@ import com.prolog.eis.util.PrologStringUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +47,8 @@ import java.util.List;
 
 @Service
 public class SxMoveStoreServiceImpl implements SxMoveStoreService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SxMoveStoreServiceImpl.class);
 
     @Autowired
     private SxStoreMapper sxStoreMapper;
@@ -107,6 +113,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         } catch (Exception e) {
             // TODO: handle exception
             //return false;
+            logger.error("eis -> sps移动失败:"+e.getMessage(),e);
             int a = 0;
         }
     }
@@ -209,9 +216,10 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                         sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
                                 0, 0, 0, 0, taskProperty1, taskProperty2);
                 long cost = (System.currentTimeMillis() - start) ;
-                System.out.println("------------------"+containerPathTask.getContainerNo()+"分配货位耗时" + cost + "毫秒------------------------------");
+                System.out.println("------------------"+containerPathTaskDetailDTO.getContainerNo()+"分配货位耗时" + cost + "毫秒------------------------------");
                 if (null == targetSxStoreLocation) {
                     //找不到货位
+                    logger.info(containerPathTaskDetailDTO.getContainerNo()+"分配货位失败");
                     return;
                 }
                 sendMoveTask(containerPathTaskDetailDTO.getContainerNo(), taskId, 1,
@@ -235,7 +243,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             }
         } catch (Exception e) {
             // TODO: handle exception
-            int a = 0;
+            logger.error("分配货位失败："+e.getMessage(),e);
         }
     }
 
@@ -248,9 +256,15 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      */
     private void sxkOutStore(ContainerPathTask containerPathTask,
                              ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
-
+        //增加校验堆垛机出库口->出库bcr任务数 （出库区域containerPathTaskDetailDTO.getNextArea()） 有一个任务后续任务不发
+        int i = containerPathTaskDetailMapper.countPathTaskDetail(containerPathTaskDetailDTO.getNextLocation());
+        if (i > 0){
+            logger.info(containerPathTaskDetailDTO.getNextLocation()+"已有任务发往出库口,当前出库任务发往sps失败");
+            return;
+        }
         SxStoreLockDto sxStoreLock = sxStoreMapper.findSxStoreLock(containerPathTask.getContainerNo());
         if (sxStoreLock.getAscentGroupLockState() == 1 || sxStoreLock.getAscentLockState() == 1 || sxStoreLock.getIsLock() == 1) {
+            logger.info("货位id"+sxStoreLock.getLocationId()+"锁定 eis -> mcs 出库任务 路径发送失败");
             return;
         } else {
             if (sxStoreLock.getDeptNum() == 0) {
@@ -258,6 +272,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 //FileLogHelper.WriteLog("checkStore", "容器出库成功，容器号：【"+containerCode+"】");
             } else {
                 this.carPassiveMoveLogic(containerPathTask, containerPathTaskDetailDTO);
+                logger.info(containerPathTaskDetailDTO.getContainerNo()+"出库正在移位");
                 //FileLogHelper.WriteLog("checkStore", "容器移位出库成功，容器号：【"+containerCode+"】");
             }
         }
@@ -274,6 +289,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
 
         SxStoreLockDto sxStoreLock = sxStoreMapper.findSxStoreLock(containerPathTask.getContainerNo());
         if (sxStoreLock.getAscentGroupLockState() == 1 || sxStoreLock.getAscentLockState() == 1 || sxStoreLock.getIsLock() == 1) {
+            logger.info("货位id"+sxStoreLock.getLocationId()+"锁定 eis -> mcs 移位任务 路径发送失败");
             return;
         } else {
             if (sxStoreLock.getDeptNum() == 0) {
@@ -339,8 +355,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                             SxStoreLocationGroup.class);
             sxkLocationService.computeLocation(sxStoreLocationGroup);
         } catch (Exception e) {
-            // TODO: handle exception
-            int a = 0;
+            logger.error(containerPathTask.getContainerNo()+"移位失败");
         }
     }
 
@@ -433,6 +448,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         } catch (Exception e) {
             // TODO: handle exception
             int a = 0;
+            logger.error(e.getMessage(),e);
         }
     }
 
@@ -458,10 +474,11 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0, 1);
                 //测试验证
-                if (!EisStringUtils.getMcsPoint(nextStoreNo).equals("0800380019")){
+                /**if (!EisStringUtils.getMcsPoint(nextStoreNo).equals("0800380019")){
 
-                }
+                }*/
                 McsResultDto mcsResultDto = mcsRequestService.mcsContainerMove(mcsMoveTaskDto);
+                logger.info("eis -> mcs 发起托盘移动回告:{}", JsonUtils.toString(mcsResultDto));
                 if (mcsResultDto.isRet()) {
                     //发送成功
                     //修改路径状态
@@ -477,6 +494,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 //加跨层判断
 
                 RestMessage<String> result = sasService.sendContainerTask(sasMoveTaskDto);
+                logger.info("eis -> sas 发起小车移动回告:{}", JsonUtils.toString(result));
                 if (result.isSuccess()) {
                     //发送成功
                     //修改路径状态

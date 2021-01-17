@@ -3,6 +3,7 @@ package com.prolog.eis.wcs.service.impl;
 
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.prolog.eis.configuration.EisProperties;
+import com.prolog.eis.configuration.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.*;
@@ -16,12 +17,14 @@ import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.location.service.IPointLocationService;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
+import com.prolog.eis.model.log.WcsLog;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.model.wms.WmsInboundTask;
@@ -34,11 +37,13 @@ import com.prolog.eis.util.Assert;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
+import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wcs.service.IOpenDiskService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.eis.wcs.service.IWcsCallbackService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.slf4j.Logger;
@@ -96,6 +101,11 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
 
+    @Autowired
+    private ServerConfiguration serverConfiguration;
+    @Autowired
+    private ILogService logService;
+
 
     @Autowired
     private StationMapper stationMapper;
@@ -120,7 +130,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             this.doXZTask(taskCallbackDTO);
             return success;
         } catch (Exception e) {
-            logger.warn("行走任务回告失败", e);
+            logger.warn(taskCallbackDTO.getContainerNo()+"行走任务回告失败"+e.getMessage(), e);
             return faliure;
         }
     }
@@ -157,6 +167,19 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             }
             return success;
         } catch (Exception e) {
+            logger.error(bcrDataDTO.getContainerNo()+"bcr回告失败"+e.getMessage(),e);
+            LogDto logDto = new LogDto();
+            logDto.setDirect("wcs->eis");
+            logDto.setDescri("wcsBCR请求异常");
+            logDto.setException(e.getMessage());
+            logDto.setCreateTime(new Date());
+            logDto.setHostPort(serverConfiguration.getUrl());
+            logDto.setParams(JsonUtils.toString(bcrDataDTO));
+            logDto.setMethodName("executeBcrCallback");
+            logDto.setSystemType(2);
+            logDto.setSuccess(false);
+            logDto.setType(2);
+            logService.save(logDto);
             if ("BCR0102".equals(bcrDataDTO.getAddress()) || "BCR0103".equals(bcrDataDTO.getAddress())) {
                 return RestMessage.newInstance(false, "300", "托盘异常" + e.getMessage(), null);
             }
@@ -305,9 +328,9 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         }
         //二楼出库 BCR 回告
         if (ConstantEnum.secondOutBcrs.contains(address)) {
-            String mcsPoint = BcrPointEnum.findMcsPoint(address);
+            String rcsPoint = BcrPointEnum.findRcsPoint(address);
             List<ContainerPathTaskDetail> list = containerPathTaskDetailMapper.findByMap(
-                    MapUtils.put("sourceLocation", mcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
+                    MapUtils.put("nextLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
             Assert.notEmpty(list, "无此任务路径明细");
             ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(list.get(0));
             containerPathTaskService.updateNextContainerPathTaskDetail(list.get(0),
@@ -353,7 +376,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if ("BCR0102".equals(address) || "BCR0103".equals(address)) {
             Assert.notEmpty(wareHousings, "未查到入库任务" + containerNo);
             if (!BranchTypeEnum.LTK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
-                throw new Exception("入库输送线有误，请核对");
+                throw new Exception("立库入库输送线有误，请核对");
             }
             //todo：设备未到位，半成品库四巷道入库，
             String target = "MCS04"; //= containerPathTaskService.computeAreaIn();
@@ -366,7 +389,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if ("BCR0101".equals(address)) {
             Assert.notEmpty(wareHousings, "未查到入库任务" + containerNo);
             if (!BranchTypeEnum.XSK.getWmsBranchType().equals(wareHousings.get(0).getBranchType())) {
-                throw new Exception("入库输送线有误，请核对");
+                throw new Exception("箱库入库输送线有误，请核对");
             }
 
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, StoreArea.SAS01);

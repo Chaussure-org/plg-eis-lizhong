@@ -63,6 +63,23 @@ public class WcsLog {
     @ApiModelProperty("本机IP和PORT")
     private String hostPort;
 
+    public WcsLog() {
+    }
+
+    public WcsLog(Integer id, String descri, String direct, Integer type, String methodName, String params, Boolean success, String exception, Date createTime, int systemType, String hostPort) {
+        this.id = id;
+        this.descri = descri;
+        this.direct = direct;
+        this.type = type;
+        this.methodName = methodName;
+        this.params = params;
+        this.success = success;
+        this.exception = exception;
+        this.createTime = createTime;
+        this.systemType = systemType;
+        this.hostPort = hostPort;
+    }
+
     public String getHostPort() {
         return hostPort;
     }

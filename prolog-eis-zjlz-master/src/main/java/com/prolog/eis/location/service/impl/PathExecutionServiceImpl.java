@@ -16,8 +16,10 @@ import com.prolog.eis.location.service.PathExecutionService;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.log.dao.SasLogMapper;
+import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.log.SasLog;
 import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.util.PrologDateUtils;
@@ -27,6 +29,7 @@ import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import org.reflections.Store;
 import org.springframework.beans.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,13 +82,17 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         //给rcs发送移动指令
         try {
             RcsTaskDto rcsTaskDto = new RcsTaskDto(taskId, containerPathTaskDetailDTO.getPalletNo()
-                    , containerPathTaskDetailDTO.getSourceLocation(), location, "1", "1");
+                    , containerPathTaskDetailDTO.getSourceLocation(), location, LocationConstants.RCS_TASK_TYPE_TRANSPORT, "1");
             RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
 
             //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
-            if ("200".equals(rcsRequestResultDto.getCode())) {
+            if ("0".equals(rcsRequestResultDto.getCode())) {
                 containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
                         , LocationConstants.PATH_TASK_STATE_SEND, LocationConstants.PATH_TASK_DETAIL_STATE_SEND);
+                if (StoreArea.RCS01.equals(containerPathTaskDetailDTO.getNextArea())){
+                    //上锁
+                    agvLocationService.updateTaskLockByLocationNo(location, AgvStoragelocation.TASK_LOCK);
+                }
             } else {
                 //...重发等相关
             }
@@ -104,11 +111,14 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     public void doMcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("mcs to wcs");
-        //此处只用发到出库接驳口，然后更改此条的状态
+        /**
+         //此处只用发到出库接驳口，然后更改此条的状态
         containerPathTaskDetailDTO.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_MCS);
         //通过 出库wcs 点位 获取 mcs 点位
         containerPathTaskDetailDTO.setNextLocation(BcrPointEnum.findMcsLocation(containerPathTaskDetailDTO.getNextLocation()));
         sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
+         */
+
     }
 
     @Override
@@ -126,6 +136,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
 
     @Override
     public void doWcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
+        //点位转换
         System.out.println("wcs to rcs");
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),
                 ContainerPathTaskDetail.class);

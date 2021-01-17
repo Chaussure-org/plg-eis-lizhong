@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
-import org.redisson.misc.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,8 @@ public class HttpUtils {
 	private HttpEntity<Map<String, Object>> parseWmsParams(Map<String,Object> params) throws JsonProcessingException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Authorization",getToken());
+//		headers.set("Authorization",getToken());
+//		headers.set("UserKey","wms");
 		Map<String, Object> requestEntity =new HashMap<>();
 		if(params!=null && params.size()>0){
 			params.forEach((k,v) ->{requestEntity.put(k,v);});
@@ -80,7 +80,7 @@ public class HttpUtils {
 
 
 	public String getToken() {
-		String url = "http://192.168.1.21:6020/oauth/token?grant_type=client_credentials&client_id=wms&client_secret" +
+		String url = "http://10.0.2.192:8800/oauth/token?grant_type=client_credentials&client_id=wms&client_secret" +
 				"=wms";
 		HashMap hashMap = restTemplate.postForObject(url, null, HashMap.class);
 		String value = "Bearer "+hashMap.get("access_token");

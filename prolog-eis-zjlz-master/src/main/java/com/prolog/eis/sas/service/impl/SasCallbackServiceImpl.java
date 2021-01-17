@@ -67,7 +67,7 @@ public class SasCallbackServiceImpl implements ISasCallbackService {
                     throw new Exception("回告类型未找到");
             }
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
         }
         return success;
     }

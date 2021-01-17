@@ -6,8 +6,7 @@ public interface IRcsCallbackService {
 
 	/**
 	 * rcs回告逻辑
-	 * @param taskCode
-	 * @param method
+	 * @param rcsCallbackDto
 	 * @throws Exception
 	 */
 	void rcsCallback(RcsCallbackDto rcsCallbackDto) throws Exception;

@@ -85,4 +85,19 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
             @Result(property = "updateTime",  column = "update_time")
     })
     List<ContainerPathTaskDetail> listRequestContainer();
+
+
+    /**
+     * 查路径执行任务数
+     * @param locationNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tCOUNT(*)\n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail \n" +
+            "WHERE\n" +
+            "\t( task_state IN ( 50, 60 ) AND next_location = #{locationNo} ) \n" +
+            "\tOR ( source_location = #{locationNo} AND task_state IN ( 0, 50, 60 ) )")
+    int countPathTaskDetail(@Param("locationNo")String locationNo);
 }

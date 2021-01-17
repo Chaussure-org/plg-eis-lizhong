@@ -8,6 +8,7 @@ import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
 import com.prolog.eis.inventory.dao.InventoryTaskMapper;
+import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.HttpUtils;
@@ -45,6 +46,9 @@ public class WmsCallBackTest {
     @Autowired
     private HttpUtils httpUtils;
 
+    @Autowired
+    private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
+
     /**
      * 入库回告
      *
@@ -52,25 +56,24 @@ public class WmsCallBackTest {
      */
     @Test
     public void testInbound() throws Exception {
-        WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
-        wmsInboundCallBackDto.setSEQNO("21954998");
-        wmsInboundCallBackDto.setITEMNAME("悬挂球头总成");
-        wmsInboundCallBackDto.setITEMID("0000002207");
-        wmsInboundCallBackDto.setCONTAINERNO("11051");
-        int[] arr = new int[]{1, 1, 2};
-        Long collect = Arrays.stream(arr).distinct().count();
-       /* WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
+//        WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
+//        wmsInboundCallBackDto.setSEQNO("21954998");
+//        wmsInboundCallBackDto.setITEMNAME("悬挂球头总成");
+//        wmsInboundCallBackDto.setITEMID("0000002207");
+//        wmsInboundCallBackDto.setCONTAINERNO("11051");
+//        int[] arr = new int[]{1, 1, 2};
+//        Long collect = Arrays.stream(arr).distinct().count();
+       WmsInboundCallBackDto wmsInboundCallBackDto = new WmsInboundCallBackDto();
         wmsInboundCallBackDto.setSEQNO("0");
-        wmsInboundCallBackDto.setITEMNAME("内接头总成");
-        wmsInboundCallBackDto.setITEMID("0000002405");
-        wmsInboundCallBackDto.setCONTAINERNO("600018");
+        wmsInboundCallBackDto.setITEMNAME("SAPH440钢板");
+        wmsInboundCallBackDto.setITEMID("0000099498");
+        wmsInboundCallBackDto.setCONTAINERNO("C-000005");
         wmsInboundCallBackDto.setBILLTYPE(1);
-        wmsInboundCallBackDto.setBILLNO("0000043763");
-        wmsInboundCallBackDto.setLINEID("21954998");
+        wmsInboundCallBackDto.setBILLNO("RCV0000004930");
         EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
-        wmsInboundCallBackDto.setBILLNO("RCV0000004803");
-        wmsInboundCallBackDto.setLINEID("21954703");
-        EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);*/
+//        wmsInboundCallBackDto.setBILLNO("RCV0000004803");
+//        wmsInboundCallBackDto.setLINEID("21954703");
+//        EisRestMessage<String> restMessage = wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
         System.out.println("aaaa");
     }
 
@@ -141,5 +144,11 @@ public class WmsCallBackTest {
         wmsStartOrderCallBackDto.setLINEID("悬挂球头总成");
         wmsStartOrderCallBackDto.setBILLNO("1001");
         wmsService.inboundTaskCallBack(wmsStartOrderCallBackDto);
+    }
+
+    @Test
+    public void testToSps(){
+        int i = containerPathTaskDetailMapper.countPathTaskDetail("0800380019");
+        System.out.println(i);
     }
 }

@@ -1,5 +1,6 @@
 package com.prolog.eis;
 
+import com.prolog.framework.authority.annotation.EnablePrologEmptySecurityServer;
 import com.prolog.framework.authority.annotation.EnablePrologResourceServer;
 import com.prolog.framework.microservice.annotation.EnablePrologService;
 import org.mybatis.spring.annotation.MapperScan;

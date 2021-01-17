@@ -87,4 +87,12 @@ public interface AgvLocationService {
 	 * 查铁笼区的可用铁笼
 	 */
 	List<String> getIronTray(String areaNo);
+
+
+	/**
+	 * 根据区域编号更新任务锁
+	 * @param locationNo agv货位编号
+	 * @param typeLock 任务锁类型任务锁  0 空闲1任务中
+	 */
+	void updateTaskLockByLocationNo(String locationNo,int typeLock);
 }
