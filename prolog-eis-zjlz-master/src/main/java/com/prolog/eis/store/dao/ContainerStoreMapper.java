@@ -111,7 +111,7 @@ public interface ContainerStoreMapper extends EisBaseMapper<ContainerStore> {
             "GROUP BY\n" +
             "\tLEFT (\n" +
             "\td.next_location,\n" +
-            "\t2);")
+            "\t2)")
     List<LayerGoodsCountDto> findOutContainers();
 
     @Select("select container_no as containerNo from container_store")

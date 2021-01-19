@@ -2,6 +2,7 @@ package com.prolog.eis.wcs.service.impl;
 
 
 import com.alibaba.druid.sql.visitor.functions.If;
+import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.configuration.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
@@ -21,6 +22,7 @@ import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.PointLocation;
+import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
@@ -105,6 +107,9 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private ServerConfiguration serverConfiguration;
     @Autowired
     private ILogService logService;
+
+    @Autowired
+    private IGoodsService goodsService;
 
 
     @Autowired
@@ -379,7 +384,14 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 throw new Exception("立库入库输送线有误，请核对");
             }
             //todo：设备未到位，半成品库四巷道入库，
-            String target = "MCS04"; //= containerPathTaskService.computeAreaIn();
+            String target = "MCS04";
+            /**
+             * 求邓大佬解放代码
+             Goods goods = goodsService.findGoodsById(wareHousings.get(0).getGoodsId());
+             String target1 = containerPathTaskService.computeAreaIn(goods);
+             */
+
+
             Assert.notEmpty(target, "一楼入库堆垛机库区，未找到库区");
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
             createContainerInfo(wareHousings.get(0));

@@ -9,6 +9,7 @@ import com.prolog.eis.location.dao.ContainerPathTaskHistoryMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.ContainerPathTaskHistory;
@@ -246,28 +247,28 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
      * @return
      */
     @Override
-    public String computeAreaIn() {
+    public String computeAreaIn(Goods goods) {
         List<TaskCountDto> taskCountDtos = containerPathTaskMapper.findInTaskCount();
         //04区3个   03区2个  02 01 区一个
         List<TaskCountDto> mcs04 =
                 taskCountDtos.stream().filter(taskCountDto -> "MCS04".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 2).collect(Collectors.toList());
         if (mcs04.size() == 0) {
-            return "MCS04";
+            return goods.getGoodsOneType().equals("包材")?"":"MCS04";
         }
         List<TaskCountDto> mcs03 =
                 taskCountDtos.stream().filter(taskCountDto -> "MCS03".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 1).collect(Collectors.toList());
         if (mcs03.size() == 0) {
-            return "MCS03";
+            return goods.getGoodsOneType().equals("包材")?"":"MCS03";
         }
         List<TaskCountDto> mcs02 =
                 taskCountDtos.stream().filter(taskCountDto -> "MCS02".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
         if (mcs02.size() == 0) {
-            return "MCS02";
+            return goods.getGoodsOneType().equals("包材")?"":"MCS02";
         }
         List<TaskCountDto> mcs01 =
                 taskCountDtos.stream().filter(taskCountDto -> "MCS01".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
         if (mcs01.size() == 0) {
-            return "MCS01";
+            return goods.getGoodsOneType().equals("包材")?"":"MCS01";
         }
         return taskCountDtos.get(0).getAreaNo();
     }

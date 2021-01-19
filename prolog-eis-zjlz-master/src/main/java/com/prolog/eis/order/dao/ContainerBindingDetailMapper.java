@@ -1,5 +1,6 @@
 package com.prolog.eis.order.dao;
 
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -49,4 +50,23 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
             "\tAND bd.container_no = #{containerNo}")
     List<ContainerBindingDetail> getBindingDetail(@Param("pickOrderId") int pickOrderId,@Param("containerNo") String containerNo);
 
+    /**
+     * 找到所有正在执行得箱库入库任务
+     * @return
+     */
+    @Select("select * from container_path_task_detail where cptd.source_area in ('RS1','RS2') and cptd" +
+            ".next_area='SAS01' and cptd.task_state=50")
+    List<ContainerPathTaskDetail> findInStore();
+
+    /**
+     * 找到所有正在执行得箱库出库任务
+     * @return
+     */
+    @Select("select\n" +
+            "       *\n" +
+            "from\n" +
+            "     container_path_task_detail cptd\n" +
+            "where\n" +
+            "    cptd.source_area='SAS01' and cptd.next_area in ('CS1','CS2') and cptd.task_state=50")
+    List<ContainerPathTaskDetail> findOutStore();
 }
