@@ -2,6 +2,7 @@ package com.prolog.eis.location.service;
 
 import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
 import com.prolog.eis.dto.location.StoreAreaPriorityDTO;
+import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
@@ -87,7 +88,7 @@ public interface ContainerPathTaskService {
      * 半成品立库分配堆垛机逻辑
      * @return
      */
-    String computeAreaIn();
+    String computeAreaIn(Goods goods);
 
     /**
      * 更新任务状态

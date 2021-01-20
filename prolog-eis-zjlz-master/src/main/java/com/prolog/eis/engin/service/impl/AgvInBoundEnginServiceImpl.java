@@ -1,5 +1,6 @@
 package com.prolog.eis.engin.service.impl;
 
+import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.RoadWayContainerTaskDto;
@@ -8,9 +9,13 @@ import com.prolog.eis.engin.dao.TrayOutMapper;
 import com.prolog.eis.engin.service.AgvInBoundEnginService;
 import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.model.ContainerStore;
+import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.StoreArea;
+import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.PrologDateUtils;
+import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +42,10 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
     private PathSchedulingService pathSchedulingService;
     @Autowired
     private EisProperties eisProperties;
+    @Autowired
+    private IGoodsService goodsService;
+    @Autowired
+    private IContainerStoreService containerStoreService;
 
     @Override
     public void AgvInBound() throws Exception {
@@ -49,9 +58,15 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
                 //回库
                 List<RoadWayContainerTaskDto> roadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();
                 roadWayContainerTasks.stream().sorted(Comparator.comparing(RoadWayContainerTaskDto::getInCount).thenComparing(RoadWayContainerTaskDto::getOutCount));
-                pathSchedulingService.containerMoveTask(containerPathTask.getContainerNo(),
-                        StoreArea.RCS01,
-                        "MCS0" + roadWayContainerTasks.get(0).getRoadWay());
+                List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("containerNo", containerPathTask.getContainerNo()).getMap());
+                if (containerStoreList!=null && containerStoreList.size()>0) {
+                    Goods goods = goodsService.findGoodsById(containerStoreList.get(0).getGoodsId());
+                    String target = goods.getGoodsOneType().equals("包材")?""+(roadWayContainerTasks.get(0).getRoadWay()-1):"MCS0" + (roadWayContainerTasks.get(0).getRoadWay()-1);
+                    pathSchedulingService.containerMoveTask(containerPathTask.getContainerNo(),
+                            StoreArea.RCS01,
+                            "MCS0" + (roadWayContainerTasks.get(0).getRoadWay()-1));
+                }
+
             }
         }
     }

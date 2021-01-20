@@ -3,6 +3,7 @@ package com.prolog.eis.wcs.service.impl;
 
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prolog.eis.base.service.IGoodsService;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.configuration.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
@@ -22,6 +23,7 @@ import com.prolog.eis.log.service.ILogService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.PointLocation;
+import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
@@ -106,6 +108,9 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private ServerConfiguration serverConfiguration;
     @Autowired
     private ILogService logService;
+
+    @Autowired
+    private IGoodsService goodsService;
 
 
     @Autowired
@@ -303,12 +308,15 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 //                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
 //            }
             Station station = stationService.findById(collect.get(0).getStationId());
-            if (station == null) {
-                throw new Exception("【站台" + collect.get(0) + "】不存在");
+            synchronized (station.getId()) {
+                if (station == null) {
+                    throw new Exception("【站台" + collect.get(0) + "】不存在");
+                }
+                station.setCurrentNum(station.getCurrentNum()-1);
+                station.setContainerNo(taskCallbackDTO.getContainerNo());
+                station.setUpdateTime(new Date());
+                stationService.updateStation(station);
             }
-            station.setContainerNo(taskCallbackDTO.getContainerNo());
-            station.setUpdateTime(new Date());
-            stationService.updateStation(station);
         } else {
             //判断在路径中是否存在任务
             List<ContainerPathTaskDetail> containerPathTaskDetailList
@@ -392,7 +400,14 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 throw new Exception("立库入库输送线有误，请核对");
             }
             //todo：设备未到位，半成品库四巷道入库，
-            String target = "MCS04"; //= containerPathTaskService.computeAreaIn();
+            String target = "MCS04";
+            /**
+             * 求邓大佬解放代码
+             Goods goods = goodsService.findGoodsById(wareHousings.get(0).getGoodsId());
+             String target1 = containerPathTaskService.computeAreaIn(goods);
+             */
+
+
             Assert.notEmpty(target, "一楼入库堆垛机库区，未找到库区");
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), address, target);
             createContainerInfo(wareHousings.get(0));
@@ -486,7 +501,19 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                     Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
                     PointLocation point = pointLocationService.getPointByStationId(stationId);
                     WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), point.getPointId(), containerNo, 5);
-                    wcsService.lineMove(wcsLineMoveDto, 0);
+                    //计算缓存位占用最大数量
+                    synchronized (stationId){
+                        Station station = stationService.findById(stationId);
+                        if (station.getMaxCachePosition()>station.getCurrentNum()) {
+                            wcsService.lineMove(wcsLineMoveDto, 0);
+                            station.setCurrentNum(station.getCurrentNum()+1);
+                            stationService.updateStation(station);
+                        } else {
+                            wcsLineMoveDto.setTarget("LXHK02");
+                            wcsService.lineMove(wcsLineMoveDto,0);
+                        }
+                    }
+
                 }
                 break;
             //盘点

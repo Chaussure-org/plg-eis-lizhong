@@ -196,6 +196,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         //containerPathTaskDetailDTO1.setSourceLocation(PointChangeEnum.getPoint(containerPathTaskDetailDTO.getSourceLocation()));
         //给SAS发任务 入库任务
         sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO1);
+        new Thread();
     }
     /**
      * 执行wcs-wcs路径任务(借道)
