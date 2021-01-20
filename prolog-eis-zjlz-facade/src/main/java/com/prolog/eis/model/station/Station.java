@@ -98,6 +98,13 @@ public class Station {
     @ApiModelProperty("站台ip")
     private String stationIp;
 
+    @Column("max_cache_position")
+    @ApiModelProperty("最大缓存位数量")
+    private Integer maxCachePosition;
+
+    @Column("current_num")
+    @ApiModelProperty("当前占用缓存数量")
+    private Integer currentNum;
 
     public Integer getId() {
         return id;
@@ -201,6 +208,22 @@ public class Station {
 
     public void setStationIp(String stationIp) {
         this.stationIp = stationIp;
+    }
+
+    public Integer getMaxCachePosition() {
+        return maxCachePosition;
+    }
+
+    public void setMaxCachePosition(Integer maxCachePosition) {
+        this.maxCachePosition = maxCachePosition;
+    }
+
+    public Integer getCurrentNum() {
+        return currentNum;
+    }
+
+    public void setCurrentNum(Integer currentNum) {
+        this.currentNum = currentNum;
     }
 }
 

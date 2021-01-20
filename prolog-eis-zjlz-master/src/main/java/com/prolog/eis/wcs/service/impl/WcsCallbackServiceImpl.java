@@ -295,12 +295,15 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 //                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
 //            }
             Station station = stationService.findById(collect.get(0).getStationId());
-            if (station == null) {
-                throw new Exception("【站台" + collect.get(0) + "】不存在");
+            synchronized (station.getId()) {
+                if (station == null) {
+                    throw new Exception("【站台" + collect.get(0) + "】不存在");
+                }
+                station.setCurrentNum(station.getCurrentNum()-1);
+                station.setContainerNo(taskCallbackDTO.getContainerNo());
+                station.setUpdateTime(new Date());
+                stationService.updateStation(station);
             }
-            station.setContainerNo(taskCallbackDTO.getContainerNo());
-            station.setUpdateTime(new Date());
-            stationService.updateStation(station);
         } else {
             //判断在路径中是否存在任务
             List<ContainerPathTaskDetail> containerPathTaskDetailList
@@ -485,7 +488,19 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                     Integer stationId = lineBindingDetails.stream().sorted(Comparator.comparing(ContainerTaskDto::getStationId)).collect(Collectors.toList()).get(0).getStationId();
                     PointLocation point = pointLocationService.getPointByStationId(stationId);
                     WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), point.getPointId(), containerNo, 5);
-                    wcsService.lineMove(wcsLineMoveDto, 0);
+                    //计算缓存位占用最大数量
+                    synchronized (stationId){
+                        Station station = stationService.findById(stationId);
+                        if (station.getMaxCachePosition()>station.getCurrentNum()) {
+                            wcsService.lineMove(wcsLineMoveDto, 0);
+                            station.setCurrentNum(station.getCurrentNum()+1);
+                            stationService.updateStation(station);
+                        } else {
+                            wcsLineMoveDto.setTarget("LXHZ02");
+                            wcsService.lineMove(wcsLineMoveDto,0);
+                        }
+                    }
+
                 }
                 break;
             //盘点
