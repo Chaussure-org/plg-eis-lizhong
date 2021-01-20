@@ -8,7 +8,7 @@ public class WCSProperties {
     /**
      * 查询出库货位是否空闲,此接口同步返回
      */
-    private String checkPosition = "/WcsApi/ OutboundRequest";
+    private String checkPosition = "/WcsApi/OutboundRequest";
 
 
     /**

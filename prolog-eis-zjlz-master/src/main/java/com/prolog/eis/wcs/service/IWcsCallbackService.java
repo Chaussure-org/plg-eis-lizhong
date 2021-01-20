@@ -1,5 +1,6 @@
 package com.prolog.eis.wcs.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prolog.eis.dto.wcs.*;
 import com.prolog.framework.common.message.RestMessage;
 
@@ -38,5 +39,5 @@ public interface IWcsCallbackService {
      * @param containerLeaveDto
      * @return
      */
-    RestMessage<String> containerLeave(ContainerLeaveDto containerLeaveDto);
+    RestMessage<String> containerLeave(ContainerLeaveDto containerLeaveDto) throws Exception;
 }

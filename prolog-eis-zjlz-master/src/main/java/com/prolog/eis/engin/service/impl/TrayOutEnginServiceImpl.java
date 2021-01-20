@@ -90,7 +90,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         List<StoreGoodsCount> trayStore = containerStoreMapper.findStore("MCS01,MCS02,MCS03,MCS04");
         List<StoreGoodsCount> agvBindStore = containerStoreMapper.findAgvBindStore();
         List<StoreGoodsCount> agvStore = containerStoreMapper.findAgvStore();
-        trayStore.addAll(agvBindStore);trayStore.addAll(agvStore);
+        trayStore.addAll(agvBindStore);
+        trayStore.addAll(agvStore);
         Map<Integer, Integer> containerStoreMap = trayStore.stream().collect(Collectors.toMap(StoreGoodsCount::getGoodsId, StoreGoodsCount::getQty, (v1, v2) -> {
             return v1 + v2;
         }));

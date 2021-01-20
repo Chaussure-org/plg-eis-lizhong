@@ -2,6 +2,7 @@ package com.prolog.eis.wcs.service.impl;
 
 
 import com.alibaba.druid.sql.visitor.functions.If;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prolog.eis.configuration.EisProperties;
 import com.prolog.eis.configuration.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
@@ -222,17 +223,29 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     }
 
     @Override
-    @LogInfo(desci = "wcs拣选站料箱放行", direction = "wcs->eis", type = LogDto.WCS_TYPE_CONTAINER_LEAVE, systemType = LogDto.WCS)
-    public RestMessage<String> containerLeave(ContainerLeaveDto containerLeaveDto) {
+    @LogInfo(desci = "wcs拣选站料箱放行回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_CONTAINER_LEAVE, systemType = LogDto.WCS)
+    public RestMessage<String> containerLeave(ContainerLeaveDto containerLeaveDto) throws Exception {
         if (containerLeaveDto == null) {
-            return faliure;
+            return RestMessage.newInstance(false, "300", "放行异常：参数不能为空" , null);
         }
         try {
             this.stationContainerLeave(containerLeaveDto);
             return success;
         } catch (Exception e) {
-            logger.warn("wcs拣选站料箱放行失败", e);
-            return faliure;
+            LogDto logDto = new LogDto();
+            logDto.setDirect("wcs->eis");
+            logDto.setDescri("wcs拣选站料箱放行");
+            logDto.setException(e.getMessage());
+            logDto.setCreateTime(new Date());
+            logDto.setHostPort(serverConfiguration.getUrl());
+            logDto.setParams(JsonUtils.toString(containerLeaveDto));
+            logDto.setMethodName("containerLeave");
+            logDto.setSystemType(2);
+            logDto.setSuccess(false);
+            logDto.setType(6);
+            logService.save(logDto);
+            logger.error("eis -> wcs拣选站料箱放行失败"+e.getMessage(), e);
+            return RestMessage.newInstance(false, "300", "料箱放行失败："+e.getMessage() , null);
         }
     }
 
@@ -274,7 +287,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
 
     /**
-     * 行走任务回告,入库点
+     * 行走任务回告,入库点,拣选站
      *
      * @param taskCallbackDTO
      */
@@ -410,7 +423,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         //二楼 循环线Bcr 请求
         //this.checkGoOn(bcrDataDTO);
 
-        //二楼 入库BCR 请求
+        //二楼 托盘回库BCR 请求
         if (ConstantEnum.secondInBcrs.contains(address)) {
             /**
              * BCR 请求 判断 此容器是否可以进行 行走任务 下发。
@@ -527,7 +540,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      * @param containerLeaveDto
      */
     private void stationContainerLeave(ContainerLeaveDto containerLeaveDto) throws Exception {
-        List<Station> stations = stationService.findStationByMap(MapUtils.put("id", Integer.parseInt(containerLeaveDto.getDeviceId())).getMap());
+        int stationId = Integer.parseInt(containerLeaveDto.getDeviceId());
+        List<Station> stations = stationService.findStationByMap(MapUtils.put("id", stationId).getMap());
         if (stations.size() == 0) {
             throw new Exception("拣选站编号【" + containerLeaveDto.getDeviceId() + "】EIS管理");
         }
@@ -545,14 +559,22 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, point.getPointId(), PointLocation.POINT_ID_LXHK, containerLeaveDto.getContainerNo(), 5);
             wcsService.lineMove(wcsLineMoveDto, 0);
         } else {
-            //计算合适拣选站，发往
+            //计算合适拣选站，下一站台id小于当前站台id 环线绕圈发往回库bcr
             int targetStationId = stationBZService.computeContainerTargetStation(stationIds, station.getId());
-            //上层输送线 发送点位
-            String taskId = PrologStringUtils.newGUID();
-            PointLocation point = pointLocationService.getPointByStationId(station.getId());
-            PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, point.getPointId(), targetPoint.getPointId(), containerLeaveDto.getContainerNo(), 5);
-            wcsService.lineMove(wcsLineMoveDto, 0);
+            if (targetStationId > stationId){
+                //上层输送线 发送点位
+                String taskId = PrologStringUtils.newGUID();
+                PointLocation point = pointLocationService.getPointByStationId(station.getId());
+                PointLocation targetPoint = pointLocationService.getPointByStationId(targetStationId);
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, point.getPointId(), targetPoint.getPointId(), containerLeaveDto.getContainerNo(), 5);
+                wcsService.lineMove(wcsLineMoveDto, 0);
+            }else {
+                String taskId = PrologStringUtils.newGUID();
+                PointLocation point = pointLocationService.getPointByStationId(station.getId());
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, point.getPointId(), PointLocation.POINT_ID_LXHK, containerLeaveDto.getContainerNo(), 5);
+                wcsService.lineMove(wcsLineMoveDto, 0);
+            }
+
         }
 
     }

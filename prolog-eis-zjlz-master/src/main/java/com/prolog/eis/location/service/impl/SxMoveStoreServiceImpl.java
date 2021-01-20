@@ -272,7 +272,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 //FileLogHelper.WriteLog("checkStore", "容器出库成功，容器号：【"+containerCode+"】");
             } else {
                 this.carPassiveMoveLogic(containerPathTask, containerPathTaskDetailDTO);
-                logger.info(containerPathTaskDetailDTO.getContainerNo()+"出库正在移位");
+                logger.info(containerPathTaskDetailDTO.getContainerNo()+"出库触发移位");
                 //FileLogHelper.WriteLog("checkStore", "容器移位出库成功，容器号：【"+containerCode+"】");
             }
         }
@@ -410,7 +410,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getSourceArea(),
                             moveSxStoreGroupDto.getX(), moveSxStoreGroupDto.getY(), 0, 0, taskProperty1, taskProperty2);
             if (null == targetSxStoreLocation) {
-                //找不到货位
+                logger.info(containerPathTaskDetailDTO.getContainerNo()+"移位未找到可用货位");
                 return;
             }
 
@@ -448,7 +448,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         } catch (Exception e) {
             // TODO: handle exception
             int a = 0;
-            logger.error(e.getMessage(),e);
+            logger.error("托盘移位失败："+e.getMessage(),e);
         }
     }
 

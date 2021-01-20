@@ -2,6 +2,7 @@ package com.prolog.eis.wcs.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.configuration.EisProperties;
+import com.prolog.eis.configuration.WCSProperties;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.CheckPositionDto;
 import com.prolog.eis.dto.wcs.TrayCallbackDto;
@@ -12,6 +13,7 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.wcs.service.IWcsCommandRepeatService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +63,7 @@ public class WcsServiceImpl implements IWcsService {
     public RestMessage<String> lineMove(WcsLineMoveDto wcsLineMoveDto, int i) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
 
-        logger.info("EIS -> WCS 输送线行走:{}", url);
+        logger.info("EIS -> WCS 输送线行走:{}", JsonUtils.toString(wcsLineMoveDto));
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(wcsLineMoveDto),
                 new TypeReference<RestMessage<String>>() {
                 });
@@ -86,7 +88,7 @@ public class WcsServiceImpl implements IWcsService {
     @LogInfo(desci = "eis回告wcs拆盘机口有订单拖", direction = "eis->wcs", type = LogDto.WCS_TYPE_TARY_ARRIVE, systemType = LogDto.WCS)
     public RestMessage<String> trayToOpenDisk(TrayCallbackDto trayCallbackDto) throws Exception {
         String url = this.getUrl(properties.getWcs().getLineMoveUrl());
-        logger.info("EIS -> WCS 输送线行走:{}", url);
+        logger.info("EIS -> WCS 拆盘机输送线行走:{}", JsonUtils.toString(trayCallbackDto));
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(trayCallbackDto),
                 new TypeReference<RestMessage<String>>() {
                 });

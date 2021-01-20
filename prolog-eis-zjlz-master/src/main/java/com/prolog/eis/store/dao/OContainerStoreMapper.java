@@ -44,7 +44,7 @@ public interface OContainerStoreMapper extends BaseMapper<ContainerStore> {
             "\tcs.qty AS qty \n" +
             "FROM\n" +
             "\tcontainer_path_task c\n" +
-            "\tLEFT JOIN container_store cs ON c.container_no = cs.container_no \n" +
+            "\t JOIN container_store cs ON c.container_no = cs.container_no \n" +
             "WHERE\n" +
             "\tc.target_area = 'RCS01' \n" +
             "\tAND c.task_state = 0 \n" +
