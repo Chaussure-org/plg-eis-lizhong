@@ -496,7 +496,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                             station.setCurrentNum(station.getCurrentNum()+1);
                             stationService.updateStation(station);
                         } else {
-                            wcsLineMoveDto.setTarget("LXHZ02");
+                            wcsLineMoveDto.setTarget("LXHK02");
                             wcsService.lineMove(wcsLineMoveDto,0);
                         }
                     }
