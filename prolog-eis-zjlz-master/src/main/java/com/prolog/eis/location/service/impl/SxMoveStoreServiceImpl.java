@@ -639,7 +639,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
                     SxStoreLocationGroup.class);
         } else if (taskType == 3) {
-            //出库锁原货位
+            //移库锁原货位 和 移库货位
             sxStoreLocationGroupMapper.updateMapById(sourceGroupId,
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
                     SxStoreLocationGroup.class);

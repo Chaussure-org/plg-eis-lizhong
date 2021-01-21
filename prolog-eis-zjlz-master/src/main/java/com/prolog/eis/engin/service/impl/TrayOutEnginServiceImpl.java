@@ -6,15 +6,18 @@ import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.dao.TrayOutMapper;
 import com.prolog.eis.engin.service.BoxOutEnginService;
 import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.agv.AgvBindingDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.order.OrderDetail;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.store.dao.OContainerStoreMapper;
+import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.utils.MapUtils;
@@ -55,6 +58,9 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Autowired
     private PathSchedulingService pathSchedulingService;
+
+    @Autowired
+    private SxStoreLocationGroupMapper sxStoreLocationGroupMapper;
 
     /**
      * 1.出库时效
@@ -126,6 +132,11 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         if (!detailStatus.isEmpty()) {
             // TODO: 2020/12/26  出库判断 堆垛机接驳口 是否有货
             pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.RCS01, null);
+            //出库锁货位
+            int groupId = sxStoreLocationGroupMapper.findGroupIdByContainer(detailStatus.get(0).getContainerNo());
+            sxStoreLocationGroupMapper.updateMapById(groupId,
+                    MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
+                    SxStoreLocationGroup.class);
             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
             logger.info(detailStatus.get(0).getContainerNo()+"生成去往agv区域路径======================");
             return;

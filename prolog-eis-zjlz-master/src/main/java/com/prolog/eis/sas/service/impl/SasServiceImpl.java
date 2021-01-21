@@ -14,6 +14,7 @@ import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologApiJsonHelper;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class SasServiceImpl implements ISasService {
      * @return
      */
     @Override
-    @LogInfo(desci = "sas请求小车信息", direction = "eis->sas", type = LogDto.SAS_TYPE_GET_CARINFO, systemType = LogDto.SAS)
+//    @LogInfo(desci = "sas请求小车信息", direction = "eis->sas", type = LogDto.SAS_TYPE_GET_CARINFO, systemType = LogDto.SAS)
     public List<CarInfoDTO> getCarInfo() throws IOException {
         String url = this.getUrl(properties.getSas().getGetCarInfoUrl());
         // logger.info("EIS -> SAS 请求小车信息:{}", url);
@@ -93,9 +94,10 @@ public class SasServiceImpl implements ISasService {
     @LogInfo(desci = "eis请求小车换层", direction = "eis->sas", type = LogDto.SAS_TYPE_CHANGE_LAYER, systemType = LogDto.SAS)
     public RestMessage<String> moveCar(SasMoveCarDto sasMoveCarDto) throws Exception {
         String url = this.getUrl(properties.getSas().getCrossLoyer());
-        logger.info("EIS -> SAS 请求小车换层:{}", url);
+        logger.info("EIS -> SAS 请求小车换层:{}",JsonUtils.toString(sasMoveCarDto));
         RestMessage<String> result = httpUtils.post(url, MapUtils.convertBean(sasMoveCarDto), new TypeReference<RestMessage<String>>() {
         });
+        logger.info("EIS <- SAS 请求小车换层:{}",JsonUtils.toString(result));
         return result;
     }
 

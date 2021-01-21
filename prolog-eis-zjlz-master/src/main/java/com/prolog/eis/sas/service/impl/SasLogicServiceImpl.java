@@ -2,17 +2,20 @@ package com.prolog.eis.sas.service.impl;
 
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.TaskCallbackDTO;
+import com.prolog.eis.engin.dao.CrossLayerTaskMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.wcs.CrossLayerTask;
 import com.prolog.eis.sas.service.ISasLogicService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.eis.warehousing.service.IWareHousingService;
+import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -42,6 +45,8 @@ public class SasLogicServiceImpl implements ISasLogicService {
 
     @Autowired
     private SxMoveStoreService sxMoveStoreService;
+    @Autowired
+    private CrossLayerTaskMapper crossLayerTaskMapper;
 
     /**
      * 移库任务回告
@@ -141,6 +146,7 @@ public class SasLogicServiceImpl implements ISasLogicService {
     @Override
     @LogInfo(desci = "sas换层任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_CHANGE_LAYER_CALLBACK,systemType = LogDto.SAS)
     public void doHcTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-        //callBack(taskCallbackDTO);
+        //换层任务回告成功删除换层任务
+        crossLayerTaskMapper.deleteByMap(MapUtils.put("taskId",taskCallbackDTO.getTaskId()).getMap(),CrossLayerTask.class);
     }
 }

@@ -16,10 +16,10 @@ import io.swagger.annotations.ApiModelProperty;
 @Table ("cross_layer_task")
 public class CrossLayerTask {
 
-  @Column("id")
+  @Column("task_id")
   @Id
-  @ApiModelProperty("id")
-  private Integer id;
+  @ApiModelProperty("task_id")
+  private String taskId;
 
   @Column("carNo")
   @ApiModelProperty("小车编号")
@@ -33,12 +33,12 @@ public class CrossLayerTask {
   @ApiModelProperty("目标层")
   private Integer targetLayer;
 
-  public Integer getId() {
-    return id;
+  public String getTaskId() {
+    return taskId;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
   }
 
   public String getCarNo() {

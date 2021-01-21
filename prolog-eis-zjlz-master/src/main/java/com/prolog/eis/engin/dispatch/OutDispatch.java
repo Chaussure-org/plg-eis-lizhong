@@ -96,12 +96,13 @@ public class OutDispatch {
     /**
      * 小车跨层调度
      */
-    @Scheduled(initialDelay = 3000, fixedDelay = 30000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 6000)
     public void crossLayer(){
         try{
             crossLayerEnginService.findCrossLayerTask();
         }catch (Exception e){
             e.printStackTrace();
+            logger.error("小车换层失败:"+e.getMessage(),e);
         }
 
     }

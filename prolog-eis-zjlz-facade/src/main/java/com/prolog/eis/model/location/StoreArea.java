@@ -119,7 +119,7 @@ public class StoreArea implements Serializable {
      */
     public static final String WCS061="WCS061";
     /**
-     * 四向库 二楼出库BCR区域
+     * 四向库 二楼出库进站BCR区域
      */
     public static final String WCS081="WCS081";
     /**
@@ -154,6 +154,7 @@ public class StoreArea implements Serializable {
      * 铁拖上架区
      */
     public static final String IT01 = "IT01";
+
 
 
 }

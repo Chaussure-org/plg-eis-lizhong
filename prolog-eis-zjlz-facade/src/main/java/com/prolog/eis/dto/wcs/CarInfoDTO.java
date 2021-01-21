@@ -14,6 +14,15 @@ public class CarInfoDTO implements Serializable {
     @ApiModelProperty("状态1-工作中 2-空闲 3-跨层中 4-故障中")
     private int status;
 
+    public CarInfoDTO() {
+    }
+
+    public CarInfoDTO(String rgvId, int layer, int status) {
+        this.rgvId = rgvId;
+        this.layer = layer;
+        this.status = status;
+    }
+
     public String getRgvId() {
         return rgvId;
     }

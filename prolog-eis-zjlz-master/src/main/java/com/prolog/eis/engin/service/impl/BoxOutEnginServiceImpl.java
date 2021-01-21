@@ -11,6 +11,7 @@ import com.prolog.eis.dto.wcs.CarInfoDTO;
 import com.prolog.eis.engin.dao.BoxOutMapper;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.service.BoxOutEnginService;
+import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
 import com.prolog.eis.location.service.PathSchedulingService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.agv.AgvBindingDetail;
@@ -18,6 +19,7 @@ import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.sas.service.ISasService;
@@ -65,6 +67,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     private ContainerStoreMapper containerStoreMapper;
     @Autowired
     private EisProperties eisProperties;
+    @Autowired
+    private SxStoreLocationGroupMapper sxStoreLocationGroupMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -73,10 +77,14 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         //判断循环线的数量
         List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findLineContainerTopath();
         int lineBoxCount = lineBindingDetailMapper.findLineBoxCount();
-        if (!detailStatus.isEmpty()&&lineBoxCount<eisProperties.getLineBoxCount()) {
-            pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), "WCS081", "LXJZ01");
-            lineBindingDetailMapper.updateLineStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
-            logger.info(detailStatus.get(0).getContainerNo()+"生成去往输送线的路径======================");
+        if (!detailStatus.isEmpty() && lineBoxCount < eisProperties.getLineBoxCount()) {
+            int groupId = sxStoreLocationGroupMapper.findGroupIdByContainer(detailStatus.get(0).getContainerNo());
+            sxStoreLocationGroupMapper.updateMapById(groupId,
+                    MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),
+                    SxStoreLocationGroup.class);
+            pathSchedulingService.containerMoveTask(detailStatus.get(0).getContainerNo(), StoreArea.WCS081, StoreArea.LXJZ01);
+            lineBindingDetailMapper.updateLineStatus(detailStatus.get(0).getContainerNo(), OrderBill.ORDER_STATUS_OUTING);
+            logger.info(detailStatus.get(0).getContainerNo() + "生成去往输送线的路径======================");
             return;
         }
         //1.要去往循环线区域的订单明细
@@ -279,11 +287,11 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         String strs = String.join(",", containers);
         lineBindingDetailMapper.saveBatch(list);
         //update 库存业务属性 和 库存状态
-        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_OUTBOUND,ContainerStore.TASK_TYPE_OUTBOUND);
+        containerStoreMapper.updateContainerStatus(strs, ContainerStore.TASK_TYPE_OUTBOUND, ContainerStore.TASK_TYPE_OUTBOUND);
         //更新订单状态
         List<Integer> ids = list.stream().distinct().map(x -> x.getOrderBillId()).collect(Collectors.toList());
         String idsStr = StringUtils.join(ids, ',');
-        orderBillMapper.updateOrderStatus(OrderBill.ORDER_STATUS_START_OUT,idsStr);
+        orderBillMapper.updateOrderStatus(OrderBill.ORDER_STATUS_START_OUT, idsStr);
     }
 
     private List<CarInfoDTO> getConformCars() throws Exception {

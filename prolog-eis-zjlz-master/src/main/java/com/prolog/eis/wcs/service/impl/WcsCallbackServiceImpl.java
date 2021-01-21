@@ -173,7 +173,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             }
             return success;
         } catch (Exception e) {
-            logger.error(bcrDataDTO.getContainerNo()+"bcr回告失败"+e.getMessage(),e);
+//            logger.error(bcrDataDTO.getContainerNo()+"bcr回告失败"+e.getMessage(),e);
             LogDto logDto = new LogDto();
             logDto.setDirect("wcs->eis");
             logDto.setDescri("wcsBCR请求异常");

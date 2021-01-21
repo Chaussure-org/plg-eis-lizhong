@@ -98,4 +98,18 @@ public interface SxStoreLocationGroupMapper extends EisBaseMapper<SxStoreLocatio
 			" set t.reserved_location = t2.reservedLocation" +
 			" where t.id = t2.id</script>")
 	void batchUpdateById(@Param("list") List<StoreLocationGroupDto> list);
+
+	/**
+	 * 根据容器查货位组id
+	 * @param containerNo
+	 * @return
+	 */
+	@Select("SELECT\n" +
+			"\tstore_location_group_id \n" +
+			"FROM\n" +
+			"\tcontainer_path_task ct\n" +
+			"\tJOIN sx_store_location s ON s.store_no = ct.source_location \n" +
+			"WHERE\n" +
+			"\tct.container_no = #{containerNo}")
+	int  findGroupIdByContainer(@Param("containerNo") String containerNo);
 }

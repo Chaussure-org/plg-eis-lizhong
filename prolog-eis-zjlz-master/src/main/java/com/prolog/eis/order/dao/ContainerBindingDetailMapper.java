@@ -54,19 +54,42 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
      * 找到所有正在执行得箱库入库任务
      * @return
      */
-    @Select("select * from container_path_task_detail where cptd.source_area in ('RS1','RS2') and cptd" +
-            ".next_area='SAS01' and cptd.task_state=50")
+    @Select("SELECT\n" +
+            "\tcptd.ID AS id,\n" +
+            "\tcptd.pallet_no AS palletNo,\n" +
+            "\tcptd.container_no AS containerNo,\n" +
+            "\tcptd.source_area AS sourceArea,\n" +
+            "\tcptd.source_location AS sourceLocation,\n" +
+            "\tcptd.next_area AS nextArea,\n" +
+            "\tcptd.next_location AS nextLocation,\n" +
+            "\tcptd.task_state AS taskState \n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail cptd \n" +
+            "WHERE\n" +
+            "\tcptd.source_area IN ( 'RS1', 'RS2' ) \n" +
+            "\tAND cptd.next_area = 'SAS01' \n" +
+            "\tAND cptd.task_state = 50")
     List<ContainerPathTaskDetail> findInStore();
 
     /**
      * 找到所有正在执行得箱库出库任务
      * @return
      */
-    @Select("select\n" +
-            "       *\n" +
-            "from\n" +
-            "     container_path_task_detail cptd\n" +
-            "where\n" +
-            "    cptd.source_area='SAS01' and cptd.next_area in ('CS1','CS2') and cptd.task_state=50")
+    @Select("SELECT\n" +
+            "\tcptd.ID AS id,\n" +
+            "\tcptd.pallet_no AS palletNo,\n" +
+            "\tcptd.container_no AS containerNo,\n" +
+            "\tcptd.source_area AS sourceArea,\n" +
+            "\tcptd.source_location AS sourceLocation,\n" +
+            "\tcptd.next_area AS nextArea,\n" +
+            "\tcptd.next_location AS nextLocation,\n" +
+            "\tcptd.task_state AS taskState \n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail cptd \n" +
+            "WHERE\n" +
+            "\tcptd.source_area = 'SAS01' \n" +
+            "\tAND cptd.next_area IN ( 'CS1', 'CS2' ) \n" +
+            "\tAND cptd.task_state = 50\n" +
+            "\t")
     List<ContainerPathTaskDetail> findOutStore();
 }

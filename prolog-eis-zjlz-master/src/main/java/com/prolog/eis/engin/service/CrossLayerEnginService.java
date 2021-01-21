@@ -19,5 +19,5 @@ public interface CrossLayerEnginService {
     /**
      * save小车跨层任务
      */
-    void saveCrossLayerTask(int sourceLayer, int targetLayer, String rgvId) throws Exception;
+    void saveCrossLayerTask(String id,int sourceLayer, int targetLayer, String rgvId) throws Exception;
 }

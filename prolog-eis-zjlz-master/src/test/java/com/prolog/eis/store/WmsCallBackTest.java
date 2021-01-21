@@ -7,14 +7,17 @@ import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
+import com.prolog.eis.engin.dao.CrossLayerTaskMapper;
 import com.prolog.eis.inventory.dao.InventoryTaskMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
+import com.prolog.eis.model.wcs.CrossLayerTask;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.HttpUtils;
 import com.prolog.eis.wms.service.FeignService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.dao.util.PageUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,9 @@ public class WmsCallBackTest {
     private FeignService feignService;
     @Autowired
     private InventoryTaskMapper taskMapper;
+
+    @Autowired
+    private CrossLayerTaskMapper crossLayerTaskMapper;
 
     @Autowired
     private HttpUtils httpUtils;
@@ -148,7 +154,12 @@ public class WmsCallBackTest {
 
     @Test
     public void testToSps(){
-        int i = containerPathTaskDetailMapper.countPathTaskDetail("0800380019");
-        System.out.println(i);
+        CrossLayerTask crossLayerTask = new CrossLayerTask();
+        crossLayerTask.setTaskId("fbd9a405d65a47cdab8a51b9af2b1357");
+        crossLayerTask.setSourceLayer(1);
+        crossLayerTask.setTargetLayer(1);
+        crossLayerTask.setCarNo("111");
+        crossLayerTaskMapper.save(crossLayerTask);
+        System.out.println("aaaa");
     }
 }

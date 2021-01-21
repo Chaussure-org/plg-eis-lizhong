@@ -17,6 +17,7 @@ import org.apache.commons.configuration.reloading.InvariantReloadingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springfox.documentation.schema.Entry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,53 +44,98 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public synchronized void findCrossLayerTask() throws Exception {
-        //所有的出库任务( 此方法暂时改成 入库的自动跨层调度)
-        List<LayerGoodsCountDto> outContainers = containerStoreMapper.findOutContainers();
-//        List<CrossLayerTask> crossLayerTasks = crossLayerTaskMapper.findByMap(null, CrossLayerTask.class);
-//        if (crossLayerTasks!=null &&crossLayerTasks.size()>0) {
-//            return;
-//        }
-//        List<ContainerPathTaskDetail> ins = containerBindingDetailMapper.findInStore();
-//        List<ContainerPathTaskDetail> outs = containerBindingDetailMapper.findOutStore();
-//        Map<Integer,List<ContainerPathTaskDetail>> layerTasks = new HashMap<>();
-//        updateLayerTasks(ins, layerTasks);
-//        updateLayerTasks(outs,layerTasks);
-//        if (layerTasks.size()==0){
-//            return;
-//        }
-//        List<CarInfoDTO> carInfoList = ISasService.getCarInfo();
-//        List<CarInfoDTO> collect1 =
-//                carInfoList.stream().filter(x -> x.getStatus() == 1 || x.getStatus() == 2).collect(Collectors.toList());
+//        List<LayerGoodsCountDto> outContainers = containerStoreMapper.findOutContainers();
+        List<CrossLayerTask> crossLayerTasks = crossLayerTaskMapper.findByMap(null, CrossLayerTask.class);
+        if (crossLayerTasks != null && crossLayerTasks.size() > 0) {
+            return;
+        }
+        List<ContainerPathTaskDetail> ins = containerBindingDetailMapper.findInStore();
+        List<ContainerPathTaskDetail> outs = containerBindingDetailMapper.findOutStore();
+        if (ins.size() + outs.size() == 0){
+            return;
+        }
+        Map<Integer, List<ContainerPathTaskDetail>> layerTasks = new HashMap<>();
+        updateLayerTasks(ins, layerTasks);
+        updateLayerTasks(outs, layerTasks);
+        if (layerTasks.size() == 0) {
+            return;
+        }
+        //排序从大到小筛选任务
+        List<Map.Entry<Integer,List<ContainerPathTaskDetail>>>  list = new ArrayList<>(layerTasks.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<Integer, List<ContainerPathTaskDetail>>>() {
+            @Override
+            public int compare(Map.Entry<Integer, List<ContainerPathTaskDetail>> o1, Map.Entry<Integer, List<ContainerPathTaskDetail>> o2) {
+                return o2.getValue().size() - o1.getValue().size();
+            }
+        });
+
+        List<CarInfoDTO> carInfoList = ISasService.getCarInfo();
+//        CarInfoDTO carInfoDTO1 = new CarInfoDTO("1", 1, 2);
+//        CarInfoDTO carInfoDTO2 = new CarInfoDTO("2", 2, 2);
+//        List<CarInfoDTO> carInfoList = Arrays.asList(carInfoDTO1,carInfoDTO2);
+        for (Map.Entry<Integer, List<ContainerPathTaskDetail>> integerListEntry : list) {
+            if (integerListEntry.getValue().size() > 0){
+                Integer integer = integerListEntry.getKey();
+                //当前层没车
+                List<CarInfoDTO> cars =
+                        carInfoList.stream().filter(x -> x.getLayer() == integer).collect(Collectors.toList());
+                if (cars == null || cars.size() == 0) {
+                    //没有车 需要找可用空闲车换层换层
+                    List<CarInfoDTO> idleCars = new ArrayList<>();
+                    List<CarInfoDTO> usableCar = carInfoList.stream().filter(x -> !layerTasks.keySet().contains(x.getLayer()) && x.getStatus() == 2).collect(Collectors.toList());
+                    for (CarInfoDTO carInfoDTO : usableCar) {
+                        idleCars.add(carInfoDTO);
+                    }
+                    if (idleCars.size() == 0) {
+                        return;
+                    }
+                    //找个最近层
+                    List<Integer> layers = idleCars.stream().map(CarInfoDTO::getLayer).collect(Collectors.toList());
+                    Integer source = 0;
+                    source = compute(source, integer, layers);
+                    Integer finalSource = source;
+                    List<CarInfoDTO> collect =
+                            idleCars.stream().filter(x -> x.getLayer() == finalSource).collect(Collectors.toList());
+                    if (source == 0){
+                        return;
+                    }
+                    this.sendCrossLayerTask(source, integer, collect.get(0).getRgvId());
+                    return;
+                }
+            }
+        }
 //        for (Integer integer : layerTasks.keySet()) {
-//            if (layerTasks.get(integer).size()>3) {
-//                //任务数大于3
+//            if (layerTasks.get(integer).size() > 0) {
+//                //当前层没车
 //                List<CarInfoDTO> cars =
-//                        collect1.stream().filter(x -> x.getLayer() == integer).collect(Collectors.toList());
-//                if (cars==null||cars.size()==0){
-//                    //没有车 需要找车换层
+//                        carInfoList.stream().filter(x -> x.getLayer() == integer).collect(Collectors.toList());
+//                if (cars == null || cars.size() == 0) {
+//                    //没有车 需要找可用空闲车换层换层
 //                    List<CarInfoDTO> idleCars = new ArrayList<>();
-//                    for (CarInfoDTO carInfoDTO : collect1) {
-//                        if (layerTasks.get(carInfoDTO.getLayer()).size()==0) {
-//                            //有车没任务
+//                    List<CarInfoDTO> usableCar = carInfoList.stream().filter(x -> !layerTasks.keySet().contains(x.getLayer()) && x.getStatus() == 2).collect(Collectors.toList());
+//                    for (CarInfoDTO carInfoDTO : usableCar) {
 //                            idleCars.add(carInfoDTO);
-//                        }
 //                    }
-//                    if (idleCars.size()==0) {
+//                    if (idleCars.size() == 0) {
 //                        return;
 //                    }
 //                    //找个最近层
 //                    List<Integer> layers = idleCars.stream().map(CarInfoDTO::getLayer).collect(Collectors.toList());
 //                    Integer source = 0;
-//                    source = compute(source,integer,layers);
+//                    source = compute(source, integer, layers);
 //                    Integer finalSource = source;
 //                    List<CarInfoDTO> collect =
 //                            idleCars.stream().filter(x -> x.getLayer() == finalSource).collect(Collectors.toList());
+//                    if (source == 0){
+//                        return;
+//                    }
 //                    this.sendCrossLayerTask(source, integer, collect.get(0).getRgvId());
+//                    return;
 //                }
 //            }
 //        }
-        
-        
+    }
+        /**
         //layerTasks为层和任务得关系
         if (outContainers.size() == 0) {
             return;
@@ -128,6 +174,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         CarInfoDTO car = carNoTasks.get(0);
         this.sendCrossLayerTask(car.getLayer(), tasksNoCars.get(0).getLayer(), car.getRgvId());
     }
+    */
 
     private int compute(int sourceLayer,int layer,List<Integer> layers){
         int diffNum = Math.abs(layers.get(0) - layer);
@@ -171,18 +218,20 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         sasMoveCarDto.setSource(sourceLayer);
         sasMoveCarDto.setTarget(targetLayer);
         sasMoveCarDto.setTaskId(taskId);
+        sasMoveCarDto.setRgvId(Integer.parseInt(rgvId));
         RestMessage<String> message = ISasService.moveCar(sasMoveCarDto);
         if (message.isSuccess()) {
-            this.saveCrossLayerTask(sourceLayer, targetLayer, rgvId);
+            this.saveCrossLayerTask(taskId,sourceLayer, targetLayer, rgvId);
         }
     }
 
     @Override
-    public void saveCrossLayerTask(int sourceLayer, int targetLayer, String rgvId) throws Exception {
+    public void saveCrossLayerTask(String id,int sourceLayer, int targetLayer, String rgvId) throws Exception {
         CrossLayerTask crossLayerTask = new CrossLayerTask();
         crossLayerTask.setSourceLayer(sourceLayer);
         crossLayerTask.setTargetLayer(targetLayer);
         crossLayerTask.setCarNo(rgvId);
+        crossLayerTask.setTaskId(id);
         crossLayerTaskMapper.save(crossLayerTask);
     }
 }

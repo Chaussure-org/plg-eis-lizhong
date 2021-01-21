@@ -158,9 +158,14 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doSasToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("=====================sas to wcs=========================");
-        containerPathTaskDetailDTO.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
-        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
-        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
+        //点位转换
+        ContainerPathTaskDetail containerPathTaskDetail =
+                containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(), ContainerPathTaskDetail.class);
+        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask,
+                PrologDateUtils.parseObject(new Date()));
+//        containerPathTaskDetailDTO.setNextDeviceSystem(LocationConstants.DEVICE_SYSTEM_SAS);
+//        containerPathTaskDetailDTO.setNextLocation(PointChangeEnum.getTarget(containerPathTaskDetailDTO.getNextLocation()));
+//        sxMoveStoreService.mcsContainerMove(containerPathTask, containerPathTaskDetailDTO);
     }
 
     @Override
