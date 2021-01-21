@@ -55,8 +55,8 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
             return;
         }
         Map<Integer, List<ContainerPathTaskDetail>> layerTasks = new HashMap<>();
-        updateLayerTasks(ins, layerTasks);
-        updateLayerTasks(outs, layerTasks);
+        updateLayerTasksIn(ins, layerTasks);
+        updateLayerTasksOut(outs, layerTasks);
         if (layerTasks.size() == 0) {
             return;
         }
@@ -189,11 +189,11 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
     }
 
     /**
-     * 获取集合中层和任务数得对应关系
+     * 获取集合中层和任务数得对应关系(入库)
      * @param ins
      * @param layerTasks
      */
-    private void updateLayerTasks(List<ContainerPathTaskDetail> ins, Map<Integer, List<ContainerPathTaskDetail>> layerTasks) {
+    private void updateLayerTasksIn(List<ContainerPathTaskDetail> ins, Map<Integer, List<ContainerPathTaskDetail>> layerTasks) {
         if (ins !=null && ins.size()>0){
             for (ContainerPathTaskDetail in : ins) {
                 if (layerTasks.containsKey(Integer.parseInt(in.getNextLocation().substring(0,2)))) {
@@ -204,6 +204,27 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
                     List<ContainerPathTaskDetail> containerPathTaskDetails = new ArrayList<>();
                     containerPathTaskDetails.add(in);
                   layerTasks.put(Integer.parseInt(in.getNextLocation().substring(0,2)),containerPathTaskDetails);
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取集合中层和任务数得对应关系（出库）
+     * @param ins
+     * @param layerTasks
+     */
+    private void updateLayerTasksOut(List<ContainerPathTaskDetail> ins, Map<Integer, List<ContainerPathTaskDetail>> layerTasks) {
+        if (ins !=null && ins.size()>0){
+            for (ContainerPathTaskDetail in : ins) {
+                if (layerTasks.containsKey(Integer.parseInt(in.getSourceLocation().substring(0,2)))) {
+                    List<ContainerPathTaskDetail> containerPathTaskDetails =
+                            layerTasks.get(Integer.parseInt(in.getSourceLocation().substring(0, 2)));
+                    containerPathTaskDetails.add(in);
+                } else {
+                    List<ContainerPathTaskDetail> containerPathTaskDetails = new ArrayList<>();
+                    containerPathTaskDetails.add(in);
+                    layerTasks.put(Integer.parseInt(in.getSourceLocation().substring(0,2)),containerPathTaskDetails);
                 }
             }
         }

@@ -13,8 +13,10 @@ public class SasMoveTaskDto implements Serializable {
 
     @ApiModelProperty("任务id")
     private String taskId;
-    @ApiModelProperty("任务类型")
+    @ApiModelProperty("任务类型：1：入库:2：出库 3：同层移库")
     int type;
+    @ApiModelProperty("库编号 默认为1")
+    int bankId;
     @ApiModelProperty("容器号")
     String containerNo;
     @ApiModelProperty("源地址")
@@ -25,22 +27,22 @@ public class SasMoveTaskDto implements Serializable {
     String weight;
     @ApiModelProperty("优先级")
     String priority;
-    @ApiModelProperty("状态")
+    @ApiModelProperty("任务状态 0- 正常 1-异常")
     int status;
 
-    public SasMoveTaskDto(String taskId, int type, String containerNo, String address, String target, String weight,
-                          String priority, int status) {
+    public SasMoveTaskDto() {
+    }
+
+    public SasMoveTaskDto(String taskId, int type, int bankId, String containerNo, String address, String target, String weight, String priority, int status) {
         this.taskId = taskId;
         this.type = type;
+        this.bankId = bankId;
         this.containerNo = containerNo;
         this.address = address;
         this.target = target;
         this.weight = weight;
         this.priority = priority;
         this.status = status;
-    }
-
-    public SasMoveTaskDto() {
     }
 
     public String getTaskId() {
@@ -107,11 +109,20 @@ public class SasMoveTaskDto implements Serializable {
         this.status = status;
     }
 
+    public int getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(int bankId) {
+        this.bankId = bankId;
+    }
+
     @Override
     public String toString() {
-        return "MoveTaskDto{" +
+        return "SasMoveTaskDto{" +
                 "taskId='" + taskId + '\'' +
                 ", type=" + type +
+                ", bankId=" + bankId +
                 ", containerNo='" + containerNo + '\'' +
                 ", address='" + address + '\'' +
                 ", target='" + target + '\'' +

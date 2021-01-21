@@ -3,17 +3,25 @@ package com.prolog.eis.sas.service.impl;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.wcs.TaskCallbackDTO;
 import com.prolog.eis.engin.dao.CrossLayerTaskMapper;
+import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
+import com.prolog.eis.location.dao.ContainerPathTaskMapper;
+import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
+import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.IContainerPathTaskDetailService;
 import com.prolog.eis.location.service.SxMoveStoreService;
+import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.store.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.model.wcs.CrossLayerTask;
 import com.prolog.eis.sas.service.ISasLogicService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.eis.util.mapper.Query;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +56,26 @@ public class SasLogicServiceImpl implements ISasLogicService {
     @Autowired
     private CrossLayerTaskMapper crossLayerTaskMapper;
 
+    @Autowired
+    private SxStoreLocationMapper sxStoreLocationMapper;
+
+    @Autowired
+    private SxStoreLocationGroupMapper sxStoreLocationGroupMapper;
+    @Autowired
+    private SxkLocationService sxkLocationService;
+    @Autowired
+    private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
+
     /**
      * 移库任务回告
      * @param taskCallbackDTO 任务回告实体
      */
     @Override
-    @LogInfo(desci = "sas出库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_SEND_MOVE_TASK_CALLBACK,systemType =
+    @LogInfo(desci = "sas移库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_SEND_MOVE_TASK_CALLBACK,systemType =
             LogDto.SAS)
     public void doMoveTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
+        //重新计算货位解锁以及升位
+        this.updateLock(taskCallbackDTO);
         callBack(taskCallbackDTO);
     }
 
@@ -68,8 +88,11 @@ public class SasLogicServiceImpl implements ISasLogicService {
     @Override
     @LogInfo(desci = "sas出库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_SEND_OUTBOUND_TASK_CALLBACK,systemType = LogDto.SAS)
     public void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-        callBack(taskCallbackDTO);
+
         iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
+        //重新计算货位解锁以及升位
+        this.updateLock(taskCallbackDTO);
+        callBack(taskCallbackDTO);
     }
 
     /**
@@ -148,5 +171,24 @@ public class SasLogicServiceImpl implements ISasLogicService {
     public void doHcTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
         //换层任务回告成功删除换层任务
         crossLayerTaskMapper.deleteByMap(MapUtils.put("taskId",taskCallbackDTO.getTaskId()).getMap(),CrossLayerTask.class);
+    }
+
+
+    private void updateLock(TaskCallbackDTO taskCallbackDTO) throws Exception {
+        Query query = new Query(ContainerPathTaskDetail.class);
+        query.addEq("taskId", taskCallbackDTO.getTaskId());
+        query.addEq("containerNo", taskCallbackDTO.getContainerNo());
+        List<ContainerPathTaskDetail> containerPathTaskDetailList = containerPathTaskDetailMapper.findByEisQuery(query);
+        SxStoreLocation sourceLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo", containerPathTaskDetailList.get(0).getSourceLocation()).getMap(), SxStoreLocation.class);
+        //判断当前深位还是否有出库任务
+        int i = sxStoreLocationGroupMapper.computeMoveNum(sourceLocation.getStoreLocationGroupId());
+        if (i == 0){
+            sxStoreLocationGroupMapper.updateMapById(sourceLocation.getStoreLocationGroupId(),
+                    MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_UNLOCK).getMap(), SxStoreLocationGroup.class);
+        }
+
+
+        SxStoreLocationGroup sxStoreLocationGroup = sxStoreLocationGroupMapper.findById(sourceLocation.getStoreLocationGroupId(), SxStoreLocationGroup.class);
+        sxkLocationService.computeLocation(sxStoreLocationGroup);
     }
 }

@@ -25,7 +25,7 @@ public interface SxStoreLocationGroupMapper extends EisBaseMapper<SxStoreLocatio
 	 * @param weight
 	 * @return
 	 */
-	@Select("select slg.id as storeLocationGroupId,count(s.id) as containerCount,slg.IN_OUT_NUM as inOutNum ,slg.x,slg.y,slg.reserved_location as reservedLocation,slg.entrance1_property1 as entrance1Property1 ,slg.entrance1_property2 as entrance1Property2 ,slg.entrance2_property1 as entrance2Property1 ,slg.entrance2_property2 as  entrance2Property2  \r\n" + 
+	@Select("select slg.id as storeLocationGroupId,count(s.id) as containerCount,slg.IN_OUT_NUM as inOutNum ,slg.x,slg.y,slg.reserved_location as reservedLocation,slg.entrance1_property1 as entrance1Property1 ,slg.entrance1_property2 as entrance1Property2 ,slg.entrance2_property1 as entrance2Property1 ,slg.entrance2_property2 as  entrance2Property2,slg.layer as layer  \r\n" +
 			"from sx_store_location sl \r\n" + 
 			"left join sx_store_location_group slg on slg.id = sl.STORE_LOCATION_GROUP_ID \r\n" + 
 			"left join container_path_task s on s.source_area = sl.area_no and s.source_location = sl.store_no \r\n" + 
@@ -112,4 +112,20 @@ public interface SxStoreLocationGroupMapper extends EisBaseMapper<SxStoreLocatio
 			"WHERE\n" +
 			"\tct.container_no = #{containerNo}")
 	int  findGroupIdByContainer(@Param("containerNo") String containerNo);
+
+	/**
+	 * 计算当前货位组是否有移动任务（）
+	 * @param storeLocationGroupId
+	 * @return
+	 */
+	@Select("SELECT\n" +
+			"\tCOUNT( * ) \n" +
+			"FROM\n" +
+			"\tsx_store_location_group sg\n" +
+			"\tJOIN sx_store_location ss ON ss.store_location_group_id = sg.id\n" +
+			"\tJOIN container_path_task_detail cpt ON cpt.source_location = ss.store_no \n" +
+			"WHERE\n" +
+			"\tcpt.task_id IS NOT NULL \n" +
+			"\tAND sg.id = #{storeLocationGroupId}")
+    int computeMoveNum(@Param("storeLocationGroupId") Integer storeLocationGroupId);
 }

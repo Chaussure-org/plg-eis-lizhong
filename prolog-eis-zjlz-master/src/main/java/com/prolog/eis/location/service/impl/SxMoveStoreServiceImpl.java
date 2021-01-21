@@ -213,7 +213,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 }
                 long start = System.currentTimeMillis();
                 SxStoreLocation targetSxStoreLocation =
-                        sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),
+                        sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getNextArea(),Integer.parseInt(containerPathTaskDetailDTO.getSourceLocation().substring(0,2)),
                                 0, 0, 0, 0, taskProperty1, taskProperty2);
                 long cost = (System.currentTimeMillis() - start) ;
                 System.out.println("------------------"+containerPathTaskDetailDTO.getContainerNo()+"分配货位耗时" + cost + "毫秒------------------------------");
@@ -256,15 +256,10 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
      */
     private void sxkOutStore(ContainerPathTask containerPathTask,
                              ContainerPathTaskDetailDTO containerPathTaskDetailDTO) {
-        //增加校验堆垛机出库口->出库bcr任务数 （出库区域containerPathTaskDetailDTO.getNextArea()） 有一个任务后续任务不发
-        int i = containerPathTaskDetailMapper.countPathTaskDetail(containerPathTaskDetailDTO.getNextLocation());
-        if (i > 0){
-            logger.info(containerPathTaskDetailDTO.getNextLocation()+"已有任务发往出库口,当前出库任务发往sps失败");
-            return;
-        }
+
         SxStoreLockDto sxStoreLock = sxStoreMapper.findSxStoreLock(containerPathTask.getContainerNo());
-        if (sxStoreLock.getAscentGroupLockState() == 1 || sxStoreLock.getAscentLockState() == 1 || sxStoreLock.getIsLock() == 1) {
-            logger.info("货位id"+sxStoreLock.getLocationId()+"锁定 eis -> mcs 出库任务 路径发送失败");
+        if ( sxStoreLock.getAscentLockState() == 1 || sxStoreLock.getIsLock() == 1) {
+            logger.info("货位id"+sxStoreLock.getLocationId()+"锁定 出库任务 路径发送失败");
             return;
         } else {
             if (sxStoreLock.getDeptNum() == 0) {
@@ -309,6 +304,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             if (StringUtils.isBlank(taskId)) {
                 taskId = PrologStringUtils.newGUID();
             }
+
 
             //当前货位
             SxStoreLocation sourceLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo",
@@ -407,7 +403,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             String taskProperty2 = containerStoreService.buildTaskProperty2(goodsInfo);
 
             SxStoreLocation targetSxStoreLocation =
-                    sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getSourceArea(),
+                    sxkLocationService.findLoacationByArea(containerPathTaskDetailDTO.getSourceArea(),Integer.parseInt(containerPathTaskDetailDTO.getSourceLocation().substring(0,2)),
                             moveSxStoreGroupDto.getX(), moveSxStoreGroupDto.getY(), 0, 0, taskProperty1, taskProperty2);
             if (null == targetSxStoreLocation) {
                 logger.info(containerPathTaskDetailDTO.getContainerNo()+"移位未找到可用货位");
@@ -471,6 +467,12 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                               int pathTaskDetailId, String sourSys) {
         try {
             if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourSys)) {
+                //增加校验堆垛机出库口->出库bcr任务数 （出库区域containerPathTaskDetailDTO.getNextArea()） 有一个任务后续任务不发
+                int i = containerPathTaskDetailMapper.countPathTaskDetail(nextStoreNo);
+                if (i > 0){
+                    logger.info(nextStoreNo+"已有任务发往出库口,当前出库任务发往sps失败");
+                    return;
+                }
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0, 1);
                 //测试验证
@@ -489,7 +491,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 }
             } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourSys)) {
                 //wcs --> sas
-                SasMoveTaskDto sasMoveTaskDto = new SasMoveTaskDto(taskId, taskType, containerNo,
+                SasMoveTaskDto sasMoveTaskDto = new SasMoveTaskDto(taskId, taskType,1, containerNo,
                         sourceStoreNo, nextStoreNo, "", "99", 0);
                 //加跨层判断
 
@@ -670,7 +672,6 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             sxkLocationService.computeLocation(sxStoreLocationGroup);
         } else if (mcsTaskType == 3) {
             //移位解锁原货位
-            //出库解锁原货位
             SxStoreLocation sourceLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo", containerPathTaskDetail.getSourceLocation()).getMap(), SxStoreLocation.class);
 
             sxStoreLocationGroupMapper.updateMapById(sourceLocation.getStoreLocationGroupId(),

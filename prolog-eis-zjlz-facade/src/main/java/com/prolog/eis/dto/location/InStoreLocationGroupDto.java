@@ -14,6 +14,9 @@ public class InStoreLocationGroupDto {
 	private String entrance1Property2;
 	private String entrance2Property1;
 	private String entrance2Property2;
+
+
+	private int layer;
 	
 	public int getStoreLocationGroupId() {
 		return storeLocationGroupId;
@@ -87,6 +90,12 @@ public class InStoreLocationGroupDto {
 	public void setEntrance2Property2(String entrance2Property2) {
 		this.entrance2Property2 = entrance2Property2;
 	}
-	
-	
+
+	public int getLayer() {
+		return layer;
+	}
+
+	public void setLayer(int layer) {
+		this.layer = layer;
+	}
 }

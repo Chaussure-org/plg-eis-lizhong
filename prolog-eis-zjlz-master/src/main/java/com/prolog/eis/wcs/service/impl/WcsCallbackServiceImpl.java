@@ -435,8 +435,17 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 createContainerInfo(wareHousings.get(0));
             }
         }
-        //二楼 循环线Bcr 请求
-        //this.checkGoOn(bcrDataDTO);
+        //二楼输送线循环线体bcr
+        if (StoreArea.LXHK02.equals(address)){
+            this.checkGoOn(bcrDataDTO);
+        }
+        if (StoreArea.R0201.equals(address)){
+            //生成回库任务
+            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), StoreArea.SAS01);
+        }
+
+        //二楼
+
 
         //二楼 托盘回库BCR 请求
         if (ConstantEnum.secondInBcrs.contains(address)) {
@@ -509,7 +518,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                             station.setCurrentNum(station.getCurrentNum()+1);
                             stationService.updateStation(station);
                         } else {
-                            wcsLineMoveDto.setTarget("LXHK02");
+                            wcsLineMoveDto.setTarget(StoreArea.LXHK02);
                             wcsService.lineMove(wcsLineMoveDto,0);
                         }
                     }
@@ -541,14 +550,20 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
         if (lineBindingDetails.size() > 0) {
             String taskId = PrologStringUtils.newGUID();
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), "", containerNo,
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), StoreArea.LXJZ01, containerNo,
                     5);
             wcsService.lineMove(wcsLineMoveDto, 0);
         } else {
             PointLocation point = pointLocationService.getPointByPointId(bcrDataDTO.getAddress());
             //回库
-            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), "SAS01");
+            String taskId = PrologStringUtils.newGUID();
+            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), StoreArea.R0201, containerNo,
+                    5);
+            wcsService.lineMove(wcsLineMoveDto, 0);
             containerStoreService.updateTaskStausByContainer(containerNo, ContainerStore.TASK_TYPE_INBOUND);
+            //删除路径
+            containerPathTaskService.deletePathByContainer(containerNo);
+
         }
     }
 

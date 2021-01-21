@@ -154,6 +154,15 @@ public class StoreArea implements Serializable {
      * 铁拖上架区
      */
     public static final String IT01 = "IT01";
+    /**
+     * 输送线回库bcr
+     */
+    public static final String R0201 = "RO201";
+
+    /**
+     * 循环线bcr
+     */
+    public static final String LXHK02 = "LXHK02";
 
 
 

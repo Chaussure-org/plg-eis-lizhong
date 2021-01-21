@@ -9,6 +9,7 @@ import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.store.service.IContainerStoreService;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SxkLocationServiceImpl implements SxkLocationService {
@@ -38,10 +40,10 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	private IContainerStoreService containerStoreService;
 
 	@Override
-	public SxStoreLocation findLoacationByArea(String area, int originX, int originY, int reserveCount, double weight, String taskProperty1, String taskProperty2) throws Exception {
+	public SxStoreLocation findLoacationByArea(String area,int layer, int originX, int originY, int reserveCount, double weight, String taskProperty1, String taskProperty2) throws Exception {
 		// TODO Auto-generated method stub
 
-		Integer storeLocationGroupId = findLocationGroup(taskProperty1, taskProperty2, originX, originY,
+		Integer storeLocationGroupId = findLocationGroup(layer,taskProperty1, taskProperty2, originX, originY,
 				area, weight);
 
 		SxStoreLocation result = findLocationId(storeLocationGroupId, taskProperty1, taskProperty2, weight);
@@ -319,13 +321,20 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	 * @param taskProperty2
 	 * @return
 	 */
-	private Integer findLocationGroup(String taskProperty1, String taskProperty2, Integer originX,
+	private Integer findLocationGroup(int layer,String taskProperty1, String taskProperty2, Integer originX,
 			Integer originY,String area, double weight) {
 
 		Integer storeLocationGroupId = null;
+		List<InStoreLocationGroupDto> findStoreLocationGroup = new ArrayList<>();
+		List<InStoreLocationGroupDto> findStoreLocationGroup1 = sxStoreLocationGroupMapper.findStoreLocationGroupByArea(area, weight);
 
-		List<InStoreLocationGroupDto> findStoreLocationGroup = sxStoreLocationGroupMapper.findStoreLocationGroupByArea(area, weight);
-		if (findStoreLocationGroup.size() == 0) {
+		//箱库只能同层换层
+		if (StoreArea.SAS01.equals(area)){
+			findStoreLocationGroup = findStoreLocationGroup1.stream().filter(x -> layer == x.getLayer()).collect(Collectors.toList());
+		}else {
+			findStoreLocationGroup = findStoreLocationGroup1;
+		}
+		if (findStoreLocationGroup1.size() == 0) {
 			return storeLocationGroupId;
 		}
 

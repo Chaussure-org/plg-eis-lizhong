@@ -1,10 +1,12 @@
 package com.prolog.eis.store;
 
 import com.prolog.eis.ZjlzApplication;
+import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.store.SxStoreLocation;
+import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.EisStringUtils;
 import org.junit.Test;
@@ -27,11 +29,13 @@ public class InboundTaskTest {
 
     @Autowired
     private SxkLocationService sxkLocationService;
+    @Autowired
+    private SxStoreLocationGroupMapper sxStoreLocationGroupMapper;
 
     @Test
     public void testInbound() throws Exception {
         GoodsInfo goodsInfo =
-                containerStoreService.findContainerStockInfo("C-002615");
+                containerStoreService.findContainerStockInfo("A-004784");
         //获取商品id
         String taskProperty1 = null;
         String taskProperty2 = null;
@@ -41,7 +45,7 @@ public class InboundTaskTest {
         }
         long start = System.currentTimeMillis();
         SxStoreLocation targetSxStoreLocation =
-                sxkLocationService.findLoacationByArea("MCS04",
+                sxkLocationService.findLoacationByArea("SAS01",1,
                         0, 0, 0, 0, taskProperty1, taskProperty2);
         long cost = (System.currentTimeMillis() - start) ;
         System.out.println("------------------分配货位耗时" + cost + "毫秒------------------------------");
@@ -53,5 +57,14 @@ public class InboundTaskTest {
     public void testSpsStore(){
         String mcsPoint = EisStringUtils.getMcsPoint("0800380019");
         System.out.println(mcsPoint);
+    }
+
+
+    @Test
+    public void testSasUpdate() throws Exception {
+        SxStoreLocationGroup sxStoreLocationGroup =
+                sxStoreLocationGroupMapper.findById(182,
+                        SxStoreLocationGroup.class);
+        sxkLocationService.computeLocation(sxStoreLocationGroup);
     }
 }

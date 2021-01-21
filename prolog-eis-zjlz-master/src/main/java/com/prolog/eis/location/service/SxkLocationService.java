@@ -8,6 +8,7 @@ public interface SxkLocationService {
 	/**
 	 * 根据区域查找货位组
 	 * @param area
+	 * @param layer
 	 * @param originX
 	 * @param originY
 	 * @param reserveCount
@@ -16,7 +17,7 @@ public interface SxkLocationService {
 	 * @param taskProperty2
 	 * @return
 	 */
-	SxStoreLocation findLoacationByArea(String area, int originX, int originY, int reserveCount, double weight,
+	SxStoreLocation findLoacationByArea(String area,int layer, int originX, int originY, int reserveCount, double weight,
 										String taskProperty1, String taskProperty2) throws Exception;
 	
 	/**

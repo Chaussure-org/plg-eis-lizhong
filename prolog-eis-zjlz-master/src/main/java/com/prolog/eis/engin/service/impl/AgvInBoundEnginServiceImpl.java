@@ -64,7 +64,7 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
                     String target = goods.getGoodsOneType().equals("包材")?""+(roadWayContainerTasks.get(0).getRoadWay()-1):"MCS0" + (roadWayContainerTasks.get(0).getRoadWay()-1);
                     pathSchedulingService.containerMoveTask(containerPathTask.getContainerNo(),
                             StoreArea.RCS01,
-                            "MCS0" + (roadWayContainerTasks.get(0).getRoadWay()-1));
+                            target);
                 }
 
             }
