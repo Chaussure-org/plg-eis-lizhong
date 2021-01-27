@@ -6,9 +6,11 @@ import com.prolog.eis.dto.page.InboundQueryDto;
 import com.prolog.eis.dto.page.WmsInboundInfoDto;
 import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.model.wms.WmsInboundTask;
+import com.prolog.eis.model.wms.WmsInboundTaskHistory;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.warehousing.dao.WareHousingMapper;
+import com.prolog.eis.warehousing.dao.WmsInboundTaskHistoryMapper;
 import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.core.pojo.Page;
@@ -16,10 +18,13 @@ import com.prolog.framework.core.restriction.Criteria;
 import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author wangkang
@@ -33,6 +38,8 @@ public class WareHousingServiceImpl implements IWareHousingService {
     private WareHousingMapper mapper;
     @Autowired
     private IWmsService wmsService;
+    @Autowired
+    private WmsInboundTaskHistoryMapper wmsInboundTaskHistoryMapper;
 
     /**
      * 通过容器号找wms下发的入库任务
@@ -78,5 +85,27 @@ public class WareHousingServiceImpl implements IWareHousingService {
         wmsInboundCallBackDto.setITEMNAME(wmsInboundTask.getGoodsName());
         wmsInboundCallBackDto.setSEQNO(wmsInboundTask.getSeqNo());
         wmsService.inboundTaskCallBack(wmsInboundCallBackDto);
+    }
+
+    @Override
+    public List<WmsInboundTask> findInboundByMap(Map map) {
+        return mapper.findByMap(map,WmsInboundTask.class);
+    }
+
+    @Override
+    public void inboundToHistory(WmsInboundTask wmsInboundTask) {
+        WmsInboundTaskHistory wmsInboundTaskHistory = new WmsInboundTaskHistory();
+        BeanUtils.copyProperties(wmsInboundTask,wmsInboundTaskHistory);
+        wmsInboundTaskHistory.setCompleteTime(new Date());
+        wmsInboundTaskHistory.setCallState(WmsInboundTask.CALL_STATE_FINISH);
+        wmsInboundTaskHistoryMapper.save(wmsInboundTaskHistory);
+        mapper.deleteById(wmsInboundTask.getId(),WmsInboundTask.class);
+    }
+
+    @Override
+    public void updateInboundCallState(String containerNo,int callState) {
+        Criteria cri = Criteria.forClass(WmsInboundTask.class);
+        cri.setRestriction(Restrictions.eq("containerNo",containerNo));
+        mapper.updateMapByCriteria(MapUtils.put("callState",callState).getMap(),cri);
     }
 }

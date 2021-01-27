@@ -2,22 +2,27 @@ package com.prolog.eis.store;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.prolog.eis.ZjlzApplication;
+import com.prolog.eis.dto.inventory.RickerTaskDto;
 import com.prolog.eis.dto.mcs.McsCarInfoDto;
 import com.prolog.eis.dto.wms.WmsInboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsInventoryCallBackDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
 import com.prolog.eis.engin.dao.CrossLayerTaskMapper;
+import com.prolog.eis.engin.service.IInventoryTrayOutService;
 import com.prolog.eis.inventory.dao.InventoryTaskMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.model.wcs.CrossLayerTask;
+import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.util.EisRestMessage;
 import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.HttpUtils;
+import com.prolog.eis.warehousing.service.IWareHousingService;
 import com.prolog.eis.wms.service.FeignService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.dao.util.PageUtils;
+import com.prolog.framework.utils.MapUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +44,9 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes = ZjlzApplication.class)
 @RunWith(SpringRunner.class)
 public class WmsCallBackTest {
+
+    @Autowired
+    private IInventoryTrayOutService inventoryTrayOutService;
     @Autowired
     private IWmsService wmsService;
     @Autowired
@@ -54,6 +62,9 @@ public class WmsCallBackTest {
 
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
+
+    @Autowired
+    private IWareHousingService wareHousingService;
 
     /**
      * 入库回告
@@ -153,13 +164,15 @@ public class WmsCallBackTest {
     }
 
     @Test
-    public void testToSps(){
-        CrossLayerTask crossLayerTask = new CrossLayerTask();
-        crossLayerTask.setTaskId("fbd9a405d65a47cdab8a51b9af2b1357");
-        crossLayerTask.setSourceLayer(1);
-        crossLayerTask.setTargetLayer(1);
-        crossLayerTask.setCarNo("111");
-        crossLayerTaskMapper.save(crossLayerTask);
-        System.out.println("aaaa");
+    public void testToSps() {
+        List<RickerTaskDto> rickerTaskDtos = inventoryTrayOutService.computeRickerTask();
+        System.out.println("aaa");
+    }
+
+    @Test
+    public void testCallInbound(){
+        List<WmsInboundTask> wmsInboundTasks = wareHousingService.findInboundByMap(MapUtils.put("callState", WmsInboundTask.CALL_STATE_IN).getMap());
+        wareHousingService.inboundToHistory(wmsInboundTasks.get(0));
+        System.out.println("aaaaa");
     }
 }

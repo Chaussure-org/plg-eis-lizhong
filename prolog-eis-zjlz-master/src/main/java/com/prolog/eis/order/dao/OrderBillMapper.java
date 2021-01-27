@@ -61,7 +61,7 @@ public interface OrderBillMapper extends BaseMapper<OrderBill> {
      * @return
      */
     @Select("SELECT\n" +
-            "\tb.task_id AS taskId,\n" +
+            "\td.task_id AS taskId,\n" +
             "\tb.order_no AS orderNo,\n" +
             "\tb.bill_date AS billDate,\n" +
             "\tb.order_type AS orderType,\n" +

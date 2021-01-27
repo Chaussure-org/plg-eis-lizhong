@@ -14,7 +14,7 @@ public class EisProperties {
     /**
      *   agv区域回库时间/分钟
      */
-    private int agvInboundTime = 2;
+    private int agvInboundTime = 1;
     /**
      *   输送线最大料箱数
      */

@@ -146,6 +146,7 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
             wmsInboundTask.setCreateTime(new Date());
             wmsInboundTask.setLotId(wmsInboundTaskDto.getPCH());
             wmsInboundTask.setLot(wmsInboundTaskDto.getLOT());
+            wmsInboundTask.setCallState(WmsInboundTask.CALL_STATE_CREATE);
             wmsInboundTaskList.add(wmsInboundTask);
         }
         mapper.saveBatch(wmsInboundTaskList);
@@ -246,7 +247,6 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                 orderBill.setOrderType(order.get(0).getBILLTYPE());
                 orderBill.setOrderTaskState(0);
                 orderBill.setBillDate(order.get(0).getBILLDATE());
-                orderBill.setTaskId(order.get(0).getTASKID());
                 orderBill.setIronTray(Integer.valueOf(order.get(0).getEXSATTR10()));
                 orderBill.setCreateTime(new Date());
                 orderBillService.saveOrderBill(orderBill);
@@ -281,7 +281,9 @@ public class WmsCallBackServiceImpl implements IWmsCallBackService {
                         orderDetail.setSpecial(Integer.valueOf(wmsOutboundTaskDto.getSPECIAL()));
                         orderDetail.setWheatHead(wmsOutboundTaskDto.getLOTNO());
                         orderDetail.setDecals(Integer.valueOf(wmsOutboundTaskDto.getSF_TB()));
+                        orderDetail.setTaskId(wmsOutboundTaskDto.getTASKID());
                         orderDetails.add(orderDetail);
+
                     }
 
                 }

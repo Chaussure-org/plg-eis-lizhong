@@ -3,6 +3,7 @@ package com.prolog.eis.location.service;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author wangkang
@@ -31,4 +32,10 @@ public interface IContainerPathTaskDetailService {
      * @param containerPathTaskDetail
      */
     void savePathDetail(ContainerPathTaskDetail containerPathTaskDetail);
+
+
+    /**
+     *根据map查对象
+     */
+    List<ContainerPathTaskDetail> findPathTaskDetailByMap(Map map);
 }

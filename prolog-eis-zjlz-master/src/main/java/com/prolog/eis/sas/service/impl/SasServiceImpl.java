@@ -60,9 +60,10 @@ public class SasServiceImpl implements ISasService {
 //    @LogInfo(desci = "sas请求小车信息", direction = "eis->sas", type = LogDto.SAS_TYPE_GET_CARINFO, systemType = LogDto.SAS)
     public List<CarInfoDTO> getCarInfo() throws IOException {
         String url = this.getUrl(properties.getSas().getGetCarInfoUrl());
-        // logger.info("EIS -> SAS 请求小车信息:{}", url);
+         logger.info("EIS -> SAS 请求小车信息:{}", url);
         RestMessage<CarListDTO> result = httpUtils.post(url, null, new TypeReference<RestMessage<CarListDTO>>() {
         });
+        logger.info("EIS <- SAS 请求小车信息{}",JsonUtils.toString(result.getData()));
         return result.getData().getCarryList();
     }
 

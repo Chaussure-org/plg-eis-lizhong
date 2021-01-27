@@ -10,9 +10,18 @@ import com.prolog.eis.util.LogInfo;
  * @CreateTime 2020-12-11 14:32
  */
 public interface ISasLogicService {
-
+    /**
+     * 移位任务回告
+     * @param taskCallbackDTO
+     * @throws Exception
+     */
     void doMoveTask(TaskCallbackDTO taskCallbackDTO) throws Exception;
 
+    /**
+     * 出库任务回告
+     * @param taskCallbackDTO
+     * @throws Exception
+     */
     void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception;
 
     /**
@@ -22,5 +31,10 @@ public interface ISasLogicService {
      */
     void doInboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception;
 
+    /**
+     * 换层任务回告
+     * @param taskCallbackDTO
+     * @throws Exception
+     */
     void doHcTask(TaskCallbackDTO taskCallbackDTO) throws Exception;
 }

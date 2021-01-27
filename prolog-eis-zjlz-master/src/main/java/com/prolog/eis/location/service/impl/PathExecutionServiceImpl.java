@@ -148,11 +148,11 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Override
     public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("rcs to wcs");
-        //在agv h回告那块处理这个逻辑
-        ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),
-                ContainerPathTaskDetail.class);
-        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask,
-                PrologDateUtils.parseObject(new Date()));
+        //bcr请求处理路径更新
+//        ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailMapper.findById(containerPathTaskDetailDTO.getId(),
+//                ContainerPathTaskDetail.class);
+//        containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask,
+//                PrologDateUtils.parseObject(new Date()));
     }
 
     @Override

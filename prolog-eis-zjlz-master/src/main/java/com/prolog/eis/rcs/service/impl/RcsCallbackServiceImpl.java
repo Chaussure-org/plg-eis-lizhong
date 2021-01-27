@@ -56,6 +56,7 @@ public class RcsCallbackServiceImpl implements IRcsCallbackService {
 
         switch (rcsCallbackDto.getMethod()) {
             case LocationConstants.RCS_TASK_METHOD_START:
+                break;
             case LocationConstants.RCS_TASK_METHOD_OUTBIN:
                 this.callbackStart(containerPathTaskDetailList);
                 break;

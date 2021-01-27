@@ -113,7 +113,7 @@ public class OutDispatch {
     @Scheduled(initialDelay = 3000, fixedDelay = 4000)
     public void rcsInBound(){
         try{
-//            agvInBoundEnginService.AgvInBound();
+            agvInBoundEnginService.AgvInBound();
         }catch (Exception e){
             e.printStackTrace();
         }

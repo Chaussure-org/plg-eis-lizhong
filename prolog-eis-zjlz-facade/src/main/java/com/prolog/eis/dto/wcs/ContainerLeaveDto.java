@@ -16,7 +16,7 @@ public class ContainerLeaveDto {
     private String taskId;
 
     @ApiModelProperty("发送时间")
-    private Date time;
+    private String time;
 
     @ApiModelProperty("容器号")
     private String containerNo;
@@ -32,11 +32,11 @@ public class ContainerLeaveDto {
         this.taskId = taskId;
     }
 
-    public Date getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -60,7 +60,7 @@ public class ContainerLeaveDto {
     public String toString() {
         return "ContainerLeaveDto{" +
                 "taskId='" + taskId + '\'' +
-                ", time=" + time +
+                ", time='" + time + '\'' +
                 ", containerNo='" + containerNo + '\'' +
                 ", deviceId='" + deviceId + '\'' +
                 '}';

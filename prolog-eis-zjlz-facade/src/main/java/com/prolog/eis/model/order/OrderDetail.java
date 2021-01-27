@@ -94,6 +94,12 @@ public class OrderDetail {
     @ApiModelProperty("麦头")
     private String wheatHead;
 
+
+    @Column("task_id")
+    @ApiModelProperty("任务id")
+    private String taskId;
+
+
     public Integer getDecals() {
         return decals;
     }
@@ -237,5 +243,14 @@ public class OrderDetail {
 
     public void setWheatHead(String wheatHead) {
         this.wheatHead = wheatHead;
+    }
+
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 }

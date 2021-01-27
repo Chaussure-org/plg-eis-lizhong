@@ -16,6 +16,7 @@ import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.model.wcs.CrossLayerTask;
+import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.sas.service.ISasLogicService;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
@@ -74,8 +75,6 @@ public class SasLogicServiceImpl implements ISasLogicService {
     @LogInfo(desci = "sas移库任务回告",direction = "sas->eis",type = LogDto.SAS_TYPE_SEND_MOVE_TASK_CALLBACK,systemType =
             LogDto.SAS)
     public void doMoveTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
-        //重新计算货位解锁以及升位
-        this.updateLock(taskCallbackDTO);
         callBack(taskCallbackDTO);
     }
 
@@ -90,8 +89,6 @@ public class SasLogicServiceImpl implements ISasLogicService {
     public void doOutboundTask(TaskCallbackDTO taskCallbackDTO) throws Exception {
 
         iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
-        //重新计算货位解锁以及升位
-        this.updateLock(taskCallbackDTO);
         callBack(taskCallbackDTO);
     }
 
@@ -130,7 +127,7 @@ public class SasLogicServiceImpl implements ISasLogicService {
         //入库完成
         iContainerStoreService.updateTaskTypeByContainer(taskCallbackDTO.getContainerNo(),0);
         iContainerStoreService.updateTaskStausByContainer(taskCallbackDTO.getContainerNo(),0);
-        iWareHousingService.deleteInboundTask(taskCallbackDTO.getContainerNo());
+        iWareHousingService.updateInboundCallState(taskCallbackDTO.getContainerNo(), WmsInboundTask.CALL_STATE_IN);
         callBack(taskCallbackDTO);
     }
 
@@ -151,12 +148,13 @@ public class SasLogicServiceImpl implements ISasLogicService {
             if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
                 updateTaskInfo(containerPathTaskDetail, containerPathTask);
                 sxMoveStoreService.updateContainerPathTaskComplete(containerPathTask,containerPathTaskDetail,nowTime);
-                sxMoveStoreService.unlockCompletekSxStoreLocation(containerPathTaskDetail);
+
             } else {
                 //不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
                 containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
                         , nowTime);
             }
+            sxMoveStoreService.unlockCompletekSxStoreLocation(containerPathTaskDetail);
             //历史表
             //containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
         }

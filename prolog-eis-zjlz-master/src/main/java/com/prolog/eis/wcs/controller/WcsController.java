@@ -1,6 +1,7 @@
 package com.prolog.eis.wcs.controller;
 
 import com.prolog.eis.dto.wcs.*;
+import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.wcs.service.IWcsCallbackService;
 import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 /**
  * @Author wangkang
@@ -39,7 +42,7 @@ public class WcsController {
     @ApiOperation(value = "bcr请求", notes = "请求类型 1-入库 2-出库 3-料箱进站 ")
     @PostMapping("/bcr")
     public RestMessage<String> bcrCallback(@RequestBody BCRDataDTO bcrDataDTO) throws Exception {
-//        logger.info("bcr请求,{}", JsonUtils.toString(bcrDataDTO));
+        logger.info("bcr请求,{}", JsonUtils.toString(bcrDataDTO));
         return wcsService.executeBcrCallback(bcrDataDTO);
     }
 

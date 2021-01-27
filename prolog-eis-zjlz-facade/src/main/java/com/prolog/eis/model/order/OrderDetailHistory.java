@@ -77,6 +77,18 @@ public class OrderDetailHistory {
   @ApiModelProperty("成品库出库数量")
   private Integer outQty;
 
+  @Column("task_id")
+  @ApiModelProperty("任务id")
+  private String taskId;
+
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
+
   public Integer getId() {
     return id;
   }

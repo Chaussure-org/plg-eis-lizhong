@@ -117,7 +117,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private StationMapper stationMapper;
     private final RestMessage<String> success = RestMessage.newInstance(true, "200", "操作成功", null);
     private final RestMessage<String> faliure = RestMessage.newInstance(false, "500", "操作失败", null);
-    private final RestMessage<String> out = RestMessage.newInstance(false, "300", "订单箱异常", null);
+    private final RestMessage<String> out = RestMessage.newInstance(false, "300", "托盘异常", null);
 
     /**
      * 任务回告
@@ -136,7 +136,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             this.doXZTask(taskCallbackDTO);
             return success;
         } catch (Exception e) {
-            logger.warn(taskCallbackDTO.getContainerNo()+"行走任务回告失败"+e.getMessage(), e);
+            logger.error(taskCallbackDTO.getContainerNo()+"行走任务回告失败"+e.getMessage(), e);
             return faliure;
         }
     }
@@ -173,7 +173,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             }
             return success;
         } catch (Exception e) {
-//            logger.error(bcrDataDTO.getContainerNo()+"bcr回告失败"+e.getMessage(),e);
+            logger.error(bcrDataDTO.getContainerNo()+"bcr回告失败"+e.getMessage(),e);
             LogDto logDto = new LogDto();
             logDto.setDirect("wcs->eis");
             logDto.setDescri("wcsBCR请求异常");
@@ -191,8 +191,11 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             }
             if ("BCR0101".equals(bcrDataDTO.getAddress())) {
                 return RestMessage.newInstance(false, "300", "托盘异常" + e.getMessage(), null);
-            } else {
-                return faliure;
+            }
+            if (ConstantEnum.secondOutBcrs.contains(bcrDataDTO.getAddress())){
+                return RestMessage.newInstance(false, "300", "托盘出库异常" + e.getMessage(), null);
+            }else {
+                return RestMessage.newInstance(false, "300", "bcr回告异常" + e.getMessage(), null);
             }
         }
     }
@@ -239,7 +242,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         } catch (Exception e) {
             LogDto logDto = new LogDto();
             logDto.setDirect("wcs->eis");
-            logDto.setDescri("wcs拣选站料箱放行");
+            logDto.setDescri("wcs拣选站料箱放行回告异常");
             logDto.setException(e.getMessage());
             logDto.setCreateTime(new Date());
             logDto.setHostPort(serverConfiguration.getUrl());
@@ -252,6 +255,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             logger.error("eis -> wcs拣选站料箱放行失败"+e.getMessage(), e);
             return RestMessage.newInstance(false, "300", "料箱放行失败："+e.getMessage() , null);
         }
+
     }
 
     /**
@@ -303,10 +307,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         List<PointLocation> collect = pointLocations.stream().filter(x -> x.getPointId().equals(taskCallbackDTO.getAddress())).collect(Collectors.toList());
         if (collect.size() > 0) {
             //判断 点位 属于站台料箱到拣选站,则将箱号写入到
-//            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
-//            if (pointLocation == null){
-//                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
-//            }
+            PointLocation pointLocation = pointLocationService.getPointByPointId(taskCallbackDTO.getAddress());
+            if (pointLocation == null){
+                throw new Exception("坐标点位【"+taskCallbackDTO.getAddress()+"】没有被管理");
+            }
             Station station = stationService.findById(collect.get(0).getStationId());
             synchronized (station.getId()) {
                 if (station == null) {
@@ -439,6 +443,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (StoreArea.LXHK02.equals(address)){
             this.checkGoOn(bcrDataDTO);
         }
+        //二层提升机入库口bcr
         if (StoreArea.R0201.equals(address)){
             //生成回库任务
             pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), StoreArea.SAS01);
@@ -449,22 +454,14 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
         //二楼 托盘回库BCR 请求
         if (ConstantEnum.secondInBcrs.contains(address)) {
-            /**
-             * BCR 请求 判断 此容器是否可以进行 行走任务 下发。
-             */
 
-            WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto("12345",
-                    "RTM0208",
-                    "RTM0207", "8888", 5);
-            RestMessage<String> result = wcsService.lineMove(wcsLineMoveDto, 0);
-            return;
-            /*String rcsPoint = BcrPointEnum.findRcsPoint(address);
+            String rcsPoint = BcrPointEnum.findRcsPoint(address);
             List<ContainerPathTaskDetail> list = containerPathTaskDetailMapper.findByMap(
-                    MapUtils.put("sourceLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
+                    MapUtils.put("nextLocation", rcsPoint).put("containerNo", containerNo).getMap(), ContainerPathTaskDetail.class);
             Assert.notEmpty(list, "无此任务路径明细");
             ContainerPathTask containerPathTask = containerPathTaskService.getContainerPathTask(list.get(0));
             containerPathTaskService.updateNextContainerPathTaskDetail(list.get(0),
-                    containerPathTask, PrologDateUtils.parseObject(new Date()));*/
+                    containerPathTask, PrologDateUtils.parseObject(new Date()));
 
         }
 

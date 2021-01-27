@@ -13,6 +13,7 @@ import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.wms.service.FeignService;
 import com.prolog.eis.wms.service.IWmsService;
 import com.prolog.framework.common.message.RestMessage;
+import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,10 @@ public class WmsServiceImpl implements IWmsService {
     public EisRestMessage<String> inboundTaskCallBack(WmsInboundCallBackDto wmsInboundCallBackDto) throws Exception {
         String serviceIp = properties.getWms().getHost();
         String url = this.getUrl(serviceIp, properties.getWms().getInPort())+properties.getWms().getWmsInboundUrl();
-        logger.info("EIS -> WMS 入库任务回告:{}", url);
+
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInboundCallBackDto), new TypeReference<EisRestMessage<String>>() {
         });
+        logger.info("EIS -> WMS 入库任务回告:{}", JsonUtils.toString(result));
         return result;
     }
 

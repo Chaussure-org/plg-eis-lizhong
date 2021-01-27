@@ -46,7 +46,6 @@ public class McsServiceImpl implements IMcsService {
         //更换从成mcs坐标
         if (mcsMoveTaskDto.getType() == 1 || mcsMoveTaskDto.getType() == 3){
             mcsMoveTaskDto.setTarget(EisStringUtils.getMcsPoint(mcsMoveTaskDto.getTarget()));
-            System.out.println(mcsMoveTaskDto.getTarget());
         }
 
         if (mcsMoveTaskDto.getType() == 2 || mcsMoveTaskDto.getType() == 3){

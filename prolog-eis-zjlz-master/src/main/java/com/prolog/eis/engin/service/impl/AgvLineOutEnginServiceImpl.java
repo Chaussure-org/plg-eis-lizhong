@@ -66,7 +66,7 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
 
         //如果没用开启的站台
         if (stations.isEmpty()) {
-            logger.info("===============没有可用站台=============");
+            logger.info("半成品库无没有可用站台=============");
             return;
         }
         for (Station station : stations) {

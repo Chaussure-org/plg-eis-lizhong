@@ -409,6 +409,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 logger.info(containerPathTaskDetailDTO.getContainerNo()+"移位未找到可用货位");
                 return;
             }
+            logger.info(containerPathTaskDetailDTO.getContainerNo()+"移位货位"+targetSxStoreLocation.getStoreNo());
 
             //修改移动托盘
             ContainerPathTask moveContainerPathTask = containerPathTaskMapper.findFirstByMap(MapUtils.put(

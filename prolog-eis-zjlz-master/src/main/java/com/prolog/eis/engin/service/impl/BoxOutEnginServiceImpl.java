@@ -78,6 +78,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<LineBindingDetail> detailStatus = lineBindingDetailMapper.findLineContainerTopath();
         int lineBoxCount = lineBindingDetailMapper.findLineBoxCount();
         if (!detailStatus.isEmpty() && lineBoxCount < eisProperties.getLineBoxCount()) {
+            //出库锁货位
             int groupId = sxStoreLocationGroupMapper.findGroupIdByContainer(detailStatus.get(0).getContainerNo());
             sxStoreLocationGroupMapper.updateMapById(groupId,
                     MapUtils.put("ascentLockState", LocationConstants.GROUP_ASCENTLOCK_LOCK).getMap(),

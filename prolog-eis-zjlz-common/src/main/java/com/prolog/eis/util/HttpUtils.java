@@ -47,9 +47,9 @@ public class HttpUtils {
 		Map<String, Object> requestEntity =new HashMap<>();
 		if(params!=null && params.size()>0){
 			params.forEach((k,v) ->{requestEntity.put(k,v);});
-			logger.info("EIS -> WCS Params: {}", JsonUtils.toString(params));
+			logger.info("EIS -> WMS Params: {}", JsonUtils.toString(params));
 		}else{
-			logger.info("EIS -> WCS Params: {}","{}");
+			logger.info("EIS -> WMS Params: {}","{}");
 		}
 		HttpEntity<Map<String, Object>> entity =new HttpEntity<Map<String, Object>>(requestEntity, headers);
 		return entity;

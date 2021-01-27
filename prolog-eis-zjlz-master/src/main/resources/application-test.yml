@@ -26,8 +26,9 @@ spring:
       enabled: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://10.0.2.192:3306/plog_eis?characterEncoding=utf8&useSSL=false
-    password: prolog0212
+#    url: jdbc:mysql://10.0.2.192:3306/plog_eis?characterEncoding=utf8&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/lz?characterEncoding=utf8&useSSL=false
+    password: root
     username: root
     initialSize: 0 #初始化大小
     minIdle: 5 #最小空閒
@@ -51,18 +52,18 @@ prolog:
 #    wcs:
 #      host: 172.22.9.156
 #      port: 80
-    rcs:
-      host: 172.22.9.203
-      port: 8181
+#    rcs:
+#      host: 172.22.9.203
+#      port: 8181
 #    sas:
 #      host: 172.22.9.12
 #      port: 8089
 #    mcs:
 #      host: localhost
 #      port: 10021
-    wms:
-      host: 10.0.2.192
-      outPort: 20631
-      inPort: 20815
-      #盘点回告
-      pdPort: 20835
+#    wms:
+#      host: 10.0.2.192
+#      outPort: 20631
+#      inPort: 20815
+#      #盘点回告
+#      pdPort: 20835

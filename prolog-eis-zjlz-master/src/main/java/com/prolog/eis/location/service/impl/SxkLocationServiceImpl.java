@@ -328,8 +328,8 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 		List<InStoreLocationGroupDto> findStoreLocationGroup = new ArrayList<>();
 		List<InStoreLocationGroupDto> findStoreLocationGroup1 = sxStoreLocationGroupMapper.findStoreLocationGroupByArea(area, weight);
 
-		//箱库只能同层换层
-		if (StoreArea.SAS01.equals(area)){
+		//箱库只能同层换层  28层层以上点位为入库点位
+		if (StoreArea.SAS01.equals(area) && layer <= 27){
 			findStoreLocationGroup = findStoreLocationGroup1.stream().filter(x -> layer == x.getLayer()).collect(Collectors.toList());
 		}else {
 			findStoreLocationGroup = findStoreLocationGroup1;

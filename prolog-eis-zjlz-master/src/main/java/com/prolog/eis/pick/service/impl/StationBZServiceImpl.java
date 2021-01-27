@@ -8,11 +8,7 @@ import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
-import com.prolog.eis.location.service.IAgvBindingDetailService;
-import com.prolog.eis.location.service.AgvLocationService;
-import com.prolog.eis.location.service.ContainerPathTaskService;
-import com.prolog.eis.location.service.IPointLocationService;
-import com.prolog.eis.location.service.PathSchedulingService;
+import com.prolog.eis.location.service.*;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.OrderBox;
 import com.prolog.eis.model.PickingOrder;
@@ -20,6 +16,7 @@ import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.base.Goods;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.order.*;
 import com.prolog.eis.model.station.Station;
 import com.prolog.eis.order.service.*;
@@ -98,6 +95,8 @@ public class StationBZServiceImpl implements IStationBZService {
     private EisProperties eisProperties;
     @Autowired
     private IWcsService wcsService;
+    @Autowired
+    private IContainerPathTaskDetailService containerPathTaskDetailService;
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -142,9 +141,9 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //校验订单拖是否在拣选站
         String areaNo = "OD01";
-        boolean b2 = checkOrderTrayNo(orderBoxNo, stationId, areaNo);
+        boolean b2 = checkOrderTrayNo(locationNo, stationId, areaNo);
         if (b2) {
-            throw new Exception("订单拖【" + orderBoxNo + "】不在站台");
+            throw new Exception("站台点位"+locationNo+"无点订单拖");
         }
         //校验容器是否是当前站台播种
         boolean b = checkContainerToStation(containerNo, stationId);
@@ -217,9 +216,9 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         int orderBillId = orderBillIds.get(0);
         //执行播种
-        this.doPicking(stationId, containerNo, completeNum, orderBillIds.get(0), orderBoxNo);
-        //删除agv绑定明细
-        agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderBillId", orderBillId).put("containerNo", containerNo).getMap());
+        ContainerBindingDetail containerBindingDetail = this.doPicking(stationId, containerNo, completeNum, orderBillIds.get(0), orderBoxNo);
+        //删除agv绑定明细  通过order_mx_id回传
+        agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderBillId", containerBindingDetail.getOrderDetailId()).put("containerNo", containerNo).getMap());
 
     }
 
@@ -259,25 +258,25 @@ public class StationBZServiceImpl implements IStationBZService {
 
     /**
      *
-     * @param orderTrayNo  料箱号
+     * @param locationNo  点位编号
      * @param stationId
      * @param areaNo
      * @return
      * @throws Exception
      */
     @Override
-    public boolean checkOrderTrayNo(String orderTrayNo, int stationId, String areaNo) throws Exception {
+    public boolean checkOrderTrayNo(String locationNo, int stationId, String areaNo) throws Exception {
         List<AgvStoragelocation> agvStoragelocations = agvLocationService.findByMap(MapUtils.put("deviceNo", stationId)
                 .put("areaNo", areaNo).getMap());
         if (agvStoragelocations.size() == 0) {
             throw new Exception("站台【" + stationId + "】点位配置错误");
         }
-        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", orderTrayNo).getMap());
+        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("sourceLocation",locationNo ).getMap());
         if (containerPathTasks.size() == 0){
-            throw new Exception("容器【"+orderTrayNo+"】路径配置有误");
+            throw new Exception("点位【"+locationNo+"】路径配置有误");
         }
         if (containerPathTasks.get(0).getTaskState() != ContainerPathTask.TASK_STATE_NOT){
-            throw new Exception("订单拖【"+orderTrayNo+"】没有到位,路径状态为【"+containerPathTasks.get(0).getTaskState()+"】");
+            throw new Exception("订单拖没有到位,路径状态为【"+containerPathTasks.get(0).getTaskState()+"】");
         }
 
         for (AgvStoragelocation agvStoragelocation : agvStoragelocations) {
@@ -354,7 +353,7 @@ public class StationBZServiceImpl implements IStationBZService {
 //                }
 
                 // 计算合适站台
-                computeTrayStation(stationIds, containerNo);
+                computeTrayStation(stationIds, containerNo,stationId);
             }
         }
     }
@@ -506,22 +505,27 @@ public class StationBZServiceImpl implements IStationBZService {
         containerStoreService.updateContainerStoreNum(containerBinDings.getSeedNum(), containerNo);
         // 删除绑定明细
         containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderDetailId()).getMap());
-
-
-        //订单播种完成后续操作  明细转历史、订单拖放行、回告wms
         //播种记录保存
         seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum(), orderDetail.getGoodsId());
-
+        boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
+        if (b) {
+            //当前订单明细完成，回告wms
+            seedToWms(containerBinDings);
+        }
         return containerBinDings;
-
     }
 
     @Override
-    public void computeTrayStation(List<Integer> stationIds, String containerNo) throws Exception {
+    public void computeTrayStation(List<Integer> stationIds, String containerNo,Integer stationId) throws Exception {
         String storeArea = "SN01";
         List<StationTrayDTO> trayTaskStation = agvLocationService.findTrayTaskStation(storeArea, stationIds);
         //大到小排序
         List<StationTrayDTO> collect = trayTaskStation.stream().sorted(Comparator.comparing(StationTrayDTO::getEmptyCount).reversed()).collect(Collectors.toList());
+        int targetId = collect.get(0).getStationId();
+        if (targetId == stationId){
+            //绑定明细为当前站台回agv暂存区
+            pathSchedulingService.containerMoveTask(containerNo, "RCS01", null);
+        }
         if (collect.get(0).getEmptyCount() == 0) {
             //站台已满无可用任务拖区域 回暂存区
             pathSchedulingService.containerMoveTask(containerNo, "RCS01", null);
@@ -706,7 +710,7 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("容器【" + containerNo + "】已离开站台请勿重复操作");
         }
         //todo:注释物料容器放行
-       this.containerNoLeave(containerNo, stationId);
+
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         if (flag) {
@@ -715,9 +719,11 @@ public class StationBZServiceImpl implements IStationBZService {
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
-            //todo:注释订单拖放行
-           this.orderTrayLeave(orderTrayNo, orderBillId);
+            //todo:2020:1:26注释订单拖放行
+            logger.info(orderTrayNo+"订单拖放行");
+//           this.orderTrayLeave(orderTrayNo, orderBillId);
         }
+        this.containerNoLeave(containerNo, stationId);
 
     }
 
@@ -749,8 +755,16 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("接驳点【"+locationNo+"】容器未到位");
 
         }
+        List<ContainerPathTaskDetail> containerPathTaskDetails = containerPathTaskDetailService.findPathTaskDetailByMap(MapUtils.put("sourceLocation", locationNo).getMap());
+        if (containerPathTaskDetails.size() == 0){
+            throw new Exception("接驳点"+locationNo+"路径异常");
+        }
         containerPathTaskList.get(0).setContainerNo(orderTrayNo);
+        containerPathTaskList.get(0).setPalletNo(orderTrayNo);
         containerPathTaskService.updateTask(containerPathTaskList.get(0));
+        containerPathTaskDetails.get(0).setContainerNo(orderTrayNo);
+        containerPathTaskDetails.get(0).setPalletNo(orderTrayNo);
+        containerPathTaskDetailService.updateTaskDetail(containerPathTaskDetails.get(0));
 
     }
 }

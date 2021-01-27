@@ -37,12 +37,12 @@ public interface IStationBZService {
 
     /**
      * 检查订单拖是否在当前拣选站
-     * @param orderTrayNo
+     * @param locationNo
      * @param stationId
      * @param areaNo
      * @return
      */
-    boolean checkOrderTrayNo(String orderTrayNo,int stationId,String areaNo) throws Exception;
+    boolean checkOrderTrayNo(String locationNo,int stationId,String areaNo) throws Exception;
 
     /**
      * 订单转历史
@@ -120,7 +120,7 @@ public interface IStationBZService {
      * @param containerNo
      * @throws Exception
      */
-    void  computeTrayStation(List<Integer> stationIds,String containerNo) throws Exception;
+    void  computeTrayStation(List<Integer> stationIds,String containerNo,Integer stationId) throws Exception;
 
     /**
      * 称重校验

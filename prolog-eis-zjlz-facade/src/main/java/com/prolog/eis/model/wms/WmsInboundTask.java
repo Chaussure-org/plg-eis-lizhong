@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description  
  * @Author  Hunter
- * @Date 2020-09-25 
+ * @Date 2020-09-25
  */
 @ApiModel ("入库任务表")
 @Table ("wms_inbound_task")
@@ -24,6 +24,22 @@ public class WmsInboundTask {
   public static final int STATE_CREATE = 0;//创建
   public static final int STATE_START = 10;//开始
   public static final int STATE_FINISH = 90;//完成
+
+  /**
+   * wms回传状态 创建
+   */
+  public static final int CALL_STATE_CREATE = 0;
+  /**
+   * wms 回传状态 入库完成
+   *
+   */
+  public static final int CALL_STATE_IN = 1;
+
+  /**
+   * wms 回传状态 回传完成
+   *
+   */
+  public static final int CALL_STATE_FINISH = 2;
 
   @Column("id")
   @Id
@@ -101,6 +117,32 @@ public class WmsInboundTask {
   @Column("wheat_head")
   @ApiModelProperty("麦头")
   private String wheatHead;
+
+
+  @Column("task_type")
+  @ApiModelProperty("入库任务类型")
+  private Integer taskType;
+
+  @Column("call_state")
+  @ApiModelProperty("回传状态 0创建 1入库完成 2回传成功")
+  private Integer callState;
+
+
+  public Integer getCallState() {
+    return callState;
+  }
+
+  public void setCallState(Integer callState) {
+    this.callState = callState;
+  }
+
+  public Integer getTaskType() {
+    return taskType;
+  }
+
+  public void setTaskType(Integer taskType) {
+    this.taskType = taskType;
+  }
 
   public String getWheatHead() {
     return wheatHead;

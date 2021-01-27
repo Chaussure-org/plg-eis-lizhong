@@ -10,6 +10,7 @@ import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
+import com.prolog.eis.model.wms.WmsInboundTask;
 import com.prolog.eis.store.dao.ContainerStoreMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.LogInfo;
@@ -65,6 +66,7 @@ public class McsCallBackServiceImpl implements IMcsCallBackService {
     public void mcsCallback(McsCallBackDto mcsCallBackDto) throws Exception {
         String taskCode = mcsCallBackDto.getTaskId();
         int state = mcsCallBackDto.getStatus();
+        int type = mcsCallBackDto.getType();
         String containerNo = mcsCallBackDto.getContainerNo();
         if (StringUtils.isEmpty(taskCode)) {
             throw new Exception("参数不能为空");
@@ -83,7 +85,7 @@ public class McsCallBackServiceImpl implements IMcsCallBackService {
                 this.callbackStart(containerPathTaskDetailList, nowTime);
                 break;
             case LocationConstants.MCS_TASK_METHOD_END:
-                this.callbackEnd(containerPathTaskDetailList, nowTime);
+                this.callbackEnd(containerPathTaskDetailList, nowTime,type);
                 break;
             default:
                 throw new Exception("任务类型有误");
@@ -153,11 +155,14 @@ public class McsCallBackServiceImpl implements IMcsCallBackService {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime) throws Exception {
+    public void callbackEnd(List<ContainerPathTaskDetail> containerPathTaskDetailList, Timestamp nowTime,int type) throws Exception {
         ContainerPathTaskDetail containerPathTaskDetail = containerPathTaskDetailList.get(0);
         Integer taskState = containerPathTaskDetail.getTaskState();
-        // 上架完成回告wms
-        iWareHousingService.deleteInboundTask(containerPathTaskDetail.getContainerNo());
+        if (type == 1){
+            // 入库上架完成修改状态入库任务状态
+            iWareHousingService.updateInboundCallState(containerPathTaskDetail.getContainerNo(), WmsInboundTask.CALL_STATE_IN);
+        }
+
         //更改容器状态
         iContainerStoreService.updateTaskStausByContainer(containerPathTaskDetail.getContainerNo(),0);
         //更改业务状态

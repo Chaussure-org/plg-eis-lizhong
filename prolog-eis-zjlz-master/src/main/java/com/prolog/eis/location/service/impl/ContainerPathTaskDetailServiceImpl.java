@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author wangkang
@@ -37,5 +38,10 @@ public class ContainerPathTaskDetailServiceImpl implements IContainerPathTaskDet
     @Override
     public void savePathDetail(ContainerPathTaskDetail containerPathTaskDetail) {
         mapper.save(containerPathTaskDetail);
+    }
+
+    @Override
+    public List<ContainerPathTaskDetail> findPathTaskDetailByMap(Map map) {
+        return mapper.findByMap(map,ContainerPathTaskDetail.class);
     }
 }

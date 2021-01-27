@@ -53,19 +53,20 @@ public class AgvInBoundEnginServiceImpl implements AgvInBoundEnginService {
         //agv 区域的空托盘
         Date currentTime = new Date();
         for (ContainerPathTask containerPathTask : emptyAgvContainers) {
-            int mins = PrologDateUtils.dateBetweenMin(currentTime, containerPathTask.getUpdateTime());
+            int mins = PrologDateUtils.dateBetweenMin( containerPathTask.getUpdateTime(),currentTime);
             if (mins > eisProperties.getAgvInboundTime()) {
                 //回库
-                List<RoadWayContainerTaskDto> roadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();
-                roadWayContainerTasks.stream().sorted(Comparator.comparing(RoadWayContainerTaskDto::getInCount).thenComparing(RoadWayContainerTaskDto::getOutCount));
-                List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("containerNo", containerPathTask.getContainerNo()).getMap());
-                if (containerStoreList!=null && containerStoreList.size()>0) {
-                    Goods goods = goodsService.findGoodsById(containerStoreList.get(0).getGoodsId());
-                    String target = goods.getGoodsOneType().equals("包材")?""+(roadWayContainerTasks.get(0).getRoadWay()-1):"MCS0" + (roadWayContainerTasks.get(0).getRoadWay()-1);
+//                List<RoadWayContainerTaskDto> roadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();
+//                roadWayContainerTasks.stream().sorted(Comparator.comparing(RoadWayContainerTaskDto::getInCount).thenComparing(RoadWayContainerTaskDto::getOutCount));
+//                List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("containerNo", containerPathTask.getContainerNo()).getMap());
+//                if (containerStoreList!=null && containerStoreList.size()>0) {
+//                    Goods goods = goodsService.findGoodsById(containerStoreList.get(0).getGoodsId());
+                    String target = "MCS04";
+//                    String target = goods.getGoodsOneType().equals("包材")?""+(roadWayContainerTasks.get(0).getRoadWay()-1):"MCS0" + (roadWayContainerTasks.get(0).getRoadWay()-1);
                     pathSchedulingService.containerMoveTask(containerPathTask.getContainerNo(),
-                            StoreArea.RCS01,
-                            target);
-                }
+                            target,
+                            null);
+//                }
 
             }
         }

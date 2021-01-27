@@ -30,7 +30,7 @@ public class RcsController {
     @PostMapping("/agvCallback")
     public String agvCallback(@RequestBody String json) throws Exception {
         PrologApiJsonHelper helper = PrologApiJsonHelper.createHelper(json);
-        logger.info("eis <- rcs 任务：{}",json);
+        logger.info("eis <- rcs 任务回告：{}",json);
         String reqCode = helper.getString("reqCode");
         try {
             String taskCode = helper.getString("taskCode");
@@ -44,7 +44,7 @@ public class RcsController {
             return resultStr;
         } catch (Exception e) {
             String resultStr = returnSuccess(reqCode);
-            logger.info("eis <- rcs 接收任务回告失败"+e.getMessage(),e);
+            logger.error("eis <- rcs 接收任务回告失败"+e.getMessage(),e);
             //String errorMsg = "RCS-> EIS[agvCallback]返回" + reqCode +" json:" + resultStr;
             //LogServices.logSys(e);
             return resultStr;

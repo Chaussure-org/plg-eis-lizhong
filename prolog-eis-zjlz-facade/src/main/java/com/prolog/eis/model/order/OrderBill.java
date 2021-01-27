@@ -125,10 +125,6 @@ public class OrderBill {
         this.branchType = branchType;
     }
 
-    @Column("task_id")
-    @ApiModelProperty("任务id")
-    private String taskId;
-
     @Column("bill_date")
     @ApiModelProperty("单据日期")
     private Date billDate;
@@ -248,11 +244,4 @@ public class OrderBill {
         this.outTime = outTime;
     }
 
-    public String getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
-    }
 }

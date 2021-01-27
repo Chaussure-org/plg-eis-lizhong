@@ -307,8 +307,8 @@ public class PrologDateUtils {
      * @throws ParseException
      */
     public static int dateBetweenMin(Date startDate, Date endDate) throws ParseException {
-        Date dateStart = dateParse(dateFormat(startDate, DATE_PATTERN), DATE_PATTERN);
-        Date dateEnd = dateParse(dateFormat(endDate, DATE_PATTERN), DATE_PATTERN);
+        Date dateStart = dateParse(dateFormat(startDate, DATE_TIME_PATTERN), DATE_TIME_PATTERN);
+        Date dateEnd = dateParse(dateFormat(endDate, DATE_TIME_PATTERN), DATE_TIME_PATTERN);
         return (int) ((dateEnd.getTime() - dateStart.getTime())/1000/60);
     }
 
