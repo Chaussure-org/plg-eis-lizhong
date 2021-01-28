@@ -145,15 +145,22 @@ public class SasLogicServiceImpl implements ISasLogicService {
                     containerPathTaskService.getContainerPathTask(containerPathTaskDetail);
             //当前路径任务明细终点=任务汇总终点，则是最后一条任务
             //清除路径任务汇总，解绑载具
+//            if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
+//                updateTaskInfo(containerPathTaskDetail, containerPathTask);
+//                sxMoveStoreService.updateContainerPathTaskComplete(containerPathTask,containerPathTaskDetail,nowTime);
+//
+//            } else {
+//                //不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
+//                containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
+//                        , nowTime);
+//            }
+            // 此处修改为，sas回告完成，是否是最后一条updateContainerPathTaskComplete这个方法中会判断，并对路径中做相应修改，解决箱库is_inbount..
+            // .为0问题，已测试通过，需要邓大佬现场测试
+            // 谢谢
             if (containerPathTaskDetail.getNextArea().equals(containerPathTask.getTargetArea())) {
-                updateTaskInfo(containerPathTaskDetail, containerPathTask);
-                sxMoveStoreService.updateContainerPathTaskComplete(containerPathTask,containerPathTaskDetail,nowTime);
-
-            } else {
-                //不是最后一条，则修改路径任务汇总当前区域，修改当前任务明细状态，并修改下一条任务明细为到位
-                containerPathTaskService.updateNextContainerPathTaskDetail(containerPathTaskDetail, containerPathTask
-                        , nowTime);
+                updateTaskInfo(containerPathTaskDetail,containerPathTask);
             }
+            sxMoveStoreService.updateContainerPathTaskComplete(containerPathTask,containerPathTaskDetail,nowTime);
             sxMoveStoreService.unlockCompletekSxStoreLocation(containerPathTaskDetail);
             //历史表
             //containerPathTaskService.saveContainerPathTaskHistory(containerPathTaskDetail, nowTime);
