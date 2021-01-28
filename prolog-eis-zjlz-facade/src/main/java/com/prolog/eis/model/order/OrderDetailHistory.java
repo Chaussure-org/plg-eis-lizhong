@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @Description  
  * @Author  Hunter
- * @Date 2020-10-26 
+ * @Date 2021-01-28 
  */
 @ApiModel ("订单明细表")
 @Table ("order_detail_history")
@@ -81,13 +81,17 @@ public class OrderDetailHistory {
   @ApiModelProperty("任务id")
   private String taskId;
 
-  public String getTaskId() {
-    return taskId;
-  }
+  @Column("special")
+  @ApiModelProperty("是否是订单拖（麦头）1是订单拖 2 不是")
+  private Integer special;
 
-  public void setTaskId(String taskId) {
-    this.taskId = taskId;
-  }
+  @Column("decals")
+  @ApiModelProperty("是否贴标（1 贴标  2 非贴标）")
+  private Integer decals;
+
+  @Column("wheat_head")
+  @ApiModelProperty("麦头")
+  private String wheatHead;
 
   public Integer getId() {
     return id;
@@ -207,6 +211,38 @@ public class OrderDetailHistory {
 
   public void setOutQty(Integer outQty) {
     this.outQty = outQty;
+  }
+
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
+
+  public Integer getSpecial() {
+    return special;
+  }
+
+  public void setSpecial(Integer special) {
+    this.special = special;
+  }
+
+  public Integer getDecals() {
+    return decals;
+  }
+
+  public void setDecals(Integer decals) {
+    this.decals = decals;
+  }
+
+  public String getWheatHead() {
+    return wheatHead;
+  }
+
+  public void setWheatHead(String wheatHead) {
+    this.wheatHead = wheatHead;
   }
 
 }

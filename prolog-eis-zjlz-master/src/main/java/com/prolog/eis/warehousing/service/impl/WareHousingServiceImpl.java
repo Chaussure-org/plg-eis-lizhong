@@ -106,6 +106,6 @@ public class WareHousingServiceImpl implements IWareHousingService {
     public void updateInboundCallState(String containerNo,int callState) {
         Criteria cri = Criteria.forClass(WmsInboundTask.class);
         cri.setRestriction(Restrictions.eq("containerNo",containerNo));
-        mapper.updateMapByCriteria(MapUtils.put("callState",callState).getMap(),cri);
+        mapper.updateMapByCriteria(MapUtils.put("callState",callState).put("completeTime",new Date()).getMap(),cri);
     }
 }

@@ -2,16 +2,20 @@ package com.prolog.eis.location.service.impl;
 
 import com.prolog.eis.dto.location.InStoreLocationGroupDto;
 import com.prolog.eis.dto.location.sxk.StoreLocationDistanceDto;
+import com.prolog.eis.dto.lzenginee.boxoutdto.LayerTaskDto;
 import com.prolog.eis.dto.store.SxStoreLocationDto;
+import com.prolog.eis.engin.service.CrossLayerEnginService;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.dao.SxStoreLocationGroupMapper;
 import com.prolog.eis.location.dao.SxStoreLocationMapper;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
+import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
+import com.prolog.eis.order.dao.ContainerBindingDetailMapper;
 import com.prolog.eis.store.service.IContainerStoreService;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.location.LocationConstants;
@@ -24,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +44,10 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 	private ContainerPathTaskMapper containerPathTaskMapper;
 	@Autowired
 	private IContainerStoreService containerStoreService;
+	@Autowired
+	private ContainerBindingDetailMapper containerBindingDetailMapper;
+	@Autowired
+	private CrossLayerEnginService crossLayerEnginService;
 
 	@Override
 	public SxStoreLocation findLoacationByArea(String area,int layer, int originX, int originY, int reserveCount, double weight, String taskProperty1, String taskProperty2) throws Exception {
@@ -330,7 +340,19 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 
 		//箱库只能同层换层  28层层以上点位为入库点位
 		if (StoreArea.SAS01.equals(area) && layer <= 27){
+			//27层下为移库
 			findStoreLocationGroup = findStoreLocationGroup1.stream().filter(x -> layer == x.getLayer()).collect(Collectors.toList());
+		}else if (StoreArea.SAS01.equals(area) && layer > 27){
+			//箱库28层上为入库点位 筛选任务数
+			List<LayerTaskDto> xkTaskByLayer = containerBindingDetailMapper.findXkTaskByLayer();
+			List<Integer> layers = xkTaskByLayer.stream().filter(x -> x.getInCount() >= 2).map(LayerTaskDto::getLayer).collect(Collectors.toList());
+			List<InStoreLocationGroupDto> collect = findStoreLocationGroup1.stream().filter(x -> !layers.contains(x.getLayer())).collect(Collectors.toList());
+			if (collect.size() == 0){
+				findStoreLocationGroup = findStoreLocationGroup1;
+			}else {
+				findStoreLocationGroup = collect;
+			}
+
 		}else {
 			findStoreLocationGroup = findStoreLocationGroup1;
 		}

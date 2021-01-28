@@ -26,9 +26,9 @@ spring:
       enabled: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://172.22.9.205:3306/plog-eis?characterEncoding=utf8&useSSL=false
-#    password: prolog
-#    username: root
+    url: jdbc:mysql://172.22.9.205:3306/plog-eis?characterEncoding=utf8&useSSL=false
+    password: prolog
+    username: root
     initialSize: 0 #初始化大小
     minIdle: 5 #最小空閒
     maxActive: 50 #最大連接數

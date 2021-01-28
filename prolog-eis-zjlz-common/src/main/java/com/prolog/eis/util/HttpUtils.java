@@ -34,7 +34,7 @@ public class HttpUtils {
 		System.out.println(entity.toString());
 		String data = this.restTemplate.postForObject(url,entity,String.class);
         //String data = this.restTemplate.postForObject("http://10.0.2.135:20631/TaskDispatch/returnDo/v1.0",entity,String.class);
-		logger.info("EIS <- WCS Resutl: {}",data);
+		logger.info("EIS <- WMS Resutl: {}",data);
 		EisRestMessage<T> result = EisRestMessage.parseJsonString(data,typeReference);
 		return result;
 	}

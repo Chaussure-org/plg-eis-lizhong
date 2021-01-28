@@ -1,5 +1,6 @@
 package com.prolog.eis.order.dao;
 
+import com.prolog.eis.dto.lzenginee.boxoutdto.LayerTaskDto;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.order.ContainerBindingDetail;
 import com.prolog.framework.dao.mapper.BaseMapper;
@@ -92,4 +93,20 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
             "\tAND cptd.task_state = 50\n" +
             "\t")
     List<ContainerPathTaskDetail> findOutStore();
+
+
+    /**
+     *查箱库层入库任务数
+     */
+    @Select("SELECT\n" +
+            "\tlayer,COUNT(1) \n" +
+            "FROM\n" +
+            "\tsx_store_location cs\n" +
+            "\tLEFT JOIN container_path_task_detail ct ON cs.store_no = ct.next_location \n" +
+            "WHERE\n" +
+            "\tct.source_area IN ( 'RS1', 'RS2' ) \n" +
+            "\tAND next_area = 'SAS01' \n" +
+            "\tAND ct.task_state = 50\n" +
+            "\tGROUP BY layer")
+    List<LayerTaskDto> findXkTaskByLayer();
 }

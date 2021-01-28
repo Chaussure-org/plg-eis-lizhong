@@ -63,7 +63,7 @@ public class WmsServiceImpl implements IWmsService {
 
         EisRestMessage<String> result = httpUtils.postWms(url, MapUtils.convertBean(wmsInboundCallBackDto), new TypeReference<EisRestMessage<String>>() {
         });
-        logger.info("EIS -> WMS 入库任务回告:{}", JsonUtils.toString(result));
+        logger.info("EIS <- WMS 入库任务回告:{}", JsonUtils.toString(result));
         return result;
     }
 
