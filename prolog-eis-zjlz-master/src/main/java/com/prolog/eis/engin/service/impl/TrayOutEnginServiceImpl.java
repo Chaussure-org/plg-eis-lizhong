@@ -162,7 +162,9 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         if (!wmsOutdetails.isEmpty()) {
             //有wms订单优先级,整体算出库的绑定明细
             List<OutContainerDto> outContainerDtoList = this.outByDetails(wmsOutdetails);
-            this.saveAgvBindingDetail(outContainerDtoList);
+            if (outContainerDtoList!=null&&outContainerDtoList.size()>0) {
+                this.saveAgvBindingDetail(outContainerDtoList);
+            }
         } else {
             List<OutDetailDto> agvDetails =
                     agvDetailList.stream().sorted(Comparator.comparing(OutDetailDto::getOrderPriority)).collect(Collectors.toList());
