@@ -87,4 +87,22 @@ public interface TrayOutMapper {
             "\t\tagv_binding_detail a \n" +
             "\t)")
     List<RoadWayGoodsCountDto> findAgvNoBindsStore(@Param("goodsId")int goodsId);
+
+    @Select("SELECT sl.x AS roadWay,\n" +
+            "            SUM( CASE c.task_status WHEN 10 THEN 1 ELSE 0 END ) AS inCount FROM " +
+            "container_path_task_detail cptd\n" +
+            "LEFT JOIN container_store c ON cptd.container_no=c.container_no\n" +
+            "LEFT JOIN sx_store_location sl on sl.store_no = cptd.source_location\n" +
+            "where cptd.task_state>=50 and  cptd.source_area in ('MCS01', 'MCS02', 'MCS03', 'MCS04')\n" +
+            "GROUP BY sl.x")
+    List<RoadWayContainerTaskDto> findTaskInStore();
+
+    @Select("SELECT sl.x AS roadWay,\n" +
+            "            SUM( CASE c.task_status WHEN 20 THEN 1 ELSE 0 END ) AS outCount FROM " +
+            "container_path_task_detail cptd\n" +
+            "LEFT JOIN container_store c ON cptd.container_no=c.container_no\n" +
+            "LEFT JOIN sx_store_location sl on sl.store_no = cptd.next_location\n" +
+            "where cptd.task_state>=50 and  cptd.next_location in ('MCS01', 'MCS02', 'MCS03', 'MCS04')\n" +
+            "GROUP BY sl.x")
+    List<RoadWayContainerTaskDto> findTaskOutStore();
 }
