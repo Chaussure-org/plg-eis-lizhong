@@ -344,7 +344,7 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			findStoreLocationGroup = findStoreLocationGroup1.stream().filter(x -> layer == x.getLayer()).collect(Collectors.toList());
 		}else if (StoreArea.SAS01.equals(area) && layer > 27){
 			//箱库28层上为入库点位 筛选任务数
-			List<LayerTaskDto> xkTaskByLayer = containerBindingDetailMapper.findXkTaskByLayer();
+			List<LayerTaskDto> xkTaskByLayer = containerBindingDetailMapper.findXkInTaskByLayer();
 			List<Integer> layers = xkTaskByLayer.stream().filter(x -> x.getInCount() >= 2).map(LayerTaskDto::getLayer).collect(Collectors.toList());
 			List<InStoreLocationGroupDto> collect = findStoreLocationGroup1.stream().filter(x -> !layers.contains(x.getLayer())).collect(Collectors.toList());
 			if (collect.size() == 0){

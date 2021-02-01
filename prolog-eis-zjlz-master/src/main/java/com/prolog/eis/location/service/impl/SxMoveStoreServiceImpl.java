@@ -442,6 +442,13 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     sxStoreLocationGroupMapper.findById(targetSxStoreLocation.getStoreLocationGroupId(),
                             SxStoreLocationGroup.class);
             sxkLocationService.computeLocation(sxStoreLocationGroup);
+            //箱库移库算货位属性
+            SxStoreLocationGroup sourceLocationGroup =
+                    sxStoreLocationGroupMapper.findById(moveSxStoreGroupDto.getStoreLocationGroupId(),
+                            SxStoreLocationGroup.class);
+            if (StoreArea.SAS01.equals(sourceLocationGroup.getBelongArea())){
+                sxkLocationService.computeLocation(sourceLocationGroup);
+            }
         } catch (Exception e) {
             // TODO: handle exception
             int a = 0;
@@ -494,8 +501,11 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 //wcs --> sas
                 SasMoveTaskDto sasMoveTaskDto = new SasMoveTaskDto(taskId, taskType,1, containerNo,
                         sourceStoreNo, nextStoreNo, "", "99", 0);
-                //加跨层判断
-
+                //校验当前层只允许有一个出库任务
+                int i = containerPathTaskDetailMapper.computeXkPathDetail(sourceStoreNo.substring(0, 2));
+                if (i > 0){
+                    logger.info(sourceStoreNo.substring(0, 2)+"====层有出库任务，当前层出库任务发往sas失败");
+                }
                 RestMessage<String> result = sasService.sendContainerTask(sasMoveTaskDto);
                 logger.info("eis -> sas 发起小车移动回告:{}", JsonUtils.toString(result));
                 if (result.isSuccess()) {
@@ -702,7 +712,10 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         } else if (mcsTaskType == 3) {
             //判断起始点是否存在漏解锁情况，兼容开始状态未解锁时，结束任务将原货位组解锁
             this.reUnlockStartkSxStoreLocation(containerPathTaskDetail.getSourceLocation());
-
+            if (containerPathTaskDetail.getSourceArea().equals(StoreArea.SAS01)){
+                //箱库重新计算货位-目标点位
+                this.reUnlockStartkSxStoreLocation(containerPathTaskDetail.getNextLocation());
+            }
             //解锁目标货位组
             SxStoreLocation nextLocation = sxStoreLocationMapper.findFirstByMap(MapUtils.put("storeNo", containerPathTaskDetail.getNextLocation()).getMap(), SxStoreLocation.class);
             sxStoreLocationGroupMapper.updateMapById(nextLocation.getStoreLocationGroupId(),

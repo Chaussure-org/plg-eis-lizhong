@@ -40,12 +40,15 @@ public interface LineBindingDetailMapper extends BaseMapper<LineBindingDetail> {
     void deleteWmsAgvBindingDetails();
 
     @Select("SELECT\n" +
-            "\ta.container_no as containerNo\n" +
+            "\ta.container_no AS containerNo \n" +
             "FROM\n" +
             "\tline_binding_detail a\n" +
             "\tLEFT JOIN container_path_task c ON a.container_no = c.container_no \n" +
             "WHERE\n" +
-            "\ta.detail_status = 10 and c.target_area ='SAS01' AND c.task_state=0")
+            "\ta.detail_status = 10 \n" +
+            "\tAND c.target_area = 'SAS01' \n" +
+            "\tAND c.task_state =0\n" +
+            "\torder by a.dept_num asc")
     List<LineBindingDetail> findLineContainerTopath();
 
     @Update("UPDATE line_binding_detail abd set abd.detail_status=#{status} WHERE abd.container_no=#{containerNo}")

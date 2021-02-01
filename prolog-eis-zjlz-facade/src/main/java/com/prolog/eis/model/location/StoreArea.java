@@ -157,7 +157,7 @@ public class StoreArea implements Serializable {
     /**
      * 输送线回库bcr
      */
-    public static final String R0201 = "RO201";
+    public static final String R0201 = "R0201";
 
     /**
      * 循环线bcr

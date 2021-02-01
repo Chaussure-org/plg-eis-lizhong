@@ -55,6 +55,19 @@ public class LineBindingDetail {
     @ApiModelProperty("更新时间")
     private java.util.Date updateTime;
 
+    @Column("dept_num")
+    @ApiModelProperty("移位数")
+    private int deptNum;
+
+
+    public int getDeptNum() {
+        return deptNum;
+    }
+
+    public void setDeptNum(int deptNum) {
+        this.deptNum = deptNum;
+    }
+
     public Integer getOrderPriority() {
         return orderPriority;
     }

@@ -84,24 +84,24 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                                     put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
                     if (list.isEmpty()) {
                         //站台无空位
+                        logger.info("站台" + station.getId() + "无可空位");
                         return;
                     }
                     //2.该站台 到达的 托盘
                     List<AgvBindingDetail> agvBindList = details.stream().filter(x -> x.getOrderBillId().equals(first.get().getOrderBillId())).collect(Collectors.toList());
                     if (agvBindList.size() > 0) {
+                        AgvBindingDetail agvBindingDetail = agvBindList.get(0);
                         //生成该站台的料箱绑定明细
-                        this.saveContainerBindingDetail(agvBindList);
+                        this.saveContainerBinding(agvBindingDetail);
                         //发送任务 1.此站台没有任务正在执行
-                        agvBindList.forEach(x -> {
-                            try {
-                                pathSchedulingService.containerMoveTask(x.getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
-                                //锁定此位置的状态
-                                agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(), AgvStoragelocation.TASK_LOCK);
-                                logger.info("================生成拣选单去往" + station.getId() + "站台的路径=============");
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
+                        try {
+                            pathSchedulingService.containerMoveTask(agvBindingDetail.getContainerNo(), StoreArea.SN01, list.get(0).getLocationNo());
+                            //锁定此位置的状态
+                            agvStoragelocationMapper.updateLocationLock(list.get(0).getLocationNo(), AgvStoragelocation.TASK_LOCK);
+                            logger.info("================生成拣选单去往" + station.getId() + "站台的路径=============");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -191,6 +191,17 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
             containerBindingDetails.add(containerBindingDetail);
         }
         containerBindingDetailMapper.saveBatch(containerBindingDetails);
+    }
+
+
+    private void saveContainerBinding(AgvBindingDetail detailList) {
+        ContainerBindingDetail containerBindingDetail = new ContainerBindingDetail();
+        containerBindingDetail.setContainerNo(detailList.getContainerNo());
+        containerBindingDetail.setBindingNum(detailList.getBindingNum());
+        containerBindingDetail.setSeedNum(detailList.getBindingNum());
+        containerBindingDetail.setOrderBillId(detailList.getOrderBillId());
+        containerBindingDetail.setOrderDetailId(detailList.getOrderMxId());
+        containerBindingDetailMapper.save(containerBindingDetail);
     }
 
 

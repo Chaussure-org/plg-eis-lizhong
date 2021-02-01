@@ -96,10 +96,34 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
 
 
     /**
-     *查箱库层入库任务数
+     * 查移库任务数
+     * @return
      */
     @Select("SELECT\n" +
-            "\tlayer,COUNT(1) \n" +
+            "\tcptd.ID AS id,\n" +
+            "\tcptd.pallet_no AS palletNo,\n" +
+            "\tcptd.container_no AS containerNo,\n" +
+            "\tcptd.source_area AS sourceArea,\n" +
+            "\tcptd.source_location AS sourceLocation,\n" +
+            "\tcptd.next_area AS nextArea,\n" +
+            "\tcptd.next_location AS nextLocation,\n" +
+            "\tcptd.task_state AS taskState \n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail cptd \n" +
+            "WHERE\n" +
+            "\tcptd.source_area = 'SAS01' \n" +
+            "\tAND cptd.next_area = 'SAS01' \n" +
+            "\tAND cptd.task_state = 50 \n" +
+            "\tAND cptd.source_location != cptd.next_location")
+    List<ContainerPathTaskDetail> findMoveStore();
+
+
+    /**
+     *查箱库层入库任务数
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tlayer,COUNT(1) as inCount \n" +
             "FROM\n" +
             "\tsx_store_location cs\n" +
             "\tLEFT JOIN container_path_task_detail ct ON cs.store_no = ct.next_location \n" +
@@ -108,5 +132,23 @@ public interface ContainerBindingDetailMapper extends BaseMapper<ContainerBindin
             "\tAND next_area = 'SAS01' \n" +
             "\tAND ct.task_state = 50\n" +
             "\tGROUP BY layer")
-    List<LayerTaskDto> findXkTaskByLayer();
+    List<LayerTaskDto> findXkInTaskByLayer();
+
+    /**
+     * 查箱库出库任务
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tlayer,\n" +
+            "\tCOUNT( 1 ) AS outCount \n" +
+            "FROM\n" +
+            "\tsx_store_location cs\n" +
+            "\tLEFT JOIN container_path_task_detail ct ON cs.store_no = ct.next_location \n" +
+            "WHERE\n" +
+            "\tct.source_area = 'SAS01' \n" +
+            "\tAND next_area in ('CS1','CS2')\n" +
+            "\tAND ct.task_state = 50 \n" +
+            "GROUP BY\n" +
+            "\tlayer")
+    List<LayerTaskDto> findXkOutTaskByLayer();
 }

@@ -1,5 +1,6 @@
 package com.prolog.eis.dto.lzenginee;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,7 @@ public class OutContainerDto {
     private int qty;
     //明细id 数量
     private List<OutDetailDto> detailList=new ArrayList<>();
+
+    @ApiModelProperty("移位数")
+    private int deptNum;
 }

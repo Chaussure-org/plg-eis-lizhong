@@ -8,12 +8,14 @@ import com.prolog.eis.dto.store.StationTrayDTO;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
+import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.location.service.*;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.OrderBox;
 import com.prolog.eis.model.PickingOrder;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
@@ -97,6 +99,8 @@ public class StationBZServiceImpl implements IStationBZService {
     private IWcsService wcsService;
     @Autowired
     private IContainerPathTaskDetailService containerPathTaskDetailService;
+    @Autowired
+    private LineBindingDetailMapper lineBindingDetailMapper;
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -218,7 +222,9 @@ public class StationBZServiceImpl implements IStationBZService {
         //执行播种
         ContainerBindingDetail containerBindingDetail = this.doPicking(stationId, containerNo, completeNum, orderBillIds.get(0), orderBoxNo);
         //删除agv绑定明细  通过order_mx_id回传
-        agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderBillId", containerBindingDetail.getOrderDetailId()).put("containerNo", containerNo).getMap());
+        agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderMxId", containerBindingDetail.getOrderDetailId()).put("containerNo", containerNo).getMap());
+        //删除输送线绑定明细
+        lineBindingDetailMapper.deleteByMap(MapUtils.put("orderMxId", containerBindingDetail.getOrderDetailId()).put("containerNo", containerNo).getMap(), LineBindingDetail.class);
 
     }
 
@@ -306,7 +312,7 @@ public class StationBZServiceImpl implements IStationBZService {
         if (stationIds.size() == 0) {
             //直接放行
             if (stations.size() > 0) {
-                //上层输送线  循环线点位
+                //上层输送线  循环线点位 通过拣选站按钮放行
                   //todo：注释输送线放行
 //                String taskId = PrologStringUtils.newGUID();
 //                PointLocation point = pointLocationService.getPointByStationId(stationId);
@@ -330,7 +336,7 @@ public class StationBZServiceImpl implements IStationBZService {
             containerStoreService.updateTaskTypeByContainer(containerNo,0);
         } else {
             if (stations.size() > 0) {
-                //todo：注释输送线放行
+                //todo：注释输送线放行 通过拣选站按钮放行
 //                //计算合适站台
 //                int targetStationId = this.computeContainerTargetStation(stationIds, stationId);
 //                //上层输送线 发送点位
@@ -713,6 +719,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
+        this.containerNoLeave(containerNo, stationId);
         if (flag) {
             //切换拣选单
             this.changePickingOrder(station);
@@ -723,7 +730,7 @@ public class StationBZServiceImpl implements IStationBZService {
             logger.info(orderTrayNo+"订单拖放行");
 //           this.orderTrayLeave(orderTrayNo, orderBillId);
         }
-        this.containerNoLeave(containerNo, stationId);
+
 
     }
 

@@ -49,6 +49,7 @@ public class OutDispatch {
     @Scheduled(initialDelay = 3000, fixedDelay = 4000)
     public void trayOutDispatch() {
         try {
+
            trayOutEnginService.initOrder();
            trayOutEnginService.trayOutByOrder();
         } catch (Exception e) {
@@ -84,7 +85,7 @@ public class OutDispatch {
     /**
      * 站台调度
      */
-    @Scheduled(initialDelay = 3000, fixedDelay = 6000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)
     public void lineAndAgvOutDispatch() {
         try {
             agvLineOutEnginService.computerPickOrder();

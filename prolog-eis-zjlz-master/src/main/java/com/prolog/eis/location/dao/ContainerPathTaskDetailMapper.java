@@ -88,7 +88,7 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
 
 
     /**
-     * 查路径执行任务数
+     * 查路径执行任务数立库到出库口
      * @param locationNo
      * @return
      */
@@ -100,4 +100,21 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
             "\t( task_state IN ( 50, 60 ) AND next_location = #{locationNo} ) \n" +
             "\tOR ( source_location = #{locationNo} AND task_state IN ( 0, 50, 60 ) )")
     int countPathTaskDetail(@Param("locationNo")String locationNo);
+
+
+    /**
+     * 查路径执行任务数每层任务数到出库口
+     * @param layer
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tCOUNT(*)\n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail \n" +
+            "WHERE\n" +
+            "\tsource_location != next_location \n" +
+            "\tAND SUBSTR( source_location, 1, 2 ) = #{layer} \n" +
+            "\tAND source_area = 'SAS01'\n" +
+            "\tand task_state = 50")
+    int computeXkPathDetail(@Param("layer") String layer);
 }

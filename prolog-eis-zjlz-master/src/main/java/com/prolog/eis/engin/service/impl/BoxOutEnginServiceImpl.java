@@ -20,6 +20,7 @@ import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
+import com.prolog.eis.order.dao.ContainerBindingDetailMapper;
 import com.prolog.eis.order.dao.OrderBillMapper;
 import com.prolog.eis.order.dao.OrderDetailMapper;
 import com.prolog.eis.sas.service.ISasService;
@@ -52,7 +53,8 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
     private final Logger logger = LoggerFactory.getLogger(TrayOutEnginServiceImpl.class);
     @Autowired
     private OrderDetailMapper orderDetailMapper;
-
+    @Autowired
+    private ContainerBindingDetailMapper containerBindingDetailMapper;
     @Autowired
     private OrderBillMapper orderBillMapper;
     @Autowired
@@ -173,14 +175,16 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         List<OutContainerDto> outContainerDtoList = new ArrayList<>();
         //箱库的库存
         List<LayerGoodsCountDto> layerGoodsCounts = boxOutMapper.findLayerGoodsCount(goodsId);
-        //找层的任务数出库任务数和入库任务数
-        List<LayerTaskDto> layerTaskCounts = boxOutMapper.findLayerTaskCount();
+        //找层的任务数出库任务数和入库任务数(sql查询时间过长)
+//        List<LayerTaskDto> layerTaskCounts = boxOutMapper.findLayerTaskCount();
+        List<LayerTaskDto> layerTaskCounts = computeBoxLayerTask();
         //输送线上绑定了订单 的  剩余库存
         List<LayerGoodsCountDto> lineGoodsCounts = boxOutMapper.findLineGoodsCount(goodsId);
 
         //小车所在的层
         List<CarInfoDTO> conformCars = this.getConformCars();
         if (conformCars.size() == 0) {
+            logger.info("箱库未找到可用车==================");
             return outContainerDtoList;
         }
         for (LayerTaskDto layerTaskDto : layerTaskCounts) {
@@ -260,6 +264,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         outContainerDto.setGoodsId(goodsId);
         outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
         outContainerDto.setQty(goodsCountDto.getQty());
+        outContainerDto.setDeptNum(goodsCountDto.getDeptNum());
         return outContainerDto;
     }
 
@@ -281,6 +286,7 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
                 lineBindingDetail.setWmsOrderPriority(detailDto.getWmsOrderPriority());
                 lineBindingDetail.setDetailStatus(OrderBill.ORDER_STATUS_START_OUT);
                 lineBindingDetail.setUpdateTime(new Date());
+                lineBindingDetail.setDeptNum(containerDto.getDeptNum());
                 list.add(lineBindingDetail);
             }
         }
@@ -355,4 +361,22 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
             return sortList.subList(0, sortList.size()).stream().map(OrderSortDto::getOrderBillId).collect(Collectors.toList());
         }
     }
+
+    @Override
+    public List<LayerTaskDto> computeBoxLayerTask() {
+        List<LayerTaskDto> xkInTaskByLayer = containerBindingDetailMapper.findXkInTaskByLayer();
+        List<LayerTaskDto> xkOutTaskByLayer = containerBindingDetailMapper.findXkOutTaskByLayer();
+        List<LayerTaskDto> list = new ArrayList<>();
+        list.addAll(xkInTaskByLayer);
+        list.addAll(xkOutTaskByLayer);
+        List<LayerTaskDto> collect = list.stream()
+                .collect(Collectors.toMap(LayerTaskDto::getLayer, a -> a, (o1, o2) -> {
+                    o1.setInCount(o1.getInCount() + o2.getInCount());
+                    o1.setOutCount(o1.getOutCount() + o2.getOutCount());
+                    return o1;
+                })).values().stream().collect(Collectors.toList());
+        return collect;
+    }
+
+
 }

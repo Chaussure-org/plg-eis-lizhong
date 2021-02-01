@@ -15,7 +15,7 @@ import java.util.Date;
  * @Author SunPP
  * @Date 2020-09-29
  */
-@ApiModel("null")
+@ApiModel("agv绑定表")
 @Table("agv_binding_detail")
 public class AgvBindingDetail {
 
@@ -61,6 +61,18 @@ public class AgvBindingDetail {
     @ApiModelProperty("是否铁笼装 1是 2 不是")
     @Ignore
     private int ironTray;
+    @Column("dept_num")
+    @ApiModelProperty("移位数")
+    private int deptNum;
+
+
+    public int getDeptNum() {
+        return deptNum;
+    }
+
+    public void setDeptNum(int deptNum) {
+        this.deptNum = deptNum;
+    }
 
     public int getIronTray() {
         return ironTray;

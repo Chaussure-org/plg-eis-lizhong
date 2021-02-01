@@ -404,7 +404,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                 throw new Exception("立库入库输送线有误，请核对");
             }
             //todo：设备未到位，半成品库四巷道入库，
-            String target = "MCS04";
+            String target = "MCS01";
             /**
              * 求邓大佬解放代码
              Goods goods = goodsService.findGoodsById(wareHousings.get(0).getGoodsId());
@@ -446,7 +446,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         //二层提升机入库口bcr
         if (StoreArea.R0201.equals(address)){
             //生成回库任务
-            pathSchedulingService.inboundTask(containerNo, containerNo, point.getPointArea(), point.getPointId(), StoreArea.SAS01);
+            pathSchedulingService.inboundTask(containerNo, containerNo,"RS2","290000000002", StoreArea.SAS01);
         }
 
         //二楼
@@ -520,6 +520,10 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
                         }
                     }
 
+                }else {
+                    String taskId = PrologStringUtils.newGUID();
+                    WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), StoreArea.LXHK02, containerNo, 5);
+                    wcsService.lineMove(wcsLineMoveDto,0);
                 }
                 break;
             //盘点
@@ -529,6 +533,12 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             //移库
             case 22:
 
+                break;
+                //容器没任务回库
+            case 0:
+                String taskId = PrologStringUtils.newGUID();
+                WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), StoreArea.LXHK02, containerNo, 5);
+                wcsService.lineMove(wcsLineMoveDto,0);
                 break;
         }
 
@@ -579,7 +589,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
      * @param containerLeaveDto
      */
     private void stationContainerLeave(ContainerLeaveDto containerLeaveDto) throws Exception {
-        int stationId = Integer.parseInt(containerLeaveDto.getDeviceId());
+        PointLocation pointLocation = pointLocationService.getPointByPointId(containerLeaveDto.getDeviceId());
+        Integer stationId = pointLocation.getStationId();
         List<Station> stations = stationService.findStationByMap(MapUtils.put("id", stationId).getMap());
         if (stations.size() == 0) {
             throw new Exception("拣选站编号【" + containerLeaveDto.getDeviceId() + "】EIS管理");
@@ -588,9 +599,9 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         //校验播种是否完成
         //判断当容器是否还有绑定明细
         List<Integer> stationIds = containerBindingDetailService.getContainerBindingToStation(containerLeaveDto.getContainerNo());
-        if (stationIds.contains(station.getId())) {
-            throw new Exception("容器【" + containerLeaveDto.getContainerNo() + "】播种未完成，放行失败");
-        }
+//        if (stationIds.contains(station.getId())) {
+//            throw new Exception("容器【" + containerLeaveDto.getContainerNo() + "】播种未完成，放行失败");
+//        }
         if (stationIds.size() == 0) {
             //放行回库
             String taskId = PrologStringUtils.newGUID();

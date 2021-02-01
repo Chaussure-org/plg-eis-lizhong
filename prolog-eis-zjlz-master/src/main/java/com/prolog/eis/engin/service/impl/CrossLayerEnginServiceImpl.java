@@ -51,12 +51,14 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         }
         List<ContainerPathTaskDetail> ins = containerBindingDetailMapper.findInStore();
         List<ContainerPathTaskDetail> outs = containerBindingDetailMapper.findOutStore();
-        if (ins.size() + outs.size() == 0){
+        List<ContainerPathTaskDetail> moves = containerBindingDetailMapper.findMoveStore();
+        if (ins.size() + outs.size() + moves.size() == 0){
             return;
         }
         Map<Integer, List<ContainerPathTaskDetail>> layerTasks = new HashMap<>();
         updateLayerTasksIn(ins, layerTasks);
         updateLayerTasksOut(outs, layerTasks);
+        updateLayerTasksOut(moves,layerTasks);
         if (layerTasks.size() == 0) {
             return;
         }

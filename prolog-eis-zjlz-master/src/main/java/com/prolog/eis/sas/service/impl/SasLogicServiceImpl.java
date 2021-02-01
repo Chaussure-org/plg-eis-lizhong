@@ -98,21 +98,23 @@ public class SasLogicServiceImpl implements ISasLogicService {
      * @param containerPathTask 任务
      */
     private void updateTaskInfo(ContainerPathTaskDetail containerPathTaskDetail, ContainerPathTask containerPathTask) {
-        containerPathTask.setSourceArea(containerPathTaskDetail.getNextArea());
-        containerPathTask.setSourceLocation(containerPathTaskDetail.getNextLocation());
-        containerPathTask.setTargetLocation(containerPathTaskDetail.getNextLocation());
-        containerPathTask.setTaskType(LocationConstants.PATH_TASK_TYPE_NONE);
-        containerPathTask.setTaskState(LocationConstants.PATH_TASK_STATE_NOTSTARTED);
-        containerPathTask.setUpdateTime(new Date());
-        containerPathTaskService.updateTask(containerPathTask);
-        containerPathTaskDetail.setSourceArea(containerPathTaskDetail.getNextArea());
-        containerPathTaskDetail.setSourceLocation(containerPathTaskDetail.getNextLocation());
-        containerPathTaskDetail.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
-        containerPathTaskDetail.setTaskId(null);
-        containerPathTaskDetail.setSortIndex(1);
-        containerPathTaskDetail.setArriveTime(new Date());
-        containerPathTaskDetail.setUpdateTime(new Date());
-        containerPathTaskDetailService.updateTaskDetail(containerPathTaskDetail);
+        ContainerPathTask containerPathTask1 = new ContainerPathTask();
+        containerPathTask1.setSourceArea(containerPathTaskDetail.getNextArea());
+        containerPathTask1.setSourceLocation(containerPathTaskDetail.getNextLocation());
+        containerPathTask1.setTargetLocation(containerPathTaskDetail.getNextLocation());
+        containerPathTask1.setTaskType(LocationConstants.PATH_TASK_TYPE_NONE);
+        containerPathTask1.setTaskState(LocationConstants.PATH_TASK_STATE_NOTSTARTED);
+        containerPathTask1.setUpdateTime(new Date());
+        containerPathTaskService.updateTask(containerPathTask1);
+        ContainerPathTaskDetail containerPathTaskDetail1 = new ContainerPathTaskDetail();
+        containerPathTaskDetail1.setSourceArea(containerPathTaskDetail.getNextArea());
+        containerPathTaskDetail1.setSourceLocation(containerPathTaskDetail.getNextLocation());
+        containerPathTaskDetail1.setTaskState(LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
+        containerPathTaskDetail1.setTaskId(null);
+        containerPathTaskDetail1.setSortIndex(1);
+        containerPathTaskDetail1.setArriveTime(new Date());
+        containerPathTaskDetail1.setUpdateTime(new Date());
+        containerPathTaskDetailService.updateTaskDetail(containerPathTaskDetail1);
     }
 
     /**

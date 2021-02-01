@@ -127,6 +127,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
 
     @Override
     public void trayOutByOrder() throws Exception {
+        long l = System.currentTimeMillis();
         //判断agv_binding_detail 里有状态为10 的，并且本身位置不是在agv区域的 ,加判断agv区域的空位 发送路径任务
         List<AgvBindingDetail> detailStatus = agvBindingDetaileMapper.findAgvContainerTopath();
         if (!detailStatus.isEmpty()) {
@@ -139,6 +140,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     SxStoreLocationGroup.class);
             agvBindingDetaileMapper.updateAgvStatus(detailStatus.get(0).getContainerNo(),OrderBill.ORDER_STATUS_OUTING);
             logger.info(detailStatus.get(0).getContainerNo()+"生成去往agv区域路径======================");
+            System.out.println("托盘库出库："+(System.currentTimeMillis() - l)+"毫秒");
             return;
         }
         //1.要去往agv区域的订单明细,排除已经生成agv任务计划的， 然后按时间排序
@@ -161,6 +163,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 this.saveAgvBindingDetail(outContainerDtoList);
             }
         }
+
     }
 
 
@@ -301,6 +304,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         outContainerDto.setGoodsId(goodsId);
         outContainerDto.setStoreLocation(goodsCountDto.getStoreLocation());
         outContainerDto.setQty(goodsCountDto.getQty());
+        outContainerDto.setDeptNum(goodsCountDto.getDeptNum());
         return outContainerDto;
     }
 
@@ -438,6 +442,7 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 agvBindingDetail.setWmsOrderPriority(detailDto.getWmsOrderPriority());
                 agvBindingDetail.setDetailStatus(OrderBill.ORDER_STATUS_START_OUT);
                 agvBindingDetail.setUpdateTime(new Date());
+                agvBindingDetail.setDeptNum(containerDto.getDeptNum());
                 list.add(agvBindingDetail);
             }
         }

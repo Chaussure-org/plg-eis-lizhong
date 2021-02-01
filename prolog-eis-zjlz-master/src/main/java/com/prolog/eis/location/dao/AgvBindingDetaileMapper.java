@@ -51,12 +51,15 @@ public interface AgvBindingDetaileMapper extends BaseMapper<AgvBindingDetail> {
 
 
     @Select("SELECT\n" +
-            "\ta.container_no as containerNo\n" +
+            "\ta.container_no AS containerNo \n" +
             "FROM\n" +
             "\tagv_binding_detail a\n" +
             "\tLEFT JOIN container_path_task c ON a.container_no = c.container_no \n" +
             "WHERE\n" +
-            "\ta.detail_status = 10 and c.target_area !='RCS01' AND c.task_state=0")
+            "\ta.detail_status = 10 \n" +
+            "\tAND c.target_area != 'RCS01' \n" +
+            "\tAND c.task_state =0\n" +
+            "\torder by a.dept_num asc")
     List<AgvBindingDetail> findAgvContainerTopath();
 
 }
