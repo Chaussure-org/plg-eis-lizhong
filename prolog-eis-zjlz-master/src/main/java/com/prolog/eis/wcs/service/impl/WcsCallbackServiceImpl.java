@@ -211,7 +211,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             return success;
         } catch (Exception e) {
             logger.warn("wcs拆盘机入口回告失败", e);
-            return faliure;
+            return RestMessage.newInstance(false, "300", "wcs拆盘机空闲回告失败" + e.getMessage(), null);
         }
     }
 
@@ -226,7 +226,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             return success;
         } catch (Exception e) {
             logger.warn("wcs拆盘机出口任务回告失败", e);
-            return faliure;
+            return RestMessage.newInstance(false, "300", "wcs拆盘机到位回告失败" + e.getMessage(), null);
         }
     }
 
@@ -270,10 +270,14 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (openDisks.size() == 0) {
             throw new Exception("【" + openDiskDto.getDeviceId() + "】拆盘机点位没有被管理");
         }
-        if (openDiskDto.getIsArrive().equals("1")) {
-            openDisk.setTaskStatus(1);
-            openDiskService.updateOpenDisk(openDisk);
+        if (!openDiskDto.getIsArrive().equals("1")){
+            throw new Exception("wcs上传状态不为到达状态1");
         }
+        if (openDisk.getTaskStatus() == 1){
+            throw new Exception("wcs已上报eis请勿重复上报");
+        }
+        openDisk.setTaskStatus(1);
+        openDiskService.updateOpenDisk(openDisk);
     }
 
     /**
@@ -288,10 +292,14 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (openDisks.size() == 0) {
             throw new Exception("【" + openDiskDto.getDeviceId() + "】拆盘机点位没有被管理");
         }
-        if (openDiskDto.getStatus().equals("0")) {
-            openDisk.setTaskStatus(0);
-            openDiskService.updateOpenDisk(openDisk);
+        if (!openDiskDto.getStatus().equals("0")){
+            throw new Exception("wcs上传eis拆盘机空闲状态不为0");
         }
+        if (openDisk.getTaskStatus() != 1){
+            throw new Exception("wcs已上报eis请勿重复上报");
+        }
+        openDisk.setTaskStatus(0);
+        openDiskService.updateOpenDisk(openDisk);
     }
 
 
