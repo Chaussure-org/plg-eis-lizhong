@@ -145,9 +145,10 @@ public interface IStationBZService {
      * @param stationId
      * @param containerNo
      * @param orderTrayNo
-     * @param orderBillId
+     * @param orderDetailId
+     * @throws Exception
      */
-    void pickingComplete(int stationId,String containerNo,String orderTrayNo,int orderBillId) throws Exception;
+    void pickingComplete(int stationId,String containerNo,String orderTrayNo,int orderDetailId) throws Exception;
 
 
     /**
@@ -156,4 +157,17 @@ public interface IStationBZService {
      * @param orderNo
      */
     void startSeedToWms(int orderBillId,String orderNo) throws Exception;
+
+    /**
+     * 称重作业 页面渲染后称重调用 2021.2.2改
+     * @param stationId 站台id
+     * @param containerNo 容器号
+     * @param orderTrayNo 订单拖号
+     * @param passBoxNo 周转箱号
+     * @param orderDetailId 订单明细id
+     * @param completeNum 拣选数量
+     * @throws Exception
+     * @return
+     */
+    OrderTrayWeighDTO pickingWeighWork(int stationId,String containerNo,String orderTrayNo,String passBoxNo,int orderDetailId,int completeNum) throws Exception;
 }

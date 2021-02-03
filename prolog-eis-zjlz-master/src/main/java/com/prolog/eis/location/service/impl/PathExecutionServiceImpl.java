@@ -5,9 +5,8 @@ import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
 import com.prolog.eis.dto.rcs.RcsRequestResultDto;
 import com.prolog.eis.dto.rcs.RcsTaskDto;
 import com.prolog.eis.dto.wcs.WcsLineMoveDto;
-import com.prolog.eis.enums.BcrPointEnum;
 import com.prolog.eis.enums.ConstantEnum;
-import com.prolog.eis.enums.PointChangeEnum;
+import com.prolog.eis.enums.RcsToWcsAreaEnum;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.service.AgvLocationService;
@@ -15,12 +14,10 @@ import com.prolog.eis.location.service.ContainerPathTaskService;
 import com.prolog.eis.location.service.PathExecutionService;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.location.service.SxkLocationService;
-import com.prolog.eis.log.dao.SasLogMapper;
 import com.prolog.eis.model.location.AgvStoragelocation;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
-import com.prolog.eis.model.log.SasLog;
 import com.prolog.eis.rcs.service.IRcsService;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
@@ -29,14 +26,13 @@ import com.prolog.eis.wcs.service.IWcsService;
 import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
-import org.reflections.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -63,6 +59,8 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     @Autowired
     private ContainerPathTaskDetailMapper containerPathTaskDetailMapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(PathExecutionServiceImpl.class);
+
     @Override
     public void doRcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         //找货位
@@ -83,6 +81,15 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         try {
             RcsTaskDto rcsTaskDto = new RcsTaskDto(taskId, containerPathTaskDetailDTO.getPalletNo()
                     , containerPathTaskDetailDTO.getSourceLocation(), location, LocationConstants.RCS_TASK_TYPE_TRANSPORT, "1");
+            //增加校验agv回库bcr只保证有一条任务
+            if (ConstantEnum.rcsHkAreas.contains(containerPathTaskDetailDTO.getNextArea())){
+                int i = computeHkWcs(containerPathTaskDetailDTO.getNextArea());
+                if (i > 0){
+                    logger.info("已有回库任务发往"+containerPathTaskDetailDTO.getNextArea()+"当前回库任务发送失败");
+                    return;
+                }
+            }
+
             RcsRequestResultDto rcsRequestResultDto = rcsRequestService.sendTask(rcsTaskDto);
 
             //rcs回传成功后，汇总表状态为20已发送指令,改明细表状态50给设备发送移动指令
@@ -268,6 +275,14 @@ public class PathExecutionServiceImpl implements PathExecutionService {
         containerPathTaskService.updateContainerPathTask(containerPathTask, containerPathTaskDetailDTO, null
                 , LocationConstants.PATH_TASK_STATE_TOBESENT, LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE);
         return taskId;
+    }
+
+
+    private int computeHkWcs(String areaNo){
+        String wcsTwoArea = RcsToWcsAreaEnum.getWcsArea(areaNo);
+        int i = containerPathTaskDetailMapper.countHkWcsPath(wcsTwoArea);
+        int i1 = containerPathTaskDetailMapper.countRcsToWcsPath(areaNo);
+        return i + i1;
     }
 
 

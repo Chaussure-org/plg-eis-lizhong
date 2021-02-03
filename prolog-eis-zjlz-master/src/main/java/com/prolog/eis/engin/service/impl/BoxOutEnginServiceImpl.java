@@ -100,7 +100,9 @@ public class BoxOutEnginServiceImpl implements BoxOutEnginService {
         if (!wmsOutdetails.isEmpty()) {
             //有wms订单优先级,整体算出库的绑定明细
             List<OutContainerDto> outContainerDtoList = this.outByDetails(wmsOutdetails);
-            this.saveLineBindingDetail(outContainerDtoList);
+            if(outContainerDtoList.size() > 0){
+                this.saveLineBindingDetail(outContainerDtoList);
+            }
         } else {
             List<OutDetailDto> agvDetails = lineDetailList.stream().sorted(Comparator.comparing(OutDetailDto::getOrderPriority)).collect(Collectors.toList());
             List<Integer> orderIds = this.computeRepeat(agvDetails);

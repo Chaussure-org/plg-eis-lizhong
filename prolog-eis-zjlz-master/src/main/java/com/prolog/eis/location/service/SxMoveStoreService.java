@@ -34,4 +34,6 @@ public interface SxMoveStoreService {
                                          ContainerPathTaskDetail containerPathTaskDetail, Timestamp time) throws Exception;
 
     void unlockCompletekSxStoreLocation(ContainerPathTaskDetail containerPathTaskDetail) throws Exception;
+
+
 }

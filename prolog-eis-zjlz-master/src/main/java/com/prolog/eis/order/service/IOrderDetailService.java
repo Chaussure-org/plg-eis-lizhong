@@ -4,6 +4,7 @@ import com.prolog.eis.dto.bz.BCPGoodsInfoDTO;
 import com.prolog.eis.dto.page.OrderDetailInfoDto;
 import com.prolog.eis.model.order.OrderDetail;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -93,4 +94,11 @@ public interface IOrderDetailService {
      * @return
      */
     List<OrderDetailInfoDto> getOrderDetail(int orderId);
+
+    /**
+     * 得到订单明细剩余未拣数量
+     * @param orderDetailId
+     * @return
+     */
+    int getSurplusCountByDetail(int orderDetailId);
 }

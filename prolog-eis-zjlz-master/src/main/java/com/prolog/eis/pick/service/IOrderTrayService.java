@@ -10,6 +10,7 @@ public interface IOrderTrayService {
 
     /**
      * 请求订单拖(拆盘机)
+     * @throws Exception
      */
     void requestOrderTray() throws Exception;
 

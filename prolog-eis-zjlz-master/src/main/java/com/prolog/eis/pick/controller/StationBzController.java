@@ -52,9 +52,9 @@ public class StationBzController {
 
     @ApiOperation(value = "拣选完成放行", notes = "拣选完成放行")
     @RequestMapping("/complete")
-    public RestMessage<String> pickingComplete(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam(defaultValue = "0") int orderBillId) throws Exception {
+    public RestMessage<String> pickingComplete(@RequestParam(defaultValue = "0") int stationId,@RequestParam String containerNo,@RequestParam String orderBoxNo,@RequestParam(defaultValue = "0") int orderDetailId) throws Exception {
         try {
-            stationBZService.pickingComplete(stationId,containerNo,orderBoxNo,orderBillId);
+            stationBZService.pickingComplete(stationId,containerNo,orderBoxNo,orderDetailId);
             return RestMessage.newInstance(true,"200","操作成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
@@ -85,6 +85,19 @@ public class StationBzController {
             return RestMessage.newInstance(true,"200","换拖成功",null);
         } catch (Exception e) {
             return RestMessage.newInstance(false,"500","操作失败:"+e.getMessage(),null);
+        }
+    }
+
+
+    @ApiOperation(value = "拣选称重操作",notes = "称重检测 一次称重不合格进行二次称重")
+    @RequestMapping("/weighWork")
+    public RestMessage<OrderTrayWeighDTO> pickWeighWork(@RequestParam int stationId,@RequestParam String containerNo,@RequestParam String orderTrayNo,
+                                                        @RequestParam(defaultValue = "0") String passBoxNo,@RequestParam int orderDetailId,@RequestParam int completeNum) {
+        try {
+            OrderTrayWeighDTO orderTrayWeighDTO = stationBZService.pickingWeighWork(stationId, containerNo, orderTrayNo, passBoxNo, orderDetailId, completeNum);
+            return RestMessage.newInstance(true,"200","操作成功",orderTrayWeighDTO);
+        } catch (Exception e) {
+            return RestMessage.newInstance(false, "500", "操作失败:" + e.getMessage(), null);
         }
     }
 

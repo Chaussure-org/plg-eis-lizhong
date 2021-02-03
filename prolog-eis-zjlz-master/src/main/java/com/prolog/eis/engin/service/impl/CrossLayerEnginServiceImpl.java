@@ -72,9 +72,7 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         });
 
         List<CarInfoDTO> carInfoList = ISasService.getCarInfo();
-//        CarInfoDTO carInfoDTO1 = new CarInfoDTO("1", 1, 2);
-//        CarInfoDTO carInfoDTO2 = new CarInfoDTO("2", 2, 2);
-//        List<CarInfoDTO> carInfoList = Arrays.asList(carInfoDTO1,carInfoDTO2);
+//        List<CarInfoDTO> carInfoList = getCarTest();
         for (Map.Entry<Integer, List<ContainerPathTaskDetail>> integerListEntry : list) {
             if (integerListEntry.getValue().size() > 0){
                 Integer integer = integerListEntry.getKey();
@@ -256,5 +254,20 @@ public class CrossLayerEnginServiceImpl implements CrossLayerEnginService {
         crossLayerTask.setCarNo(rgvId);
         crossLayerTask.setTaskId(id);
         crossLayerTaskMapper.save(crossLayerTask);
+    }
+
+    /**
+     * 模拟小车
+     * @return
+     */
+    public  static List<CarInfoDTO>  getCarTest(){
+        CarInfoDTO carInfoDTO1 = new CarInfoDTO("1", 22, 3);
+        CarInfoDTO carInfoDTO3 = new CarInfoDTO("2",26 , 2);
+        CarInfoDTO carInfoDTO2 = new CarInfoDTO("3", 11, 2);
+        CarInfoDTO carInfoDTO4 = new CarInfoDTO("4", 20, 2);
+        CarInfoDTO carInfoDTO5 = new CarInfoDTO("5", 6, 2);
+        CarInfoDTO carInfoDTO6 = new CarInfoDTO("6", 3, 2);
+        List<CarInfoDTO> carInfoList = Arrays.asList(carInfoDTO1,carInfoDTO2,carInfoDTO3,carInfoDTO4,carInfoDTO5,carInfoDTO6);
+        return carInfoList;
     }
 }

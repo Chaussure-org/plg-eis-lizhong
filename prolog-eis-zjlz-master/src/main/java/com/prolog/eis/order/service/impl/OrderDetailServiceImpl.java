@@ -161,4 +161,9 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     public List<OrderDetailInfoDto> getOrderDetail(int orderId) {
         return orderDetailMapper.getOrderDetailById(orderId);
     }
+
+    @Override
+    public int getSurplusCountByDetail(int orderDetailId) {
+        return orderDetailMapper.getOrderDetailQty(orderDetailId);
+    }
 }

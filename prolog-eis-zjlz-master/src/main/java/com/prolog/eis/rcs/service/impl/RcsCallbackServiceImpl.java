@@ -12,10 +12,12 @@ import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.model.order.OrderBill;
+import com.prolog.eis.model.wcs.OpenDisk;
 import com.prolog.eis.rcs.service.IRcsCallbackService;
 import com.prolog.eis.util.LogInfo;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.location.LocationConstants;
+import com.prolog.eis.wcs.service.IOpenDiskService;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ public class RcsCallbackServiceImpl implements IRcsCallbackService {
     private ContainerPathTaskService containerPathTaskService;
     @Autowired
     private AgvStoragelocationMapper agvStoragelocationMapper;
+    @Autowired
+    private IOpenDiskService openDiskService;
 
     @Override
     @LogInfo(desci = "rcs任务回告", direction = "rcs->eis", type = LogDto.RCS_TYPE_CALLBACK, systemType = LogDto.RCS)
@@ -90,6 +94,20 @@ public class RcsCallbackServiceImpl implements IRcsCallbackService {
                         .put("updateTime", nowTime).getMap()
                 , ContainerPathTaskDetail.class);
         agvStoragelocationMapper.updateLocationLock(containerPathTaskDetail.getSourceLocation(), AgvStoragelocation.TASK_EMPTY);
+        if (containerPathTask.getSourceArea().equals(OpenDisk.OPEN_DISK_OUT)){
+            //agv位取货后更新状态(拆盘机出口)
+            List<OpenDisk> openDiskList = openDiskService.findOpenDiskByMap(MapUtils.put("openDiskId", OpenDisk.OPEN_DISK_OUT).getMap());
+            OpenDisk openDisk = openDiskList.get(0);
+            openDisk.setTaskStatus(0);
+            openDiskService.updateOpenDisk(openDisk);
+        }
+        if (containerPathTask.getSourceArea().equals(OpenDisk.OPEN_DISK_IN)){
+            //agv位放货后更新状态(拆盘机出口)
+            List<OpenDisk> openDiskList = openDiskService.findOpenDiskByMap(MapUtils.put("openDiskId", OpenDisk.OPEN_DISK_IN).getMap());
+            OpenDisk openDisk = openDiskList.get(0);
+            openDisk.setTaskStatus(1);
+            openDiskService.updateOpenDisk(openDisk);
+        }
     }
 
     /**

@@ -25,14 +25,14 @@ public interface IWcsCallbackService {
      * @param openDiskDto
      * @return
      */
-    RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto);
+    RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) throws JsonProcessingException;
 
     /**
      * 拆盘机出口回告
      * @param openDiskDto
      * @return
      */
-    RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto);
+    RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto) throws JsonProcessingException;
 
     /**
      * 拣选站容器放行

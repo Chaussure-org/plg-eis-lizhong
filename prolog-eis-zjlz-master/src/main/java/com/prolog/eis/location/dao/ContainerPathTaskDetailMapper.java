@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -117,4 +118,34 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
             "\tAND source_area = 'SAS01'\n" +
             "\tand task_state = 50")
     int computeXkPathDetail(@Param("layer") String layer);
+
+    /**
+     * 计算rcs到回库输送线任务数
+     * @param areaNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tCOUNT( * ) \n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail \n" +
+            "WHERE\n" +
+            "\t( task_state IN ( 50, 60 ) AND next_area = 'RCS041' ) \n" +
+            "\tOR ( task_state = 0 AND source_area = 'RCS041' )")
+    int countRcsToWcsPath(@Param("areaNo")String areaNo);
+
+    /**
+     * 回库输送线上的托盘
+     * @param areaNo
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tCOUNT( * ) \n" +
+            "FROM\n" +
+            "\tcontainer_path_task_detail \n" +
+            "WHERE\n" +
+            "\t( task_state IN ( 0,50, 60 ) AND source_area = 'RCS041' ) ")
+    int countHkWcsPath(@Param("areaNo")String areaNo);
+
+
+
 }

@@ -3,6 +3,7 @@ package com.prolog.eis.engin.dispatch;
 import com.prolog.eis.engin.service.*;
 import com.prolog.eis.mcs.service.IMcsCallBackService;
 import com.prolog.eis.model.wcs.CrossLayerTask;
+import com.prolog.eis.pick.service.IOrderTrayService;
 import com.prolog.eis.util.VisiableThreadPoolTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,8 @@ public class OutDispatch {
 
     @Autowired
     private IMcsCallBackService mcsCallbackService;
+    @Autowired
+    private IOrderTrayService orderTrayService;
 
     /**
      * 托盘库 出库
@@ -130,6 +133,19 @@ public class OutDispatch {
             inventoryBoxOutService.inventoryBoxOut();
         } catch (Exception e) {
             logger.error("盘点出库失败"+e.getMessage(),e);
+        }
+    }
+
+    /**
+     * 订单拖调度
+     */
+    @Scheduled(initialDelay = 4000,fixedDelay = 6000)
+    public void orderTrayDispatch(){
+        try {
+            //拆盘
+            orderTrayService.requestOrderTray();
+        } catch (Exception e) {
+            logger.error("订单拖调度"+e.getMessage(),e);
         }
     }
 

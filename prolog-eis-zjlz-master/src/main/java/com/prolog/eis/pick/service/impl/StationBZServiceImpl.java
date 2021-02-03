@@ -180,6 +180,9 @@ public class StationBZServiceImpl implements IStationBZService {
         picking.setSurplusOrderDetailCount(count);
         //订单第一次拣选则回告wms拣选开始
         startSeedToWms(bindingDetail.getOrderBillId(),bcpGoodsDTO.getOrderNo());
+        //查当前拣选明细剩余拣选数量
+        int surplusCountByDetail = orderDetailService.getSurplusCountByDetail(bindingDetail.getOrderDetailId());
+        picking.setSurplusQtyByDetail(surplusCountByDetail);
         return picking;
 
     }
@@ -277,9 +280,13 @@ public class StationBZServiceImpl implements IStationBZService {
         if (agvStoragelocations.size() == 0) {
             throw new Exception("站台【" + stationId + "】点位配置错误");
         }
+        long count = agvStoragelocations.stream().filter(x -> x.getLocationNo().equals(locationNo)).count();
+        if (count == 0){
+            throw new Exception("点位【"+locationNo+"】不属于当前拣选站");
+        }
         List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("sourceLocation",locationNo ).getMap());
         if (containerPathTasks.size() == 0){
-            throw new Exception("点位【"+locationNo+"】路径配置有误");
+            throw new Exception("点位【"+locationNo+"】无容器，路径配置有误");
         }
         if (containerPathTasks.get(0).getTaskState() != ContainerPathTask.TASK_STATE_NOT){
             throw new Exception("订单拖没有到位,路径状态为【"+containerPathTasks.get(0).getTaskState()+"】");
@@ -490,7 +497,7 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("容器【" + containerNo + "】无在播明细");
         }
         if (completeNum > containerBinDings.getSeedNum() ){
-            throw new Exception("短拣数量不能大于播种数量");
+            throw new Exception("拣选数量不能大于播种数量");
         }
         OrderDetail orderDetail = orderDetailService.findOrderDetailById(containerBinDings.getOrderDetailId());
         if (orderDetail == null) {
@@ -509,8 +516,8 @@ public class StationBZServiceImpl implements IStationBZService {
         orderDetailService.updateOrderDetail(orderDetail);
         //扣减库存
         containerStoreService.updateContainerStoreNum(containerBinDings.getSeedNum(), containerNo);
-        // 删除绑定明细
-        containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderDetailId()).getMap());
+        // 删除绑定明细（放行确认后删除）
+//        containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", containerBinDings.getOrderDetailId()).getMap());
         //播种记录保存
         seedInfoService.saveSeedInfo(containerNo, orderBoxNo, orderBillId, containerBinDings.getOrderDetailId(), stationId, containerBinDings.getSeedNum(), orderDetail.getGoodsId());
         boolean b = orderDetailService.checkOrderDetailFinish(containerBinDings.getOrderDetailId());
@@ -700,7 +707,7 @@ public class StationBZServiceImpl implements IStationBZService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void pickingComplete(int stationId, String containerNo, String orderTrayNo, int orderBillId) throws Exception {
+    public void pickingComplete(int stationId, String containerNo, String orderTrayNo, int orderDetailId) throws Exception {
         if (StringUtils.isBlank(containerNo)) {
             throw new Exception("容器号不能为空");
         }
@@ -715,8 +722,13 @@ public class StationBZServiceImpl implements IStationBZService {
         if (b) {
             throw new Exception("容器【" + containerNo + "】已离开站台请勿重复操作");
         }
-        //todo:注释物料容器放行
-
+        //放行删除绑定汇总绑定明细
+        List<ContainerBindingDetail> bindingDetails = containerBindingDetailService.findMap(MapUtils.put("containerNo", containerNo).put("orderDetailId",orderDetailId).getMap());
+        if (bindingDetails.size() == 0){
+            throw new Exception("容器【"+containerNo+"】无容器绑定");
+        }
+        Integer orderBillId = bindingDetails.get(0).getOrderBillId();
+        containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", orderDetailId).getMap());
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         this.containerNoLeave(containerNo, stationId);
@@ -728,7 +740,7 @@ public class StationBZServiceImpl implements IStationBZService {
             //订单拖放行 贴标区或非贴标区
             //todo:2020:1:26注释订单拖放行
             logger.info(orderTrayNo+"订单拖放行");
-//           this.orderTrayLeave(orderTrayNo, orderBillId);
+           this.orderTrayLeave(orderTrayNo, orderBillId);
         }
 
 
@@ -750,6 +762,51 @@ public class StationBZServiceImpl implements IStationBZService {
     }
 
     /**
+     * 称重检测 一个接口调用校验是否有seed_info信息 没有进行拣选逻辑保存称重，有则更新称重信息
+     * @param stationId 站台id
+     * @param containerNo 容器号
+     * @param orderTrayNo 订单拖号
+     * @param passBoxNo 周转箱号
+     * @param orderDetailId 订单明细id
+     * @param completeNum 拣选数量
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OrderTrayWeighDTO pickingWeighWork(int stationId, String containerNo, String orderTrayNo, String passBoxNo, int orderDetailId, int completeNum) throws Exception {
+        if (StringUtils.isBlank(orderTrayNo)) {
+            throw new RuntimeException("订单拖编号不能为空");
+        }
+        if (StringUtils.isBlank(containerNo)) {
+            throw new RuntimeException("容器编号不能为空");
+        }
+        if (StringUtils.isBlank(passBoxNo)) {
+            throw new Exception("周转箱号不能为空");
+        }
+        Station station = stationService.findById(stationId);
+        if (station == null) {
+            throw new RuntimeException(stationId + "站台不存在");
+        }
+        OrderTrayWeighDTO orderTrayWeighDTO = null;
+        List<SeedInfo> seedInfos = seedInfoService.findSeedInfoByMap(MapUtils.put("containerNo", containerNo).put("orderDetailId", orderDetailId).getMap());
+        if (seedInfos.size() == 0){
+            //找到当前播种的绑定明细
+            List<Integer> orderBillIds = stationService.findPickingOrderBillId(stationId);
+            if (orderBillIds.size() == 0) {
+                throw new Exception("站台【" + stationId + "】无播种订单");
+            }
+            //执行播种
+            this.doPicking(stationId, containerNo, completeNum, orderBillIds.get(0), orderTrayNo);
+            //称重
+             orderTrayWeighDTO = weighCheck(stationId, orderDetailId, passBoxNo);
+        }else {
+            //称重
+            orderTrayWeighDTO = weighCheck(stationId, orderDetailId, passBoxNo);
+        }
+        return orderTrayWeighDTO;
+    }
+
+    /**
      * 修改接驳点订单拖号
      * @param orderTrayNo
      * @param locationNo
@@ -765,6 +822,10 @@ public class StationBZServiceImpl implements IStationBZService {
         List<ContainerPathTaskDetail> containerPathTaskDetails = containerPathTaskDetailService.findPathTaskDetailByMap(MapUtils.put("sourceLocation", locationNo).getMap());
         if (containerPathTaskDetails.size() == 0){
             throw new Exception("接驳点"+locationNo+"路径异常");
+        }
+        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", orderTrayNo).getMap());
+        if (containerPathTasks.size() > 0){
+            throw new Exception("容器号已被使用");
         }
         containerPathTaskList.get(0).setContainerNo(orderTrayNo);
         containerPathTaskList.get(0).setPalletNo(orderTrayNo);

@@ -20,6 +20,12 @@ public class ConstantEnum {
 
     public static List<String> secondOutBcrs = Arrays.asList("BCR0205", "BCR0206", "BCR0207", "BCR0208");
 
+    /**
+     * rcs回库点位
+     */
+    public static List<String> rcsHkAreas = Arrays.asList("RCS041", "RCS031", "RCS021", "RCS011");
+
+
     public static List<String> secondPoints = Arrays.asList("RTM0202", "RTM0201", "RTM0203", "RTM0204", "RTM0205", "RTM0206", "RTM0207", "RTM0208"
             , "MTR0201", "MTR0202", "MTR0203", "MTR0204", "MTR0205", "MTR0206", "MTR0207", "MTR0208");
 

@@ -15,7 +15,6 @@ import com.prolog.eis.location.dao.SxStoreMapper;
 import com.prolog.eis.location.service.SxMoveStoreService;
 import com.prolog.eis.location.service.SxkLocationService;
 import com.prolog.eis.mcs.service.IMcsService;
-import com.prolog.eis.mcs.service.impl.McsServiceImpl;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
@@ -24,7 +23,6 @@ import com.prolog.eis.model.store.SxStoreLocation;
 import com.prolog.eis.model.store.SxStoreLocationGroup;
 import com.prolog.eis.sas.service.ISasService;
 import com.prolog.eis.store.service.IContainerStoreService;
-import com.prolog.eis.util.EisStringUtils;
 import com.prolog.eis.util.ListHelper;
 import com.prolog.eis.util.PrologDateUtils;
 import com.prolog.eis.util.PrologStringUtils;
@@ -41,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -751,4 +748,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
             }
         }
     }
+
+
+
 }

@@ -173,7 +173,10 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                     agvDetails.stream().filter(x -> orderIds.contains(x.getOrderBillId())).collect(Collectors.toList());
             if (!details.isEmpty()) {
                 List<OutContainerDto> outContainerDtoList = this.outByDetails(details);
-                this.saveAgvBindingDetail(outContainerDtoList);
+                if (outContainerDtoList.size() > 0){
+                    this.saveAgvBindingDetail(outContainerDtoList);
+                }
+
             }
         }
 
@@ -238,19 +241,8 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
         return outContainerList;
     }
 
-    /**
-     * 1.根据goodsId count
-     * 返回：料箱 货位 goodsId
-     *
-     * @throws Exception
-     */
     @Override
-    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception {
-        /**1.移位数最少 2.巷道任务数最少
-         2.找到本层 该商品的货位和数量 以及移位数 最少的
-         满足明细数量的，注：尾托的 概念 以及比例的选择
-         */
-//        System.out.println("+++++++++++++++++++++++++开始时间" + new Date());
+    public List<RoadWayContainerTaskDto> computeRoadWayTask() {
         List<RoadWayContainerTaskDto> roadWayContainerTaskDtoList = new ArrayList<>();
         for (int i = 2; i < 6; i++) {
             RoadWayContainerTaskDto roadWayContainerTaskDto = new RoadWayContainerTaskDto();
@@ -279,8 +271,53 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
                 }
             }
         }
-//        System.out.println(roadWayContainerTaskDtoList);
-//        System.out.println("+++++++++++++++++++++++++结束时间" + new Date());
+        return roadWayContainerTaskDtoList;
+    }
+
+    /**
+     * 1.根据goodsId count
+     * 返回：料箱 货位 goodsId
+     *
+     * @throws Exception
+     */
+    @Override
+    public synchronized List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception {
+        /**1.移位数最少 2.巷道任务数最少
+         2.找到本层 该商品的货位和数量 以及移位数 最少的
+         满足明细数量的，注：尾托的 概念 以及比例的选择
+         */
+
+        /**
+        List<RoadWayContainerTaskDto> roadWayContainerTaskDtoList = new ArrayList<>();
+        for (int i = 2; i < 6; i++) {
+            RoadWayContainerTaskDto roadWayContainerTaskDto = new RoadWayContainerTaskDto();
+            roadWayContainerTaskDto.setRoadWay(i);
+            roadWayContainerTaskDto.setOutCount(0);
+            roadWayContainerTaskDto.setInCount(0);
+            roadWayContainerTaskDtoList.add(roadWayContainerTaskDto);
+        }
+        List<RoadWayContainerTaskDto> taskIns = trayOutMapper.findTaskInStore();
+        List<RoadWayContainerTaskDto> taskOuts = trayOutMapper.findTaskOutStore();
+        if (taskIns != null && taskIns.size() > 0) {
+            for (RoadWayContainerTaskDto taskIn : taskIns) {
+                for (RoadWayContainerTaskDto roadWayContainerTaskDto : roadWayContainerTaskDtoList) {
+                    if (taskIn.getRoadWay() == roadWayContainerTaskDto.getRoadWay()) {
+                        roadWayContainerTaskDto.setInCount(roadWayContainerTaskDto.getInCount() + taskIn.getInCount());
+                    }
+                }
+            }
+        }
+        if (taskOuts != null && taskOuts.size() > 0) {
+            for (RoadWayContainerTaskDto taskOut : taskOuts) {
+                for (RoadWayContainerTaskDto roadWayContainerTaskDto : roadWayContainerTaskDtoList) {
+                    if (taskOut.getRoadWay() == roadWayContainerTaskDto.getRoadWay()) {
+                        roadWayContainerTaskDto.setOutCount(roadWayContainerTaskDto.getOutCount() + taskOut.getOutCount());
+                    }
+                }
+            }
+        }
+         */
+        List<RoadWayContainerTaskDto> roadWayContainerTaskDtoList = computeRoadWayTask();
 
         //巷道的出库任务数 和入库任务数
         //List<RoadWayContainerTaskDto> RoadWayContainerTasks = trayOutMapper.findRoadWayContainerTask();

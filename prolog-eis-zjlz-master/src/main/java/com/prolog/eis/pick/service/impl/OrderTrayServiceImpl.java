@@ -92,9 +92,9 @@ public class OrderTrayServiceImpl implements IOrderTrayService {
             }
             pathSchedulingService.inboundTask(containerNo,containerNo,agvStore.getAreaNo(),agvStore.getLocationNo(),OpenDisk.OPEN_DISK_OUT);
             pathSchedulingService.containerMoveTask(containerNo,storeArea,usableStore.get(0));
-            OpenDisk openDisk = openDisks.get(0);
-            openDisk.setTaskStatus(OpenDisk.TASK_STATUS_NOT);
-            openDiskService.updateOpenDisk(openDisk);
+            openDisks.get(0).setTaskStatus(2);
+            openDiskService.updateOpenDisk(openDisks.get(0));
+
         }
     }
 

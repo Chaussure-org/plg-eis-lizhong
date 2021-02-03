@@ -47,7 +47,8 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "FROM\n" +
             "order_bill ob JOIN\n" +
             "\torder_detail od on ob.id=od.order_bill_id\n" +
-            "WHERE\n" +
+            "WHERE \n" +
+            "od.plan_qty != od.has_pick_qty AND " +
             "\tod.id NOT IN ( SELECT abd.order_mx_id FROM line_binding_detail abd ) \n" +
             "\tAND od.area_no=#{areaNo} \n" +
             "ORDER BY\n" +
@@ -181,4 +182,16 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
             "\td.order_bill_id = #{orderId}")
     List<OrderDetailInfoDto> getOrderDetailById(@Param("orderId") int orderId);
 
+    /**
+     * 得到订单明细剩余未拣选数量
+     * @param orderDetailId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tSUM( plan_qty - has_pick_qty ) \n" +
+            "FROM\n" +
+            "\torder_detail \n" +
+            "WHERE\n" +
+            "\tid = #{orderDetailId}")
+    int getOrderDetailQty(@Param("orderDetailId") int orderDetailId);
 }

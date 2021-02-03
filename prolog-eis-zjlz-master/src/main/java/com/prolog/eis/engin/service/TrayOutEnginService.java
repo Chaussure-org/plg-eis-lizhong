@@ -2,6 +2,7 @@ package com.prolog.eis.engin.service;
 
 import com.prolog.eis.dto.lzenginee.OutContainerDto;
 import com.prolog.eis.dto.lzenginee.OutDetailDto;
+import com.prolog.eis.dto.lzenginee.RoadWayContainerTaskDto;
 import com.prolog.eis.model.order.OrderBill;
 
 import java.util.List;
@@ -36,4 +37,8 @@ public interface TrayOutEnginService {
     List<OutContainerDto> outByGoodsId(int goodsId, int count) throws Exception;
 
     List<OutContainerDto> outByDetails(List<OutDetailDto> detailDtos) throws Exception;
+
+
+    List<RoadWayContainerTaskDto> computeRoadWayTask();
+
 }

@@ -9,6 +9,7 @@ import com.prolog.eis.configuration.ServerConfiguration;
 import com.prolog.eis.dto.log.LogDto;
 import com.prolog.eis.dto.station.ContainerTaskDto;
 import com.prolog.eis.dto.wcs.*;
+import com.prolog.eis.engin.dao.LineBindingDetailMapper;
 import com.prolog.eis.engin.service.IInventoryBoxOutService;
 import com.prolog.eis.enums.BcrPointEnum;
 import com.prolog.eis.enums.BranchTypeEnum;
@@ -24,6 +25,7 @@ import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.GoodsInfo;
 import com.prolog.eis.model.PointLocation;
 import com.prolog.eis.model.base.Goods;
+import com.prolog.eis.model.line.LineBindingDetail;
 import com.prolog.eis.model.location.ContainerPathTask;
 import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
@@ -111,6 +113,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
     @Autowired
     private IGoodsService goodsService;
+    @Autowired
+    private LineBindingDetailMapper lineBindingDetailMapper;
 
 
     @Autowired
@@ -202,7 +206,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
 
     @Override
     @LogInfo(desci = "wcs拆盘机入口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_IN, systemType = LogDto.WCS)
-    public RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) {
+    public RestMessage<String> openDiskEntranceCallback(OpenDiskDto openDiskDto) throws JsonProcessingException {
         if (openDiskDto == null) {
             return success;
         }
@@ -210,14 +214,26 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             this.openDiskIn(openDiskDto);
             return success;
         } catch (Exception e) {
-            logger.warn("wcs拆盘机入口回告失败", e);
+            logger.error("wcs拆盘机入口回告失败", e);
+            LogDto logDto = new LogDto();
+            logDto.setDirect("wcs->eis");
+            logDto.setDescri("wcs拆盘机入口回告失败");
+            logDto.setException(e.getMessage());
+            logDto.setCreateTime(new Date());
+            logDto.setHostPort(serverConfiguration.getUrl());
+            logDto.setParams(JsonUtils.toString(openDiskDto));
+            logDto.setMethodName("openDiskEntranceCallback");
+            logDto.setSystemType(2);
+            logDto.setSuccess(false);
+            logDto.setType(4);
+            logService.save(logDto);
             return RestMessage.newInstance(false, "300", "wcs拆盘机空闲回告失败" + e.getMessage(), null);
         }
     }
 
     @Override
     @LogInfo(desci = "wcs拆盘机出口任务回告", direction = "wcs->eis", type = LogDto.WCS_TYPE_OPEN_DISK_OUT, systemType = LogDto.WCS)
-    public RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto) {
+    public RestMessage<String> openDiskOuTCallback(OpenDiskFinishDto openDiskDto) throws JsonProcessingException {
         if (openDiskDto == null) {
             return success;
         }
@@ -225,7 +241,19 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
             this.openDiskOut(openDiskDto);
             return success;
         } catch (Exception e) {
-            logger.warn("wcs拆盘机出口任务回告失败", e);
+            logger.error("wcs拆盘机出口任务回告失败", e);
+            LogDto logDto = new LogDto();
+            logDto.setDirect("wcs->eis");
+            logDto.setDescri("wcs拆盘机出口回告失败");
+            logDto.setException(e.getMessage());
+            logDto.setCreateTime(new Date());
+            logDto.setHostPort(serverConfiguration.getUrl());
+            logDto.setParams(JsonUtils.toString(openDiskDto));
+            logDto.setMethodName("openDiskOuTCallback");
+            logDto.setSystemType(2);
+            logDto.setSuccess(false);
+            logDto.setType(5);
+            logService.save(logDto);
             return RestMessage.newInstance(false, "300", "wcs拆盘机到位回告失败" + e.getMessage(), null);
         }
     }
@@ -273,7 +301,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (!openDiskDto.getIsArrive().equals("1")){
             throw new Exception("wcs上传状态不为到达状态1");
         }
-        if (openDisk.getTaskStatus() == 1){
+        //0 空闲 1到位 2agv取货中
+        if (openDisk.getTaskStatus() != 0){
             throw new Exception("wcs已上报eis请勿重复上报");
         }
         openDisk.setTaskStatus(1);
@@ -295,6 +324,7 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (!openDiskDto.getStatus().equals("0")){
             throw new Exception("wcs上传eis拆盘机空闲状态不为0");
         }
+        //0 空闲 1到位 2agv送货中
         if (openDisk.getTaskStatus() != 1){
             throw new Exception("wcs已上报eis请勿重复上报");
         }
@@ -387,7 +417,9 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
         if (point == null) {
             throw new Exception("找不到入口点位");
         }
-
+        if (bcrDataDTO.getContainerNo().equals("NOREAD")){
+            throw new Exception("wcs上包eis容器编号为NOREAD");
+        }
         //查询入库 任务
         List<WmsInboundTask> wareHousings = wareHousingService.getWareHousingByContainer(containerNo);
         //外形检测不合格
@@ -562,7 +594,8 @@ public class WcsCallbackServiceImpl implements IWcsCallbackService {
     private void checkGoOn(BCRDataDTO bcrDataDTO) throws Exception {
         //1.此BCR 只需要判断 箱子是不是应该回库
         String containerNo = bcrDataDTO.getContainerNo();
-        List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
+        List<LineBindingDetail> lineBindingDetails = lineBindingDetailMapper.findByMap(MapUtils.put("containerNo", containerNo).getMap(), LineBindingDetail.class);
+//        List<ContainerTaskDto> lineBindingDetails = stationService.getTaskByContainerNo(containerNo);
         if (lineBindingDetails.size() > 0) {
             String taskId = PrologStringUtils.newGUID();
             WcsLineMoveDto wcsLineMoveDto = new WcsLineMoveDto(taskId, bcrDataDTO.getAddress(), StoreArea.LXJZ01, containerNo,

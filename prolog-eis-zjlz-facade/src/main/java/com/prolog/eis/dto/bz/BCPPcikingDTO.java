@@ -32,6 +32,18 @@ public class BCPPcikingDTO {
     @ApiModelProperty("剩余拣选的商品条数")
     private int surplusOrderDetailCount;
 
+
+    @ApiModelProperty("明细剩余拣选数量")
+    private int surplusQtyByDetail;
+
+    public int getSurplusQtyByDetail() {
+        return surplusQtyByDetail;
+    }
+
+    public void setSurplusQtyByDetail(int surplusQtyByDetail) {
+        this.surplusQtyByDetail = surplusQtyByDetail;
+    }
+
     public int getQty() {
         return qty;
     }
@@ -116,6 +128,7 @@ public class BCPPcikingDTO {
                 ", pickNum=" + pickNum +
                 ", qty=" + qty +
                 ", surplusOrderDetailCount=" + surplusOrderDetailCount +
+                ", surplusQtyByDetail=" + surplusQtyByDetail +
                 '}';
     }
 }
