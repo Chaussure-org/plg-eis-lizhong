@@ -125,6 +125,10 @@ public class StationBZServiceImpl implements IStationBZService {
         if (StringUtils.isBlank(locationNo)){
             throw new Exception("接驳点位不能为空");
         }
+        List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("containerNo", orderBoxNo).getMap());
+        if (containerStoreList.size() > 0){
+            throw new Exception("容器【"+orderBoxNo+"】已被使用");
+        }
 
         Station station = stationService.findById(stationId);
         if (station == null) {
@@ -728,9 +732,15 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("容器【"+containerNo+"】无容器绑定");
         }
         Integer orderBillId = bindingDetails.get(0).getOrderBillId();
+        //删除绑定
         containerBindingDetailService.deleteContainerDetail(MapUtils.put("containerNo", containerNo).put("orderDetailId", orderDetailId).getMap());
+        //删除agv绑定明细  通过order_mx_id回传
+        agvBindingDetailService.deleteBindingDetailByMap(MapUtils.put("orderMxId", orderDetailId).put("containerNo", containerNo).getMap());
+        //删除输送线绑定明细
+        lineBindingDetailMapper.deleteByMap(MapUtils.put("orderMxId", orderDetailId).put("containerNo", containerNo).getMap(), LineBindingDetail.class);
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
+        //容器放行
         this.containerNoLeave(containerNo, stationId);
         if (flag) {
             //切换拣选单

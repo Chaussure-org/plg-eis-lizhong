@@ -129,8 +129,8 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
             "FROM\n" +
             "\tcontainer_path_task_detail \n" +
             "WHERE\n" +
-            "\t( task_state IN ( 50, 60 ) AND next_area = 'RCS041' ) \n" +
-            "\tOR ( task_state = 0 AND source_area = 'RCS041' )")
+            "\t( task_state IN ( 50, 60 ) AND next_area = #{areaNo} ) \n" +
+            "\tOR ( task_state = 0 AND source_area = #{areaNo} )")
     int countRcsToWcsPath(@Param("areaNo")String areaNo);
 
     /**
@@ -143,7 +143,7 @@ public interface ContainerPathTaskDetailMapper extends EisBaseMapper<ContainerPa
             "FROM\n" +
             "\tcontainer_path_task_detail \n" +
             "WHERE\n" +
-            "\t( task_state IN ( 0,50, 60 ) AND source_area = 'RCS041' ) ")
+            "\t( task_state IN ( 0,50, 60 ) AND source_area = #{areaNo} ) ")
     int countHkWcsPath(@Param("areaNo")String areaNo);
 
 
