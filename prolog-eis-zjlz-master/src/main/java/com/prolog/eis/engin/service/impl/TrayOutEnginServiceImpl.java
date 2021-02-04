@@ -244,9 +244,11 @@ public class TrayOutEnginServiceImpl implements TrayOutEnginService {
     @Override
     public List<RoadWayContainerTaskDto> computeRoadWayTask() {
         List<RoadWayContainerTaskDto> roadWayContainerTaskDtoList = new ArrayList<>();
+        String[] areaNo = new String[]{"MCS01","MCS02","MCS03","MCS04"};
         for (int i = 2; i < 6; i++) {
             RoadWayContainerTaskDto roadWayContainerTaskDto = new RoadWayContainerTaskDto();
             roadWayContainerTaskDto.setRoadWay(i);
+            roadWayContainerTaskDto.setStoreAreaNo(areaNo[i-2]);
             roadWayContainerTaskDto.setOutCount(0);
             roadWayContainerTaskDto.setInCount(0);
             roadWayContainerTaskDtoList.add(roadWayContainerTaskDto);
