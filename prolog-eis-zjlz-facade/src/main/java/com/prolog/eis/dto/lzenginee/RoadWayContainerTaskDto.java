@@ -15,6 +15,7 @@ public class RoadWayContainerTaskDto {
     private int roadWay;
     private int outCount;
     private int inCount;
+    private String storeAreaNo;
 //    private int goodsId;
 //    private int goodsCount;
 }

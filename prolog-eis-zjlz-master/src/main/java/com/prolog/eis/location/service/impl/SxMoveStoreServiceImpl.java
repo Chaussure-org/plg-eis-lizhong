@@ -1,11 +1,14 @@
 package com.prolog.eis.location.service.impl;
 
 import com.prolog.eis.dto.location.ContainerPathTaskDetailDTO;
+import com.prolog.eis.dto.lzenginee.RoadWayContainerTaskDto;
 import com.prolog.eis.dto.mcs.McsMoveTaskDto;
 import com.prolog.eis.dto.sas.SasMoveTaskDto;
 import com.prolog.eis.dto.store.SxStoreGroupDto;
 import com.prolog.eis.dto.store.SxStoreLockDto;
 import com.prolog.eis.dto.mcs.McsResultDto;
+import com.prolog.eis.engin.service.TrayOutEnginService;
+import com.prolog.eis.engin.service.impl.TrayOutEnginServiceImpl;
 import com.prolog.eis.location.dao.ContainerPathTaskDetailMapper;
 import com.prolog.eis.location.dao.ContainerPathTaskMapper;
 import com.prolog.eis.location.dao.StoreAreaMapper;
@@ -32,6 +35,7 @@ import com.prolog.framework.common.message.RestMessage;
 import com.prolog.framework.utils.JsonUtils;
 import com.prolog.framework.utils.MapUtils;
 import com.prolog.framework.utils.StringUtils;
+import eu.bitwalker.useragentutils.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.*;
 
 @Service
 public class SxMoveStoreServiceImpl implements SxMoveStoreService {
@@ -71,6 +76,8 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
     private IWareHousingService iWareHousingService;
     @Autowired
     private IContainerStoreService iContainerStoreService;
+    @Autowired
+    private TrayOutEnginService trayOutEnginService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -79,11 +86,32 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
         //boolean bl = false;
 
         try {
+            /**
+             * 1。找出当前每个巷道存在多少个任务
+             * 2.对比当前任务所属巷道
+             * 2.1 如果不存在任务，则进行下面操作
+             * 2.2 如果存在任务，则直接返回
+             */
+
             //检查移动任务类型
             StoreArea sourceStoreArea = storeAreaMapper.findById(containerPathTaskDetailDTO.getSourceArea(),
                     StoreArea.class);
             StoreArea targetStoreArea = storeAreaMapper.findById(containerPathTaskDetailDTO.getNextArea(),
                     StoreArea.class);
+            if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS)||targetStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS)) {
+                List<RoadWayContainerTaskDto> roadWayContainerTaskDtoList = trayOutEnginService.computeRoadWayTask();
+                Map<String,Integer> taskCountMap = new HashMap<String,Integer>();
+                for (RoadWayContainerTaskDto roadWayContainerTaskDto : roadWayContainerTaskDtoList) {
+                    int num = roadWayContainerTaskDto.getInCount()+roadWayContainerTaskDto.getOutCount();
+                    taskCountMap.put(roadWayContainerTaskDto.getStoreAreaNo(),num);
+                }
+                if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea())>0){
+                    return;
+                }
+                if (targetStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getNextArea()) !=null && taskCountMap.get(containerPathTaskDetailDTO.getNextArea())>0) {
+                    return;
+                }
+            }
 
             int mcsTaskType = this.getMcsTaskType(sourceStoreArea, targetStoreArea);
             switch (mcsTaskType) {
