@@ -105,10 +105,12 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     int num = roadWayContainerTaskDto.getInCount()+roadWayContainerTaskDto.getOutCount();
                     taskCountMap.put(roadWayContainerTaskDto.getStoreAreaNo(),num);
                 }
-                if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea())>0){
+                if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea()) != null && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea())>0){
+                    logger.info("eis -> sps出库任务发送失败：区域【"+containerPathTaskDetailDTO.getSourceArea()+"】已有任务");
                     return;
                 }
                 if (targetStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getNextArea()) !=null && taskCountMap.get(containerPathTaskDetailDTO.getNextArea())>0) {
+                    logger.info("eis -> sps入库任务发送失败：区域【"+containerPathTaskDetailDTO.getNextArea()+"】已有任务");
                     return;
                 }
             }

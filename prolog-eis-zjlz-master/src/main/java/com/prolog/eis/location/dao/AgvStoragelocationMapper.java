@@ -76,7 +76,8 @@ public interface AgvStoragelocationMapper extends EisBaseMapper<AgvStoragelocati
             "\tagv_storagelocation a\n" +
             "\tLEFT JOIN container_path_task c ON a.location_no = c.target_location \n" +
             "WHERE\n" +
-            "\ta.storage_lock = 0 \n" +
+            "\ta.storage_lock = 0 " +
+            "and a.task_lock = 0 \n" +
             "\tAND a.area_no = #{storeArea} \n" +
             "\tAND a.device_no = #{stationId}\n" +
             "\tand c.container_no is null")

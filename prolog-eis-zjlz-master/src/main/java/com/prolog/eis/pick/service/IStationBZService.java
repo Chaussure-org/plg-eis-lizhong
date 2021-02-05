@@ -40,9 +40,11 @@ public interface IStationBZService {
      * @param locationNo
      * @param stationId
      * @param areaNo
+     * @param orderTrayNo 订单拖编号
+     * @throws Exception
      * @return
      */
-    boolean checkOrderTrayNo(String locationNo,int stationId,String areaNo) throws Exception;
+    boolean checkOrderTrayNo(String locationNo,int stationId,String areaNo,String orderTrayNo) throws Exception;
 
     /**
      * 订单转历史

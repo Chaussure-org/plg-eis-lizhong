@@ -9,6 +9,7 @@ import com.prolog.eis.dto.wcs.WcsLineMoveDto;
 import com.prolog.eis.dto.wms.WmsOutboundCallBackDto;
 import com.prolog.eis.dto.wms.WmsStartOrderCallBackDto;
 import com.prolog.eis.engin.dao.LineBindingDetailMapper;
+import com.prolog.eis.location.dao.AgvStoragelocationMapper;
 import com.prolog.eis.location.service.*;
 import com.prolog.eis.model.ContainerStore;
 import com.prolog.eis.model.OrderBox;
@@ -101,6 +102,8 @@ public class StationBZServiceImpl implements IStationBZService {
     private IContainerPathTaskDetailService containerPathTaskDetailService;
     @Autowired
     private LineBindingDetailMapper lineBindingDetailMapper;
+    @Autowired
+    private AgvStoragelocationMapper agvStoragelocationMapper;
 
     /**
      * 2、校验托盘或料箱是否在拣选站
@@ -149,7 +152,7 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         //校验订单拖是否在拣选站
         String areaNo = "OD01";
-        boolean b2 = checkOrderTrayNo(locationNo, stationId, areaNo);
+        boolean b2 = checkOrderTrayNo(locationNo, stationId, areaNo,orderBoxNo);
         if (b2) {
             throw new Exception("站台点位"+locationNo+"无点订单拖");
         }
@@ -260,12 +263,6 @@ public class StationBZServiceImpl implements IStationBZService {
             return true;
         }
 
-        // 此处代码 有bug add sunpp
-        /*String areaNo = "OD01";
-        boolean b = checkOrderTrayNo(containerNo, stationId, areaNo);
-        if (b){
-            return true;
-        }*/
         return false;
     }
 
@@ -278,7 +275,7 @@ public class StationBZServiceImpl implements IStationBZService {
      * @throws Exception
      */
     @Override
-    public boolean checkOrderTrayNo(String locationNo, int stationId, String areaNo) throws Exception {
+    public boolean checkOrderTrayNo(String locationNo, int stationId, String areaNo,String orderBoxNo) throws Exception {
         List<AgvStoragelocation> agvStoragelocations = agvLocationService.findByMap(MapUtils.put("deviceNo", stationId)
                 .put("areaNo", areaNo).getMap());
         if (agvStoragelocations.size() == 0) {
@@ -384,12 +381,20 @@ public class StationBZServiceImpl implements IStationBZService {
             throw new Exception("【" + orderTrayNo + "】托盘离开失败，无播种作业");
         }
         boolean flag = orderDetailService.findOrderTrayGoodsLabel(orderBillId, orderTrayNo);
+        List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", orderTrayNo).getMap());
+        if (containerPathTasks.size() == 0){
+            throw new Exception("订单托【"+orderTrayNo+"】无路径");
+        }
         if (flag) {
             //Agv贴标区
             pathSchedulingService.containerMoveTask(orderTrayNo, "LB01", null);
+
+            agvStoragelocationMapper.updateLocationLock(containerPathTasks.get(0).getSourceLocation(), AgvStoragelocation.TASK_LOCK);
         } else {
             //agv非贴标
             pathSchedulingService.containerMoveTask(orderTrayNo, "CH01", null);
+
+            agvStoragelocationMapper.updateLocationLock(containerPathTasks.get(0).getSourceLocation(), AgvStoragelocation.TASK_LOCK);
         }
     }
 
@@ -741,7 +746,7 @@ public class StationBZServiceImpl implements IStationBZService {
 //        校验订单是否完成
         boolean flag = orderDetailService.orderPickingFinish(orderBillId);
         //容器放行
-        this.containerNoLeave(containerNo, stationId);
+
         if (flag) {
             //切换拣选单
             this.changePickingOrder(station);
@@ -752,6 +757,7 @@ public class StationBZServiceImpl implements IStationBZService {
             logger.info(orderTrayNo+"订单拖放行");
            this.orderTrayLeave(orderTrayNo, orderBillId);
         }
+        this.containerNoLeave(containerNo, stationId);
 
 
     }
