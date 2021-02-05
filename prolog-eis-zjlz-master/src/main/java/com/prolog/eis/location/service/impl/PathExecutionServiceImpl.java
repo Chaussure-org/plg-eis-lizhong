@@ -32,6 +32,7 @@ import org.springframework.beans.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -129,6 +130,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doWcsToMcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
 
         //此处仅执行一个点位转换
@@ -142,6 +144,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doWcsToRcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         //点位转换
         System.out.println("wcs to rcs");
@@ -153,6 +156,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doRcsToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("rcs to wcs");
         //bcr请求处理路径更新
@@ -163,6 +167,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doSasToWcsTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("=====================sas to wcs=========================");
         //点位转换
@@ -176,6 +181,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doWcsToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to sas");
         //改为路径的更新和删除
@@ -196,6 +202,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doSasToSasTask(ContainerPathTask containerPathTask, ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("sas to sas");
         //改为路径的更新和删除
@@ -218,6 +225,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
      * @param containerPathTaskDetailDTO 详情实体
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doWcsToWcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         System.out.println("wcs to wcs");
@@ -252,6 +260,7 @@ public class PathExecutionServiceImpl implements PathExecutionService {
      * @throws Exception
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doMcsToMcsTask(ContainerPathTask containerPathTask,
                                ContainerPathTaskDetailDTO containerPathTaskDetailDTO) throws Exception {
         //发送mcs移动任务

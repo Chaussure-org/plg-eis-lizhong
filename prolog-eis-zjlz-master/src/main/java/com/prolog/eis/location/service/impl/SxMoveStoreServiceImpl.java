@@ -106,7 +106,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     taskCountMap.put(roadWayContainerTaskDto.getStoreAreaNo(),num);
                 }
                 if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea())>0){
-                    return;
+                    throw new Exception(containerPathTaskDetailDTO.getSourceArea()+"该巷道已有出入库容器");
                 }
                 if (targetStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getNextArea()) !=null && taskCountMap.get(containerPathTaskDetailDTO.getNextArea())>0) {
                     return;

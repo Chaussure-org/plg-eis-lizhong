@@ -105,36 +105,41 @@ public class LocationServiceImpl implements LocationService {
             String sourceDeviceSystem = containerPathTaskDetailList.get(0).getSourceDeviceSystem();
             String nextDeviceSystem = containerPathTaskDetailList.get(0).getNextDeviceSystem();
             //设备厂商先直接写死
-            if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //MCS TO WCS
-                pathExecutionService.doMcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
-                //WCS TO MCS
-                pathExecutionService.doWcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
-                //WCS TO RCS
-                pathExecutionService.doWcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //RCS TO WCS
-                pathExecutionService.doRcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
-                //RCS TO RCS
-                pathExecutionService.doRcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //SAS TO WCS
-                pathExecutionService.doSasToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
-                //WCS TO SAS
-                pathExecutionService.doWcsToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
-                //WCS TO WCS
-                pathExecutionService.doWcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
-                //MCS TO MCS
-                pathExecutionService.doMcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
-            } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
-                //SAS TO SAS
-                pathExecutionService.doSasToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
+            try {
+                if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                    //MCS TO WCS
+                    pathExecutionService.doMcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
+                    //WCS TO MCS
+                    pathExecutionService.doWcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
+                    //WCS TO RCS
+                    pathExecutionService.doWcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                    //RCS TO WCS
+                    pathExecutionService.doRcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_RCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_RCS.equals(nextDeviceSystem)) {
+                    //RCS TO RCS
+                    pathExecutionService.doRcsToRcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                    //SAS TO WCS
+                    pathExecutionService.doSasToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
+                    //WCS TO SAS
+                    pathExecutionService.doWcsToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_WCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_WCS.equals(nextDeviceSystem)) {
+                    //WCS TO WCS
+                    pathExecutionService.doWcsToWcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_MCS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_MCS.equals(nextDeviceSystem)) {
+                    //MCS TO MCS
+                    pathExecutionService.doMcsToMcsTask(containerPathTask, containerPathTaskDetailList.get(0));
+                } else if (LocationConstants.DEVICE_SYSTEM_SAS.equals(sourceDeviceSystem) && LocationConstants.DEVICE_SYSTEM_SAS.equals(nextDeviceSystem)) {
+                    //SAS TO SAS
+                    pathExecutionService.doSasToSasTask(containerPathTask, containerPathTaskDetailList.get(0));
+                }
+            }catch (Exception e){
+                logger.error(e.getMessage());
+                continue;
             }
         }
     }
