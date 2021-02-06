@@ -102,7 +102,7 @@ public class RcsCallbackServiceImpl implements IRcsCallbackService {
             openDiskService.updateOpenDisk(openDisk);
         }
         if (containerPathTask.getSourceArea().equals(OpenDisk.OPEN_DISK_IN)){
-            //agv位放货后更新状态(拆盘机出口)
+            //agv位放货后更新状态(拆盘机入口)
             List<OpenDisk> openDiskList = openDiskService.findOpenDiskByMap(MapUtils.put("openDiskId", OpenDisk.OPEN_DISK_IN).getMap());
             OpenDisk openDisk = openDiskList.get(0);
             openDisk.setTaskStatus(1);

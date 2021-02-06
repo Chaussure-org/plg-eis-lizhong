@@ -753,7 +753,6 @@ public class StationBZServiceImpl implements IStationBZService {
             //明细转历史
             orderBillService.orderBillToHistory(orderBillId);
             //订单拖放行 贴标区或非贴标区
-            //todo:2020:1:26注释订单拖放行
             logger.info(orderTrayNo+"订单拖放行");
            this.orderTrayLeave(orderTrayNo, orderBillId);
         }
@@ -841,7 +840,7 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         List<ContainerPathTask> containerPathTasks = containerPathTaskService.findByMap(MapUtils.put("containerNo", orderTrayNo).getMap());
         if (containerPathTasks.size() > 0){
-            throw new Exception("容器号已被使用");
+            throw new Exception("【"+orderTrayNo+"】容器号已被使用");
         }
         containerPathTaskList.get(0).setContainerNo(orderTrayNo);
         containerPathTaskList.get(0).setPalletNo(orderTrayNo);
