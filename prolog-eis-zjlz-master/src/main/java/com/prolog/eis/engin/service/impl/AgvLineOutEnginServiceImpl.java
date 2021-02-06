@@ -84,8 +84,8 @@ public class AgvLineOutEnginServiceImpl implements AgvLineOutEnginService {
                                     put("areaNo", StoreArea.SN01).put("taskLock", 0).put("storageLock", 0).getMap(), AgvStoragelocation.class);
                     if (list.isEmpty()) {
                         //站台无空位
-                        logger.info("站台" + station.getId() + "无可空位");
-                        return;
+                        logger.info("站台" + station.getId() + "无可用空位");
+                        continue;
                     }
                     //2.该站台 到达的 托盘
                     List<AgvBindingDetail> agvBindList = details.stream().filter(x -> x.getOrderBillId().equals(first.get().getOrderBillId())).collect(Collectors.toList());
