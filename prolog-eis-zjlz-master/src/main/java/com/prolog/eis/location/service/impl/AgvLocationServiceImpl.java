@@ -87,18 +87,6 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 //				.stream()
 //				.map(ContainerPathTaskDetail::getNextLocation)
 //				.collect(Collectors.toList());
-
-		Criteria criteria = Criteria.forClass(ContainerPathTaskDetail.class);
-		criteria.setRestriction(Restrictions.le("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_SEND));
-		List<ContainerPathTaskDetail> byCriteria = containerPathTaskDetailMapper.findByCriteria(criteria);
-		List<String> sourceLocations = byCriteria.stream().map(ContainerPathTaskDetail::getSourceLocation).distinct().collect(Collectors.toList());
-		List<ContainerPathTaskDetail> byMap = containerPathTaskDetailMapper.findByMap(Maps.newHashMap(), ContainerPathTaskDetail.class);
-		List<String> nextLocations = byMap.stream().filter(c -> !StringUtils.isEmpty(c.getNextLocation())).map(ContainerPathTaskDetail::getNextLocation).distinct().collect(Collectors.toList());
-		sourceLocations.removeAll(nextLocations);
-		sourceLocations.addAll(nextLocations);
-
-
-
 		//获取不在容器任务明细中的点位
 		List<AgvStoragelocation> agvStoragelocationList = agvStoragelocationMapper.findByMap(
 				MapUtils.put("areaNo", area)
