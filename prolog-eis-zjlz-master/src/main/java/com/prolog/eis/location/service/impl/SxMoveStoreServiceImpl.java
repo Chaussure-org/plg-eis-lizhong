@@ -105,13 +105,10 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                     int num = roadWayContainerTaskDto.getInCount()+roadWayContainerTaskDto.getOutCount();
                     taskCountMap.put(roadWayContainerTaskDto.getStoreAreaNo(),num);
                 }
-                if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea()) != null && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea())>0){
-                    logger.info("eis -> sps出库任务发送失败：区域【"+containerPathTaskDetailDTO.getSourceArea()+"】已有任务");
-                    return;
+                if (sourceStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea()) != null && taskCountMap.get(containerPathTaskDetailDTO.getSourceArea())>0){               throw new Exception(containerPathTaskDetailDTO.getSourceArea()+"该巷道已有出入库容器");
                 }
                 if (targetStoreArea.getDeviceSystem().equals(LocationConstants.DEVICE_SYSTEM_MCS) && taskCountMap.get(containerPathTaskDetailDTO.getNextArea()) !=null && taskCountMap.get(containerPathTaskDetailDTO.getNextArea())>0) {
-                    logger.info("eis -> sps入库任务发送失败：区域【"+containerPathTaskDetailDTO.getNextArea()+"】已有任务");
-                    return;
+                    throw new Exception(containerPathTaskDetailDTO.getNextArea()+"该巷道已有出入库容器");
                 }
             }
 
@@ -505,8 +502,7 @@ public class SxMoveStoreServiceImpl implements SxMoveStoreService {
                 //增加校验堆垛机出库口->出库bcr任务数 （出库区域containerPathTaskDetailDTO.getNextArea()） 有一个任务后续任务不发
                 int i = containerPathTaskDetailMapper.countPathTaskDetail(nextStoreNo);
                 if (i > 0){
-                    logger.info(nextStoreNo+"已有任务发往出库口,当前出库任务发往sps失败");
-                    return;
+                    throw new Exception(nextStoreNo+"已有任务发往出库口,当前出库任务发往sps失败");
                 }
                 McsMoveTaskDto mcsMoveTaskDto = new McsMoveTaskDto(taskId, taskType, containerNo, sourceStoreNo,
                         nextStoreNo, "", "99", 0, 1);
