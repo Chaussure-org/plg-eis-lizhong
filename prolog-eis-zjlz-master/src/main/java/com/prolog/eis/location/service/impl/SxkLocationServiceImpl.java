@@ -343,12 +343,19 @@ public class SxkLocationServiceImpl implements SxkLocationService {
 			//27层下为移库
 			findStoreLocationGroup = findStoreLocationGroup1.stream().filter(x -> layer == x.getLayer()).collect(Collectors.toList());
 		}else if (StoreArea.SAS01.equals(area) && layer > 27){
+			List<LayerTaskDto> xkTaskByLayer = containerBindingDetailMapper.findXkInTaskByLayer();
+			List<InStoreLocationGroupDto> collect1 = findStoreLocationGroup1.stream().filter(x -> x.getLayer() != 21).collect(Collectors.toList());
+			List<Integer> layers = xkTaskByLayer.stream().filter(x -> x.getInCount() >= 2).map(LayerTaskDto::getLayer).collect(Collectors.toList());
+			List<InStoreLocationGroupDto> collect = collect1.stream().filter(x -> !layers.contains(x.getLayer())).collect(Collectors.toList());
+			/**
 			//箱库28层上为入库点位 筛选任务数
 			List<LayerTaskDto> xkTaskByLayer = containerBindingDetailMapper.findXkInTaskByLayer();
 			List<Integer> layers = xkTaskByLayer.stream().filter(x -> x.getInCount() >= 2).map(LayerTaskDto::getLayer).collect(Collectors.toList());
 			List<InStoreLocationGroupDto> collect = findStoreLocationGroup1.stream().filter(x -> !layers.contains(x.getLayer())).collect(Collectors.toList());
+			 */
 			if (collect.size() == 0){
-				findStoreLocationGroup = findStoreLocationGroup1;
+				List<InStoreLocationGroupDto> collect2 = findStoreLocationGroup1.stream().filter(x -> x.getLayer() != 21).collect(Collectors.toList());
+				findStoreLocationGroup = collect2;
 			}else {
 				findStoreLocationGroup = collect;
 			}

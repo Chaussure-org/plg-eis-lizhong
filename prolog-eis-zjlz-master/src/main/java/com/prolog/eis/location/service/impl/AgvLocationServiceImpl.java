@@ -1,6 +1,7 @@
 package com.prolog.eis.location.service.impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.prolog.eis.dto.location.AgvStoragelocationDTO;
 import com.prolog.eis.dto.location.ContainerPathTaskDTO;
 import com.prolog.eis.dto.page.AgvStoreInfoDto;
@@ -17,6 +18,8 @@ import com.prolog.eis.model.location.ContainerPathTaskDetail;
 import com.prolog.eis.model.location.StoreArea;
 import com.prolog.eis.util.location.LocationConstants;
 import com.prolog.framework.core.pojo.Page;
+import com.prolog.framework.core.restriction.Criteria;
+import com.prolog.framework.core.restriction.Restrictions;
 import com.prolog.framework.dao.util.PageUtils;
 import com.prolog.framework.utils.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -62,14 +65,21 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 			return agvStoragelocationDTO;
 		}
 
-		List<String> locationList = containerPathTaskDetailMapper.findByMap(
-//				MapUtils.put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap()
-				MapUtils.put("nextArea", area).getMap()
-				, ContainerPathTaskDetail.class)
-				.stream()
-				.map(ContainerPathTaskDetail::getNextLocation)
-				.collect(Collectors.toList());
-
+//		List<String> locationList = containerPathTaskDetailMapper.findByMap(
+////				MapUtils.put("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_INPLACE).getMap()
+//				MapUtils.put("nextArea", area).getMap()
+//				, ContainerPathTaskDetail.class)
+//				.stream()
+//				.map(ContainerPathTaskDetail::getNextLocation)
+//				.collect(Collectors.toList());
+		Criteria criteria = Criteria.forClass(ContainerPathTaskDetail.class);
+		criteria.setRestriction(Restrictions.le("taskState", LocationConstants.PATH_TASK_DETAIL_STATE_START));
+		List<ContainerPathTaskDetail> byCriteria = containerPathTaskDetailMapper.findByCriteria(criteria);
+		List<String> sourceLocations = byCriteria.stream().map(ContainerPathTaskDetail::getSourceLocation).distinct().collect(Collectors.toList());
+		List<ContainerPathTaskDetail> byMap = containerPathTaskDetailMapper.findByMap(Maps.newHashMap(), ContainerPathTaskDetail.class);
+		List<String> nextLocations = byMap.stream().filter(c -> !StringUtils.isEmpty(c.getNextLocation())).map(ContainerPathTaskDetail::getNextLocation).distinct().collect(Collectors.toList());
+		sourceLocations.removeAll(nextLocations);
+		sourceLocations.addAll(nextLocations);
 		//获取不在容器任务明细中的点位
 		List<AgvStoragelocation> agvStoragelocationList = agvStoragelocationMapper.findByMap(
 				MapUtils.put("areaNo", area)
@@ -77,7 +87,7 @@ public class AgvLocationServiceImpl implements AgvLocationService {
 						.put("storageLock", LocationConstants.AGV_STORAGELOCK_UNLOCK).getMap()
 				, AgvStoragelocation.class)
 				.stream()
-				.filter(agvStoragelocation -> !locationList.contains(agvStoragelocation.getLocationNo()))
+				.filter(agvStoragelocation -> !sourceLocations.contains(agvStoragelocation.getLocationNo()))
 				.collect(Collectors.toList());
 
 		if (CollectionUtils.isEmpty(agvStoragelocationList)) {

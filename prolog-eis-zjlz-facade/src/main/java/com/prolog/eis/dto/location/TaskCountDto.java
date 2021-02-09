@@ -15,6 +15,14 @@ public class TaskCountDto {
     @ApiModelProperty("任务数")
     private Integer taskCount;
 
+    public TaskCountDto(String areaNo, Integer taskCount) {
+        this.areaNo = areaNo;
+        this.taskCount = taskCount;
+    }
+
+    public TaskCountDto() {
+    }
+
     public String getAreaNo() {
         return areaNo;
     }

@@ -28,11 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -249,26 +245,40 @@ public class ContainerPathTaskServiceImpl implements ContainerPathTaskService {
     @Override
     public String computeAreaIn(Goods goods) {
         List<TaskCountDto> taskCountDtos = containerPathTaskMapper.findInTaskCount();
+
+        TaskCountDto mcs01TaskCountDto = new TaskCountDto("MCS01", 0);
+        TaskCountDto mcs04TaskCountDto = new TaskCountDto("MCS04", 0);
+        List<TaskCountDto> initTaskCountList = Arrays.asList(mcs01TaskCountDto, mcs04TaskCountDto);
+        if (taskCountDtos.size() > 0) {
+            for (TaskCountDto taskCountDto : taskCountDtos) {
+                for (TaskCountDto countDto : initTaskCountList) {
+                    if (taskCountDto.getAreaNo().equals(countDto.getAreaNo())) {
+                        countDto.setTaskCount(taskCountDto.getTaskCount());
+                    }
+                }
+            }
+        }
+
         //04区3个   03区2个  02 01 区一个
         List<TaskCountDto> mcs04 =
-                taskCountDtos.stream().filter(taskCountDto -> "MCS04".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 2).collect(Collectors.toList());
+                initTaskCountList.stream().filter(taskCountDto -> "MCS04".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 6).collect(Collectors.toList());
         if (mcs04.size() == 0) {
-            return goods.getGoodsOneType().equals("包材")?"":"MCS04";
+            return goods.getGoodsOneType().equals("包材") ? "MCS04" : "MCS04";
         }
-        List<TaskCountDto> mcs03 =
-                taskCountDtos.stream().filter(taskCountDto -> "MCS03".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 1).collect(Collectors.toList());
-        if (mcs03.size() == 0) {
-            return goods.getGoodsOneType().equals("包材")?"":"MCS03";
-        }
-        List<TaskCountDto> mcs02 =
-                taskCountDtos.stream().filter(taskCountDto -> "MCS02".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
-        if (mcs02.size() == 0) {
-            return goods.getGoodsOneType().equals("包材")?"":"MCS02";
-        }
+//        List<TaskCountDto> mcs03 =
+//                taskCountDtos.stream().filter(taskCountDto -> "MCS03".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 1).collect(Collectors.toList());
+//        if (mcs03.size() == 0) {
+//            return goods.getGoodsOneType().equals("包材")?"MCS03":"MCS03";
+//        }
+//        List<TaskCountDto> mcs02 =
+//                taskCountDtos.stream().filter(taskCountDto -> "MCS02".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
+//        if (mcs02.size() == 0) {
+//            return goods.getGoodsOneType().equals("包材")?"MCS02":"MCS02";
+//        }
         List<TaskCountDto> mcs01 =
-                taskCountDtos.stream().filter(taskCountDto -> "MCS01".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
+                initTaskCountList.stream().filter(taskCountDto -> "MCS01".equals(taskCountDto.getAreaNo()) && taskCountDto.getTaskCount() > 0).collect(Collectors.toList());
         if (mcs01.size() == 0) {
-            return goods.getGoodsOneType().equals("包材")?"":"MCS01";
+            return goods.getGoodsOneType().equals("包材") ? "MCS01" : "MCS01";
         }
         return taskCountDtos.get(0).getAreaNo();
     }
