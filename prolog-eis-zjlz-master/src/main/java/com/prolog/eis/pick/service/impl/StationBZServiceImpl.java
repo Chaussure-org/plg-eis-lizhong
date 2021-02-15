@@ -130,7 +130,7 @@ public class StationBZServiceImpl implements IStationBZService {
         }
         List<ContainerStore> containerStoreList = containerStoreService.findByMap(MapUtils.put("containerNo", orderBoxNo).getMap());
         if (containerStoreList.size() > 0){
-            throw new Exception("容器【"+orderBoxNo+"】已被使用");
+            throw new Exception("容器【"+orderBoxNo+"】已被使用,请更换条码");
         }
 
         Station station = stationService.findById(stationId);
